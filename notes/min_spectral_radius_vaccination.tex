@@ -305,65 +305,14 @@ minimizer of $\Psi$ on $\mathcal{K}$. The statement on local minimizers is
 Theorem~\ref{active}(ii).
 \end{proof}
 
-\paragraph{Minimization in the kernel}
-For location $i$ let $\bm\sigma_i=\left(\sigma_{1,p}\right)_{p\in I_i}\in\mathbb{R}^n$,
-and let
-\begin{equation}\label{X-def}
-X=\operatorname{diag}\left(\bm\sigma_1^T,\ldots,\bm\sigma_m^T\right)\in\mathbb{R}^{m\times N}
-\end{equation}
-be the block diagonal matrix with the row vectors $\bm\sigma_i^T$ as its
-diagonal blocks. The $m$ constraints of~\eqref{t-constraint} read
-$X\bm t\le\bm c$, and by Corollary~\ref{all-active} we may minimize over the set
-$\left\{\bm t:\ X\bm t=\bm c,\ \bm t\ge\mathbbm{1}\right\}$. As $\sigma_{1,p}>0$,
-the matrix $X$ has rank $m$, and a vector $\bm h\in\mathbb{R}^N$ lies in its
-kernel if and only if $\sum_{p\in I_i}\sigma_{1,p}h_p=0$ for $i=1:m$. Hence
-\begin{equation}\label{ker-X}
-\ker X=\bm\sigma_1^{\perp}\oplus\cdots\oplus\bm\sigma_m^{\perp},\qquad
-\dim\ker X=m(n-1),
-\end{equation}
-where $\bm\sigma_i^{\perp}\subset\mathbb{R}^n$ is the orthogonal complement of
-$\bm\sigma_i$ and acts on the components $p\in I_i$. A basis of $\ker X$ is
-formed by the $m(n-1)$ vectors
-$\bm e_p/\sigma_{1,p}-\bm e_{p+1}/\sigma_{1,p+1}$, where $p$ and $p+1$ both lie in $I_i$,
-$i=1:m$; such a vector moves doses between two age groups of one location and
-keeps the total of that location. The orthogonal projection onto $\ker X$ is
-\begin{equation}\label{ker-proj}
-P=I-\operatorname{diag}\left(\frac{\bm\sigma_1\bm\sigma_1^T}{\|\bm\sigma_1\|^2},\ldots,
-\frac{\bm\sigma_m\bm\sigma_m^T}{\|\bm\sigma_m\|^2}\right),
-\end{equation}
-and its application to a vector costs $O(N)$ operations.
-
-Fix $\bm t_0$ with $X\bm t_0=\bm c$ and $\bm t_0\ge\mathbbm{1}$, for instance
-\begin{equation}\label{t0-def}
-t_{0,p}=1+\frac{b_{1i}}{n\,\omega_v\sigma_{1,p}},\qquad p\in I_i,
-\end{equation}
-which divides the doses of location $i$ equally among its $n$ age groups. Every
-$\bm t$ with $X\bm t=\bm c$ is $\bm t=\bm t_0+\bm h$ with $\bm h\in\ker X$, and
-$\bm t\ge\mathbbm{1}$ if and only if $h_p\ge 1-t_{0,p}$. The single-dose problem
-is therefore
-\begin{equation}\label{ker-program}
-\min\ \Psi\left(\bm t_0+\bm h\right)\qquad\mbox{subject to}\qquad
-\bm h\in\ker X,\quad h_p\ge 1-t_{0,p},\ p=1:N .
-\end{equation}
-Only lower bounds appear, but the feasible set of~\eqref{ker-program} is
-bounded: for $p\in I_i$ the kernel condition and the lower bounds give
-\begin{equation}
-\sigma_{1,p}h_p=-\sum_{q\in I_i,\,q\neq p}\sigma_{1,q}h_q
-\le\sum_{q\in I_i,\,q\neq p}\sigma_{1,q}\left(t_{0,q}-1\right).
-\end{equation}
-For the location $i$ the feasible set is a simplex of dimension $n-1$,
-translated by $-\bm t_0$, and the feasible set of~\eqref{ker-program} is the
-product of these $m$ simplices. If no bound is active at the minimizer, then the
-minimizer of~\eqref{ker-program} is characterized by $P\nabla\Psi=0$; otherwise
-the bounds $h_p\ge 1-t_{0,p}$ have to be enforced, by projection or by a barrier.
-
 \begin{theorem}\label{global}
 Let $A_1\ge 0$ with $\rho(A_1)>0$. Then $\Psi$ is convex and continuous
 on $\mathcal{K}$, the minimum in~\eqref{t-program} is attained, and every local
 minimizer is a global minimizer. If in addition $A_1$ is irreducible, then the
-minimizer is unique, $\Psi$ is continuously differentiable on
-$\left\{\bm t>0\right\}$, and the Karush--Kuhn--Tucker conditions are necessary
-and sufficient for a global minimum.
+minimizer is unique.
+% , $\Psi$ is continuously differentiable on
+% $\left\{\bm t>0\right\}$, and the Karush--Kuhn--Tucker conditions are necessary
+% and sufficient for a global minimum.
 \end{theorem}
 \begin{proof}
 The feasible set $\mathcal{K}$ is closed, and bounded because $\bm t\ge\mathbbm{1}$ and
@@ -421,19 +370,21 @@ and $\Psi$ is convex. The feasible set is compact and
 $\Psi$ is continuous, so the minimum is attained, and every local minimizer of
 a convex function on a convex set is a global minimizer.
 
-Let now $A_1$ be irreducible. For $\bm t>0$ the matrix
-$A_1\operatorname{diag}(\bm g)\ge 0$ has the same zero entries as $A_1$ and is
-irreducible, so by Theorem~\ref{pf} in~\S\ref{sec-facts} its spectral radius
-is a simple eigenvalue, hence a continuously differentiable function of the
-entries, which are continuously differentiable in $\bm t$. By
-Theorem~\ref{mono} the inequality~\eqref{mono-g} is strict and, the two sides
+Let now $A_1$ be irreducible.
+% For $\bm t>0$ the matrix
+% $A_1\operatorname{diag}(\bm g)\ge 0$ has the same zero entries as $A_1$ and is
+% irreducible, so by Theorem~\ref{pf} in~\S\ref{sec-facts} its spectral radius
+% is a simple eigenvalue, hence a continuously differentiable function of the
+% entries, which are continuously differentiable in $\bm t$.
+By Theorem~\ref{mono} the inequality~\eqref{mono-g} is strict and, the two sides
 of~\eqref{g-strict} being distinct, the first inequality in~\eqref{psi-strict}
 is strict: $\Psi$ is strictly convex. If $\bm t\neq\bm t'$ were two minimizers, then
 $\bm t_{1/2}$ would be feasible, the feasible set being convex, and
 $\Psi\left(\bm t_{1/2}\right)$ would be smaller than the minimum; hence the
-minimizer is unique. The Karush--Kuhn--Tucker conditions are necessary and
-sufficient for a continuously differentiable convex function on a set defined
-by affine constraints.
+minimizer is unique.
+% The Karush--Kuhn--Tucker conditions are necessary and
+% sufficient for a continuously differentiable convex function on a set defined
+% by affine constraints.
 \end{proof}
 
 The minimizer can be computed by an interior penalty method: a logarithmic
@@ -467,7 +418,7 @@ $\bm t(\mu)$ in $\mathcal{K}^\circ$.
 \end{theorem}
 \begin{proof}
 By Theorem~\ref{global} and its proof, $\Psi$ is strictly convex and
-continuously differentiable on $\{\bm t>0\}$, which contains $\mathcal{K}$.
+continuous on $\{\bm t>0\}$, which contains $\mathcal{K}$.
 
 (i) The set $\mathcal{K}^\circ$ is not empty: it contains the point with
 $t_p=1+b_{1i}/\left(2n\,\omega_v\sigma_{1,p}\right)$, $p\in I_i$, for which
@@ -500,22 +451,31 @@ set $E$ is closed, hence compact, and it is not empty since it contains
 $\bm t^0$. So $F_\mu$ attains its minimum over $E$, and this is its
 minimum over $\mathcal{K}^\circ$.
 
-(ii) The left inequality holds because $\bm t(\mu)\in\mathcal{K}$. At the
-interior minimizer $\bm t=\bm t(\mu)$ the gradient of
-$F_\mu$ vanishes: for $p\in I_i$,
-\begin{equation}\label{barrier-stationary}
-\frac{\partial\Psi}{\partial t_p}(\bm t)
-=\lambda_p-\sigma_{1,p}\nu_i,\qquad
+(ii) The left inequality holds because $\bm t(\mu)\in\mathcal{K}$. Let
+$\bm t=\bm t(\mu)$ and, for $p\in I_i$,
+\begin{equation}
 \lambda_p=\frac{\mu}{t_p-1},\qquad
 \nu_i=\frac{\mu}{c_i-\sum_{l\in I_i}\sigma_{1,l}t_l} ,
 \end{equation}
-with $\lambda_p>0$ and $\nu_i>0$. Let $\bm y\in\mathcal{K}$. By convexity of
-$\Psi$ and~\eqref{barrier-stationary},
+so that $\lambda_p>0$, $\nu_i>0$, and the barrier $B$, a sum of logarithms of
+affine functions, has the partial derivatives
+$\mu\,\partial B/\partial t_p(\bm t)=-\lambda_p+\sigma_{1,p}\nu_i$.
+Let $\bm y\in\mathcal{K}$, let $0<s<1$, and put $\bm t_s=\bm t+s(\bm y-\bm t)$.
+Since $\bm t\in\mathcal{K}^\circ$, $\bm y\in\mathcal{K}$ and $\mathcal{K}$ is
+convex, $\bm t_s\in\mathcal{K}^\circ$, and since $\bm t$ minimizes $F_\mu$
+on $\mathcal{K}^\circ$, $F_\mu(\bm t_s)\ge F_\mu(\bm t)$. By convexity,
+$\Psi(\bm t_s)\le\Psi(\bm t)+s\left(\Psi(\bm y)-\Psi(\bm t)\right)$, and therefore
 \begin{equation}
+s\left(\Psi(\bm y)-\Psi(\bm t)\right)+\mu\left(B(\bm t_s)-B(\bm t)\right)\ge 0 .
+\end{equation}
+We divide by $s$ and let $s\to 0$; the second term tends to
+$\mu\sum_p\left(\partial B/\partial t_p\right)(\bm t)\left(y_p-t_p\right)$, and we obtain
+\begin{equation}\label{barrier-stationary}
 \Psi(\bm y)\ge\Psi(\bm t)
 +\sum_{p}\lambda_p\left(y_p-t_p\right)
 -\sum_{i}\nu_i\sum_{p\in I_i}\sigma_{1,p}\left(y_p-t_p\right).
 \end{equation}
+Only the derivatives of $B$ were used, not those of $\Psi$.
 In the first sum
 $\lambda_p\left(y_p-t_p\right)=\lambda_p\left(y_p-1\right)-\lambda_p\left(t_p-1\right)\ge-\mu$,
 so the sum is at least $-mn\mu$. In the second,
@@ -587,8 +547,48 @@ The left-hand side is positive, so $\mu_i>0$ for every $i$ and all $m$
 constraints are active. For a coordinate with $t_p>1$ one has $\nu_p=0$, so the
 left-hand side divided by $\sigma_{1,p}$ equals $\mu_i$ and is the same for
 every such $j$ at the index $i$; for a coordinate at $t_p=1$ that ratio is at
-most $\mu_i$. By Theorem~\ref{global} a point satisfying~\eqref{kkt} is a global
-minimizer.
+most $\mu_i$. That these conditions certify the minimizer is the content of the
+next proposition.
+
+\begin{proposition}\label{kkt-sufficient}
+Let $A_1\ge 0$ be irreducible, and let $\bm t\in\mathcal{K}$ together with
+multipliers $\mu_i\ge 0$, $i=1:m$, and $\nu_p\ge 0$, $p=1:N$, satisfy~\eqref{kkt}
+and the complementarity conditions
+\begin{equation}\label{kkt-compl}
+\mu_i\left(c_i-\sum_{p\in I_i}\sigma_{1,p}t_p\right)=0,\qquad
+\nu_p\left(t_p-1\right)=0 .
+\end{equation}
+Then $\bm t$ is the minimizer $\widehat{\bm t}$ of~\eqref{t-program}.
+\end{proposition}
+\begin{proof}
+For $\bm t>0$ the matrix $A_1\operatorname{diag}(\bm g)\ge 0$ has the same
+zero entries as $A_1$ and is irreducible, so by Theorem~\ref{pf}
+in~\S\ref{sec-facts} its spectral radius is a simple eigenvalue with the
+positive eigenvectors $\bm v$ and $\bm w$ of~\eqref{perron}. A simple
+eigenvalue is a differentiable function of the entries of the matrix, with
+the derivative $\partial\rho/\partial g_p$ given before~\eqref{grad}
+\cite[Section 6.3]{1985Horn_Johnson}. The entries are differentiable in $\bm t$,
+so $\Psi$ is differentiable at $\bm t$, its partial derivatives are given
+by~\eqref{grad}, and~\eqref{kkt} reads
+$\partial\Psi/\partial t_p(\bm t)=-\mu_i\sigma_{1,p}+\nu_p$ for $p\in I_i$.
+
+Let $\bm y\in\mathcal{K}$ and $0<s<1$. Since $\Psi$ is convex
+(Theorem~\ref{global}),
+$\Psi\left(\bm t+s(\bm y-\bm t)\right)-\Psi(\bm t)\le s\left(\Psi(\bm y)-\Psi(\bm t)\right)$.
+We divide by $s$ and let $s\to 0$:
+\begin{equation}
+\Psi(\bm y)-\Psi(\bm t)\ge\sum_p\frac{\partial\Psi}{\partial t_p}(\bm t)\left(y_p-t_p\right)
+=\sum_i\mu_i\sum_{p\in I_i}\sigma_{1,p}\left(t_p-y_p\right)
++\sum_p\nu_p\left(y_p-t_p\right).
+\end{equation}
+By~\eqref{kkt-compl},
+$\mu_i\sum_{p\in I_i}\sigma_{1,p}\left(t_p-y_p\right)
+=\mu_i\left(c_i-\sum_{p\in I_i}\sigma_{1,p}y_p\right)\ge 0$ and
+$\nu_p\left(y_p-t_p\right)=\nu_p\left(y_p-1\right)\ge 0$, because
+$\bm y\in\mathcal{K}$. Hence $\Psi(\bm y)\ge\Psi(\bm t)$ for every
+$\bm y\in\mathcal{K}$, and $\bm t=\widehat{\bm t}$ by the uniqueness in
+Theorem~\ref{global}.
+\end{proof}
 
 \subsection{Numerical results}\label{sec-numerics}
 
