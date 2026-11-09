@@ -284,7 +284,7 @@ if __name__ == "__main__":
     for i in range(m):
         free = what[i] > 1e-8          # what is normalized, so this is relative
         mu = ratio[i, free].mean()
-        print("    location %d: mu = %.6e, spread over free groups %.2e,"
+        print("    location %d: mu = %.6e, spread over free groups %.1e,"
               " at the bound: %s, their ratio/mu = %s, dose residual %.1e"
               % (i, mu, np.abs(ratio[i, free] / mu - 1).max(),
                  np.where(~free)[0].tolist(),

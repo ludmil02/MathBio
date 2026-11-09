@@ -60,23 +60,24 @@
 \section{Formulation of the problem}\label{sec-ngm}
 
 
-There are two index ranges, $i=1:m$ and $j=1:n$, corresponding to the locations and the age groups, respectively; the vaccine types are indexed by $k=1,2,3$.
-The problem is to find $\chi_k\in\mathbb{R}^{m\times n}$, $k=1:3$, such that
+The problem is to find $\widehat\chi_k\in\mathbb{R}^{m\times n}$, $k=1:3$, such that
 \begin{equation}\label{the-min-ij}
 \begin{aligned}
-&\left(\chi_1,\chi_2,\chi_3\right)
+&\left(\widehat\chi_1,\widehat\chi_2,\widehat\chi_3\right)
 \in\operatorname*{arg\,min}\ \rho\left(\operatorname{NGM}(\chi_1,\chi_2,\chi_3)\right)
 \quad\mbox{subject to}\\
 &\sum_{j=1}^{n}\chi_{k,ij}\,\sigma_{k,ij}=b_{k,i},\qquad \chi_{k,ij}\ge 0,
 \qquad k=1,2,3,\quad i=1:m,\quad j=1:n ,
 \end{aligned}
 \end{equation}
-where $b_{k,i}\ge 0$ is given for $k=1,2,3$ and $i=1:m$, and
-$\sigma_{k,ij}>0$.
-In the model of~\cite{JZh} the $\sigma_{1,ij}$, $\sigma_{2,ij}$ and $\sigma_{3,ij}$ are
-the numbers of susceptible, vaccinated and partially protected individuals at
-the end of the preceding week and $b_{k,i}$ is the number of doses of vaccine of
-type $k$ then available.
+The indices $i=1:m$, $j=1:n$ and $k=1,2,3$ correspond to the locations, the age groups and the vaccine types, respectively.
+The $b_{k,i}\ge 0$ are the quantities of available vaccines, the number of
+doses of type $k$ in location $i$, and the $\sigma_{k,ij}>0$ are the sizes of
+the groups that receive them. The model we follow is described
+in~\cite{JZh}, and in this model $\sigma_{1,ij}$,
+$\sigma_{2,ij}$ and $\sigma_{3,ij}$ are the numbers of susceptible, vaccinated
+and partially protected individuals in the age group $j$ of location $i$ at
+the end of the preceding week.
 
 To simplify the notation somewhat, we write
 \begin{equation}\label{flat-index}
@@ -92,15 +93,16 @@ With this indexing,~\eqref{the-min-ij} becomes the
 following problem.
 
 \begin{problem}\label{ngm-problem}
-Find $\bm\chi\in\mathbb{R}^{3N}$ such that
+Find
 \begin{equation}\label{the-min}
-\bm\chi\in\operatorname*{arg\,min}\ \rho\left(\operatorname{NGM}(\bm\chi)\right)
-\quad\mbox{subject to}
+\widehat{\bm\chi}\in\operatorname*{arg\,min}\left\{\rho\left(\operatorname{NGM}(\bm\chi)\right)\;\mbox{subject to}\;\bm\chi\in\mathfrak{S}\right\}.
 \end{equation}
+The set of constraints $\mathfrak{S}$ is defined as
 \begin{equation}\label{constraints}
-\sum_{p\in I_i}\chi_{k,p}\,\sigma_{k,p}=b_{k,i},\qquad \chi_{k,p}\ge 0,
-\qquad k=1,2,3,\quad i=1:m,\quad p=1:N .
+\mathfrak{S}:=\bigcap_{k=1}^{3}\bigcap_{i=1}^{m}\left\{\bm\chi\in\mathbb{R}^{3N}\ :\
+\sum_{p\in I_i}\chi_{k,p}\,\sigma_{k,p}=b_{k,i},\quad \chi_{k,p}\ge 0\ \mbox{for}\ p\in I_i\right\},
 \end{equation}
+where $I_i=\left\{(i-1)n+1,\ldots,in\right\}$ is the set of indices $p$ corresponding to location $i$.
 \end{problem}
 
 It remains to define the $\operatorname{NGM}$ matrix.
@@ -109,20 +111,15 @@ Following~\cite{JZh},
 \operatorname{NGM}=\operatorname{diag}\left(\bm d(\bm\chi)\right)A_c,
 \qquad A_c\in\mathbb{R}^{2N\times 2N},
 \end{equation}
-The matrix $A_c$ independent of $\bm\chi$ and is assembled from the model parameters.
-The dependence of $\operatorname{NGM}$ on $\bm\chi$ is given by a vector
-$\bm d(\bm\chi)\in\mathbb{R}^{2N}$ is given by
+The matrix $A_c$ is independent of $\bm\chi$ and is assembled from the model parameters.
+The dependence of $\operatorname{NGM}$ on $\bm\chi$ is through the vector
+valued function $\bm d(\bm\chi)\in\mathbb{R}^{2N}$, given by
 \begin{equation}\label{yz}
 d_{2p-1}=y_p,\qquad d_{2p}=z_p,
 \end{equation}
 the pair $(y_p,z_p)$ are derived from the equilibrium fractions of the model.
 The specific formulae for $A_c$, $\bm y$, and $\bm z$ are found in
 Appendix~\ref{sec-reduction}, equations~\eqref{ac-assembled} and~\eqref{yz-def}.
-
-Next, we introduce the set 
-\begin{equation}
-    \mathfrak{S}:=\{\bm\chi\ge 0\ :\ \bm\chi\text{ satisfies~\eqref{constraints}}\}.
-\end{equation}
 
 \section{An equivalent reduced problem on a product of simplices}\label{sec-reduced}
 
@@ -157,9 +154,9 @@ The constraints~\eqref{constraints} decouple over the pairs $(k,i)$. If
 $b_{k,i}=0$, the constraint is $\sum_j\sigma_{k,ij}\chi_{k,ij}=0$ with
 $\sigma_{k,ij}>0$ and $\chi_{k,ij}\ge 0$, so $\chi_{k,ij}=0$ for $j=1:n$; these
 variables are zero and are not rescaled. If $b_{k,i}>0$, we rescale the
-constraint by $\widehat u_{k,ij}=\sigma_{k,ij}\chi_{k,ij}/b_{k,i}$, which turns
-it into $\sum_j\widehat u_{k,ij}=1$, $\widehat u_{k,ij}\ge 0$, that is,
-$\widehat{\bm u}_{k,i}$ lies in the simplex $\Delta_{n-1}$. The feasible set and
+constraint by $u_{k,ij}=\sigma_{k,ij}\chi_{k,ij}/b_{k,i}$, which turns
+it into $\sum_ju_{k,ij}=1$, $u_{k,ij}\ge 0$, that is,
+$\bm u_{k,i}$ lies in the simplex $\Delta_{n-1}$. The feasible set and
 the objective function then have the following properties.
 \begin{enumerate}
 \renewcommand{\theenumi}{\roman{enumi}}
@@ -168,13 +165,13 @@ the objective function then have the following properties.
 onto the product $\mathcal{S}$ of the simplices $\Delta_{n-1}$, one for each pair
 $(k,i)$ with $b_{k,i}>0$, with inverse
 \begin{equation}\label{u-of-chihat}
-\chi_{k,p}=\frac{b_{k,i}}{\sigma_{k,ij}}\,\widehat u_{k,ij},\qquad
+\chi_{k,p}=\frac{b_{k,i}}{\sigma_{k,ij}}\,u_{k,ij},\qquad
 p=(i-1)n+j,\qquad j=1:n .
 \end{equation}
 In particular $\mathfrak{S}$ is compact and convex.
 \item\label{reduced-item} Problem~\ref{ngm-problem} is equivalent to
 \begin{equation}\label{reduced-problem}
-\min_{\widehat{\bm u}\in\mathcal{S}}\
+\min_{\bm u\in\mathcal{S}}\
 \rho\left(A_1\operatorname{diag}\left(\bm g\right)\right),
 \end{equation}
 with $\bm g$ given by~\eqref{g-def} and $\bm\chi$ by~\eqref{u-of-chihat}, and the
@@ -183,7 +180,7 @@ in~\S\ref{sec-reduction} the
 objective function of Problem~\ref{ngm-problem} equals
 $\rho\left(A_1\operatorname{diag}(\bm g(\bm\chi))\right)$ for every $\bm\chi\ge 0$,
 and by~(\ref{simplex-product}) $\bm\chi\in\mathfrak{S}$ if and only if
-$\widehat{\bm u}\in\mathcal{S}$; the set $\mathcal{S}$ is compact and the
+$\bm u\in\mathcal{S}$; the set $\mathcal{S}$ is compact and the
 objective function is continuous.
 \item\label{mono-g} If $0<\bm g\le\widetilde{\bm g}$, then
 $\rho\left(A_1\operatorname{diag}(\bm g)\right)
@@ -202,10 +199,10 @@ $\bm\chi_2=\bm\chi_3=0$. Then $\pi_{2,p}=0$, the value of
 $\pi_{3,p}$ is
 immaterial, and with
 \begin{equation}\label{t-def}
-t_p=1+\frac{\chi_{1,p}}{\omega_v}\ \ge 1,\qquad \widehat s_p=\frac{1}{t_p},
+t_p=1+\frac{\chi_{1,p}}{\omega_v}\ \ge 1,\qquad \widetilde s_p=\frac{1}{t_p},
 \end{equation}
 formula~\eqref{g-def} becomes
-$g_p=(1-\varepsilon_1)+\varepsilon_1\widehat s_p$. Then we have
+$g_p=(1-\varepsilon_1)+\varepsilon_1\widetilde s_p$. Then we have
 \begin{equation}\label{split}
 A_1\operatorname{diag}(\bm g)=(1-\varepsilon_1)A_1+\varepsilon_1A_1\operatorname{diag}(\bm t)^{-1}.
 \end{equation}
@@ -225,26 +222,26 @@ meets the constraints with equality. The single-dose problem is
 \end{equation}
 We assume $b_{1i}>0$ for $i=1:m$; a location with $b_{1i}=0$ has $t_p=1$ for
 all its $n$ age groups by~\eqref{t-constraint} and can be removed. In the
-variables $\widehat{\bm u}_1$ of property~(\ref{simplex-product}),
+variables $\bm u_1$ of property~(\ref{simplex-product}),
 \begin{equation}\label{w-def}
-\widehat u_{1,ij}=\frac{\sigma_{1,ij}\chi_{1,ij}}{b_{1i}}
+u_{1,ij}=\frac{\sigma_{1,ij}\chi_{1,ij}}{b_{1i}}
 =\frac{\omega_v\sigma_{1,p}}{b_{1i}}\left(t_p-1\right),
 \end{equation}
-the constraints~\eqref{t-constraint} read $\widehat{\bm u}_1\ge 0$ and
-$\sum_j\widehat u_{1,ij}\le 1$, $i=1:m$. The feasible set
+the constraints~\eqref{t-constraint} read $\bm u_1\ge 0$ and
+$\sum_ju_{1,ij}\le 1$, $i=1:m$. The feasible set
 \begin{equation}\label{Kt-def}
 K=\left\{\bm t\in\mathbb{R}^N\ :\ \bm t\ \mbox{satisfies~\eqref{t-constraint}}\right\}
 \end{equation}
 of~\eqref{t-program} is therefore the image of the product of $m$ solid
 standard simplices
 \begin{equation}\label{K-def}
-\widehat K=\left\{\widehat{\bm u}_1\in\mathbb{R}^{N}\ :\ \widehat{\bm u}_1\ge 0,\
-\sum_{j=1}^{n}\widehat u_{1,ij}\le 1,\ i=1:m\right\}
+\mathcal{K}=\left\{\bm u_1\in\mathbb{R}^{N}\ :\ \bm u_1\ge 0,\
+\sum_{j=1}^{n}u_{1,ij}\le 1,\ i=1:m\right\}
 \end{equation}
-under the affine bijection $\bm t=\mathbbm{1}+L\widehat{\bm u}_1$ of
+under the affine bijection $\bm t=\mathbbm{1}+L\bm u_1$ of
 $\mathbb{R}^N$, with $L$ the positive diagonal matrix of entries
 $b_{1i}/\left(\omega_v\sigma_{1,p}\right)$; that is,
-$K=\mathbbm{1}+L\widehat K$.
+$K=\mathbbm{1}+L\mathcal{K}$.
 
 \begin{theorem}\label{global}
 Let $A_1\ge 0$ be irreducible. Then
@@ -255,7 +252,7 @@ conditions are necessary and sufficient for finding a global minimum.
 \begin{proof}
 The feasible set $K$ is closed, and bounded because $\bm t\ge\mathbbm{1}$ and
 $\sigma_{1,p}>0$ give $1\le t_p\le c_i/\sigma_{1,p}$; it is convex, being the
-image of the convex set $\widehat K$ in~\eqref{K-def} under an affine map. For $\bm t>0$ one has $\bm g>0$, so
+image of the convex set $\mathcal{K}$ in~\eqref{K-def} under an affine map. For $\bm t>0$ one has $\bm g>0$, so
 $A_1\operatorname{diag}(\bm g)\ge 0$ has the same zero entries as $A_1$ and is
 irreducible, and by Theorem~\ref{pf} in~\S\ref{sec-facts} its spectral radius is a
 simple eigenvalue, hence a real-analytic function of the entries, which are
@@ -265,10 +262,10 @@ strict decrease of $g_p$ in $t_p$.
 For convexity write $\Psi(\bm t)=\Phi\left(\bm\xi(\bm t)\right)$ with
 $\Phi(\bm\xi)=\log\rho\left(A_1\operatorname{diag}\left(e^{\bm\xi}\right)\right)$
 (see~\eqref{phi-def} in~\S\ref{sec-facts}) and $\xi_p(t_p)=\log g_p(t_p)$. Each $\xi_p$ is strictly convex: with
-$a=1-\varepsilon_1\ge 0$, $b=\varepsilon_1>0$ and $u=a+b/t$,
+$a=1-\varepsilon_1\ge 0$, $b=\varepsilon_1>0$ and $g=a+b/t$,
 \begin{equation}
-\xi''=\frac{u''u-\left(u'\right)^2}{u^2},\qquad
-u''u-\left(u'\right)^2=\frac{2b}{t^3}\left(a+\frac{b}{t}\right)-\frac{b^2}{t^4}
+\xi''=\frac{g''g-\left(g'\right)^2}{g^2},\qquad
+g''g-\left(g'\right)^2=\frac{2b}{t^3}\left(a+\frac{b}{t}\right)-\frac{b^2}{t^4}
 =\frac{2ab}{t^3}+\frac{b^2}{t^4}>0 .
 \end{equation}
 By Lemma~\ref{log-convex} in~\S\ref{sec-facts} the function $\Phi$ is convex, and by
@@ -300,112 +297,112 @@ affine.
 \end{proof}
 
 The minimizer can be computed by an interior penalty method: a logarithmic
-barrier for the constraints of $\widehat K$ is added to the objective function with a
+barrier for the constraints of $\mathcal{K}$ is added to the objective function with a
 weight $\mu>0$, and $\mu$ is driven to zero~\cite{1968Fiacco_McCormick},
 \cite[Chapter 11]{2004Boyd_Vandenberghe}. The next theorem shows that for the
 single dose problem this method is well defined for every $\mu$, converges to
 the minimizer, and comes with an explicit bound for the error in the objective
 function. Let
 \begin{equation}\label{psi-hat}
-\widehat\Psi(\widehat{\bm u}_1)=\Psi\left(\mathbbm{1}+L\widehat{\bm u}_1\right),
+\Upsilon(\bm u_1)=\Psi\left(\mathbbm{1}+L\bm u_1\right),
 \qquad
-B(\widehat{\bm u}_1)=-\sum_{i=1}^{m}\sum_{j=1}^{n}\log\widehat u_{1,ij}
--\sum_{i=1}^{m}\log\left(1-\sum_{j=1}^{n}\widehat u_{1,ij}\right),
+B(\bm u_1)=-\sum_{i=1}^{m}\sum_{j=1}^{n}\log u_{1,ij}
+-\sum_{i=1}^{m}\log\left(1-\sum_{j=1}^{n}u_{1,ij}\right),
 \end{equation}
 the barrier $B$ being defined on the interior
-$\widehat K^\circ=\left\{\widehat{\bm u}_1>0,\ \sum_j\widehat u_{1,ij}<1,\ i=1:m\right\}$
-of $\widehat K$, and for $\mu>0$ let $F_\mu=\widehat\Psi+\mu B$ on $\widehat K^\circ$.
+$\mathcal{K}^\circ=\left\{\bm u_1>0,\ \sum_ju_{1,ij}<1,\ i=1:m\right\}$
+of $\mathcal{K}$, and for $\mu>0$ let $F_\mu=\Upsilon+\mu B$ on $\mathcal{K}^\circ$.
 
 \begin{theorem}\label{barrier}
 Let $A_1\ge 0$ be irreducible. Then:
 \begin{enumerate}
 \renewcommand{\labelenumi}{(\roman{enumi})}
-\item $\widehat\Psi$ has a unique minimizer $\widehat{\bm u}_1^*$ on $\widehat K$, and
-$\bm t^*=\mathbbm{1}+L\widehat{\bm u}_1^*$ is the unique minimizer
+\item $\Upsilon$ has a unique minimizer $\widehat{\bm u}_1$ on $\mathcal{K}$, and
+$\widehat{\bm t}=\mathbbm{1}+L\widehat{\bm u}_1$ is the unique minimizer
 of~\eqref{t-program}.
 \item For every $\mu>0$ the function $F_\mu$ has a unique minimizer
-$\widehat{\bm u}_1(\mu)$ in $\widehat K^\circ$.
+$\bm u_1(\mu)$ in $\mathcal{K}^\circ$.
 \item For every $\mu>0$,
 \begin{equation}\label{gap}
-0\le\widehat\Psi\left(\widehat{\bm u}_1(\mu)\right)-\widehat\Psi\left(\widehat{\bm u}_1^*\right)\le\mu\,m(n+1).
+0\le\Upsilon\left(\bm u_1(\mu)\right)-\Upsilon\left(\widehat{\bm u}_1\right)\le\mu\,m(n+1).
 \end{equation}
-\item $\widehat{\bm u}_1(\mu)\to\widehat{\bm u}_1^*$ as $\mu\to 0$.
+\item $\bm u_1(\mu)\to\widehat{\bm u}_1$ as $\mu\to 0$.
 \end{enumerate}
 \end{theorem}
 \begin{proof}
-The map $\widehat{\bm u}_1\mapsto\mathbbm{1}+L\widehat{\bm u}_1$ is an affine
-bijection of $\mathbb{R}^N$ that carries $\widehat K$ onto the feasible set
+The map $\bm u_1\mapsto\mathbbm{1}+L\bm u_1$ is an affine
+bijection of $\mathbb{R}^N$ that carries $\mathcal{K}$ onto the feasible set
 $K$ of~\eqref{t-program}, so (i) is Theorem~\ref{global} in the variables
-$\widehat{\bm u}_1$. By Theorem~\ref{global} and its proof, $\Psi$ is strictly
+$\bm u_1$. By Theorem~\ref{global} and its proof, $\Psi$ is strictly
 convex and continuously differentiable on $\{\bm t>0\}$; composed with an
-injective affine map, $\widehat\Psi$ is strictly convex and continuously
-differentiable on the open set $\left\{\widehat{\bm u}_1:\mathbbm{1}+L\widehat{\bm u}_1>0\right\}$,
-which contains $\widehat K$.
+injective affine map, $\Upsilon$ is strictly convex and continuously
+differentiable on the open set $\left\{\bm u_1:\mathbbm{1}+L\bm u_1>0\right\}$,
+which contains $\mathcal{K}$.
 
-(ii) The set $\widehat K^\circ$ is not empty: it contains $\widehat u_{1,ij}=1/(2n)$.
-On $\widehat K^\circ$ each of the $m(n+1)$ affine functions
+(ii) The set $\mathcal{K}^\circ$ is not empty: it contains $u_{1,ij}=1/(2n)$.
+On $\mathcal{K}^\circ$ each of the $m(n+1)$ affine functions
 \begin{equation}\label{slacks}
-s_{ij}(\widehat{\bm u}_1)=\widehat u_{1,ij},\qquad
-s_{i}(\widehat{\bm u}_1)=1-\sum_{j=1}^{n}\widehat u_{1,ij}
+s_{ij}(\bm u_1)=u_{1,ij},\qquad
+s_{i}(\bm u_1)=1-\sum_{j=1}^{n}u_{1,ij}
 \end{equation}
 is positive, so $B$ is finite and, as a sum of the convex functions $-\log s$,
-convex. Hence $F_\mu$ is strictly convex on $\widehat K^\circ$ and has at most one
-minimizer. On $\widehat K$ every $s$ in~\eqref{slacks} is at most $1$, so each term
-$-\log s$ of $B$ is non-negative on $\widehat K^\circ$. Fix $\widehat{\bm u}_1^0\in \widehat K^\circ$,
-put $c=F_\mu(\widehat{\bm u}_1^0)$, and let
-$E=\left\{\widehat{\bm u}_1\in \widehat K^\circ: F_\mu(\widehat{\bm u}_1)\le c\right\}$.
-For $\widehat{\bm u}_1\in E$ and each $s$ in~\eqref{slacks},
+convex. Hence $F_\mu$ is strictly convex on $\mathcal{K}^\circ$ and has at most one
+minimizer. On $\mathcal{K}$ every $s$ in~\eqref{slacks} is at most $1$, so each term
+$-\log s$ of $B$ is non-negative on $\mathcal{K}^\circ$. Fix $\bm u_1^0\in \mathcal{K}^\circ$,
+put $c=F_\mu(\bm u_1^0)$, and let
+$E=\left\{\bm u_1\in \mathcal{K}^\circ: F_\mu(\bm u_1)\le c\right\}$.
+For $\bm u_1\in E$ and each $s$ in~\eqref{slacks},
 \begin{equation}
--\mu\log s(\widehat{\bm u}_1)\le\mu B(\widehat{\bm u}_1)
-\le c-\widehat\Psi(\widehat{\bm u}_1)\le c-\widehat\Psi(\widehat{\bm u}_1^*),
+-\mu\log s(\bm u_1)\le\mu B(\bm u_1)
+\le c-\Upsilon(\bm u_1)\le c-\Upsilon(\widehat{\bm u}_1),
 \end{equation}
-so $s(\widehat{\bm u}_1)\ge\delta=\exp\left(-\left(c-\widehat\Psi(\widehat{\bm u}_1^*)\right)/\mu\right)>0$.
+so $s(\bm u_1)\ge\delta=\exp\left(-\left(c-\Upsilon(\widehat{\bm u}_1)\right)/\mu\right)>0$.
 Thus $E$ lies in the compact set
 \begin{equation}
-\widehat K_\delta=\left\{\widehat{\bm u}_1\in\widehat K\ :\ s(\widehat{\bm u}_1)\ge\delta\
-\mbox{for every $s$ in~\eqref{slacks}}\right\}\subset \widehat K^\circ,
+\mathcal{K}_\delta=\left\{\bm u_1\in\mathcal{K}\ :\ s(\bm u_1)\ge\delta\
+\mbox{for every $s$ in~\eqref{slacks}}\right\}\subset \mathcal{K}^\circ,
 \end{equation}
-on which $F_\mu$ is continuous. As a sublevel set of $F_\mu$ in $\widehat K_\delta$, the
+on which $F_\mu$ is continuous. As a sublevel set of $F_\mu$ in $\mathcal{K}_\delta$, the
 set $E$ is closed, hence compact, and it is not empty since it contains
-$\widehat{\bm u}_1^0$. So $F_\mu$ attains its minimum over $E$, and this is its
-minimum over $\widehat K^\circ$.
+$\bm u_1^0$. So $F_\mu$ attains its minimum over $E$, and this is its
+minimum over $\mathcal{K}^\circ$.
 
-(iii) The left inequality holds because $\widehat{\bm u}_1(\mu)\in\widehat K$. At the
-interior minimizer $\widehat{\bm u}_1=\widehat{\bm u}_1(\mu)$ the gradient of
+(iii) The left inequality holds because $\bm u_1(\mu)\in\mathcal{K}$. At the
+interior minimizer $\bm u_1=\bm u_1(\mu)$ the gradient of
 $F_\mu$ vanishes:
 \begin{equation}\label{barrier-stationary}
-\frac{\partial\widehat\Psi}{\partial\widehat u_{1,ij}}(\widehat{\bm u}_1)
+\frac{\partial\Upsilon}{\partial u_{1,ij}}(\bm u_1)
 =\lambda_{ij}-\nu_i,\qquad
-\lambda_{ij}=\frac{\mu}{\widehat u_{1,ij}},\qquad
-\nu_i=\frac{\mu}{1-\sum_{l=1}^{n}\widehat u_{1,il}} ,
+\lambda_{ij}=\frac{\mu}{u_{1,ij}},\qquad
+\nu_i=\frac{\mu}{1-\sum_{l=1}^{n}u_{1,il}} ,
 \end{equation}
-with $\lambda_{ij}>0$ and $\nu_i>0$. Let $\bm y\in\widehat K$. By convexity of
-$\widehat\Psi$ and~\eqref{barrier-stationary},
+with $\lambda_{ij}>0$ and $\nu_i>0$. Let $\bm y\in\mathcal{K}$. By convexity of
+$\Upsilon$ and~\eqref{barrier-stationary},
 \begin{equation}
-\widehat\Psi(\bm y)\ge\widehat\Psi(\widehat{\bm u}_1)
-+\sum_{i,j}\lambda_{ij}\left(y_{ij}-\widehat u_{1,ij}\right)
--\sum_{i}\nu_i\sum_{j}\left(y_{ij}-\widehat u_{1,ij}\right).
+\Upsilon(\bm y)\ge\Upsilon(\bm u_1)
++\sum_{i,j}\lambda_{ij}\left(y_{ij}-u_{1,ij}\right)
+-\sum_{i}\nu_i\sum_{j}\left(y_{ij}-u_{1,ij}\right).
 \end{equation}
-In the first sum $\lambda_{ij}y_{ij}\ge 0$ and $\lambda_{ij}\widehat u_{1,ij}=\mu$,
+In the first sum $\lambda_{ij}y_{ij}\ge 0$ and $\lambda_{ij}u_{1,ij}=\mu$,
 so the sum is at least $-mn\mu$. In the second,
 \begin{equation}
--\sum_j\left(y_{ij}-\widehat u_{1,ij}\right)
-=\left(1-\sum_j y_{ij}\right)-\left(1-\sum_j\widehat u_{1,ij}\right),
+-\sum_j\left(y_{ij}-u_{1,ij}\right)
+=\left(1-\sum_j y_{ij}\right)-\left(1-\sum_ju_{1,ij}\right),
 \end{equation}
 and $\nu_i\left(1-\sum_j y_{ij}\right)\ge 0$ while
-$\nu_i\left(1-\sum_j\widehat u_{1,ij}\right)=\mu$, so the second term is at least
-$-m\mu$. Hence $\widehat\Psi(\bm y)\ge\widehat\Psi(\widehat{\bm u}_1(\mu))-\mu\,m(n+1)$
-for every $\bm y\in\widehat K$, and $\bm y=\widehat{\bm u}_1^*$ gives~\eqref{gap}.
+$\nu_i\left(1-\sum_ju_{1,ij}\right)=\mu$, so the second term is at least
+$-m\mu$. Hence $\Upsilon(\bm y)\ge\Upsilon(\bm u_1(\mu))-\mu\,m(n+1)$
+for every $\bm y\in\mathcal{K}$, and $\bm y=\widehat{\bm u}_1$ gives~\eqref{gap}.
 
 (iv) Let $\mu_k\to 0$. By~\eqref{gap},
-$\widehat\Psi\left(\widehat{\bm u}_1(\mu_k)\right)\to\widehat\Psi\left(\widehat{\bm u}_1^*\right)$.
-The points $\widehat{\bm u}_1(\mu_k)$ lie in the compact set $\widehat K$; if
+$\Upsilon\left(\bm u_1(\mu_k)\right)\to\Upsilon\left(\widehat{\bm u}_1\right)$.
+The points $\bm u_1(\mu_k)$ lie in the compact set $\mathcal{K}$; if
 $\overline{\bm u}_1$ is the limit of a subsequence, then by continuity
-$\widehat\Psi(\overline{\bm u}_1)=\widehat\Psi(\widehat{\bm u}_1^*)$, so
-$\overline{\bm u}_1$ minimizes $\widehat\Psi$ on $\widehat K$ and $\overline{\bm u}_1=\widehat{\bm u}_1^*$
-by (i). Every subsequence of $\left(\widehat{\bm u}_1(\mu_k)\right)$ thus has a
-further subsequence converging to $\widehat{\bm u}_1^*$, and therefore
-$\widehat{\bm u}_1(\mu_k)\to\widehat{\bm u}_1^*$.
+$\Upsilon(\overline{\bm u}_1)=\Upsilon(\widehat{\bm u}_1)$, so
+$\overline{\bm u}_1$ minimizes $\Upsilon$ on $\mathcal{K}$ and $\overline{\bm u}_1=\widehat{\bm u}_1$
+by (i). Every subsequence of $\left(\bm u_1(\mu_k)\right)$ thus has a
+further subsequence converging to $\widehat{\bm u}_1$, and therefore
+$\bm u_1(\mu_k)\to\widehat{\bm u}_1$.
 \end{proof}
 
 \subsection{The algorithm}\label{sec-algorithm}
@@ -414,7 +411,7 @@ The method of Theorem~\ref{barrier} minimizes $F_{\mu}$ for a decreasing
 sequence of weights $\mu$, each minimization started from the previous
 minimizer; by~\eqref{gap} the objective function is within $\mu\,m(n+1)$ of the
 minimum, which gives a stopping rule. Each step needs the gradient of
-$\widehat\Psi$, and for this the eigenvectors corresponding to the spectral
+$\Upsilon$, and for this the eigenvectors corresponding to the spectral
 radii of $A_1\operatorname{diag}(\bm g)$ and
 $\left[A_1\operatorname{diag}(\bm g)\right]^T$ suffice. Let
 \begin{equation}\label{perron}
@@ -430,9 +427,9 @@ and since $dg_p/dt_p=-\varepsilon_1/t_p^2$ the chain rule gives
 \frac{\left(A_1^T\bm w\right)_p v_p}{\langle\bm w,\bm v\rangle}\ <0 ,
 \end{equation}
 the sign because $\bm v>0$, $\bm w>0$ and no column of $A_1$ vanishes, and
-$\partial\widehat\Psi/\partial\widehat u_{1,ij}=L_{pp}\,\partial\Psi/\partial t_p$.
+$\partial\Upsilon/\partial u_{1,ij}=L_{pp}\,\partial\Psi/\partial t_p$.
 No differences of eigenvalue computations are needed. The two eigenvectors are
-computed by Arnoldi. The variables $\widehat{\bm u}_1$ are used rather than
+computed by Arnoldi. The variables $\bm u_1$ are used rather than
 $\bm t$: in $\bm t$ the coefficients $\sigma_{1,p}$ of~\eqref{t-constraint} are
 of order $10^{7}$ against a $\bm t$ of order one, and a solver stalls. The
 implementation uses the trust region interior point method
@@ -493,10 +490,10 @@ plots have one line per location and the same scale.
  & \multicolumn{4}{c|}{$\chi_{1,ij}$ ($10^{-3}$ per day)} & \multicolumn{3}{c}{KKT conditions~\eqref{kkt}}\\
 location & $0$--$19$ & $20$--$39$ & $40$--$59$ & $60+$ & spread & ratio at $60+$ & dose residual\\
 \hline
-Northeast & $4.600$ & $4.375$ & $3.817$ & $0$ & $9.5\cdot 10^{-10}$ & $0.339$ & $2.9\cdot 10^{-12}$\\
-Midwest   & $4.994$ & $5.024$ & $4.763$ & $0$ & $9.8\cdot 10^{-10}$ & $0.395$ & $4.9\cdot 10^{-12}$\\
-South     & $3.736$ & $3.721$ & $3.439$ & $0$ & $1.2\cdot 10^{-9}$  & $0.318$ & $4.1\cdot 10^{-12}$\\
-West      & $5.229$ & $4.836$ & $4.402$ & $0$ & $2.6\cdot 10^{-9}$  & $0.243$ & $5.8\cdot 10^{-13}$\\
+Northeast & $4.600$ & $4.375$ & $3.817$ & $0$ & $4.9\cdot 10^{-13}$ & $0.339$ & $1.8\cdot 10^{-13}$\\
+Midwest   & $4.994$ & $5.024$ & $4.763$ & $0$ & $1.8\cdot 10^{-12}$ & $0.395$ & $8.6\cdot 10^{-13}$\\
+South     & $3.736$ & $3.721$ & $3.439$ & $0$ & $6.2\cdot 10^{-13}$ & $0.318$ & $7.3\cdot 10^{-13}$\\
+West      & $5.229$ & $4.836$ & $4.402$ & $0$ & $8.7\cdot 10^{-13}$ & $0.243$ & $9.6\cdot 10^{-13}$\\
 \hline
 \end{tabular}
 \caption{The minimizer $\chi_1$ for the weekly budget and the optimality
@@ -519,24 +516,28 @@ the spectrum of $\operatorname{NGM}$, $\rho=4.4230681092$ at $\bm\chi=0$, and
 John's method: the age profile of the left Perron vector, plotted per location.
 The notebook \texttt{min\_rho\_single\_dose\_H\_ZF\_JG.nb} solves the single
 dose problem~\eqref{t-program} with the weekly budget $b_{1i}$: an interior
-point method on the product of simplices $\widehat K$, with the gradient~\eqref{grad},
+point method on the product of simplices $\mathcal{K}$, with the gradient~\eqref{grad},
 followed by a quasi-Newton method on the groups that receive doses. It checks
 the optimality conditions~\eqref{kkt}, gives the minimum $\rho=2.9059382878$ and
 the $\chi_1$ of Table~\ref{tab-chi1}, and compares them with John's method,
-$\rho=2.9312317763$, as in Figure~\ref{fig-chi1}.
+$\rho=2.9312317763$, as in Figure~\ref{fig-chi1}. The python file
+\texttt{gp\_single\_dose.py} solves the same problem by the interior penalty
+method of Theorem~\ref{barrier} and gives the same minimum and $\chi_1$; the
+columns ``spread'', ``ratio at $60+$'' and ``dose residual'' of
+Table~\ref{tab-chi1} are computed by it.
 
 \section{Optimization for three doses}\label{sec-three}
 
 When doses of the second or third type are available as well, $b_{2i}>0$ or
 $b_{3i}>0$ for some $i$, the variables $\bm\chi_2$ and $\bm\chi_3$ do not vanish,
 and each $g_p$ in~\eqref{g-def} depends on $\chi_{1,p}$, $\chi_{2,p}$ and
-$\chi_{3,p}$. In the variables $\widehat{\bm u}$ of property~(\ref{simplex-product})
+$\chi_{3,p}$. In the variables $\bm u$ of property~(\ref{simplex-product})
 the problem is
 \begin{equation}\label{three-program}
-\min_{\widehat{\bm u}\in\mathcal{S}}\
-\log\rho\left(A_1\operatorname{diag}\left(\bm g\left(\bm\chi(\widehat{\bm u})\right)\right)\right),
+\min_{\bm u\in\mathcal{S}}\
+\log\rho\left(A_1\operatorname{diag}\left(\bm g\left(\bm\chi(\bm u)\right)\right)\right),
 \end{equation}
-with $\bm\chi(\widehat{\bm u})$ given by~\eqref{u-of-chihat} and the
+with $\bm\chi(\bm u)$ given by~\eqref{u-of-chihat} and the
 coordinates with $b_{k,i}=0$ equal to zero. The feasible set $\mathcal{S}$ is
 the product of the simplices $\Delta_{n-1}$, one for each pair $(k,i)$ with
 $b_{k,i}>0$, and the minimum is attained.
@@ -544,7 +545,7 @@ $b_{k,i}>0$, and the minimum is attained.
 The argument of Section~\ref{sec-single} is not available here. The function
 $\Phi$ is convex in $\bm\xi=\log\bm g$ by Lemma~\ref{log-convex} in~\S\ref{sec-facts}, but the
 objective function of~\eqref{three-program} is $\Phi$ composed with
-$\widehat{\bm u}\mapsto\log\bm g\left(\bm\chi(\widehat{\bm u})\right)$.
+$\bm u\mapsto\log\bm g\left(\bm\chi(\bm u)\right)$.
 For a single dose the proof of Theorem~\ref{global} uses the convexity of each
 component of this map; for three doses we have not established it, nor the
 convexity of the set $\left\{\log\bm g(\bm\chi):\bm\chi\in\mathfrak{S}\right\}$. Theorems~\ref{global} and~\ref{barrier} therefore do not apply
@@ -567,11 +568,11 @@ so these values also show that it is not convex.
 
 In the rest of this section we assume $b_{k,i}>0$ for all $k=1:3$ and $i=1:m$,
 so that $\mathcal{S}=\left(\Delta_{n-1}\right)^{3m}$ has $3m$ factors and
-$\widehat{\bm u}\in\mathbb{R}^{3N}$, and that $A_1\ge 0$ is irreducible. We
+$\bm u\in\mathbb{R}^{3N}$, and that $A_1\ge 0$ is irreducible. We
 write
 \begin{equation}\label{t-F}
-\Theta(\widehat{\bm u})
-=\log\rho\left(A_1\operatorname{diag}\left(\bm g\left(\bm\chi(\widehat{\bm u})\right)\right)\right)
+\Theta(\bm u)
+=\log\rho\left(A_1\operatorname{diag}\left(\bm g\left(\bm\chi(\bm u)\right)\right)\right)
 \end{equation}
 for the objective function of~\eqref{three-program}, and minimize it by the
 adaptive method Yogi of~\cite{2018Zaheer_Yogi}, with each step projected onto
@@ -580,7 +581,7 @@ gradient of $\Theta$ and no Hessian.
 
 \subsection{Properties of the objective function}
 
-For $\widehat{\bm u}\in\mathcal{S}$ all $\chi_{k,p}\ge 0$, so
+For $\bm u\in\mathcal{S}$ all $\chi_{k,p}\ge 0$, so
 $\pi_{1,p},\pi_{2,p}\ge 0$ and $\pi_{3,p}\ge 1$ in~\eqref{g-def}; the
 numerator of $g_p$ is at least $1$ and its denominator at least $1$, and $g_p$
 is a rational function of $\bm\chi$ with a positive denominator on a
@@ -592,12 +593,12 @@ is real-analytic on a neighbourhood of the compact set $\mathcal{S}$. In
 particular $\nabla\Theta$ is continuous and bounded on $\mathcal{S}$, and we
 put
 \begin{equation}\label{t-G}
-G=\max_{\widehat{\bm u}\in\mathcal{S}}\left\|\nabla\Theta\left(\widehat{\bm u}\right)\right\|_\infty<\infty .
+G=\max_{\bm u\in\mathcal{S}}\left\|\nabla\Theta\left(\bm u\right)\right\|_\infty<\infty .
 \end{equation}
 With the eigenvectors $\bm v,\bm w>0$ of~\eqref{perron}, the argument that
 gives~\eqref{grad} gives
 \begin{equation}\label{t-grad}
-\frac{\partial\Theta}{\partial\widehat u_{k,ij}}
+\frac{\partial\Theta}{\partial u_{k,ij}}
 =\frac{1}{\rho}\cdot\frac{\left(A_1^T\bm w\right)_pv_p}{\langle\bm w,\bm v\rangle}
 \cdot\frac{\partial g_p}{\partial \chi_{k,p}}\cdot\frac{b_{k,i}}{\sigma_{k,ij}},
 \qquad p=(i-1)n+j ,
@@ -676,16 +677,16 @@ values of $\theta_jz_j$, $\varphi$ is affine in $\lambda$.
 
 \begin{lemma}\label{t-fixed}
 Let $D>0$ be diagonal of order $3N$, $\eta>0$, and
-$\widehat{\bm u}\in\mathcal{S}$. The following are equivalent:
+$\bm u\in\mathcal{S}$. The following are equivalent:
 \begin{enumerate}
 \renewcommand{\labelenumi}{(\alph{enumi})}
-\item $\widehat{\bm u}=\Pi^D_{\mathcal{S}}\left(\widehat{\bm u}-\eta D^{-1}\nabla\Theta\left(\widehat{\bm u}\right)\right)$;
-\item $\nabla\Theta\left(\widehat{\bm u}\right)^T\left(\bm x-\widehat{\bm u}\right)\ge 0$ for all $\bm x\in\mathcal{S}$;
+\item $\bm u=\Pi^D_{\mathcal{S}}\left(\bm u-\eta D^{-1}\nabla\Theta\left(\bm u\right)\right)$;
+\item $\nabla\Theta\left(\bm u\right)^T\left(\bm x-\bm u\right)\ge 0$ for all $\bm x\in\mathcal{S}$;
 \item for each factor $(k,i)$ there is $\lambda_{k,i}$ with
-$\partial\Theta/\partial\widehat u_{k,ij}=\lambda_{k,i}$ where $\widehat u_{k,ij}>0$
-and $\partial\Theta/\partial\widehat u_{k,ij}\ge\lambda_{k,i}$ where $\widehat u_{k,ij}=0$,
+$\partial\Theta/\partial u_{k,ij}=\lambda_{k,i}$ where $u_{k,ij}>0$
+and $\partial\Theta/\partial u_{k,ij}\ge\lambda_{k,i}$ where $u_{k,ij}=0$,
 \end{enumerate}
-that is, $\widehat{\bm u}$ satisfies the Karush--Kuhn--Tucker conditions
+that is, $\bm u$ satisfies the Karush--Kuhn--Tucker conditions
 of~\eqref{three-program}. In particular the condition does not depend on $D$
 and $\eta$.
 \end{lemma}
@@ -693,17 +694,17 @@ and $\eta$.
 (a)$\Leftrightarrow$(b). Apply Lemma~\ref{t-proj-prop}(a) to each factor
 with
 \begin{equation*}
-\bm y=\widehat{\bm u}_{k,i},\qquad
-\bm z=\widehat{\bm u}_{k,i}-\eta D_{k,i}^{-1}\nabla_{k,i}\Theta,
+\bm y=\bm u_{k,i},\qquad
+\bm z=\bm u_{k,i}-\eta D_{k,i}^{-1}\nabla_{k,i}\Theta,
 \end{equation*}
 where the subscript $k,i$ denotes the entries of the factor. Then
-$\theta_j(z_j-y_j)=-\eta\,\partial\Theta/\partial\widehat u_{k,ij}$,
+$\theta_j(z_j-y_j)=-\eta\,\partial\Theta/\partial u_{k,ij}$,
 and~\eqref{t-vi} holding in every factor is the statement that
-$\nabla_{k,i}\Theta^T(\bm x_{k,i}-\widehat{\bm u}_{k,i})\ge 0$ for all
+$\nabla_{k,i}\Theta^T(\bm x_{k,i}-\bm u_{k,i})\ge 0$ for all
 $\bm x_{k,i}\in\Delta_{n-1}$ and all $(k,i)$. Since $\mathcal{S}$ is the
 product of the factors, this is (b).
 
-(b)$\Leftrightarrow$(c). Condition (b) says that $\widehat{\bm u}_{k,i}$
+(b)$\Leftrightarrow$(c). Condition (b) says that $\bm u_{k,i}$
 minimizes the linear function $\bm c^T\bm x$, $\bm c=\nabla_{k,i}\Theta$, over
 $\Delta_{n-1}$ in every factor. The minimum of $\bm c^T\bm x$ over
 $\Delta_{n-1}$ is $\min_jc_j$, and
@@ -714,19 +715,19 @@ $\lambda_{k,i}\le c_j$ for all $j$ with equality on the support of $\bm y$,
 which has at least one element, so $\lambda_{k,i}=\min_jc_j$.
 
 Finally, the Karush--Kuhn--Tucker conditions of~\eqref{three-program} in the
-variables $\widehat{\bm u}$, with the constraints $\sum_j\widehat u_{k,ij}=1$
-and $\widehat u_{k,ij}\ge 0$, are (c) with the multiplier $\lambda_{k,i}$ of
+variables $\bm u$, with the constraints $\sum_ju_{k,ij}=1$
+and $u_{k,ij}\ge 0$, are (c) with the multiplier $\lambda_{k,i}$ of
 the equality constraint of the factor.
 \end{proof}
 
 With $D=I$ and $\eta=1$ we use
 \begin{equation}\label{t-r}
-r\left(\widehat{\bm u}\right)=\left\|\widehat{\bm u}-\Pi_{\mathcal{S}}\left(\widehat{\bm u}-\nabla\Theta\left(\widehat{\bm u}\right)\right)\right\|_\infty
+r\left(\bm u\right)=\left\|\bm u-\Pi_{\mathcal{S}}\left(\bm u-\nabla\Theta\left(\bm u\right)\right)\right\|_\infty
 \end{equation}
 as the measure of stationarity: $r\ge 0$ on $\mathcal{S}$, it is continuous,
 and by Lemma~\ref{t-fixed} it vanishes exactly at the points satisfying the
 Karush--Kuhn--Tucker conditions. It needs no threshold to decide which entries
-of $\widehat{\bm u}$ are positive.
+of $\bm u$ are positive.
 
 \subsection{Optimization via projected Yogi method}\label{sec-yogi}
 
@@ -740,26 +741,26 @@ first moment $\bm\kappa$ by $1-\beta_1^t$.
 \begin{algorithm}[ht]
 \caption{Projected Yogi}\label{t-alg-yogi}
 \begin{algorithmic}[1]
-\Require a start $\widehat{\bm u}^{(0)}\in\mathcal{S}$; a step $\eta>0$;
+\Require a start $\bm u^{(0)}\in\mathcal{S}$; a step $\eta>0$;
 $\beta_1\in[0,1)$, $\beta_2\in(0,1)$, $\epsilon>0$; a tolerance $\mathrm{tol}$
 and a maximal number of iterations $t_{\max}$
-\State $\bm q\gets\nabla\Theta\left(\widehat{\bm u}^{(0)}\right)$, $\bm\kappa\gets\bm 0$, $\bm s\gets\bm q^2$
+\State $\bm q\gets\nabla\Theta\left(\bm u^{(0)}\right)$, $\bm\kappa\gets\bm 0$, $\bm s\gets\bm q^2$
 \For{$t=1,\ldots,t_{\max}$}
-  \State $\bm q\gets\nabla\Theta\left(\widehat{\bm u}^{(t-1)}\right)$
+  \State $\bm q\gets\nabla\Theta\left(\bm u^{(t-1)}\right)$
   \State $\bm\kappa\gets\beta_1\bm\kappa+(1-\beta_1)\bm q$
   \State $\bm s\gets\bm s-(1-\beta_2)\operatorname{sign}\left(\bm s-\bm q^2\right)\bm q^2$
   \State $D\gets\operatorname{diag}\left(\sqrt{\bm s}+\epsilon\right)$
-  \State $\widehat{\bm u}^{(t)}\gets\Pi^D_{\mathcal{S}}\left(\widehat{\bm u}^{(t-1)}-\eta D^{-1}\bm\kappa/\left(1-\beta_1^t\right)\right)$
-  \If{$r\left(\widehat{\bm u}^{(t)}\right)<\mathrm{tol}$}
+  \State $\bm u^{(t)}\gets\Pi^D_{\mathcal{S}}\left(\bm u^{(t-1)}-\eta D^{-1}\bm\kappa/\left(1-\beta_1^t\right)\right)$
+  \If{$r\left(\bm u^{(t)}\right)<\mathrm{tol}$}
     \State \textbf{break}
   \EndIf
 \EndFor
-\State \Return $\widehat{\bm u}^{(t)}$, $\rho=\exp\Theta\left(\widehat{\bm u}^{(t)}\right)$
+\State \Return $\bm u^{(t)}$, $\rho=\exp\Theta\left(\bm u^{(t)}\right)$
 \end{algorithmic}
 \end{algorithm}
 
 \begin{lemma}\label{t-yogi-limit}
-Let $\widehat{\bm u}^{(t)}$, $\bm\kappa$, $\bm s$ be the iterates of
+Let $\bm u^{(t)}$, $\bm\kappa$, $\bm s$ be the iterates of
 projected Yogi with $t_{\max}=\infty$ and $\mathrm{tol}=0$, and
 $G$ as in~\eqref{t-G}.
 \begin{enumerate}
@@ -768,8 +769,8 @@ $G$ as in~\eqref{t-G}.
 $0\le s_l\le\overline{s}:=\max\left(\left\|\bm s^{(0)}\right\|_\infty,(2-\beta_2)G^2\right)$
 for every entry $l$ and every $t$. Hence
 $\epsilon I\le D\le\left(\sqrt{\overline{s}}+\epsilon\right)I$.
-\item If $\widehat{\bm u}^{(t)}\to\widehat{\bm u}^*$, then
-$\widehat{\bm u}^*$ satisfies the Karush--Kuhn--Tucker conditions
+\item If $\bm u^{(t)}\to\bm u^*$, then
+$\bm u^*$ satisfies the Karush--Kuhn--Tucker conditions
 of~\eqref{three-program}.
 \end{enumerate}
 \end{lemma}
@@ -784,19 +785,19 @@ $\bm s^{(0)}=\bm q^2\ge 0$, each entry stays non-negative, and it either does
 not increase or ends at most $(2-\beta_2)G^2$; hence it never exceeds $\overline{s}$.
 
 (b) By continuity of $\nabla\Theta$,
-$\bm q^{(t)}=\nabla\Theta\left(\widehat{\bm u}^{(t-1)}\right)\to\nabla\Theta\left(\widehat{\bm u}^*\right)$.
+$\bm q^{(t)}=\nabla\Theta\left(\bm u^{(t-1)}\right)\to\nabla\Theta\left(\bm u^*\right)$.
 The moment
 \begin{equation*}
 \bm\kappa^{(t)}=(1-\beta_1)\sum_{\tau=1}^t\beta_1^{t-\tau}\bm q^{(\tau)}
 \end{equation*}
 is a weighted mean with weights summing to $1-\beta_1^t$, so
-$\bm\kappa^{(t)}/\left(1-\beta_1^t\right)\to\nabla\Theta\left(\widehat{\bm u}^*\right)$.
+$\bm\kappa^{(t)}/\left(1-\beta_1^t\right)\to\nabla\Theta\left(\bm u^*\right)$.
 By (a) the matrices $D^{(t)}$ lie in a compact set of positive diagonal
 matrices, so a subsequence converges to some $D^*\ge\epsilon I$. Along this
 subsequence, the continuity of Lemma~\ref{t-proj-prop}(c) in the update
-of $\widehat{\bm u}^{(t)}$ gives
+of $\bm u^{(t)}$ gives
 \begin{equation*}
-\widehat{\bm u}^*=\Pi^{D^*}_{\mathcal{S}}\left(\widehat{\bm u}^*-\eta D^{*-1}\nabla\Theta\left(\widehat{\bm u}^*\right)\right),
+\bm u^*=\Pi^{D^*}_{\mathcal{S}}\left(\bm u^*-\eta D^{*-1}\nabla\Theta\left(\bm u^*\right)\right),
 \end{equation*}
 and Lemma~\ref{t-fixed} applies.
 \end{proof}
@@ -851,8 +852,8 @@ time & $0.5$ s & $90$ s & $822$ s & $27$ s\\
 \caption{Projected Yogi on the weekly instance from the $49$ starts.}\label{t-tab-yogi}
 \end{table}
 
-Figure~\ref{t-fig-conv} shows the relative excess $(\rho-\rho^*)/\rho^*$ over
-$\rho^*=1.661826042009$ and the stationarity measure $r$ of~\eqref{t-r} per
+Figure~\ref{t-fig-conv} shows the relative excess $(\rho-\widehat\rho)/\widehat\rho$ over
+$\widehat\rho=1.661826042009$ and the stationarity measure $r$ of~\eqref{t-r} per
 iteration along three runs, from the barycenter and from the starts
 $(k,i,j)=(3,1,4)$ and $(2,4,1)$. The iteration count is on a logarithmic
 scale and the start, iteration $0$, is not shown; excesses below $10^{-16}$,
@@ -886,7 +887,7 @@ projected Yogi from the barycenter if it is smaller. A run is
 successful if its $\rho$ is at most $(1+10^{-7})\rho_{\mathrm{best}}$.
 
 From the barycenter, projected Yogi takes between $545$ and
-$10897$ iterations, $71$~s for all $36$ instances, and ends with $r<10^{-10}$
+$10897$ iterations, $66$~s for all $36$ instances, and ends with $r<10^{-10}$
 in every instance. It is successful in $31$ instances, $14$ of the $18$
 weekly and $17$ of the $18$ daily. In two of them its value is smaller than
 that of all $69$ interior point runs, by $0.13$ and $0.025$ per cent, and is
@@ -1054,19 +1055,19 @@ of $A_1$ in~\eqref{p-identities}.
 
 Next, we consider the quantities $y_p$ and $z_p$. Following~\cite{JZh}, for $p=1:N$ we have
 \begin{equation}\label{fractions}
-\widehat s_p=\left\lbrack
+\widetilde s_p=\left\lbrack
 1+\pi_{1,p}\left(1+\pi_{2,p}+\pi_{2,p}\pi_{3,p}\right)\right\rbrack^{-1},
-\qquad \widehat v_p=\pi_{1,p}\,\widehat s_p,
+\qquad \widetilde v_p=\pi_{1,p}\,\widetilde s_p,
 \end{equation}
 with $\pi_{1,p}$, $\pi_{2,p}$ and $\pi_{3,p}$ as in~\eqref{g-def}, and the
 entries of~\eqref{yz} are
 \begin{equation}\label{yz-def}
-y_p=\widehat s_p,\qquad
-z_p=\left\lbrack(1-\varepsilon_1)+\pi_{2,p}\right\rbrack\widehat v_p .
+y_p=\widetilde s_p,\qquad
+z_p=\left\lbrack(1-\varepsilon_1)+\pi_{2,p}\right\rbrack\widetilde v_p .
 \end{equation}
-Using $\widehat v_p=\pi_{1,p}\widehat s_p$ we find the 
+Using $\widetilde v_p=\pi_{1,p}\widetilde s_p$ we find the 
 closed form of 
-$g_p$ in~\eqref{g-def}. Moreover, since $\widehat s_p\in(0,1]$, one has $0<g_p\le 1$, with $g_p=1$ exactly when $\chi_{1,p}=0$.
+$g_p$ in~\eqref{g-def}. Moreover, since $\widetilde s_p\in(0,1]$, one has $0<g_p\le 1$, with $g_p=1$ exactly when $\chi_{1,p}=0$.
 
 We also have the following identity: $\bm d$ as in~\eqref{yz} and $\bm g=\bm y+\bm z$,
 \begin{equation}\label{ptdp}
