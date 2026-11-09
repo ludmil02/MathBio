@@ -1,0 +1,583 @@
+\documentclass[12pt]{amsart}
+\usepackage[letterpaper,margin=1in]{geometry}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{listings}
+% \lstdefinestyle{pystyle}{
+%        language=Python,
+%        basicstyle=\ttfamily,
+%        keywordstyle=\color{blue},
+%        stringstyle=\color{red},
+%        commentstyle=\color{green},
+%        numbers=left,
+%        numberstyle=\tiny\color{gray},
+%        stepnumber=1,
+%        showstringspaces=false
+%    }
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{bm}
+\usepackage{bbm}
+\usepackage[config,labelfont={rm,rm},textfont=rm]{caption,subfig}
+
+\usepackage{amsmath,amssymb,amsthm,latexsym,mathrsfs}
+
+\usepackage{color,graphicx,colortbl}
+\usepackage{bm,bbm,dsfont}
+
+\usepackage[latin1]{inputenc}
+\usepackage[english]{babel}
+
+\theoremstyle{definition}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{problem}[theorem]{Problem}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{algorithm}[theorem]{Algorithm}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{exercise}[theorem]{Exercise}
+\newtheorem{observation}[theorem]{{\color{red}Observation}}
+
+\renewcommand{\labelenumi}{\textbf{\arabic{enumi}.}}
+\renewcommand{\labelenumii}{\textbf{\arabic{enumi}\alph{enumii}.}}
+\everymath{\displaystyle}
+
+\title{Math bio optimization problem}
+\author{Zhilan \and John \and Yuliya \and Ludmil}
+
+\begin{document}
+
+\begin{abstract}
+We present a possible algorithm for minimizing the spectral radius of a class of non-negative matrices appearing in a math bio application. 
+\end{abstract}
+
+\maketitle
+
+
+\section{Preliminaries}
+
+We use bold face for column vectors, $X^T$ for transposition of a matrix or a vector $X$. 
+Furthermore, the following standard notation will be used for vectors in $\mathds{R}^{M}$:
+\begin{equation}
+  \begin{aligned}
+    &\langle \bm{a},\bm{b}\rangle = \bm{b}^T\bm a = \sum_{\mu=1}^M a_i b_i\\
+    &\bm{a}\ge 0,\quad\mbox{iff} \quad a_i\ge 0,\quad i=1:M. 
+  \end{aligned}
+\end{equation}
+Here, the second line applies to both matrices and vectors. 
+
+\section{Optimization}
+We consider the following optimization problem:
+\begin{equation}
+  \min_{\bm{u}\in \mathfrak{S}} \rho(T(\bm{u})),\quad \mathfrak{S}\subset \mathds{R}^{N} \quad\mbox{determined by constraints}.
+\end{equation}
+Here $T$ is a matrix depending on the componenets of $\bm{u}$. 
+The vector $\bm{u}\in \mathds{R}^{3nm}$ represents the matrices 
+$\chi_{k}\in \mathds{R}^{n\times m}$ given in the original write-up by John and Zhilan. We define the components of $\bm u$ as follows
+\begin{equation}
+  u_{(k,(i-1)n+j}=\chi_{k,ij}, \quad k=1:3, \quad i=1:m,\quad j=1:n.
+\end{equation}
+The constraints satisfied by $\bm u$ are as follows: Given vectors $\sigma_k\in \mathds{R}^{\mathcal{N}}$ the linear equality constraints are as follows (for $i=1:m$, $j=1:n$, and  $k=1:3$ with given right hand sides $b_k$):
+\begin{equation}
+\langle \bm{\sigma}_k,\bm{u}_k\rangle = b_k,\quad\mbox{where}\quad
+\sigma_{k,(i-1)n+j}=\begin{cases} S_{ij} & k=1,\\
+  P_{ij} & k=2,\\
+  V_{ij} & k=3.
+\end{cases}
+\end{equation}
+In matrix form then the constraints look like
+\begin{equation}\label{def-theta}
+  \mathds{R}^{3\times 3nm}\ni \Theta=
+    \begin{pmatrix}
+      \bm{\sigma}_1^T & \bm{0}^T & \bm{0}^T\\
+      \bm{0}^T &  \bm{\sigma}_2^T & \bm{0}^T\\
+      \bm{0}^T & \bm{0} & \bm{\sigma}_3^T 
+    \end{pmatrix}
+    \begin{pmatrix}
+      \bm u_1\\ \bm u_2 \\ \bm u_3
+    \end{pmatrix}=
+    \begin{pmatrix}
+      b_1\\ b_2 \\ b_3
+    \end{pmatrix},
+\end{equation}
+where $\bm{0}^T$ is a row vector with $nm$ components.
+
+We now define two linear operators (these are well known, we introduce them here to have a more concise presentation).
+\begin{equation}
+\begin{aligned}
+&\operatorname{diag}: 
+\mathds{R}^{N}\mapsto \mathds{R}^{N\times N}_{\operatorname{diag}},\quad\operatorname{diag}(\bm a)= \sum_{j=1}^N a_j \bm e_j\bm e_j^T\\
+&\operatorname{flat}:\mathds{R}^{M\times N}\mapsto \mathds{R}^{MN},\quad
+\operatorname{flat}(A)=\sum_{i=1}^N\sum_{j=1}^M a_{ij}\bm e_{(i-1)M+j},
+\end{aligned}
+\end{equation}
+where $\bm{e}_k$ is the $k$-th canonical Euclidean basis vector with $k$-th component equal to $1$ and all other components zero, and $\mathds{R}^{N\times N}_{\operatorname{diag}}$ 
+is the subspace of diagonal matrices in $\mathds{R}^{N\times N}$. 
+
+To relate this to the application in hand, we observe that 
+\[
+\bm{u}_k=\operatorname{flat}(\chi_k)
+\]
+and note that $\operatorname{flat}$ takes a matrix and converts it into a vector with components the matrix entries written row by row. 
+
+Both mappings are invertible and they are also implemented in any high level software package such as \verb|Matlab|, \verb|Python|, \verb|Mathematica| (sometimes they are disguised under the names \verb|reshape(\cdot)|, \verb|Flatten[\cdot]|, \verb|diag|, or \verb|DiagonalMatrix|).
+
+Following the other write-up, the matrix $T(\bm{u})$ is defined as follows:
+\begin{equation}
+  T(\bm{u})=D(\bm u) A_c, \quad\mbox{with}\quad A_c \quad\mbox{independent of}\quad\bm{u},
+\end{equation}
+where $A_c$ is a constant matrix constructed as shown in the write-up. In fact, we observe that the rows of  $A_c$ are linearly dependent, namely we have
+\begin{equation}
+A_c^T=(\bm{a}_{c,1},\bm{a}_{c,1},\ldots,\bm{a}_{c,nm},\bm{a}_{c,nm}),
+\end{equation}
+where $\bm{a}_{c,j}^T$ is a row vector from $A_c$ and a column vector from $A_c^T$. 
+
+An interesting observation is that 
+$A_c^T$ has a kernel of dimension $mn$ and its range (where the eigenvector corresponding to the spectral radius lies) is spanned by 
+\begin{equation}
+  \begin{aligned}
+    \operatorname{ker}(A_c^T)=\operatorname{span}\left\{\bm e_{2j}-\bm e_{2j-1}\right\}_{j=1}^{nm},\\
+    \operatorname{range}(A_c)=\operatorname{span}\left\{\bm e_{2j}+\bm e_{2j-1}\right\}_{j=1}^{nm},\\  
+  \end{aligned}
+\end{equation}
+Following the write-up we find out that $A_c^T\mathscr{Z}=0$ which shows that $\operatorname{ker}(A_c^T)=\operatorname{range}(\mathscr{Z})$, where $\mathscr{Z}\in\mathds{R}^{2nm\times nm}$ is as follows: 
+\begin{equation}\label{ker-ac}
+  \mathscr{Z}=2nm\left\{\underbrace{\begin{pmatrix}
+      1 & 0 & 0& 0& 0 & \ldots & 0 & 0\\
+     -1 & 0 & 0& 0& 0 & \ldots & 0 & 0\\
+      0 & 1 & 0& 0& 0 & \ldots & 0 & 0\\
+      0 &-1 & 0& 0& 0 & \ldots & 0 & 0\\
+     \ldots & \ldots & \ldots& \ldots& \ldots & \ldots & \ldots & \ldots\\
+      0 & 0 & 0& 0& 0 & \ldots & 0 & 1\\
+      0 & 0 & 0& 0& 0 & \ldots & 0 & -1
+    \end{pmatrix}}_{nm}\right.
+  \end{equation}
+Using the fact that $\operatorname{ker}(A^T_c)^{\perp}=\operatorname{range}(A_c)$ we find out that the range of $A_c$ is the same as the range $\mathscr{P}$ which is defined as (replace $-1$ to $1$ in $\mathscr{Z}$):
+\begin{equation}\label{ran-ac}
+  \mathscr{P}=2nm\underbrace{\left\{
+    \begin{pmatrix}
+      1 & 0 & 0& 0& 0 & \ldots & 0 & 0\\
+      1 & 0 & 0& 0& 0 & \ldots & 0 & 0\\
+      0 & 1 & 0& 0& 0 & \ldots & 0 & 0\\
+      0 &-1 & 0& 0& 0 & \ldots & 0 & 0\\
+     \ldots & \ldots & \ldots& \ldots& \ldots & \ldots & \ldots & \ldots\\
+      0 & 0 & 0& 0& 0 & \ldots & 0 & 1\\
+      0 & 0 & 0& 0& 0 & \ldots & 0 & 1
+    \end{pmatrix}\right.}_{nm}
+  \end{equation}
+
+  Since the eigenvalue we are interested in is in the $\operatorname{range}(A_c)$ we have that for some "shorter vector $\bm\varphi\in \mathds{R}^{nm}$ (recall that the size of $A_c$ is $2nm\times 2nm$) we have
+  \begin{equation}
+    D(\bm u)A_c\mathscr{P} \bm{\varphi} = \rho\mathscr{P}\bm{\varphi} 
+    \end{equation}
+  Furthermore, if we take the inner product with any vector in the 
+$\operatorname{range}(\mathscr{P})=\operatorname{range}(\mathscr{A_c})$ we have
+\begin{equation}
+  \begin{aligned}
+    \langle D(\bm u)A_c\mathscr{P} \bm{\varphi},\mathscr{P}\bm \eta\rangle = 
+  \rho\langle \mathscr{P} \bm{\varphi},\mathscr{P}\bm \eta\rangle,\quad\mbox{namely,}\\
+  \langle \mathscr{P}^TD(\bm u)A_c\mathscr{P} \bm{\varphi},\bm \eta\rangle = 
+  \rho\langle \mathscr{P}^T\mathscr{P} 
+  \bm{\varphi},\bm \eta\rangle.\quad\mbox{for all}\quad \eta\in \mathds{R}^{nm},\quad\mbox{i.e.} \\
+  \mathscr{P}^TD(\bm u)A_c\mathscr{P} \bm{\varphi}=
+  2\rho\bm{\varphi}
+  \end{aligned}
+  \end{equation}
+where we have used that $\mathscr{P}^T\mathscr{P}=2I$.
+
+Thus the spectral radius of $A_c$ is also half of the spectral radius of
+ $\mathscr{P}^TD(\bm u)A_c\mathscr{P} \bm{\varphi}$. The latter matrix is non-singular. 
+
+
+
+If $\mathscr{N}$ is the population matrix \verb|mN|, and $\mathscr{A}$ is the \verb|mA| matrix, and  
+$\bm{s}$, $\bm{\beta}$, $\bm{\psi_S}$ are the matrix and vector pparameters, we define
+\begin{equation}
+\begin{aligned}
+    &D_{\bm\psi_S}=\operatorname{diag}\left(\operatorname{flat}(\psi_S)\right)\\
+    %& D_s=\operatorname{diag}(\mathscr{S})\\
+    %& D_{\beta}=\operatorname{diag}(\bm{\beta})\\
+    &D_{a,\beta}=\operatorname{diag}\left(
+      \operatorname{flat}\left(X\right)\right),\quad \mbox{where}\quad 
+        X=\operatorname{diag}(\bm s)\mathscr{A} \operatorname{diag}(\bm\beta)\\
+    &\bm d_c=\operatorname{diag}^{-1}\left(D_{\psi_S} D_{a,\beta}\right)\quad
+    D_0=\operatorname{diag}(\bm d_0), \quad d_{0,2k-1}= d_{0,2k}=d_{c,k}, \quad k=1:n
+    %d[::2]=dc.reshape((ntotal,)) 
+    %d[1::2]=dc.reshape((ntotal,))
+\end{aligned}
+\end{equation}
+
+With this in hand, we then have $A_c=D_0A_0$ where $A_0$ depends on the input matrix $C$, $\bm \psi_I$ and bunch of other things and has the form but is independennt of the variable $\bm u$. Again, following the other write-up, we now define $D(\bm u)$ as follows:
+\begin{equation}
+\begin{aligned}
+  &\bm{y}=\operatorname{diag}\left(\bm{s}^*\right)\\
+  &\bm{z}=\operatorname{diag}\left((1-\varepsilon_1)\bm{v}^*
+  +\bm{p}^*\right)\\
+  &D(\bm{u})=\operatorname{diag}(\bm d), \quad  d_{2k-1}=y_k,\quad d_{2k}=z_{k}, \quad k=1:n.
+  \end{aligned}
+\end{equation}
+Here, we have denoted the vectors (in the other write-up these are matrices (indices: age-group and location), but we can simplify this here.
+The components of the vectors $\bm{s}^*$, $\bm{p}^*$, $\bm{v}^*$ are computed as follows (below $k=1:nm$):
+\begin{equation}\label{si-def}
+  \begin{aligned}
+  s_{k}^* &= \left\lbrack
+  1+\frac{\bm{u}_{1,k}}{\omega_v+\varepsilon_2\bm{u}_{2,k}}
+  \left(1+\frac{\varepsilon_{2}\bm{u}_{2,k}}{\omega}+
+  \frac{\varepsilon_{2}\bm{u}_{2,k}}{\omega}\left\lbrack
+  1+\frac{\varepsilon_{3}\bm{u}_{3,k}}{\omega}
+  \right\rbrack
+  \right)
+  \right\rbrack^{-1}\\
+  v_{k}^*&=  \frac{\bm{u}_{1,k}}{\omega_{v}+\varepsilon_2\bm{u}_{2,k}} \bm{s}_k^*\\
+  p_{k}^*&= \frac{\varepsilon_{2}\bm{u}_{2,k}}{\omega}\bm{v}_{k}^*=
+  \frac{\varepsilon_{2}\bm{u}_{2,k}}{\omega}
+  \frac{\bm{u}_{1,k}}{\omega_{v}+\varepsilon_2\bm{u}_{2,k}} \bm{s}_{k}^*. 
+  % \\
+  % r_{k}^*&=
+  % \frac{\bm{u}_{1,k}}{\omega_v+\varepsilon_2 \bm{u}_{2,k}}
+  % \frac{\varepsilon_2 \bm{u}_{2,k}}{\omega}
+  % \Big(1+\frac{\varepsilon_3 \bm{u}_{3,k}}{\omega}\Big)
+  % \bm{s}_{k}^*.
+  \end{aligned}
+  \end{equation}
+
+\section{Problem statement}
+The constrained optimization is then as follows 
+\begin{equation}
+  \begin{aligned}
+&    \mbox{Find}\quad \min_{\bm{t}\in \mathds{R}^{3mn}} 
+\rho\left(D(\bm{t}) A_c\right), \quad\mbox{subject to the constraints,} \\
+     & \Theta       
+      \begin{pmatrix}
+        \bm{t}_1\\
+        \bm{t}_2\\
+        \bm{t}_3
+      \end{pmatrix} = 
+      \begin{pmatrix}
+        b_1\\
+        b_2\\
+        b_3
+      \end{pmatrix}\quad\mbox{and}\quad \bm{t}\ge 0.
+  \end{aligned}
+\end{equation}
+Here $\Theta$ is defined in~\ref{def-theta}.
+
+
+\section{A simplification}
+We now consider the problem when $b_2=b_3=0$ in the constraints. This implies that $\bm{u}_2=\bm{u}_3=\bm{0}$ and the only unknown is $\bm{u}_1$. This also simplifies 
+$\bm{s}^*$ and $\bm{v}^*$, and, moreover $\bm{p}^*=0$. We have:
+
+\begin{equation}\label{si-def}
+  \begin{aligned}
+  s_{k}^* &= \left\lbrack  1+\frac{\bm{u}_{1,k}}{\omega_v}\right\rbrack^{-1},\quad
+  v_{k}^* &=  \frac{\bm{u}_{1,k}}{\omega_{v}}s_k^*=1-s_k^*,\quad \quad p_{k}^*&= 0. 
+  \end{aligned}
+  \end{equation}
+  For this case then everything simplifies and the minimization looks also simpler and also probably one can find derivatives and so on and exact solution.... Basically we have a simpler problem with simpler $D(\bm{u})$ which from the formulae $\bm{y}$ and $\bm{z}$ it seems these are very simple if a new variablle is introduced, e.g. 
+\begin{equation}
+    \bm{u}_1\leftarrow  \frac{1}{\omega_v}\bm{u}_1.  
+\end{equation}
+
+
+
+
+\section{LATER: Older stuff}
+We recall here the Perron-Frobenius theorem about non-negative and irreducible matrices because this is an essential result to be used. The proof of this famous theorem is found at many places, for example, check Varga~\cite[Theorem 2.7]{2000Varga-aa}. Please, pay particular attention to item 3. in the statement of the theorem. 
+\begin{theorem}[Perron-Frobenius]\label{pf}
+  Let $\bm A\geq 0$ be a non-negative and irreducible matrix. Then
+  \begin{enumerate}
+  \item $\bm A$ has positive real eigenvalue equal to $\rho(\bm A)$.
+  \item The corresponding eigenvector has nonnegative elements (positive in fact).
+  \item $\rho(\bm A)$ increases when any entry of $\bm A$ increases.
+  \item $\rho(\bm A)$ is a simple (not repeating) eigenvalue of $\bm A$.
+  \end{enumerate}
+\end{theorem}
+
+{\color{magenta} Similar result when the matrix is only nonnegative and might be reducible. We state two results here and refer the reader to~\cite[Section 8.3]{1985Horn_Johnson}
+}
+\begin{theorem}\label{reducible}
+If $A\in \mathds{R}^{n\times n}$ is a nonnegative, then $\rho(A)$ is an eigenvalue of A and there 
+is a nonnegative nonzero vector $x$ such that $Ax=\rho(A)x$.
+\end{theorem}
+\begin{proof}\cite[Theorem 8.3.1]{1985Horn_Johnson}
+Let $\mathbbm{1}$ be the column vector of all ones. Then we consider the matrix 
+\[
+A_{\varepsilon}(\varepsilon)=A+\varepsilon \mathbbm{1}\mathbbm{1}^*, \quad \varepsilon>0.
+\]
+The matrix $A_{\varepsilon}$ is a full matrix and therefore irreducible satisfying all assumptions of the Perron-Frobenius Theorem~\ref{pf}. Taking the limit when $\varepsilon\to 0_+$ then shows the result (the eigenvalues of a matrix are continuously depending on the matrix entries). 
+\end{proof}
+
+Regarding the other items in Theorem~\ref{pf} when compared to Theorem~\ref{reducible} is that Theorem~\ref{pf}(4.) may fail to hold; while Theorem~\ref{pf}(3.) holds but "increasing" should be replaced with "non-decreasing".
+
+Next Corollary (found in~\cite[Corollary~8.3.3]{1985Horn_Johnson}) could be useful for computations:
+
+\begin{corollary}
+If $A\in\mathds{R}^{n\times n}$ is nonnegative, then
+\begin{equation}\label{max-min}
+\rho(A) = \max_{\substack{x\ge 0 \\ x\neq 0}} 
+\min_{\substack{1 \leq i  \leq n \\ x_i\neq 0}} \frac{(A x)_i}{x_i}.
+\end{equation}
+\end{corollary}
+\section{Constraints}
+We also have $3m$ constraints. Let $S_{ij}(T-1)$, $V_{ij}(T-1)$, and 
+$P_{ij}(T-1)$ denote the numbers of individuals in the susceptible $(S)$, vaccinated ($V$), and $(P)$ classes {\color{red} at the end of week $T-1$} (which are the solutions of the ODEs by using the $\chi$ values in the week $T-1$). We need to find optimal $\chi$ values for week $T$. Then the constraints are:
+\begin{equation}\label{eq:c}
+\begin{aligned}
+&\sum_{j=1}^n \chi_{1ij} S_{ij}(T-1) = b_{1i}, \quad i=1:m, \\
+&\sum_{j=1}^n \chi_{2ij} V_{ij}(T-1) = b_{2i}, \quad i=1:m, \\
+&\sum_{j=1}^n \chi_{3ij} P_{ij}(T-1) = b_{3i}, \quad i=1:m, 
+\end{aligned}
+\end{equation}
+where $b_{ki}$ $(k=1, 2, 3)$ are the total available vaccine doses of type $k$ at location $i$ for week $T$. 
+
+% \section{Data details}
+% Each block $F_{ijpq}$ of the matrix $F$ represents the interactions between susceptible people of age $j$ at location $i$ with infected people of age $q$ at location $p$).
+
+% Let us fix $(i,j,p,q)$ and look at the definition of $\bm F_{ijpq}$:
+% \begin{equation}\label{f-ijpq-1}
+% \bm{F}_{ijpq}=
+% \begin{pmatrix}
+% 0 & 0 &  Y_{ij}\Psi_{qI}\eta_{a}c_{ijpq} & \ldots & Y_{ij}\Psi_{qI}\eta_{m}c_{ijpq}\\
+% 0 & 0 &  Z_{ij}\Psi_{qI}\eta_{a}c_{ijpq} & \ldots & Z_{ij}\Psi_{qI}\eta_{m}c_{ijpq}\\
+% 0 & 0 &  0 & \ldots & 0\\
+% \vdots & \vdots &  \vdots & \ldots & \vdots\\
+% 0 & 0 &  0 & \ldots & 0
+% \end{pmatrix}
+% \end{equation}
+% For the case of $m=4$ and $n=4$, the first row  of block matrices of  $F$  are 
+% \tiny{
+% \[
+% (F_{1111} \ \ F_{1112} \ \ F_{1113} \  \ F_{1114} \  \
+% F_{1121} \ \  F_{1122} \ \ F_{1123}  \ \ F_{1124}   \ \
+% F_{1131} \ \   F_{1132} \ \  F_{1133} \ \  F_{1134} \ \
+% F_{1141} \ \   F_{1142} \ \  F_{1143} \ \  F_{1144}).
+% \]
+% }
+% {\color{red}(ZF note: it is a row vector of block matrices {\bf each block} with dimension $8\times 8$. It describes the interactions between people of age $j=1$ at location $i=1$ with infected people of age $q=1,2,3,4$ at location $p=1,2,3,4$.)}
+% \tiny{
+% \begin{equation}\label{F-def-1}
+% \begin{pmatrix} 
+% 0 & 0 & Y_{ij}\Psi_{qI}\eta_{a}c_{ijpq} & Y_{ij}\Psi_{qI}\eta_{ps}c_{ijpq} &Y_{ij}\Psi_{qI}\eta_{s}c_{ijpq}
+% &Y_{ij}\Psi_{qI}\eta_{h}c_{ijpq}  &
+% Y_{ij}\Psi_{qI}\eta_{pm}c_{ijpq}  & Y_{ij}\Psi_{qI}\eta_{m}c_{ijpq}
+% \end{pmatrix}.
+% \end{equation}
+% }
+% The order of the entries of $\bm\eta$ is the order of the infected
+% compartments in $\bm v_{ij}=(E^s_{ij},E^p_{ij},I^a_{ij},I^{ps}_{ij},I^s_{ij},I^h_{ij},I^{pm}_{ij},I^m_{ij})$,
+% that is,
+% \[
+% \bm\eta=(\eta_a,\eta_{ps},\eta_s,\eta_h,\eta_{pm},\eta_m)=(0.5,\,1.25,\,1,\,0.1,\,1,\,0.75),
+% \]
+% preceded by the two zeros in the columns of $E^s_{ij}$ and $E^p_{ij}$.
+% The list written in the Mathematica notebook,
+% $\{\eta_a,\eta_{ps},\eta_{pm},\eta_s,\eta_m,\eta_h\}=\{0.5,1.25,1,1,0.75,0.1\}$,
+% is a simultaneous assignment of the six named values and carries no ordering
+% information; it gives the same value to each name.
+% The values of $Y_{ij}$ and $Z_{ij}$ are computed as follows:
+% \begin{equation}\label{yz-ij-def}
+% \begin{aligned}
+% Y_{ij} &= \Psi_{jS}s_ia_{ij}\beta_j \frac{S_{ij}^*}{N_{ij}}, \quad i=1:m,\; j=1:n\\
+% Z_{ij} &= \Psi_{jS} s_i a_{ij}\beta_j \frac{(1-\varepsilon_{1})V_{ij}^*+(1-\varepsilon_{3})P_{ij}^*}{N_{ij}}.
+% \end{aligned}
+% \end{equation}
+% Here, we have denoted
+% \begin{equation}\label{si-def-o}
+% \begin{aligned}
+% \frac{S_{ij}^*}{N_{ij}}&= \left\lbrack
+% 1+\frac{\chi_{1,ij}}{\omega_v+\varepsilon_2\chi_{2,ij}}
+% \left(1+\frac{\varepsilon_{2}\chi_{2,ij}}{\omega}+
+% \frac{\varepsilon_{2}\chi_{2,ij}}{\omega}\left\lbrack
+% 1+\frac{\varepsilon_{3}\chi_{3,ij}}{\omega}
+% \right\rbrack
+% \right)
+% \right\rbrack^{-1}\\
+% \frac{V_{ij}^*}{N_{ij}}&=  \frac{\chi_{1,ij}}{\omega_{v}+\varepsilon_2\chi_{2,ij}} \frac{S_{ij}^*}{N_{ij}}\\
+% \frac{P_{ij}^*}{N_{ij}}&= \frac{\varepsilon_{2}\chi_{2,ij}}{\omega}\frac{V_{ij}^*}{N_{ij}}=
+% \frac{\varepsilon_{2}\chi_{2,ij}}{\omega}
+% \frac{\chi_{1,ij}}{\omega_{v}+\varepsilon_2\chi_{2,ij}} \frac{S_{ij}^*}{N_{ij}} \\
+%  \frac{R_{ij}^*}{N^*_{ij}}&=
+% \frac{\chi_{1ij}}{\omega_v+\varepsilon_2 \chi_{2ij}}
+% \frac{\varepsilon_2 \chi_{2ij}}{\omega}
+% \Big(1+\frac{\varepsilon_3 \chi_{3ij}}{\omega}\Big)
+% \frac{S_{ij}^*}{N^*_{ij}}.
+% \end{aligned}
+% \end{equation}
+
+
+% \begin{observation}
+% The way $F_{ijpq}$ are defined if we look at one $16\times 8$ block column for fixed $(p,q)$ where each block is $8\times 8$:
+% \begin{equation}
+% \begin{pmatrix}
+% F_{11pq}\\
+% F_{12pq}\\
+% \vdots\\
+% F_{14pq}\\
+% F_{21pq}\\
+% \vdots\\
+% F_{24pq}\\
+% \vdots\\
+% F_{44pq}
+% \end{pmatrix}
+% \end{equation}
+% The non-zero columns in the above $128\times 8$ matrix are proportional to each other. So this is a rank one matrix and it is seen from its definition. Since there are 16 such columns, this shows that the rank of $F$ is no more than $16$, because we have 16 such block columns. 
+% \end{observation}
+
+% \hrulefill
+
+% \centerline{To be continued}
+
+% \hrulefill
+
+
+% The full matrix $F$:
+% \tiny{
+%  \[
+% Row 1: (F_{1111} \ \ F_{1112} \ \ F_{1113} \  \ F_{1114} \  \
+% F_{1121} \ \  F_{1122} \ \ F_{1123}  \ \ F_{1124}   \ \
+% F_{1131} \ \   F_{1132} \ \  F_{1133} \ \  F_{1134} \ \
+% F_{1141} \ \   F_{1142} \ \  F_{1143} \ \  F_{1144})
+% \]
+% \[
+% Row 2: (F_{1211} \ \ F_{1212} \ \ F_{1213} \  \ F_{1214} \  \
+% F_{1221} \ \  F_{1222} \ \ F_{1223}  \ \ F_{1224}   \ \
+% F_{1231} \ \   F_{1232} \ \  F_{1233} \ \  F_{1234} \ \
+% F_{1241} \ \   F_{1242} \ \  F_{1243} \ \  F_{1244})
+% \]
+% \[
+% Row 3: (F_{1311} \ \ F_{1312} \ \ F_{1313} \  \ F_{1314} \  \
+% F_{1321} \ \  F_{1322} \ \ F_{1323}  \ \ F_{1324}   \ \
+% F_{1331} \ \   F_{1332} \ \  F_{1333} \ \  F_{1334} \ \
+% F_{1341} \ \   F_{1342} \ \  F_{1343} \ \  F_{1344})
+% \]
+
+% \quad \vdots
+% \[
+% Row 16: (F_{4411} \ \ F_{4412} \ \ F_{4413} \  \ F_{4414} \  \
+% F_{4421} \ \  F_{4422} \ \ F_{4423}  \ \ F_{4424}   \ \
+% F_{4431} \ \   F_{4432} \ \  F_{4433} \ \  F_{4434} \ \
+% F_{4441} \ \   F_{4442} \ \  F_{4443} \ \  F_{4444})
+% \]
+% }
+
+% {\color{magenta} There are questions in regard to this (maybe). 
+% \begin{itemize}
+%     \item 
+% The matrix \verb|mF| in the \verb|Mathematica| notebook is with dimensions $(4,4,4,4,8,8)$. One can use \verb|ArrayReshape[mF,{128,128}]| in \verb|Mathematica| to convert $F$ to $128 \times 128$. The resulting matrix is of rank $4$ only! 
+% \item If we do not convert the matrix $F$ with \verb|ArrayReshape[]|, then Mathematica cannot compute the eigenvalues, can it? 
+% \end{itemize}
+% }%% end magenta
+
+% \bibliographystyle{plain}
+% \bibliography{bib_mb}
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% \newpage
+% \section{Answered\label{sec:answers}}
+% \begin{itemize}
+% \item If $\bm V$ is defined as in the document you gave us then we have that $\bm V$ is non-zero for $i=p$, and zero for $i\neq p$ (but nothing is said about $j$ and $q$). The definition of $\bm V$  from the document suggests the following form of $\bm V$
+ 
+% \begin{equation}\label{V-1}
+% \bm V = (V_{ijpq}):=\begin{pmatrix}
+% V_{1111} & V_{1112} & V_{1113} &  0 &  0 & 0 \\
+% V_{1211} & V_{1212} & V_{1213} &  0 &  0 & 0 \\
+% V_{1311} & V_{1312} & V_{1313} &  0 &  0 & 0 \\
+% 0 & 0 & 0 & V_{2121} &  V_{2122} & V_{2123} \\
+% 0 &  0 & 0 & V_{2221} &  V_{2222} & V_{2223} \\
+% 0 &  0 & 0 & V_{2321} &  V_{2322} & V_{2323}
+% \end{pmatrix}
+% \end{equation}
+% In such case, we are unsure about the positivity of $\bm V^{-1}$; such positivity is not guaranteed, which bothers us a bit. However, $\bm H$ can still be positive, but this will not be easy to establish, or, at least, it is not obvious to us.
+
+% \item On the other hand, if $\bm V$ is non-zero only when $i=p$ and $j=q$, then the positivity of $\bm{V}^{-1}$ can be guaranteed, and $\bm{V}$ is block diagonal.
+% \begin{equation}\label{V-2}
+% \bm V =  (V_{ijpq}) := \begin{pmatrix}
+% V_{1111} & 0 & 0 &  0 &  0 & 0 \\
+% 0 & V_{1212} & 0 &  0 &  0 & 0 \\
+% 0 & 0 & V_{1313} &  0 &  0 & 0 \\
+% 0 & 0 & 0 & V_{2121} &  0 & 0 \\
+% 0 &  0 & 0 & 0 &  V_{2222} & 0 \\
+% 0 &  0 & 0 & 0 &  0 & V_{2323}
+% \end{pmatrix}
+% \end{equation}
+% \item {QUESTION: Which of the two definitions of $\bm V$ is the correct one (equation~\eqref{V-1} or equation~\eqref{V-2})}. 
+% \item {\bf ANSWER:} The $\bm V$ given in~\eqref{V-2} is the correct one. 
+
+% \item QUESTION(s) 1: What is the number of columns in $\bm{F}_{ijpq}$? Is it $8$ because of the two zero columns added? The $m$ in $\eta_{qm}$ is not the same as the number of blocks $m=2$ defined in the first item, right? Anyway, how is the number of rows and columns in $F_{ijpq}$ determined as a function of the sites and the age groups  ($m$ and $n$  from the first item above).
+
+% \item {\bf Answer:} $F_{ijpq}$ are the derivatives of the RHS functions of the model equations on page 1 with respect to the 8 variables in the vector \[
+% v_{ij}=( E_{ijs}, E_{ijp}, I_{ija}, I_{ijps}, I_{ijs}, I_{ijh}, I_{ijpm}, I_{ijm} ) 
+% \]
+% (see the top of page 2) evaluated at $v_{ij}=(0,0,\cdots, 0)$
+% and $S_{ij}=S^*_{ij}, V_{ij}=V^*_{ij}, P_{ij}=P^*_{ij}$.  The letter $m$ in subscripts of variables (e.g., $E$ or $I$) and parameters (e.g., $\eta$) are independent of the number of age groups ($n$) or sites ($m$).
+
+% \item Question 2: Does $\bm{V}$ depend on $\bm{\chi}$? It will be great to know either way. It will be easier to deal with the optimization problem (minimizing the entries of $\bm F$ if $\bm V$ is independent of $\bm \chi$, but this is not a show-stopper.
+
+% \item {\bf Answer:} The matrix $V$ does NOT depend on $\chi$.
+ 
+% \item Question 3: Which entries of $\bm F$ depend on $\bm \chi$. All? Some? How?
+
+% \item {\bf Answer:} Because all elements of $F$ depend on either $Y$ or $Z$, where $Y$ and $Z$ depend on $S^*/N=s^*$, or $V^*/N=v^*$, or $P^*/N=p^*$, which depend on $\chi$ as shown in line 5 on page 2, all non-zero elements of F depend on $\chi$.
+
+% \item {\bf Additional explanations:} In the attached pdf, I highlighted the items related to the v vector, $s^*$, $v^*$ etc. $Y_{ij}$ and $Z_{ij}$.
+ 
+% The constraint on $\chi$ is illustrated on page 4 (Equation (215)). But for the real model, the constraints consist of $m$ equations ($m$ is the number of sites) of the form:
+% \[
+% \chi_{i1}N_{i1} +\chi_{i2}N_{i2}+\ldots +\chi_{in}N_{in}=c_i,     \quad i=1:m.
+% \] 
+% Here, $N_{ij}$ is the total number of individuals of location  $i$ and age $j$. When you need these $N_{ij}$ values as well as other parameter values, we can ask John.
+ 
+% Although $Y$ and $Z$ do not depend on $(pq)$, the factor $c_{ijpq}$ in $F_{ij}$ depend of parameters associated with $p$ or $q$. Thees parameters $c_{ijpq}$ link populations of different ages and different sites.
+ 
+% \end{itemize}
+
+% % \section{Code}
+
+% % %\lstset{style=pystyle}
+
+% % %\begin{lstlisting}
+% % %\lstinputlisting[firstline=300,lastline=500]{Code/data_math_bio.py}
+% % \lstinputlisting[language=Python,
+% %        basicstyle=\ttfamily,
+% %        keywordstyle=\color{blue},
+% %        stringstyle=\color{red},
+% %        commentstyle=\color{green}]{Code/z_math_bio.py}
+% % %\end{lstlisting}
+
+\end{document}
+
+
+We now state a helpful result with an obvious proof. 
+\begin{lemma}\label{l-1}
+Let $\bm A\ge 0$, $\bm B\ge 0$, and $\bm C\ge 0$ be nonnegative matrices. If $\bm B$ and $\bm C$  satisfy the inequality $\bm B \ge \bm C$ (to be understood element-wise),  then 
+\begin{equation}
+\bm{A}\bm B\ge \bm{A}\bm C,\qquad\mbox{where the inequality holds element-wise.}
+\end{equation}
+\end{lemma} 
+\begin{proof} Since $(\bm B - \bm C)\ge 0$ and $\bm A\ge 0$, it is obvious that $\bm A(\bm B - \bm C)\ge 0$ which is what we wanted to show. 
+\end{proof}
+
+Here is a possible path to the solution of the problem in hand:
+\begin{enumerate}
+\item As discussed at NSF: If $(z,\bm\varphi)$ is eigenpair for $\bm F\bm V^{-1}$, then $(z,\bm \psi)$ is 
+an eigenpair for $\bm V^{-1}\bm F$ with $\bm \psi=\bm V\bm \varphi$. So the eigenvalues are the same and we will focus on minimizing 
+the dominant eigenvalue $z=\rho\left(\bm V^{-1} \bm F\right)$.  
+\item Let $\bm H(\bm \chi)=\bm{V}^{-1}\bm F(\bm \chi)$ be the matrix for which we would like to minimize the dominant eigenvalue with respect to $\bm \chi$. Since $\bm V^{-1}\ge 0$ (this is easy to prove), from Lemma~\ref{l-1} and the Perron-Frobenius Theorem (item 3.) we have the following result.
+\begin{theorem}
+Let  $\widehat{\bm \chi}$ and $\widetilde{\bm \chi}$ be two values of the parameters satisfying the constraints. We then have
+\begin{equation}\label{monotonicity} 
+\mbox{If} \quad 
+\bm F(\widehat{\bm\chi})\ge \bm F(\widetilde{\bm\chi})\quad\mbox{then}\quad
+\rho\left(\bm H(\widehat{\bm\chi})\right) \ge \rho\left(\bm H(\widetilde{\bm\chi})\right) 
+\end{equation}
+\end{theorem}
+\begin{proof}
+The proof follows from Lemma~\ref{l-1} and the Perron-Frobenius Theorem.
+\end{proof}
+\item Basically, we need to minimize the entries of $\bm F$ with respect to $\bm{\chi}$ satisfying the constraints. That is it.
+\item From this observation, it is clear that that {\bf we do not need to know the dominant eigenvalue or the gradient with respect to $\bm \chi$ to find the optimal $\bm \chi$}.
+\end{enumerate}

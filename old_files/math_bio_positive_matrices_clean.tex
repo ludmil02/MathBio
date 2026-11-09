@@ -1,0 +1,759 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{amsthm,latexsym,mathrsfs}
+\usepackage{bm,bbm,dsfont}
+\usepackage{color,graphicx}
+\usepackage[config,labelfont={rm,rm},textfont=rm]{caption,subfig}
+\usepackage[latin1]{inputenc}
+\usepackage[english]{babel}
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\definecolor{locNE}{HTML}{2A78D6}
+\definecolor{locMW}{HTML}{EB6834}
+\definecolor{locS}{HTML}{1BAF7A}
+\definecolor{locW}{HTML}{EDA100}
+
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+
+\theoremstyle{definition}
+\newtheorem{problem}[theorem]{Problem}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\renewcommand{\labelenumi}{\textbf{\arabic{enumi}.}}
+\renewcommand{\labelenumii}{\textbf{\arabic{enumi}\alph{enumii}.}}
+\everymath{\displaystyle}
+
+% section numbers in headings followed by a period: "B. Title", "3.1. Title"
+\makeatletter
+\renewcommand\@seccntformat[1]{\csname the#1\endcsname.\quad}
+\makeatother
+
+\numberwithin{equation}{section}
+\numberwithin{figure}{section}
+\numberwithin{table}{section}
+
+
+\title{Minimizing the spectral radius of a diagonally scaled positive matrix\thanks{Parts of this manuscript were edited with the assistance of an AI tool (Claude Opus 5.5, Anthropic). The authors are solely responsible for all proofs and statements.}}
+\author{Zhilan \and John \and Yuliya \and Ludmil}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+    We investigate a minimization problem for the spectral radius of a positive matrix corresponding to the model of Glasser and Feng (2023) for the allocation of vaccines to subpopulations.
+\end{abstract}
+
+\section{Formulation of the problem}\label{sec-ngm}
+
+
+There are two index ranges, $i=1:m$ and $j=1:n$, corresponding to the locations and the age groups, respectively; the vaccine types are indexed by $k=1,2,3$.
+To simplify the notation somewhat, we write
+\begin{equation}\label{flat-index}
+\{1,\ldots,m\}\times\{1,\ldots,n\}\ni (i,j)\mapsto p=(i-1)n+j,\quad p=1:N, \quad\mbox{with}\quad N=mn,
+\end{equation}
+and we use this convention on and off in the text. We consider the following problem:
+
+\begin{problem}\label{ngm-problem}
+Find $\chi_k\in\mathbb{R}^{m\times n}$, $k=1:3$, such that
+\begin{equation}\label{the-min}
+\left(\chi_1,\chi_2,\chi_3\right)
+\in\operatorname*{arg\,min}\ \rho\left(\operatorname{NGM}(\chi_1,\chi_2,\chi_3)\right),
+\end{equation}
+the minimum being taken subject to
+\begin{equation}\label{constraints}
+\sum_{j=1}^{n}\chi_{k,ij}\,\sigma_{k,ij}=b_{k,i},\qquad \chi_{k,ij}\ge 0,
+\qquad k=1,2,3,\quad i=1:m,\quad j=1:n ,
+\end{equation}
+where $b_{k,i}\ge 0$ is given for $k=1,2,3$ and $i=1:m$, and
+$\sigma_{k,ij}>0$.
+\end{problem}
+In the model of~\cite{JZh} the $\sigma_{1,ij}$, $\sigma_{2,ij}$ and $\sigma_{3,ij}$ are
+the numbers of susceptible, vaccinated and partially protected individuals at
+the end of the preceding week and $b_{k,i}$ is the number of doses of vaccine of
+type $k$ then available.
+
+It remains to define the $\operatorname{NGM}$ matrix.
+With the index $p$ of~\eqref{flat-index} we write
+\begin{equation}\label{flat}
+\bm\chi=(\chi_1,\chi_2,\chi_3)\in\mathbb{R}^{3N},\qquad \chi_{k,p}=\chi_{k,ij},\qquad
+\sigma_{k,p}=\sigma_{k,ij},\qquad k=1,2,3,\quad p=1:N .
+\end{equation}
+Following~\cite{JZh},
+\begin{equation}\label{ngm}
+\operatorname{NGM}=\operatorname{diag}\left(\bm d(\bm\chi)\right)A_c,
+\qquad A_c\in\mathbb{R}^{2N\times 2N},
+\end{equation}
+The matrix $A_c$ independent of $\bm\chi$ and is assembled from the model parameters.
+The dependence of $\operatorname{NGM}$ on $\bm\chi$ is given by a vector
+$\bm d(\bm\chi)\in\mathbb{R}^{2N}$ is given by
+\begin{equation}\label{yz}
+d_{2p-1}=y_p,\qquad d_{2p}=z_p,
+\end{equation}
+the pair $(y_p,z_p)$ are derived from the equilibrium fractions of the model.
+The specific formulae for $A_c$, $\bm y$, and $\bm z$ are found in
+Appendix~\ref{sec-reduction}, equations~\eqref{ac-assembled} and~\eqref{yz-def}.
+
+Next, we introduce the set 
+\begin{equation}
+    \mathfrak{S}:=\{\bm\chi\ge 0\ :\ \bm\chi\text{ satisfies~\eqref{constraints}}\}.
+\end{equation}
+
+\section{An equivalent problem}\label{sec-reduced}
+
+Let
+\begin{equation}\label{p-def}
+\mathscr{P}=\sum_{p=1}^{N}\left(\bm e_{2p-1}+\bm e_{2p}\right)\bm e_p^T
+\in\mathbb{R}^{2N\times N}
+\end{equation}
+be the $2N\times N$ matrix repeating each component of a vector twice, so that
+\begin{equation}\label{p-identities}
+\mathscr{P}^T\mathscr{P}=2I_N \quad\mbox{and define}\quad
+A_1=\frac{1}{4}\,\mathscr{P}^TA_c\mathscr{P}\in\mathbb{R}^{N\times N},
+\end{equation}
+of half the order of $A_c$. We then have the following equivalence of the spectral radii of the two matrices (see also Appendix~\ref{sec-reduction}):
+\begin{equation}\label{rho-equal}
+\rho\left(\operatorname{diag}(\bm d)A_c\right)=\rho\left(A_1\operatorname{diag}(\bm g)\right).
+\end{equation}
+Here the components of $\bm g$ are
+\begin{equation}\label{g-def}
+g_p=\frac{1+(1-\varepsilon_1)\pi_{1,p}+\pi_{1,p}\pi_{2,p}}
+{1+\pi_{1,p}+\pi_{1,p}\pi_{2,p}+\pi_{1,p}\pi_{2,p}\pi_{3,p}}\ \in(0,1],
+\qquad
+\begin{aligned}
+&\pi_{1,p}=\frac{\chi_{1,p}}{\omega_v+\varepsilon_2\chi_{2,p}},\\
+&\pi_{2,p}=\frac{\varepsilon_2\chi_{2,p}}{\omega},\\
+&\pi_{3,p}=1+\frac{\varepsilon_3\chi_{3,p}}{\omega},
+\end{aligned}
+\end{equation}
+Each $g_p=y_p+z_p$ depends on $\chi_{1,p}$, $\chi_{2,p}$ and $\chi_{3,p}$.
+
+The constraints~\eqref{constraints} decouple over the pairs $(k,i)$. If
+$b_{k,i}=0$, the constraint is $\sum_j\sigma_{k,ij}\chi_{k,ij}=0$ with
+$\sigma_{k,ij}>0$ and $\chi_{k,ij}\ge 0$, so $\chi_{k,ij}=0$ for $j=1:n$; these
+variables are zero and are not rescaled. If $b_{k,i}>0$, we rescale the
+constraint by $\widehat u_{k,ij}=\sigma_{k,ij}\chi_{k,ij}/b_{k,i}$, which turns
+it into $\sum_j\widehat u_{k,ij}=1$, $\widehat u_{k,ij}\ge 0$, that is,
+$\widehat{\bm u}_{k,i}$ lies in the simplex $\Delta_{n-1}$. The feasible set and
+the objective function then have the following properties.
+\begin{enumerate}
+\renewcommand{\theenumi}{\roman{enumi}}
+\renewcommand{\labelenumi}{(\theenumi)}
+\item\label{simplex-product} The rescaling is a bijection of $\mathfrak{S}$
+onto the product $\mathcal{S}$ of the simplices $\Delta_{n-1}$, one for each pair
+$(k,i)$ with $b_{k,i}>0$, with inverse
+\begin{equation}\label{u-of-chihat}
+\chi_{k,p}=\frac{b_{k,i}}{\sigma_{k,ij}}\,\widehat u_{k,ij},\qquad
+p=(i-1)n+j,\qquad j=1:n .
+\end{equation}
+In particular $\mathfrak{S}$ is compact and convex.
+\item\label{reduced-item} Problem~\ref{ngm-problem} is equivalent to
+\begin{equation}\label{reduced-problem}
+\min_{\widehat{\bm u}\in\mathcal{S}}\
+\rho\left(A_1\operatorname{diag}\left(\bm g\right)\right),
+\end{equation}
+with $\bm g$ given by~\eqref{g-def} and $\bm\chi$ by~\eqref{u-of-chihat}, and the
+minimum is attained. Indeed, by~\eqref{ngm} and Theorem~\ref{reduction}
+in~\S\ref{sec-reduction} the
+objective function of Problem~\ref{ngm-problem} equals
+$\rho\left(A_1\operatorname{diag}(\bm g(\bm\chi))\right)$ for every $\bm\chi\ge 0$,
+and by~(\ref{simplex-product}) $\bm\chi\in\mathfrak{S}$ if and only if
+$\widehat{\bm u}\in\mathcal{S}$; the set $\mathcal{S}$ is compact and the
+objective function is continuous.
+\item\label{mono-g} If $0<\bm g\le\widetilde{\bm g}$, then
+$\rho\left(A_1\operatorname{diag}(\bm g)\right)
+\le\rho\left(A_1\operatorname{diag}(\widetilde{\bm g})\right)$,
+since $0\le A_1\operatorname{diag}(\bm g)\le A_1\operatorname{diag}(\widetilde{\bm g})$
+(see Theorem~\ref{mono} in~\S\ref{sec-facts}). The inequality is strict if
+$A_1$ is irreducible.
+\end{enumerate}
+
+\section{The case of a single dose}\label{sec-single}
+
+Suppose that only doses of the first type are available, $b_{2i}=b_{3i}=0$ for
+all $i$. Since the coefficients
+$\sigma_{2,p}$ and $\sigma_{3,p}$ are positive, this implies that
+$\bm\chi_2=\bm\chi_3=0$. Then $\pi_{2,p}=0$, the value of
+$\pi_{3,p}$ is
+immaterial, and with
+\begin{equation}\label{t-def}
+t_p=1+\frac{\chi_{1,p}}{\omega_v}\ \ge 1,\qquad \widehat s_p=\frac{1}{t_p},
+\end{equation}
+formula~\eqref{g-def} becomes
+$g_p=(1-\varepsilon_1)+\varepsilon_1\widehat s_p$. Then we have
+\begin{equation}\label{split}
+A_1\operatorname{diag}(\bm g)=(1-\varepsilon_1)A_1+\varepsilon_1A_1\operatorname{diag}(\bm t)^{-1}.
+\end{equation}
+Since $\chi_{1,p}=\omega_v(t_p-1)$, the constraints are:
+\begin{equation}\label{t-constraint}
+\sum_{j=1}^{n}\sigma_{1,p}\,t_p\le c_i,\quad i=1:m,\qquad \bm t\ge\mathbbm{1},
+\qquad c_i=\frac{b_{1i}}{\omega_v}+\sum_{j=1}^{n}\sigma_{1,p}.
+\end{equation}
+Clearly, the equalities of~\eqref{constraints} have been relaxed to inequalities:
+$g_p$ is strictly decreasing in $t_p$, so by property~(\ref{mono-g}) increasing a single
+$t_p$ strictly decreases the objective function, and a minimizer of the relaxed problem
+meets the constraints with equality. The single-dose problem is
+\begin{equation}\label{t-program}
+\min\ \Psi(\bm t),\qquad
+\Psi(\bm t)=\log\rho\left(A_1\operatorname{diag}(\bm g)\right),
+\qquad\mbox{subject to}\qquad\eqref{t-constraint} .
+\end{equation}
+We assume $b_{1i}>0$ for $i=1:m$; a location with $b_{1i}=0$ has $t_p=1$ for
+all its $n$ age groups by~\eqref{t-constraint} and can be removed. In the
+variables $\widehat{\bm u}_1$ of property~(\ref{simplex-product}),
+\begin{equation}\label{w-def}
+\widehat u_{1,ij}=\frac{\sigma_{1,ij}\chi_{1,ij}}{b_{1i}}
+=\frac{\omega_v\sigma_{1,p}}{b_{1i}}\left(t_p-1\right),
+\end{equation}
+the constraints~\eqref{t-constraint} read $\widehat{\bm u}_1\ge 0$ and
+$\sum_j\widehat u_{1,ij}\le 1$, $i=1:m$. The feasible set
+\begin{equation}\label{Kt-def}
+K=\left\{\bm t\in\mathbb{R}^N\ :\ \bm t\ \mbox{satisfies~\eqref{t-constraint}}\right\}
+\end{equation}
+of~\eqref{t-program} is therefore the image of the product of $m$ solid
+standard simplices
+\begin{equation}\label{K-def}
+\widehat K=\left\{\widehat{\bm u}_1\in\mathbb{R}^{N}\ :\ \widehat{\bm u}_1\ge 0,\
+\sum_{j=1}^{n}\widehat u_{1,ij}\le 1,\ i=1:m\right\}
+\end{equation}
+under the affine bijection $\bm t=\mathbbm{1}+L\widehat{\bm u}_1$ of
+$\mathbb{R}^N$, with $L$ the positive diagonal matrix of entries
+$b_{1i}/\left(\omega_v\sigma_{1,p}\right)$; that is,
+$K=\mathbbm{1}+L\widehat K$.
+
+\begin{theorem}\label{global}
+Let $A_1\ge 0$ be irreducible. Then
+the minimum in~\eqref{t-program} is attained, the minimizer is unique, every
+local minimizer is also a global minimizer. Moreover, the Karush--Kuhn--Tucker
+conditions are necessary and sufficient for finding a global minimum.
+\end{theorem}
+\begin{proof}
+The feasible set $K$ is closed, and bounded because $\bm t\ge\mathbbm{1}$ and
+$\sigma_{1,p}>0$ give $1\le t_p\le c_i/\sigma_{1,p}$; it is convex, being the
+image of the convex set $\widehat K$ in~\eqref{K-def} under an affine map. For $\bm t>0$ one has $\bm g>0$, so
+$A_1\operatorname{diag}(\bm g)\ge 0$ has the same zero entries as $A_1$ and is
+irreducible, and by Theorem~\ref{pf} in~\S\ref{sec-facts} its spectral radius is a
+simple eigenvalue, hence a real-analytic function of the entries, which are
+real-analytic in $\bm t$. Monotonicity is property~(\ref{mono-g}) together with the
+strict decrease of $g_p$ in $t_p$.
+
+For convexity write $\Psi(\bm t)=\Phi\left(\bm\xi(\bm t)\right)$ with
+$\Phi(\bm\xi)=\log\rho\left(A_1\operatorname{diag}\left(e^{\bm\xi}\right)\right)$
+(see~\eqref{phi-def} in~\S\ref{sec-facts}) and $\xi_p(t_p)=\log g_p(t_p)$. Each $\xi_p$ is strictly convex: with
+$a=1-\varepsilon_1\ge 0$, $b=\varepsilon_1>0$ and $u=a+b/t$,
+\begin{equation}
+\xi''=\frac{u''u-\left(u'\right)^2}{u^2},\qquad
+u''u-\left(u'\right)^2=\frac{2b}{t^3}\left(a+\frac{b}{t}\right)-\frac{b^2}{t^4}
+=\frac{2ab}{t^3}+\frac{b^2}{t^4}>0 .
+\end{equation}
+By Lemma~\ref{log-convex} in~\S\ref{sec-facts} the function $\Phi$ is convex, and by
+property~(\ref{mono-g}) it is strictly increasing in each argument. Let
+$\bm t\neq\bm t'$ be positive, let $0<\lambda<1$, and set
+$\bm t_\lambda=\lambda\bm t+(1-\lambda)\bm t'$. Since each $\xi_p$ is strictly
+convex,
+\begin{equation}\label{xi-strict}
+\bm\xi\left(\bm t_\lambda\right)\le\lambda\,\bm\xi(\bm t)+(1-\lambda)\,\bm\xi(\bm t'),
+\end{equation}
+with strict inequality in every component $p$ for which $t_p\neq t'_p$, so the
+two sides of~\eqref{xi-strict} are distinct. Therefore
+\begin{equation}\label{psi-strict}
+\Psi\left(\bm t_\lambda\right)=\Phi\left(\bm\xi\left(\bm t_\lambda\right)\right)
+<\Phi\left(\lambda\,\bm\xi(\bm t)+(1-\lambda)\,\bm\xi(\bm t')\right)
+\le\lambda\Psi(\bm t)+(1-\lambda)\Psi(\bm t'),
+\end{equation}
+where the first inequality is property~(\ref{mono-g}) and the second is the
+convexity of $\Phi$. Thus $\Psi$ is strictly convex.
+
+The feasible set is compact and $\Psi$ is continuous, so the minimum is
+attained. If $\bm t\neq\bm t'$ were two minimizers, then
+$\bm t_{1/2}$ would be feasible, the feasible set being convex, and
+by~\eqref{psi-strict} the value $\Psi\left(\bm t_{1/2}\right)$ would be smaller
+than the minimum; hence the minimizer is unique. The last two assertions are the
+standard properties of a
+convex objective function on a convex set, and of a convex program whose constraints are
+affine.
+\end{proof}
+
+The minimizer can be computed by an interior penalty method: a logarithmic
+barrier for the constraints of $\widehat K$ is added to the objective function with a
+weight $\mu>0$, and $\mu$ is driven to zero~\cite{1968Fiacco_McCormick},
+\cite[Chapter 11]{2004Boyd_Vandenberghe}. The next theorem shows that for the
+single dose problem this method is well defined for every $\mu$, converges to
+the minimizer, and comes with an explicit bound for the error in the objective
+function. Let
+\begin{equation}\label{psi-hat}
+\widehat\Psi(\widehat{\bm u}_1)=\Psi\left(\mathbbm{1}+L\widehat{\bm u}_1\right),
+\qquad
+B(\widehat{\bm u}_1)=-\sum_{i=1}^{m}\sum_{j=1}^{n}\log\widehat u_{1,ij}
+-\sum_{i=1}^{m}\log\left(1-\sum_{j=1}^{n}\widehat u_{1,ij}\right),
+\end{equation}
+the barrier $B$ being defined on the interior
+$\widehat K^\circ=\left\{\widehat{\bm u}_1>0,\ \sum_j\widehat u_{1,ij}<1,\ i=1:m\right\}$
+of $\widehat K$, and for $\mu>0$ let $F_\mu=\widehat\Psi+\mu B$ on $\widehat K^\circ$.
+
+\begin{theorem}\label{barrier}
+Let $A_1\ge 0$ be irreducible. Then:
+\begin{enumerate}
+\renewcommand{\labelenumi}{(\roman{enumi})}
+\item $\widehat\Psi$ has a unique minimizer $\widehat{\bm u}_1^*$ on $\widehat K$, and
+$\bm t^*=\mathbbm{1}+L\widehat{\bm u}_1^*$ is the unique minimizer
+of~\eqref{t-program}.
+\item For every $\mu>0$ the function $F_\mu$ has a unique minimizer
+$\widehat{\bm u}_1(\mu)$ in $\widehat K^\circ$.
+\item For every $\mu>0$,
+\begin{equation}\label{gap}
+0\le\widehat\Psi\left(\widehat{\bm u}_1(\mu)\right)-\widehat\Psi\left(\widehat{\bm u}_1^*\right)\le\mu\,m(n+1).
+\end{equation}
+\item $\widehat{\bm u}_1(\mu)\to\widehat{\bm u}_1^*$ as $\mu\to 0$.
+\end{enumerate}
+\end{theorem}
+\begin{proof}
+The map $\widehat{\bm u}_1\mapsto\mathbbm{1}+L\widehat{\bm u}_1$ is an affine
+bijection of $\mathbb{R}^N$ that carries $\widehat K$ onto the feasible set
+$K$ of~\eqref{t-program}, so (i) is Theorem~\ref{global} in the variables
+$\widehat{\bm u}_1$. By Theorem~\ref{global} and its proof, $\Psi$ is strictly
+convex and continuously differentiable on $\{\bm t>0\}$; composed with an
+injective affine map, $\widehat\Psi$ is strictly convex and continuously
+differentiable on the open set $\left\{\widehat{\bm u}_1:\mathbbm{1}+L\widehat{\bm u}_1>0\right\}$,
+which contains $\widehat K$.
+
+(ii) The set $\widehat K^\circ$ is not empty: it contains $\widehat u_{1,ij}=1/(2n)$.
+On $\widehat K^\circ$ each of the $m(n+1)$ affine functions
+\begin{equation}\label{slacks}
+s_{ij}(\widehat{\bm u}_1)=\widehat u_{1,ij},\qquad
+s_{i}(\widehat{\bm u}_1)=1-\sum_{j=1}^{n}\widehat u_{1,ij}
+\end{equation}
+is positive, so $B$ is finite and, as a sum of the convex functions $-\log s$,
+convex. Hence $F_\mu$ is strictly convex on $\widehat K^\circ$ and has at most one
+minimizer. On $\widehat K$ every $s$ in~\eqref{slacks} is at most $1$, so each term
+$-\log s$ of $B$ is non-negative on $\widehat K^\circ$. Fix $\widehat{\bm u}_1^0\in \widehat K^\circ$,
+put $c=F_\mu(\widehat{\bm u}_1^0)$, and let
+$E=\left\{\widehat{\bm u}_1\in \widehat K^\circ: F_\mu(\widehat{\bm u}_1)\le c\right\}$.
+For $\widehat{\bm u}_1\in E$ and each $s$ in~\eqref{slacks},
+\begin{equation}
+-\mu\log s(\widehat{\bm u}_1)\le\mu B(\widehat{\bm u}_1)
+\le c-\widehat\Psi(\widehat{\bm u}_1)\le c-\widehat\Psi(\widehat{\bm u}_1^*),
+\end{equation}
+so $s(\widehat{\bm u}_1)\ge\delta=\exp\left(-\left(c-\widehat\Psi(\widehat{\bm u}_1^*)\right)/\mu\right)>0$.
+Thus $E$ lies in the compact set
+\begin{equation}
+\widehat K_\delta=\left\{\widehat{\bm u}_1\in\widehat K\ :\ s(\widehat{\bm u}_1)\ge\delta\
+\mbox{for every $s$ in~\eqref{slacks}}\right\}\subset \widehat K^\circ,
+\end{equation}
+on which $F_\mu$ is continuous. As a sublevel set of $F_\mu$ in $\widehat K_\delta$, the
+set $E$ is closed, hence compact, and it is not empty since it contains
+$\widehat{\bm u}_1^0$. So $F_\mu$ attains its minimum over $E$, and this is its
+minimum over $\widehat K^\circ$.
+
+(iii) The left inequality holds because $\widehat{\bm u}_1(\mu)\in\widehat K$. At the
+interior minimizer $\widehat{\bm u}_1=\widehat{\bm u}_1(\mu)$ the gradient of
+$F_\mu$ vanishes:
+\begin{equation}\label{barrier-stationary}
+\frac{\partial\widehat\Psi}{\partial\widehat u_{1,ij}}(\widehat{\bm u}_1)
+=\lambda_{ij}-\nu_i,\qquad
+\lambda_{ij}=\frac{\mu}{\widehat u_{1,ij}},\qquad
+\nu_i=\frac{\mu}{1-\sum_{l=1}^{n}\widehat u_{1,il}} ,
+\end{equation}
+with $\lambda_{ij}>0$ and $\nu_i>0$. Let $\bm y\in\widehat K$. By convexity of
+$\widehat\Psi$ and~\eqref{barrier-stationary},
+\begin{equation}
+\widehat\Psi(\bm y)\ge\widehat\Psi(\widehat{\bm u}_1)
++\sum_{i,j}\lambda_{ij}\left(y_{ij}-\widehat u_{1,ij}\right)
+-\sum_{i}\nu_i\sum_{j}\left(y_{ij}-\widehat u_{1,ij}\right).
+\end{equation}
+In the first sum $\lambda_{ij}y_{ij}\ge 0$ and $\lambda_{ij}\widehat u_{1,ij}=\mu$,
+so the sum is at least $-mn\mu$. In the second,
+\begin{equation}
+-\sum_j\left(y_{ij}-\widehat u_{1,ij}\right)
+=\left(1-\sum_j y_{ij}\right)-\left(1-\sum_j\widehat u_{1,ij}\right),
+\end{equation}
+and $\nu_i\left(1-\sum_j y_{ij}\right)\ge 0$ while
+$\nu_i\left(1-\sum_j\widehat u_{1,ij}\right)=\mu$, so the second term is at least
+$-m\mu$. Hence $\widehat\Psi(\bm y)\ge\widehat\Psi(\widehat{\bm u}_1(\mu))-\mu\,m(n+1)$
+for every $\bm y\in\widehat K$, and $\bm y=\widehat{\bm u}_1^*$ gives~\eqref{gap}.
+
+(iv) Let $\mu_k\to 0$. By~\eqref{gap},
+$\widehat\Psi\left(\widehat{\bm u}_1(\mu_k)\right)\to\widehat\Psi\left(\widehat{\bm u}_1^*\right)$.
+The points $\widehat{\bm u}_1(\mu_k)$ lie in the compact set $\widehat K$; if
+$\overline{\bm u}_1$ is the limit of a subsequence, then by continuity
+$\widehat\Psi(\overline{\bm u}_1)=\widehat\Psi(\widehat{\bm u}_1^*)$, so
+$\overline{\bm u}_1$ minimizes $\widehat\Psi$ on $\widehat K$ and $\overline{\bm u}_1=\widehat{\bm u}_1^*$
+by (i). Every subsequence of $\left(\widehat{\bm u}_1(\mu_k)\right)$ thus has a
+further subsequence converging to $\widehat{\bm u}_1^*$, and therefore
+$\widehat{\bm u}_1(\mu_k)\to\widehat{\bm u}_1^*$.
+\end{proof}
+
+\subsection{The algorithm}\label{sec-algorithm}
+
+The method of Theorem~\ref{barrier} minimizes $F_{\mu}$ for a decreasing
+sequence of weights $\mu$, each minimization started from the previous
+minimizer; by~\eqref{gap} the objective function is within $\mu\,m(n+1)$ of the
+minimum, which gives a stopping rule. Each step needs the gradient of
+$\widehat\Psi$, and for this the eigenvectors corresponding to the spectral
+radii of $A_1\operatorname{diag}(\bm g)$ and
+$\left[A_1\operatorname{diag}(\bm g)\right]^T$ suffice. Let
+\begin{equation}\label{perron}
+A_1\operatorname{diag}(\bm g)\,\bm v=\rho\,\bm v,\qquad
+\operatorname{diag}(\bm g)A_1^T\bm w=\rho\,\bm w,\qquad \bm v>0,\ \bm w>0 .
+\end{equation}
+Then
+$\partial\rho/\partial g_p=\left(A_1^T\bm w\right)_pv_p/\langle\bm w,\bm v\rangle$,
+and since $dg_p/dt_p=-\varepsilon_1/t_p^2$ the chain rule gives
+\begin{equation}\label{grad}
+\frac{\partial\Psi}{\partial t_p}
+=-\frac{\varepsilon_1}{\rho\,t_p^2}\cdot
+\frac{\left(A_1^T\bm w\right)_p v_p}{\langle\bm w,\bm v\rangle}\ <0 ,
+\end{equation}
+the sign because $\bm v>0$, $\bm w>0$ and no column of $A_1$ vanishes, and
+$\partial\widehat\Psi/\partial\widehat u_{1,ij}=L_{pp}\,\partial\Psi/\partial t_p$.
+No differences of eigenvalue computations are needed. The two eigenvectors are
+computed by Arnoldi. The variables $\widehat{\bm u}_1$ are used rather than
+$\bm t$: in $\bm t$ the coefficients $\sigma_{1,p}$ of~\eqref{t-constraint} are
+of order $10^{7}$ against a $\bm t$ of order one, and a solver stalls. The
+implementation uses the trust region interior point method
+of~\cite{1999Byrd_Hribar_Nocedal}, which minimizes the barrier functions
+$F_\mu$ approximately, with the gradient~\eqref{grad} and a quasi-Newton
+Hessian.
+
+After the stopping tolerance of the method is met, the Karush--Kuhn--Tucker
+conditions are verified at the computed point. With multipliers $\mu_i\ge 0$
+for the constraints of~\eqref{t-constraint} and $\nu_p\ge 0$ for $t_p\ge 1$,
+stationarity of
+$\Psi+\sum_i\mu_i\left(\sum_j\sigma_{1,p}t_p-c_i\right)
++\sum_p\nu_p\left(1-t_p\right)$ reads
+\begin{equation}\label{kkt}
+\frac{\varepsilon_1}{\rho\,t_p^2}\cdot
+\frac{\left(A_1^T\bm w\right)_pv_p}{\langle\bm w,\bm v\rangle}
+=\mu_i\,\sigma_{1,p}-\nu_p .
+\end{equation}
+The left-hand side is positive, so $\mu_i>0$ for every $i$ and all $m$
+constraints are active. For a coordinate with $t_p>1$ one has $\nu_p=0$, so the
+left-hand side divided by $\sigma_{1,p}$ equals $\mu_i$ and is the same for
+every such $j$ at the index $i$; for a coordinate at $t_p=1$ that ratio is at
+most $\mu_i$. By Theorem~\ref{global} a point satisfying~\eqref{kkt} is a global
+minimizer.
+
+\subsection{Numerical results}\label{sec-numerics}
+
+For the data of~\cite{JZh}, with $m=n=4$ (four locations and four age groups),
+the right-hand side of~\eqref{constraints} is the weekly budget $b_{1i}$ of
+doses of the primary series in location $i$, and $\sigma_{1,ij}$ is the number
+of susceptible individuals. The algorithm of Section~\ref{sec-algorithm} gives
+the minimum
+\begin{equation}
+\rho\left(\operatorname{NGM}(\chi_1,0,0)\right)=2.9059382878,
+\end{equation}
+attained at the $\chi_1$ in Table~\ref{tab-chi1} and Figure~\ref{fig-chi1}. In
+every location the age group $60+$ receives no doses.
+
+\begin{table}[ht]
+\centering
+\small
+\begin{tabular}{lcccc|ccc}
+\hline
+ & \multicolumn{4}{c|}{$\chi_{1,ij}$ ($10^{-3}$ per day)} & \multicolumn{3}{c}{KKT conditions~\eqref{kkt}}\\
+location & $0$--$19$ & $20$--$39$ & $40$--$59$ & $60+$ & spread & ratio at $60+$ & dose residual\\
+\hline
+Northeast & $4.600$ & $4.375$ & $3.817$ & $0$ & $9.5\cdot 10^{-10}$ & $0.339$ & $2.9\cdot 10^{-12}$\\
+Midwest   & $4.994$ & $5.024$ & $4.763$ & $0$ & $9.8\cdot 10^{-10}$ & $0.395$ & $4.9\cdot 10^{-12}$\\
+South     & $3.736$ & $3.721$ & $3.439$ & $0$ & $1.2\cdot 10^{-9}$  & $0.318$ & $4.1\cdot 10^{-12}$\\
+West      & $5.229$ & $4.836$ & $4.402$ & $0$ & $2.6\cdot 10^{-9}$  & $0.243$ & $5.8\cdot 10^{-13}$\\
+\hline
+\end{tabular}
+\caption{The minimizer $\chi_{1,ij}$ for the weekly budget $b_{1i}$, and the
+verification of the Karush--Kuhn--Tucker conditions~\eqref{kkt} at it. With
+$r_p$ the left-hand side of~\eqref{kkt} divided by $\sigma_{1,p}$ and
+$\mu_i$ the mean of $r_p$ over the groups $0$--$59$ of location $i$, which
+receive doses: ``spread'' is $\max\left|r_p/\mu_i-1\right|$ over these groups
+(zero at a minimizer); ``ratio at $60+$'' is $r_p/\mu_i$ for the group $60+$,
+which receives no doses (at most $1$ at a minimizer); ``dose residual'' is
+$\left|\sum_j\chi_{1,ij}\sigma_{1,ij}/b_{1i}-1\right|$ (zero when the
+constraint is active).}\label{tab-chi1}
+\end{table}
+
+\pgfplotsset{chi1 panel/.style={
+  width=0.52\textwidth, height=0.40\textwidth,
+  xtick={0,1,2,3}, xticklabels={0--19,20--39,40--59,60+},
+  xlabel={age group (years)},
+  ymin=0, ymax=5.6, ymajorgrids, grid style={gray!25},
+  axis lines*=left, title style={font=\small},
+  legend pos=south west, legend cell align=left,
+  legend style={draw=none, fill=none, font=\footnotesize},
+  every axis plot/.append style={line width=1.2pt, mark size=2.2pt}}}
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}
+\begin{axis}[chi1 panel, title={minimizer, $\rho=2.9059382878$},
+  ylabel={$\chi_1$ ($10^{-3}$ per day)}]
+\addplot[color=locNE, mark=*]          table[x=age, y=Northeast]{fig_chi1_single_dose.dat};
+\addplot[color=locMW, mark=square*]    table[x=age, y=Midwest]{fig_chi1_single_dose.dat};
+\addplot[color=locS,  mark=triangle*]  table[x=age, y=South]{fig_chi1_single_dose.dat};
+\addplot[color=locW,  mark=diamond*]   table[x=age, y=West]{fig_chi1_single_dose.dat};
+\legend{Northeast, Midwest, South, West}
+\end{axis}
+\end{tikzpicture}%
+\hfill
+\begin{tikzpicture}
+\begin{axis}[chi1 panel, title={John's method, $\rho=2.9312317763$}]
+\addplot[color=locNE, mark=*]          table[x=age, y=Northeast]{fig_chi1_john.dat};
+\addplot[color=locMW, mark=square*]    table[x=age, y=Midwest]{fig_chi1_john.dat};
+\addplot[color=locS,  mark=triangle*]  table[x=age, y=South]{fig_chi1_john.dat};
+\addplot[color=locW,  mark=diamond*]   table[x=age, y=West]{fig_chi1_john.dat};
+\end{axis}
+\end{tikzpicture}
+\caption{Left: the minimizer $\chi_1$ of Table~\ref{tab-chi1}. Right: the
+$\chi_1$ of John's method, the age profile of the left Perron vector of
+$\operatorname{NGM}$ at $\bm\chi=0$ scaled in each location to spend the same
+budget $b_{1i}$. One line per location; the same scale in both
+panels.}\label{fig-chi1}
+\end{figure}
+
+The computations are reproduced by two Mathematica notebooks, which share
+their settings. The file \texttt{settings\_zf\_jg.wl} contains the parameters
+and the data of~\cite{JZh} and assembles $\operatorname{NGM}$ at $\bm\chi=0$;
+both notebooks load it in their first input cell, so that a parameter changed
+there changes both. The notebook \texttt{eigenvalues\_H\_ZF\_JG.nb} computes
+the spectrum of $\operatorname{NGM}$, $\rho=4.4230681092$ at $\bm\chi=0$, and
+John's method: the age profile of the left Perron vector, plotted per location.
+The notebook \texttt{min\_rho\_single\_dose\_H\_ZF\_JG.nb} solves the single
+dose problem~\eqref{t-program} with the weekly budget $b_{1i}$: an interior
+point method on the product of simplices $\widehat K$, with the gradient~\eqref{grad},
+followed by a quasi-Newton method on the groups that receive doses. It checks
+the optimality conditions~\eqref{kkt}, gives the minimum $\rho=2.9059382878$ and
+the $\chi_1$ of Table~\ref{tab-chi1}, and compares them with John's method,
+$\rho=2.9312317763$, as in Figure~\ref{fig-chi1}.
+
+\section{The case of three doses}\label{sec-three}
+
+When doses of the second or third type are available as well, $b_{2i}>0$ or
+$b_{3i}>0$ for some $i$, the variables $\bm\chi_2$ and $\bm\chi_3$ do not vanish,
+and each $g_p$ in~\eqref{g-def} depends on $\chi_{1,p}$, $\chi_{2,p}$ and
+$\chi_{3,p}$. In the variables $\widehat{\bm u}$ of property~(\ref{simplex-product})
+the problem is
+\begin{equation}\label{three-program}
+\min_{\widehat{\bm u}\in\mathcal{S}}\
+\log\rho\left(A_1\operatorname{diag}\left(\bm g\left(\bm\chi(\widehat{\bm u})\right)\right)\right),
+\end{equation}
+with $\bm\chi(\widehat{\bm u})$ given by~\eqref{u-of-chihat} and the
+coordinates with $b_{k,i}=0$ equal to zero. The feasible set $\mathcal{S}$ is
+the product of the simplices $\Delta_{n-1}$, one for each pair $(k,i)$ with
+$b_{k,i}>0$, and the minimum is attained.
+
+The argument of Section~\ref{sec-single} is not available here. The function
+$\Phi$ is convex in $\bm\xi=\log\bm g$ by Lemma~\ref{log-convex} in~\S\ref{sec-facts}, but the
+objective function of~\eqref{three-program} is $\Phi$ composed with
+$\widehat{\bm u}\mapsto\log\bm g\left(\bm\chi(\widehat{\bm u})\right)$.
+For a single dose the proof of Theorem~\ref{global} uses the convexity of each
+component of this map; for three doses we have not established it, nor the
+convexity of the set $\left\{\log\bm g(\bm\chi):\bm\chi\in\mathfrak{S}\right\}$. Theorems~\ref{global} and~\ref{barrier} therefore do not apply
+to~\eqref{three-program}, and a local method finds a local minimizer.
+
+\appendix
+
+\section{On the equivalence of the two formulations}\label{sec-reduction}
+
+Recall $\mathscr{P}$ from~\eqref{p-def} and~\eqref{p-identities}. 
+Given with $\bm{a}\in \mathbb{R}^{N}$ we call a diagonal matrix
+$X(\bm a)=\operatorname{diag}\left(\bm x(\bm a)\right)
+\in\mathbb{R}^{2N\times 2N}$ 
+\emph{doubled} if $x_{2p-1}=x_{2p}=a_p$; 
+a direct computation gives $X\mathscr{P}=\mathscr{P}\operatorname{diag}(\bm a)$ and
+$\mathscr{P}^TX=\operatorname{diag}(\bm a)\mathscr{P}^T$. Further, let $\bm d_c\in\mathbb{R}^{N}$, $N=mn$ is composed from the entries of the product 
+\begin{equation}
+d_{c,p}=\left\lbrack\operatorname{diag}(\bm s)\,\mathscr{A}\,
+\operatorname{diag}\left(\bm\psi_S\odot\bm\beta\right)\right\rbrack_{ij},
+\qquad p=(i-1)n+j,
+\end{equation} 
+$D_0$ be the doubled diagonal matrix with underlying vector $\bm d_c$. 
+The definition of $\operatorname{NGM}$ in~\cite{JZh} uses the constant matrix $A_c$ such that 
+\begin{equation}\label{ac-assembled}
+A_c=D_0\left(\mathscr{P}C\mathscr{P}^T\right)\Psi_IQ.
+\end{equation}
+Here, $C\in\mathbb{R}^{N\times N}$ is the mixing matrix and $\Psi_I(\bm\psi_I)$, and $Q(\bm q)$ 
+are doubled diagonal matrices of order $2N$, with given
+$\bm\psi_I,\bm q\in\mathbb{R}^{N}$.
+A straightforward computation gives
+\begin{equation}\label{a1-explicit}
+A_c=\mathscr{P}A_1\mathscr{P}^T\qquad\mbox{with}\qquad
+A_1=\operatorname{diag}(\bm d_c)\,C\operatorname{diag}\left(\bm\psi_I\odot\bm q\right),
+\end{equation}
+where $\odot$ is the entry-wise product. In particular $A_1>0$ whenever $C$,
+$\bm d_c$, $\bm\psi_I$ and $\bm q$ are positive, which holds for the data we consider~\cite{JZh}. Indeed,
+substituting in~\eqref{ac-assembled} and using the identities for doubled
+matrices, $D_0\mathscr{P}=\mathscr{P}\operatorname{diag}(\bm d_c)$ and
+$\mathscr{P}^T\Psi_IQ=\operatorname{diag}\left(\bm\psi_I\odot\bm q\right)\mathscr{P}^T$,
+gives~\eqref{a1-explicit}. Multiplying the first identity
+in~\eqref{a1-explicit} by $\mathscr{P}^T$ on the left and by $\mathscr{P}$ on the
+right and using $\mathscr{P}^T\mathscr{P}=2I_N$ twice, we obtain the definition
+of $A_1$ in~\eqref{p-identities}.
+
+
+Next, we consider the quantities $y_p$ and $z_p$. Following~\cite{JZh}, for $p=1:N$ we have
+\begin{equation}\label{fractions}
+\widehat s_p=\left\lbrack
+1+\pi_{1,p}\left(1+\pi_{2,p}+\pi_{2,p}\pi_{3,p}\right)\right\rbrack^{-1},
+\qquad \widehat v_p=\pi_{1,p}\,\widehat s_p,
+\end{equation}
+with $\pi_{1,p}$, $\pi_{2,p}$ and $\pi_{3,p}$ as in~\eqref{g-def}, and the
+entries of~\eqref{yz} are
+\begin{equation}\label{yz-def}
+y_p=\widehat s_p,\qquad
+z_p=\left\lbrack(1-\varepsilon_1)+\pi_{2,p}\right\rbrack\widehat v_p .
+\end{equation}
+Using $\widehat v_p=\pi_{1,p}\widehat s_p$ we find the 
+closed form of 
+$g_p$ in~\eqref{g-def}. Moreover, since $\widehat s_p\in(0,1]$, one has $0<g_p\le 1$, with $g_p=1$ exactly when $\chi_{1,p}=0$.
+
+We also have the following identity: $\bm d$ as in~\eqref{yz} and $\bm g=\bm y+\bm z$,
+\begin{equation}\label{ptdp}
+\mathscr{P}^T\operatorname{diag}(\bm d)\mathscr{P}=\operatorname{diag}(\bm g).
+\end{equation}
+To see this, 
+we observe that 
+$\left(\mathscr{P}^T\operatorname{diag}(\bm d)\mathscr{P}\right)_{pl}
+=\sum_{r}\mathscr{P}_{rp}d_r\mathscr{P}_{rl}$. Since $\mathscr{P}_{rp}\neq 0$ only
+for $r\in\{2p-1,2p\}$, this sum vanishes for $p\neq l$. For $p=l$, it equals $d_{2p-1}+d_{2p}=y_p+z_p$ which is what we wanted to show.
+
+Next theorem was used in the main text to reduce the order of the matrix in the spectral radius minimization problem.
+Recall that $\bm d\in\mathbb{R}^{2N}$ and $\bm g\in\mathbb{R}^{N}$ are related by $\bm g=\mathscr{P}^T\bm d$.
+\begin{theorem}\label{reduction}
+The following identity holds
+\begin{equation}
+\rho\left(\operatorname{diag}(\bm d)A_c\right)=\rho\left(A_1\operatorname{diag}(\bm g)\right).
+\end{equation}
+Moreover, any non-zero eigenvalue of $\operatorname{diag}(\bm d)A_c$ is also an
+eigenvalue of $A_1\operatorname{diag}(\bm g)$, and vice versa.
+\end{theorem}
+\begin{proof}
+By~\eqref{a1-explicit} and~\eqref{ptdp},
+\begin{equation}\label{two-products}
+\operatorname{diag}(\bm d)A_c=\operatorname{diag}(\bm d)\mathscr{P}A_1\mathscr{P}^T,
+\qquad
+A_1\operatorname{diag}(\bm g)=A_1\mathscr{P}^T\operatorname{diag}(\bm d)\mathscr{P}.
+\end{equation}
+Let $\lambda\neq 0$. If $A_1\operatorname{diag}(\bm g)\bm v=\lambda\bm v$ with
+$\bm v\neq 0$, put $\bm x=\operatorname{diag}(\bm d)\mathscr{P}\bm v$. Then
+\begin{equation}
+\operatorname{diag}(\bm d)A_c\,\bm x
+=\operatorname{diag}(\bm d)\mathscr{P}\left(A_1\mathscr{P}^T\operatorname{diag}(\bm d)\mathscr{P}\bm v\right)
+=\lambda\,\bm x,
+\end{equation}
+and $\bm x\neq 0$, since $A_1\mathscr{P}^T\bm x=\lambda\bm v\neq 0$.
+Conversely, if $\operatorname{diag}(\bm d)A_c\bm x=\lambda\bm x$ with
+$\bm x\neq 0$, put $\bm v=A_1\mathscr{P}^T\bm x$. Then
+\begin{equation}
+A_1\operatorname{diag}(\bm g)\,\bm v
+=A_1\mathscr{P}^T\left(\operatorname{diag}(\bm d)\mathscr{P}A_1\mathscr{P}^T\bm x\right)
+=\lambda\,\bm v,
+\end{equation}
+and $\bm v\neq 0$, since $\operatorname{diag}(\bm d)\mathscr{P}\bm v=\lambda\bm x\neq 0$.
+So the two matrices have the same non-zero eigenvalues. This implies that two spectral radii are equal.
+\end{proof}
+
+\section{Some well known facts about non-negative matrices}\label{sec-facts}
+
+\begin{theorem}[Perron--Frobenius]\label{pf}
+Let $A\ge 0$ be irreducible. Then $\rho(A)>0$ is a simple eigenvalue of $A$,
+and the corresponding eigenvector has positive components.
+\end{theorem}
+
+For a proof see Varga~\cite[Theorem 2.7]{2000Varga-aa}; for the next
+theorem see~\cite[Section 8.1]{1985Horn_Johnson}.
+
+\begin{theorem}\label{mono}
+Let $0\le B\le A$. Then $\rho(B)\le\rho(A)$, and $\rho(B)<\rho(A)$ if in
+addition $A$ is irreducible and $B\neq A$.
+\end{theorem}
+
+\begin{lemma}\label{log-convex}
+Let $A\ge 0$ with $\rho(A)>0$ and set
+\begin{equation}\label{phi-def}
+\Phi(\bm\xi)=\log\rho\left(A\operatorname{diag}\left(e^{\bm\xi}\right)\right).
+\end{equation}
+Then $\Phi$ is convex.
+\end{lemma}
+\begin{proof}
+$\Phi$ is finite: with $c=\min_l e^{\xi_l}>0$ we have
+$cA\le A\operatorname{diag}\left(e^{\bm\xi}\right)$, so by Theorem~\ref{mono}
+\begin{equation}
+\rho\left(A\operatorname{diag}\left(e^{\bm\xi}\right)\right)\ge c\,\rho(A)>0.
+\end{equation}
+We first prove the lemma for irreducible $A$ in Steps 1--3, and then remove
+this assumption in Step 4.
+
+An irreducible matrix has no zero row (with the index of a zero row placed
+last, the matrix would be block upper triangular), so for every $p$ the set
+$\mathcal{L}_p=\{l:A_{pl}>0\}$ is not empty. For $\bm\xi,\bm\zeta\in\mathbb{R}^N$
+let
+\begin{equation}\label{cw-F}
+\begin{aligned}
+F(\bm\xi,\bm\zeta)&=\max_{p}\,h_p(\bm\xi,\bm\zeta),\qquad\mbox{where}\\
+h_p(\bm\xi,\bm\zeta)&=\log\frac{\left(A\operatorname{diag}\left(e^{\bm\xi}\right)e^{\bm\zeta}\right)_p}{e^{\zeta_p}}\\
+&=\log\sum_{l\in\mathcal{L}_p}\exp\left(\log A_{pl}+\xi_l+\zeta_l-\zeta_p\right).
+\end{aligned}
+\end{equation}
+
+\emph{Step 1: $\Phi(\bm\xi)=\min_{\bm\zeta}F(\bm\xi,\bm\zeta)$.} Fix $\bm\xi$
+and put $M=A\operatorname{diag}\left(e^{\bm\xi}\right)$. Since $e^{\bm\xi}>0$,
+the matrix $M\ge 0$ has the same zero entries as $A$, so $M$ and $M^T$ are
+irreducible, and by Theorem~\ref{pf} there are $\bm v>0$ and $\bm w>0$ with
+$M\bm v=\rho(M)\bm v$ and $M^T\bm w=\rho(M)\bm w$. For $\bm\zeta=\log\bm v$
+every $h_p$ equals $\log\rho(M)$, so $F(\bm\xi,\log\bm v)=\Phi(\bm\xi)$. For
+any $\bm\zeta$, put $\bm x=e^{\bm\zeta}>0$ and $\theta=e^{F(\bm\xi,\bm\zeta)}$;
+then $M\bm x\le\theta\bm x$, and pairing with $\bm w>0$,
+\begin{equation}
+\rho(M)\langle\bm w,\bm x\rangle=\langle M^T\bm w,\bm x\rangle
+=\langle\bm w,M\bm x\rangle\le\theta\langle\bm w,\bm x\rangle .
+\end{equation}
+As $\langle\bm w,\bm x\rangle>0$, $\rho(M)\le\theta$, that is,
+$\Phi(\bm\xi)\le F(\bm\xi,\bm\zeta)$.
+
+\emph{Step 2: $F$ is jointly convex in $(\bm\xi,\bm\zeta)$.} Each $e^{h_p}$ is
+a sum of functions $\exp\left(a_l(\bm\xi,\bm\zeta)\right)$ with $a_l$ affine.
+For $0\le\lambda\le 1$ and two points, write $f_l$ and $g_l$ for the values of
+$\exp(a_l)$ at the two points; since $a_l$ is affine, the value at the convex
+combination is $f_l^{\lambda}g_l^{1-\lambda}$, and by H\"older's inequality
+with exponents $1/\lambda$ and $1/(1-\lambda)$,
+\begin{equation}
+\sum_l f_l^{\lambda}g_l^{1-\lambda}\le\Big(\sum_l f_l\Big)^{\lambda}\Big(\sum_l g_l\Big)^{1-\lambda}.
+\end{equation}
+Taking logarithms, the value of $h_p$ at the convex combination is at most
+$\lambda$ times its value at the first point plus $1-\lambda$ times its value
+at the second, so $h_p$ is convex, and $F$, a maximum of convex functions, is
+convex.
+
+\emph{Step 3.} Let $\bm\xi,\bm\eta\in\mathbb{R}^N$, $0\le\lambda\le 1$, and by
+Step 1 choose $\bm\zeta$ and $\bm\zeta'$ with $F(\bm\xi,\bm\zeta)=\Phi(\bm\xi)$
+and $F(\bm\eta,\bm\zeta')=\Phi(\bm\eta)$. By Steps 1 and 2,
+\begin{equation}
+\Phi\left(\lambda\bm\xi+(1-\lambda)\bm\eta\right)
+\le F\left(\lambda\bm\xi+(1-\lambda)\bm\eta,\ \lambda\bm\zeta+(1-\lambda)\bm\zeta'\right)
+\le\lambda\Phi(\bm\xi)+(1-\lambda)\Phi(\bm\eta).
+\end{equation}
+
+\emph{Step 4: $A\ge 0$ not irreducible.} For $\varepsilon>0$ the matrix
+$A_\varepsilon=A+\varepsilon\mathbbm{1}\mathbbm{1}^T$ is positive, hence
+irreducible, so by Steps 1--3 the function
+$\Phi_\varepsilon(\bm\xi)=\log\rho\left(A_\varepsilon\operatorname{diag}\left(e^{\bm\xi}\right)\right)$
+is convex. The spectral radius depends continuously on the entries of the
+matrix, and $\rho\left(A\operatorname{diag}\left(e^{\bm\xi}\right)\right)>0$, so
+$\Phi_\varepsilon(\bm\xi)\to\Phi(\bm\xi)$ as $\varepsilon\to 0$ for every
+$\bm\xi$. A pointwise limit of convex functions is convex.
+\end{proof}
+
+\bibliographystyle{plain}
+\bibliography{bib_mb}
+
+\end{document}
