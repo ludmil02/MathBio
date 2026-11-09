@@ -1,0 +1,133 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{amsthm,latexsym,mathrsfs}
+\usepackage{bm,bbm,dsfont}
+\usepackage{color,graphicx}
+\usepackage[latin1]{inputenc}
+\usepackage[english]{babel}
+\usepackage{xr-hyper}
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
+% labels of the main document, prefixed M-: build it first, so that its .aux exists
+\externaldocument[M-]{math_bio_positive_matrices_clean}
+
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\everymath{\displaystyle}
+\numberwithin{equation}{section}
+\renewcommand{\thesection}{S\arabic{section}}
+
+\title{Supplement: numerical tests\thanks{Parts of this manuscript were edited with the assistance of an AI tool (Claude Opus 5.5, Anthropic). The authors are solely responsible for all proofs and statements.}}
+\author{Zhilan \and John \and Yuliya \and Ludmil}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Supplement to ``Minimizing the spectral radius of a diagonally scaled positive
+matrix''. Equation, theorem and section numbers without a prefix S refer to
+that document.
+\end{abstract}
+
+\section{Bounds for the single dose problem}\label{s-bounds}
+
+The fixed term in~\eqref{M-split} confines the objective function: since
+$1-\varepsilon_1\le g_p\le 1$ we have
+$(1-\varepsilon_1)A_1\le A_1\operatorname{diag}(\bm g)\le A_1$, so by
+Theorem~\ref{M-mono} in~\S\ref{M-sec-facts}
+\begin{equation}\label{s-two-sided}
+(1-\varepsilon_1)\,\rho(A_1)\le\rho\left(A_1\operatorname{diag}(\bm g)\right)\le\rho(A_1),
+\end{equation}
+with equality on the right exactly when no dose is allocated, $\chi_1=0$, and
+the left approached as every $t_p\to\infty$. For the data of~\cite{JZh} the
+interval is $\left\lbrack 0.8846136218,\ 4.4230681092\right\rbrack$ and the
+constrained minimum of Section~\ref{M-sec-single} is $2.9059382878$, $43$ per cent
+of the way down.
+
+\section{A numerical test for single dose}\label{s-test}
+
+For the data of~\cite{JZh}, with $m=n=4$, $N=16$ and $A_c$ of order $32$, the
+right-hand side of~\eqref{M-constraints} is the weekly budget $b_{1i}$, the
+number of doses of the primary series given in location $i$, and
+$\sigma_{1,ij}$ is the number of susceptible individuals. The minimum
+of~\eqref{M-t-program}, computed by the algorithm of
+Section~\ref{M-sec-algorithm}, is $\rho=2.9059382878$, and the spectral radius of
+the $32\times 32$ matrix $\operatorname{NGM}$ at the computed minimizer has the
+same value. At the computed point all four constraints are active to a
+relative $4.9\cdot 10^{-12}$, the ratio in~\eqref{M-kkt} has a spread of at most
+$2.6\cdot 10^{-9}$ over the coordinates with $t_p>1$, the fourth coordinate,
+the age group $60+$, is at $t_p=1$ for every $i$, and eight random feasible
+starting points give values with a spread of $1.9\cdot 10^{-9}$ and minimizers
+that agree to $8.3\cdot 10^{-11}$. The independent formulation of
+Section~\ref{s-gp} agrees to $6.4\cdot 10^{-13}$.
+
+An allocation of the same budget computed earlier and stored with the data,
+with the same $\sigma_{1,ij}$ and the same $\operatorname{NGM}$, gives
+$\rho=2.9247935891$; the minimum of Section~\ref{M-sec-single} is smaller by
+$0.64$ per cent.
+
+\section{A test instance with three doses}\label{s-three}
+
+No budget for the second and third doses is given with the data
+of~\cite{JZh}. On an instance built from these data, with the coefficients
+$\sigma_{2,ij}$ and $\sigma_{3,ij}$ both taken equal to the numbers of partially
+protected individuals, the daily budgets $b_{1i}/7$ for the first dose and
+$b_{2i}=b_{3i}=b_{1i}/28$, the objective function of~\eqref{M-three-program} is
+not convex in $\widehat{\bm u}$: $24$ of $4000$ random segments of the
+product of simplices violate the convexity inequality, the worst by
+$1.1\cdot 10^{-3}$, and twelve random starts of a local method return eight
+distinct values between $3.8757$ and $3.8879$. With the weekly budgets $b_{1i}$
+and $b_{2i}=b_{3i}=b_{1i}/4$ the same two tests find no violation in $4000$
+segments, and the twelve starts end at one value, $1.661826$. With a single
+dose and the weekly budget the segment test finds no violation in $4000$
+segments, as Theorem~\ref{M-global} requires.
+
+\section{The geometric programming form}\label{s-gp}
+
+The program~\eqref{M-t-program} can be traded for one with a linear objective
+function and no eigenvalue computation, which is the independent check quoted
+in Section~\ref{s-test}. For $M\ge 0$ irreducible, with eigenvectors
+$\bm v,\bm w>0$ of $M$ and $M^T$ corresponding to the spectral radius,
+\begin{equation}\label{s-cw}
+\rho(M)=\min\left\{\theta>0\ :\ \exists\,\bm x>0\ \mbox{with}\
+M\bm x\le\theta\bm x\right\},
+\end{equation}
+since $\bm x=\bm v$, $\theta=\rho$ is admissible, while $M\bm x\le\theta\bm x$
+paired with $\bm w$ gives
+$\rho\langle\bm w,\bm x\rangle\le\theta\langle\bm w,\bm x\rangle$ with
+$\langle\bm w,\bm x\rangle>0$. Substituting $M=A_1\operatorname{diag}(\bm g)$
+through~\eqref{M-split} turns~\eqref{M-t-program} into
+\begin{equation}\label{s-gp-eq}
+\begin{aligned}
+&\min_{\theta,\bm x,\bm t}\ \theta\\
+&\mbox{subject to}\quad
+\sum_{l=1}^{N}\left(A_1\right)_{pl}
+\left\lbrack(1-\varepsilon_1)+\frac{\varepsilon_1}{t_l}\right\rbrack
+\frac{x_l}{\theta\,x_p}\le 1,\quad p=1:N,\\
+&\phantom{\mbox{subject to}}\quad
+\sum_{j=1}^{n}\frac{\sigma_{1,p}}{c_i}\,t_p\le 1,\quad i=1:m,\qquad
+\frac{1}{t_p}\le 1,\qquad \bm x>0,\ \theta>0,
+\end{aligned}
+\end{equation}
+a geometric program~\cite{2007Boyd_gp}: every left-hand side is a posynomial
+and the objective function $\theta$ a monomial. In the variables $\log\theta$,
+$\log\bm x$ and $\log\bm t$ the constraints become sums of exponentials of
+affine functions, hence convex. Only inequalities occur, and this matters: a
+geometric program admits posynomial inequality constraints but only monomial
+equalities, whereas the equalities of~\eqref{M-constraints} are posynomial.
+
+For three doses this construction is not available: $g_p$ in~\eqref{M-g-def} is
+then a quotient of posynomials whose denominator has more than one term, so the
+constraint $A_1\operatorname{diag}(\bm g)\bm x\le\theta\bm x$ is not a
+posynomial inequality.
+
+\bibliographystyle{plain}
+\bibliography{bib_mb}
+
+\end{document}

@@ -1,0 +1,320 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 15.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[     14028,        311]
+NotebookOptionsPosition[     11784,        275]
+NotebookOutlinePosition[     12179,        291]
+CellTagsIndexPosition[     12136,        288]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["Parameters, data and the next generation matrix", "Section",ExpressionUUID->"7cefefbd-d50a-4ecf-a708-3cbe96de2f65"],
+
+Cell["\<\
+The parameters, the data and NGM at chi = 0 are in settings_zf_jg.wl, in this \
+directory, the same file eigenvalues_H_ZF_JG.nb loads.\
+\>", "Text",ExpressionUUID->"3fd0031f-500a-4c12-9286-af1b4b467a2d"],
+
+Cell["\<\
+Get[FileNameJoin[{NotebookDirectory[], \"settings_zf_jg.wl\"}]]\
+\>", "Input",ExpressionUUID->"316f2569-04e9-4408-b9f1-98bfe261ca79"],
+
+Cell["John's method: l0", "Section",ExpressionUUID->"9c899493-e882-4bfa-b78d-ef8a9a7dcb91"],
+
+Cell["\<\
+The age profile l0 of the left Perron vector of NGM at chi = 0, per location, \
+as in eigenvalues_H_ZF_JG.nb.\
+\>", "Text",ExpressionUUID->"eb9b7c11-2c95-4604-8264-8ee3bb842635"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"Psdfe0", "=", 
+   RowBox[{
+    RowBox[{"Table", "[", 
+     RowBox[{"1", ",", 
+      RowBox[{"{", 
+       RowBox[{"i", ",", "1", ",", "m"}], "}"}], ",", 
+      RowBox[{"{", 
+       RowBox[{"j", ",", "1", ",", "n"}], "}"}]}], "]"}], "//", "Quiet"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"RN", "=", 
+   RowBox[{"{", 
+    RowBox[{"\"\<Northeast\>\"", ",", "\"\<Midwest\>\"", ",", "\"\<South\>\"",
+      ",", "\"\<West\>\""}], "}"}]}], ";"}]}], "Input",ExpressionUUID->\
+"42ac9599-4dad-4565-95d9-d9082bfb52f5"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"T", "=", 
+   RowBox[{"Table", "[", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"Partition", "[", 
+       RowBox[{
+        RowBox[{"Flatten", "[", 
+         RowBox[{"Abs", "[", 
+          RowBox[{"Eigenvectors", "[", 
+           RowBox[{
+            RowBox[{"Transpose", "[", "NGM", "]"}], ",", "1"}], "]"}], "]"}], 
+         "]"}], ",", 
+        RowBox[{"2", " ", "n"}]}], "]"}], "[", 
+      RowBox[{"[", "k", "]"}], "]"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"k", ",", "1", ",", "m"}], "}"}]}], "]"}]}], " ", ";"}], "\[IndentingNewLine]", 
+ RowBox[{" ", 
+  RowBox[{
+   RowBox[{"l0", "=", 
+    RowBox[{"Table", "[", 
+     RowBox[{
+      RowBox[{"Table", "[", 
+       RowBox[{
+        RowBox[{
+         RowBox[{
+          RowBox[{"Psdfe0", "[", 
+           RowBox[{"[", 
+            RowBox[{"i", ",", " ", "j"}], "]"}], "]"}], "\[Times]", 
+          RowBox[{"T", "[", 
+           RowBox[{"[", 
+            RowBox[{"i", ",", 
+             RowBox[{
+              RowBox[{"2", " ", "j"}], "-", "1"}]}], "]"}], "]"}]}], "+", 
+         RowBox[{"0", "\[Times]", 
+          RowBox[{"T", "[", 
+           RowBox[{"[", 
+            RowBox[{"i", ",", 
+             RowBox[{"2", " ", "j"}]}], "]"}], "]"}]}]}], ",", " ", 
+        RowBox[{"{", 
+         RowBox[{"j", ",", "1", ",", "n"}], "}"}]}], "]"}], ",", 
+      RowBox[{"{", 
+       RowBox[{"i", ",", "1", ",", "m"}], "}"}]}], "]"}]}], ";"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"dTcks", "=", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"1", ",", "\"\<0-19\>\""}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"2", ",", "\"\<20-39\>\""}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"3", ",", "\"\<40-59\>\""}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"4", ",", "\"\<60+\>\""}], "}"}]}], "}"}]}], ";"}]}], "Input",Ex\
+pressionUUID->"7ac5ddc3-eb3e-4c3c-9ae0-7ab6ee2bbe93"],
+
+Cell[CellGroupData[{
+
+Cell["Minimizing the spectral radius, single dose", "Section",ExpressionUUID->"f3f72cfc-329a-4c63-aa03-674bd4d244d4"],
+
+Cell["\<\
+Single dose: m\\[Chi]2 = m\\[Chi]3 = 0, and only m\\[Chi]1 is chosen. In each \
+location i the weekly budget b1[[i]] is spent, Sum_j m\\[Chi]1[[i,j]] \
+Sstar[[i,j]] = b1[[i]], with m\\[Chi]1 >= 0. b1 is the row sums of C2, the \
+doses of the primary series in 16_Group_Model_Results_t=347_ZF.nb, and Sstar \
+is the number of susceptible individuals at t = 347. These are the data that \
+John's method below is scaled with, so both methods spend the same doses.\
+\>", "Text",ExpressionUUID->"269a1b5a-993f-42b7-8aae-ce844f401063"],
+
+Cell["\<\
+Sstar = {{1.0600216151660305`*^7, 1.1947824997470027`*^7, \
+1.200765016794735`*^7, 1.2488303055892894`*^7}, {1.4987652030268373`*^7, \
+1.6016533803076502`*^7, 1.5145225873499423`*^7, 1.5295304221225757`*^7}, \
+{2.714573794622607`*^7, 2.9291708309119027`*^7, 2.7921743967612088`*^7, \
+2.680293855830742`*^7}, {1.7516265188547775`*^7, 2.023022880905246`*^7, \
+1.768703243117786`*^7, 1.6290434385275263`*^7}};
+C2 = {{279, 62294, 60028, 24269}, {898, 92762, 96407, 37373}, {1180, 115330, \
+133603, 56325}, {749, 107797, 119699, 39046}};
+b1 = N[Total[Transpose[C2]]]\
+\>", "Input",ExpressionUUID->"48c59078-8428-4aa3-976c-4217f0a2d076"],
+
+Cell["\<\
+NGM as a function of m\\[Chi]1, with the formulas of the cells above: NGM = \
+diag(Y, Z) . Ac, where Ac is the block product with \\[CapitalOmega]mat \
+replaced by the identity. The check compares it with NGM computed above.\
+\>", "Text",ExpressionUUID->"999fccd6-9cca-42cd-8bcd-374a0ed0e3bd"],
+
+Cell["\<\
+yzOf[c1_] := Block[{m\\[Chi]1 = c1, sdfe, vdfe, pdfe, Y, Z},
+  sdfe = Table[mN[[i, j]]/(1 + (m\\[Chi]1[[i, j]]/(\\[Omega]v + \\[Epsilon]2 \
+m\\[Chi]2[[i, j]])) (1 + (\\[Epsilon]2 m\\[Chi]2[[i, j]])/\\[Omega] + \
+((\\[Epsilon]2 m\\[Chi]2[[i, j]])/\\[Omega]) (1 + (\\[Epsilon]3 m\\[Chi]3[[i, \
+j]])/\\[Omega]))), {i, 1, m}, {j, 1, n}];
+  vdfe = Table[(m\\[Chi]1[[i, j]]/(\\[Omega]v + \\[Epsilon]2 m\\[Chi]2[[i, \
+j]])) sdfe[[i, j]], {i, 1, m}, {j, 1, n}];
+  pdfe = Table[((\\[Epsilon]2 m\\[Chi]2[[i, j]])/\\[Omega]) vdfe[[i, j]], {i, \
+1, m}, {j, 1, n}];
+  Y = Table[v\\[Psi]S[[j]] vS[[i]] ma[[i, j]] v\\[Beta][[j]] (sdfe[[i, \
+j]]/mN[[i, j]]), {i, 1, m}, {j, 1, n}];
+  Z = Table[v\\[Psi]S[[j]] vS[[i]] ma[[i, j]] v\\[Beta][[j]] (((1 - \
+\\[Epsilon]1) vdfe[[i, j]] + pdfe[[i, j]])/mN[[i, j]]), {i, 1, m}, {j, 1, \
+n}];
+  Flatten[Table[{Y[[i, j]], Z[[i, j]]}, {i, 1, m}, {j, 1, n}]]];
+Ac = SparseArray[ArrayFlatten[Table[ccMat[[i, p]] . \\[Psi]Imat[[p]] . Q, {i, \
+1, m}, {p, 1, m}]]];
+ngmOf[c1_] := SparseArray[DiagonalMatrix[SparseArray[yzOf[c1]]]] . Ac;
+Max[Abs[Normal[ngmOf[m\\[Chi]1]] - NGM]]/Max[Abs[NGM]]\
+\>", "Input",ExpressionUUID->"7cd86af6-c9f4-453d-8b38-42dc0e5c9f19"],
+
+Cell["\<\
+The Perron pair of a matrix and of its transpose, by Arnoldi, and the \
+derivatives of Y and Z in m\\[Chi]1, which depend only on the entry of the \
+same group.\
+\>", "Text",ExpressionUUID->"45177462-d057-44e0-8198-8fd2e79446cc"],
+
+Cell["\<\
+perron[a_] := Module[{l, v, w},
+  {{l}, {v}} = Eigensystem[a, 1, Method -> {\"Arnoldi\", \"Criteria\" -> \
+\"RealPart\"}];
+  w = First[Eigenvectors[Transpose[a], 1, Method -> {\"Arnoldi\", \
+\"Criteria\" -> \"RealPart\"}]];
+  v = Re[v]; w = Re[w];
+  {Re[l], v Sign[Total[v]], w Sign[Total[w]]}];
+yzSym = yzOf[Array[xx, {m, n}]];
+dyzSym = Table[With[{k = (i - 1) n + j}, {D[yzSym[[2 k - 1]], xx[i, j]], \
+D[yzSym[[2 k]], xx[i, j]]}], {i, 1, m}, {j, 1, n}];
+dyz[c1_] := dyzSym /. Thread[Flatten[Array[xx, {m, n}]] -> Flatten[c1]];\
+\>", "Input",ExpressionUUID->"b7129ce4-0606-45d8-bf90-fe5644357052"],
+
+Cell["\<\
+The minimization. With m\\[Chi]1[[i,j]] = b1[[i]] h[[i,j]]/Sstar[[i,j]] the \
+constraints become h >= 0 and Sum_j h[[i,j]] = 1, a product of m simplices. \
+The objective function is Log of the spectral radius of NGM, convex in these \
+variables for a single dose, so the local minimum found is the global one. \
+Its gradient uses one Perron pair of NGM and one of its transpose: d rho/d \
+Y_k = w_k (Ac.v)_k/(w.v).\
+\>", "Text",ExpressionUUID->"833e2058-8e32-4bc3-8b61-4fbecc5a0d4c"],
+
+Cell["\<\
+chiOf[h_] := b1 h/Sstar;
+psi[hv_?(VectorQ[#, NumericQ] &)] := \
+Log[First[perron[ngmOf[chiOf[Partition[hv, n]]]]]];
+gradPsi[hv_?(VectorQ[#, NumericQ] &)] := Module[{c = chiOf[Partition[hv, n]], \
+rho, v, w, av, d},
+  {rho, v, w} = perron[ngmOf[c]]; av = Ac . v; d = dyz[c];
+  Flatten[Table[With[{k = (i - 1) n + j}, (w[[2 k - 1]] av[[2 k - 1]] d[[i, \
+j, 1]] + w[[2 k]] av[[2 k]] d[[i, j, 2]])/(w . v)], {i, 1, m}, {j, 1, n}] \
+b1/Sstar]/rho];
+(* step 1: interior point method on the product of simplices *)
+hv = Array[hh, m n];
+sol = FindMinimum[{psi[hv], Join[Thread[hv >= 0], Table[Total[hv[[(i - 1) n + \
+1 ;; i n]]] == 1, {i, 1, m}]]},
+   Transpose[{hv, ConstantArray[1./n, m n]}], Gradient :> gradPsi[hv], Method \
+-> \"InteriorPoint\"];
+h1 = Partition[Clip[hv /. Last[sol], {0, Infinity}], n];
+(* step 2: groups left with h < 10^-4 get no doses; on the others eliminate \
+the constraint and finish with quasi-Newton *)
+fr = Table[Flatten[Position[h1[[i]], _?(# > 10^-4 &)]], {i, 1, m}];
+piv = Last /@ fr; oth = Most /@ fr;
+hOfY[y_] := Module[{h = ConstantArray[0., {m, n}], k = 0},
+  Do[Do[h[[i, j]] = y[[++k]], {j, oth[[i]]}]; h[[i, piv[[i]]]] = 1 - \
+Total[h[[i]]], {i, 1, m}]; h];
+psiY[y_?(VectorQ[#, NumericQ] &)] := psi[Flatten[hOfY[y]]];
+gradY[y_?(VectorQ[#, NumericQ] &)] := Module[{g = \
+Partition[gradPsi[Flatten[hOfY[y]]], n]},
+  Flatten[Table[g[[i, j]] - g[[i, piv[[i]]]], {i, 1, m}, {j, oth[[i]]}]]];
+yv = Flatten[Table[yy[i, j], {i, 1, m}, {j, oth[[i]]}]];
+sol2 = FindMinimum[psiY[yv], Transpose[{yv, Flatten[Table[h1[[i, j]], {i, 1, \
+m}, {j, oth[[i]]}]]}],
+   Gradient :> gradY[yv], Method -> \"QuasiNewton\", AccuracyGoal -> 14, \
+PrecisionGoal -> 14, MaxIterations -> 1000];
+hOpt = hOfY[yv /. Last[sol2]];
+m\\[Chi]1Min = chiOf[hOpt]\
+\>", "Input",ExpressionUUID->"d4676a00-a383-4885-a0ee-1b7cfddfe3b5"],
+
+Cell["\<\
+The minimum, the doses used per location (should be 1), and the optimality \
+conditions: in each location the gradient in h is the same for every group \
+that receives doses and not smaller for a group that receives none.\
+\>", "Text",ExpressionUUID->"1c836a77-3388-4ad0-9a20-413afcaa8ff7"],
+
+Cell["\<\
+\\[Rho]Min = First[perron[ngmOf[m\\[Chi]1Min]]]
+Total[Transpose[m\\[Chi]1Min Sstar]]/b1
+gOpt = Partition[gradPsi[Flatten[hOpt]], n];
+Table[{\"groups with doses\" -> Flatten[Position[hOpt[[i]], _?(# > 0 &)]], \
+\"relative spread of the gradient over them\" -> (Max[#] - \
+Min[#])/Abs[Mean[#]] &[Pick[gOpt[[i]], Thread[hOpt[[i]] > 0]]], \"gradient \
+without doses / with doses\" -> Pick[gOpt[[i]], Thread[hOpt[[i]] <= \
+0]]/Mean[Pick[gOpt[[i]], Thread[hOpt[[i]] > 0]]]}, {i, 1, m}] // Column\
+\>", "Input",ExpressionUUID->"611d5fd7-4fad-4f85-92a5-31002c91e15f"],
+
+Cell["\<\
+Comparison with John's method: the allocation proportional to l0 in each \
+location, scaled to spend the same b1.\
+\>", "Text",ExpressionUUID->"f974c018-6daa-4e16-aa92-16add79337e5"],
+
+Cell["\<\
+m\\[Chi]1John = (b1/Total[Transpose[l0 Sstar]]) l0;
+\\[Rho]John = First[perron[ngmOf[m\\[Chi]1John]]];
+Grid[{{\"\", \"spectral radius\", \"doses used / b1\"},
+  {\"John's method\", NumberForm[\\[Rho]John, 11], \
+Total[Transpose[m\\[Chi]1John Sstar]]/b1},
+  {\"minimum\", NumberForm[\\[Rho]Min, 11], Total[Transpose[m\\[Chi]1Min \
+Sstar]]/b1}}, Frame -> All]\
+\>", "Input",ExpressionUUID->"f667da7a-bd4d-4d18-96a4-bee679e39727"],
+
+Cell["\<\
+f12 = ListPlot[Table[Tooltip[m\\[Chi]1Min[[i]], RN[[i]]], {i, 1, m}], \
+PlotMarkers -> None, Joined -> True, PlotRange -> All, Frame -> {True, True, \
+False, False}, FrameLabel -> {\"Age (years)\", \"\\[Chi]1, minimum\"}, \
+FrameTicks -> {{Automatic, Automatic}, {dTcks, None}}, PlotLegends -> RN, \
+LabelStyle -> Directive[FontSize -> 12, FontFamily -> \"Arial\"], ImageSize \
+-> 375]\
+\>", "Input",ExpressionUUID->"ce86b381-41eb-4b5c-98c9-4e5e781d9411"]
+}, Open  ]]
+},
+WindowSize->{1140, 378},
+WindowMargins->{{95.25, Automatic}, {Automatic, 5.25}},
+FrontEndVersion->"15.0 for Linux x86 (64-bit) (July 2, 2026)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"db2f5fdf-81b6-3143-aa45-97085e17d85a"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 121, 0, 70, "Section",ExpressionUUID->"7cefefbd-d50a-4ecf-a708-3cbe96de2f65"],
+Cell[678, 22, 213, 3, 70, "Text",ExpressionUUID->"3fd0031f-500a-4c12-9286-af1b4b467a2d"],
+Cell[894, 27, 143, 2, 70, "Input",ExpressionUUID->"316f2569-04e9-4408-b9f1-98bfe261ca79"],
+Cell[1040, 31, 91, 0, 70, "Section",ExpressionUUID->"9c899493-e882-4bfa-b78d-ef8a9a7dcb91"],
+Cell[1134, 33, 188, 3, 70, "Text",ExpressionUUID->"eb9b7c11-2c95-4604-8264-8ee3bb842635"],
+Cell[1325, 38, 560, 16, 70, "Input",ExpressionUUID->"42ac9599-4dad-4565-95d9-d9082bfb52f5"],
+Cell[1888, 56, 1889, 56, 70, "Input",ExpressionUUID->"7ac5ddc3-eb3e-4c3c-9ae0-7ab6ee2bbe93"],
+Cell[CellGroupData[{
+Cell[3802, 116, 117, 0, 70, "Section",ExpressionUUID->"f3f72cfc-329a-4c63-aa03-674bd4d244d4"],
+Cell[3922, 118, 539, 7, 70, "Text",ExpressionUUID->"269a1b5a-993f-42b7-8aae-ce844f401063"],
+Cell[4464, 127, 641, 10, 70, "Input",ExpressionUUID->"48c59078-8428-4aa3-976c-4217f0a2d076"],
+Cell[5108, 139, 303, 4, 70, "Text",ExpressionUUID->"999fccd6-9cca-42cd-8bcd-374a0ed0e3bd"],
+Cell[5414, 145, 1188, 20, 70, "Input",ExpressionUUID->"7cd86af6-c9f4-453d-8b38-42dc0e5c9f19"],
+Cell[6605, 167, 239, 4, 70, "Text",ExpressionUUID->"45177462-d057-44e0-8198-8fd2e79446cc"],
+Cell[6847, 173, 608, 12, 70, "Input",ExpressionUUID->"b7129ce4-0606-45d8-bf90-fe5644357052"],
+Cell[7458, 187, 493, 7, 70, "Text",ExpressionUUID->"833e2058-8e32-4bc3-8b61-4fbecc5a0d4c"],
+Cell[7954, 196, 1836, 35, 70, "Input",ExpressionUUID->"d4676a00-a383-4885-a0ee-1b7cfddfe3b5"],
+Cell[9793, 233, 300, 4, 70, "Text",ExpressionUUID->"1c836a77-3388-4ad0-9a20-413afcaa8ff7"],
+Cell[10096, 239, 569, 9, 70, "Input",ExpressionUUID->"611d5fd7-4fad-4f85-92a5-31002c91e15f"],
+Cell[10668, 250, 192, 3, 70, "Text",ExpressionUUID->"f974c018-6daa-4e16-aa92-16add79337e5"],
+Cell[10863, 255, 437, 8, 70, "Input",ExpressionUUID->"f667da7a-bd4d-4d18-96a4-bee679e39727"],
+Cell[11303, 265, 465, 7, 70, "Input",ExpressionUUID->"ce86b381-41eb-4b5c-98c9-4e5e781d9411"]
+}, Open  ]]
+}
+]
+*)
+
+(* End of internal cache information *)

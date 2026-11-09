@@ -1,0 +1,67 @@
+*.dat
+
+# everything under old_files
+old_files/
+
+# files produced by runs (reduced_test.py, ref_h.wls, Yogi scripts)
+intermediate/
+
+# pdfs that a tex file in this repository regenerates
+math_bio_positive_matrices_clean.pdf
+math_bio_positive_matrices_supplement.pdf
+math_bio_three_doses.pdf
+
+# superseded data, nothing is read from these
+nb_Data/
+solution*.tar.gz
+
+# TeX build files
+*.aux
+*.bbl
+*.blg
+*.log
+*.out
+*.toc
+*.lof
+*.lot
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.synctex(busy)
+*.nav
+*.snm
+*.vrb
+*.bcf
+*.run.xml
+*.idx
+*.ilg
+*.ind
+*.xdv
+*.dvi
+
+# C build files
+*.o
+*.obj
+*.a
+*.so
+*.so.*
+*.dylib
+*.exe
+*.out.dSYM/
+*.gch
+*.pch
+*.d
+a.out
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.ipynb_checkpoints/
+.pytest_cache/
+.mypy_cache/
+.venv/
+venv/
