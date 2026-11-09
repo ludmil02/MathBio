@@ -19,8 +19,8 @@ from zf_jg import ngm_factored, dominant, john_method
 from zf_jg_params import default_params
 from zf_jg_doses import dose_budgets
 
-OUT = os.path.join(G.ROOT, "notes", "figures", "fig_chi1_single_dose.dat")   # read by the tex in notes/
-OUT_JOHN = os.path.join(G.ROOT, "notes", "figures", "fig_chi1_john.dat")
+OUT = os.path.join(G.ROOT, "notes", "suplemental", "fig_chi1_single_dose.dat")   # read by make_figures.py
+OUT_JOHN = os.path.join(G.ROOT, "notes", "suplemental", "fig_chi1_john.dat")
 LOCATIONS = ["Northeast", "Midwest", "South", "West"]
 
 
