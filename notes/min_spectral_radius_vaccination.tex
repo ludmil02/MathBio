@@ -5,6 +5,8 @@
 \usepackage{amsthm,latexsym,mathrsfs}
 \usepackage{bm,bbm,dsfont}
 \usepackage{color,graphicx}
+\graphicspath{{figures/}}
+\DeclareGraphicsExtensions{.png,.pdf}
 \usepackage[config,labelfont={rm,rm},textfont=rm]{caption,subfig}
 \usepackage[latin1]{inputenc}
 \usepackage[english]{babel}
@@ -495,7 +497,7 @@ constraint is active).}\label{tab-chi1}
 
 \begin{figure}[ht]
 \centering
-\includegraphics[width=\textwidth]{figures/fig_chi1.pdf}
+\includegraphics[width=\textwidth]{fig_chi1}
 \caption{Left: the minimizer $\chi_1$ of Table~\ref{tab-chi1}. Right: the
 $\chi_1$ of John's method, the age profile of the left Perron vector of
 $\operatorname{NGM}$ at $\bm\chi=0$ scaled in each location to spend the same
@@ -855,7 +857,7 @@ decreases slowly over most of the run.
 
 \begin{figure}[ht]
 \centering
-\includegraphics[width=\textwidth]{figures/fig_yogi_conv.pdf}
+\includegraphics[width=\textwidth]{fig_yogi_conv}
 \caption{Projected Yogi on the weekly instance from the barycenter
 and from the starts $(k,i,j)=(3,1,4)$ and $(2,4,1)$: the relative excess over
 $\rho^*=1.6618$ (left) and $r$ of~\eqref{t-r} (right) per iteration.
@@ -935,7 +937,7 @@ this group.
 
 \begin{figure}[ht]
 \centering
-\includegraphics[width=\textwidth]{figures/fig_alloc_s2.pdf}
+\includegraphics[width=\textwidth]{fig_alloc_s2}
 \caption{The weekly instance with $b_{2i}=b_{3i}=b_{1i}/4$ and $\sigma_2$,
 $\sigma_3$ of seed $2$: the allocations $\chi_1$, $\chi_2$, $\chi_3$ (rows),
 in units of $10^{-3}$ per day, at the endpoints of the interior point method
@@ -945,7 +947,7 @@ line per location; the same scale in each row.}\label{t-fig-alloc-s2}
 
 \begin{figure}[ht]
 \centering
-\includegraphics[width=\textwidth]{figures/fig_alloc_p.pdf}
+\includegraphics[width=\textwidth]{fig_alloc_p}
 \caption{As Figure~\ref{t-fig-alloc-s2}, for the weekly instance with
 $b_{2i}=b_{1i}/8$, $b_{3i}=b_{1i}/2$ and $\sigma_2=\sigma_3=P$.}\label{t-fig-alloc-p}
 \end{figure}
