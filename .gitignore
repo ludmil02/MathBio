@@ -6,9 +6,14 @@ old_files/
 # files produced by runs (reduced_test.py, ref_h.wls, Yogi scripts)
 intermediate/
 
+# python kept only locally: no computation of notes/min_spectral_radius_vaccination.tex
+code/check_gs_endpoints.py
+code/reduced_test.py
+code/smoke_zf_jg.py
+
 # pdfs that a tex file in this repository regenerates
-math_bio_positive_matrices_clean.pdf
-math_bio_positive_matrices_supplement.pdf
+min_spectral_radius_vaccination.pdf
+min_spectral_radius_vaccination_supplement.pdf
 math_bio_three_doses.pdf
 
 # superseded data, nothing is read from these

@@ -1,7 +1,7 @@
 """The single dose problem of Section 3, with the geometric program of equation (S4.2).
 
-Three routes to the same minimum, from math_bio_positive_matrices_clean.tex
-and math_bio_positive_matrices_supplement.tex (numbers with an S):
+Three routes to the same minimum, from min_spectral_radius_vaccination.tex
+and min_spectral_radius_vaccination_supplement.tex (numbers with an S):
 
   A  the interior penalty method of Theorem 3.2 in the normalized variables
      what = u-hat_1 of (3.5): minimize Psi over the product K-hat (3.7) of
@@ -41,6 +41,7 @@ zf_jg_doses.py, the weekly budget, the row sums of C2.  Nothing is written to
 disk.
 """
 
+import os
 import numpy as np
 import scipy.sparse as sps
 import scipy.sparse.linalg as spsl
@@ -52,7 +53,8 @@ from zf_jg import ac_matrix, ngm_factored, dominant, john_method
 from zf_jg_doses import dose_budgets
 
 RHO_REPORTED = 2.9059382878      # Section S2 and min_rho_single_dose_H_ZF_JG.nb
-S_CSV = "old_files/solution_nb_Data/s1Matrix.csv"
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))   # the repository
+S_CSV = os.path.join(ROOT, "old_files/solution_nb_Data/s1Matrix.csv")
 
 
 # ----------------------------------------------------------------- the data

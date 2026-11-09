@@ -25,6 +25,7 @@ Usage:
     python3 -u gs_three_dose.py
 """
 
+import os
 import time
 import numpy as np
 import scipy.sparse as sps
@@ -35,7 +36,7 @@ from zf_jg_params import default_params
 from zf_jg_doses import dose_budgets
 
 OUT = "gs_three_dose_results.txt"
-P_CSV = "old_files/solution_nb_Data/p1Matrix.csv"
+P_CSV = os.path.join(G.ROOT, "old_files/solution_nb_Data/p1Matrix.csv")
 DELTA = 1e-3          # vertex starts moved this fraction towards the barycenter
 TOL_SWEEP = 1e-12     # GS stops when |rho_new - rho_old| / rho_old < TOL_SWEEP
 MAX_SWEEPS = 200

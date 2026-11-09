@@ -11,6 +11,7 @@ Usage:
     python3 -u plot_chi1_single_dose.py
 """
 
+import os
 import numpy as np
 
 import gp_single_dose as G
@@ -18,8 +19,8 @@ from zf_jg import ngm_factored, dominant, john_method
 from zf_jg_params import default_params
 from zf_jg_doses import dose_budgets
 
-OUT = "fig_chi1_single_dose.dat"
-OUT_JOHN = "fig_chi1_john.dat"
+OUT = os.path.join(G.ROOT, "notes", "figures", "fig_chi1_single_dose.dat")   # read by the tex in notes/
+OUT_JOHN = os.path.join(G.ROOT, "notes", "figures", "fig_chi1_john.dat")
 LOCATIONS = ["Northeast", "Midwest", "South", "West"]
 
 

@@ -514,20 +514,20 @@ constraint is active).}\label{tab-chi1}
 \begin{tikzpicture}
 \begin{axis}[chi1 panel, title={minimizer, $\rho=2.9059$},
   ylabel={$\chi_1$ ($10^{-3}$ per day)}]
-\addplot[color=locNE, mark=*]          table[x=age, y=Northeast]{fig_chi1_single_dose.dat};
-\addplot[color=locMW, mark=square*]    table[x=age, y=Midwest]{fig_chi1_single_dose.dat};
-\addplot[color=locS,  mark=triangle*]  table[x=age, y=South]{fig_chi1_single_dose.dat};
-\addplot[color=locW,  mark=diamond*]   table[x=age, y=West]{fig_chi1_single_dose.dat};
+\addplot[color=locNE, mark=*]          table[x=age, y=Northeast]{figures/fig_chi1_single_dose.dat};
+\addplot[color=locMW, mark=square*]    table[x=age, y=Midwest]{figures/fig_chi1_single_dose.dat};
+\addplot[color=locS,  mark=triangle*]  table[x=age, y=South]{figures/fig_chi1_single_dose.dat};
+\addplot[color=locW,  mark=diamond*]   table[x=age, y=West]{figures/fig_chi1_single_dose.dat};
 \legend{Northeast, Midwest, South, West}
 \end{axis}
 \end{tikzpicture}%
 \hfill
 \begin{tikzpicture}
 \begin{axis}[chi1 panel, title={John's method, $\rho=2.9312$}]
-\addplot[color=locNE, mark=*]          table[x=age, y=Northeast]{fig_chi1_john.dat};
-\addplot[color=locMW, mark=square*]    table[x=age, y=Midwest]{fig_chi1_john.dat};
-\addplot[color=locS,  mark=triangle*]  table[x=age, y=South]{fig_chi1_john.dat};
-\addplot[color=locW,  mark=diamond*]   table[x=age, y=West]{fig_chi1_john.dat};
+\addplot[color=locNE, mark=*]          table[x=age, y=Northeast]{figures/fig_chi1_john.dat};
+\addplot[color=locMW, mark=square*]    table[x=age, y=Midwest]{figures/fig_chi1_john.dat};
+\addplot[color=locS,  mark=triangle*]  table[x=age, y=South]{figures/fig_chi1_john.dat};
+\addplot[color=locW,  mark=diamond*]   table[x=age, y=West]{figures/fig_chi1_john.dat};
 \end{axis}
 \end{tikzpicture}
 \caption{Left: the minimizer $\chi_1$ of Table~\ref{tab-chi1}. Right: the
@@ -902,14 +902,14 @@ decreases slowly over most of the run.
 \begin{tikzpicture}
 \begin{groupplot}[group style={group size=2 by 1, horizontal sep=1.4cm}, conv panel]
 \nextgroupplot[title={relative excess}, ylabel={$(\rho-\rho^*)/\rho^*$}, legend pos=south west]
-\addplot[color=locNE] table[x=it, y=excess]{fig_yogi_hist_bary.dat};
-\addplot[color=locMW] table[x=it, y=excess]{fig_yogi_hist_k3.dat};
-\addplot[color=locS]  table[x=it, y=excess]{fig_yogi_hist_k2.dat};
+\addplot[color=locNE] table[x=it, y=excess]{figures/fig_yogi_hist_bary.dat};
+\addplot[color=locMW] table[x=it, y=excess]{figures/fig_yogi_hist_k3.dat};
+\addplot[color=locS]  table[x=it, y=excess]{figures/fig_yogi_hist_k2.dat};
 \legend{barycenter, {$(3,1,4)$}, {$(2,4,1)$}}
 \nextgroupplot[title={stationarity measure}, ylabel={$r$}]
-\addplot[color=locNE] table[x=it, y=r]{fig_yogi_hist_bary.dat};
-\addplot[color=locMW] table[x=it, y=r]{fig_yogi_hist_k3.dat};
-\addplot[color=locS]  table[x=it, y=r]{fig_yogi_hist_k2.dat};
+\addplot[color=locNE] table[x=it, y=r]{figures/fig_yogi_hist_bary.dat};
+\addplot[color=locMW] table[x=it, y=r]{figures/fig_yogi_hist_k3.dat};
+\addplot[color=locS]  table[x=it, y=r]{figures/fig_yogi_hist_k2.dat};
 \end{groupplot}
 \end{tikzpicture}
 \caption{Projected Yogi on the weekly instance from the barycenter
@@ -1004,36 +1004,36 @@ this group.
 \begin{groupplot}[group style={group size=2 by 3, horizontal sep=1.2cm,
     vertical sep=1.3cm, xticklabels at=edge bottom}, alloc panel]
 \nextgroupplot[title={interior point method, $\rho=#2$}, ymax=6, ylabel={$\chi_1$}, legend pos=south west]
-\addplot[color=locNE, mark=*]         table[x=age, y=k1NE]{fig_alloc_#1_joint.dat};
-\addplot[color=locMW, mark=square*]   table[x=age, y=k1MW]{fig_alloc_#1_joint.dat};
-\addplot[color=locS,  mark=triangle*] table[x=age, y=k1S]{fig_alloc_#1_joint.dat};
-\addplot[color=locW,  mark=diamond*]  table[x=age, y=k1W]{fig_alloc_#1_joint.dat};
+\addplot[color=locNE, mark=*]         table[x=age, y=k1NE]{figures/fig_alloc_#1_joint.dat};
+\addplot[color=locMW, mark=square*]   table[x=age, y=k1MW]{figures/fig_alloc_#1_joint.dat};
+\addplot[color=locS,  mark=triangle*] table[x=age, y=k1S]{figures/fig_alloc_#1_joint.dat};
+\addplot[color=locW,  mark=diamond*]  table[x=age, y=k1W]{figures/fig_alloc_#1_joint.dat};
 \legend{Northeast, Midwest, South, West}
 \nextgroupplot[title={projected Yogi, $\rho=#3$}, ymax=6]
-\addplot[color=locNE, mark=*]         table[x=age, y=k1NE]{fig_alloc_#1_yogi.dat};
-\addplot[color=locMW, mark=square*]   table[x=age, y=k1MW]{fig_alloc_#1_yogi.dat};
-\addplot[color=locS,  mark=triangle*] table[x=age, y=k1S]{fig_alloc_#1_yogi.dat};
-\addplot[color=locW,  mark=diamond*]  table[x=age, y=k1W]{fig_alloc_#1_yogi.dat};
+\addplot[color=locNE, mark=*]         table[x=age, y=k1NE]{figures/fig_alloc_#1_yogi.dat};
+\addplot[color=locMW, mark=square*]   table[x=age, y=k1MW]{figures/fig_alloc_#1_yogi.dat};
+\addplot[color=locS,  mark=triangle*] table[x=age, y=k1S]{figures/fig_alloc_#1_yogi.dat};
+\addplot[color=locW,  mark=diamond*]  table[x=age, y=k1W]{figures/fig_alloc_#1_yogi.dat};
 \nextgroupplot[ymax=60, ylabel={$\chi_2$}]
-\addplot[color=locNE, mark=*]         table[x=age, y=k2NE]{fig_alloc_#1_joint.dat};
-\addplot[color=locMW, mark=square*]   table[x=age, y=k2MW]{fig_alloc_#1_joint.dat};
-\addplot[color=locS,  mark=triangle*] table[x=age, y=k2S]{fig_alloc_#1_joint.dat};
-\addplot[color=locW,  mark=diamond*]  table[x=age, y=k2W]{fig_alloc_#1_joint.dat};
+\addplot[color=locNE, mark=*]         table[x=age, y=k2NE]{figures/fig_alloc_#1_joint.dat};
+\addplot[color=locMW, mark=square*]   table[x=age, y=k2MW]{figures/fig_alloc_#1_joint.dat};
+\addplot[color=locS,  mark=triangle*] table[x=age, y=k2S]{figures/fig_alloc_#1_joint.dat};
+\addplot[color=locW,  mark=diamond*]  table[x=age, y=k2W]{figures/fig_alloc_#1_joint.dat};
 \nextgroupplot[ymax=60]
-\addplot[color=locNE, mark=*]         table[x=age, y=k2NE]{fig_alloc_#1_yogi.dat};
-\addplot[color=locMW, mark=square*]   table[x=age, y=k2MW]{fig_alloc_#1_yogi.dat};
-\addplot[color=locS,  mark=triangle*] table[x=age, y=k2S]{fig_alloc_#1_yogi.dat};
-\addplot[color=locW,  mark=diamond*]  table[x=age, y=k2W]{fig_alloc_#1_yogi.dat};
+\addplot[color=locNE, mark=*]         table[x=age, y=k2NE]{figures/fig_alloc_#1_yogi.dat};
+\addplot[color=locMW, mark=square*]   table[x=age, y=k2MW]{figures/fig_alloc_#1_yogi.dat};
+\addplot[color=locS,  mark=triangle*] table[x=age, y=k2S]{figures/fig_alloc_#1_yogi.dat};
+\addplot[color=locW,  mark=diamond*]  table[x=age, y=k2W]{figures/fig_alloc_#1_yogi.dat};
 \nextgroupplot[ymax=100, ylabel={$\chi_3$}, xlabel={age group (years)}]
-\addplot[color=locNE, mark=*]         table[x=age, y=k3NE]{fig_alloc_#1_joint.dat};
-\addplot[color=locMW, mark=square*]   table[x=age, y=k3MW]{fig_alloc_#1_joint.dat};
-\addplot[color=locS,  mark=triangle*] table[x=age, y=k3S]{fig_alloc_#1_joint.dat};
-\addplot[color=locW,  mark=diamond*]  table[x=age, y=k3W]{fig_alloc_#1_joint.dat};
+\addplot[color=locNE, mark=*]         table[x=age, y=k3NE]{figures/fig_alloc_#1_joint.dat};
+\addplot[color=locMW, mark=square*]   table[x=age, y=k3MW]{figures/fig_alloc_#1_joint.dat};
+\addplot[color=locS,  mark=triangle*] table[x=age, y=k3S]{figures/fig_alloc_#1_joint.dat};
+\addplot[color=locW,  mark=diamond*]  table[x=age, y=k3W]{figures/fig_alloc_#1_joint.dat};
 \nextgroupplot[ymax=100, xlabel={age group (years)}]
-\addplot[color=locNE, mark=*]         table[x=age, y=k3NE]{fig_alloc_#1_yogi.dat};
-\addplot[color=locMW, mark=square*]   table[x=age, y=k3MW]{fig_alloc_#1_yogi.dat};
-\addplot[color=locS,  mark=triangle*] table[x=age, y=k3S]{fig_alloc_#1_yogi.dat};
-\addplot[color=locW,  mark=diamond*]  table[x=age, y=k3W]{fig_alloc_#1_yogi.dat};
+\addplot[color=locNE, mark=*]         table[x=age, y=k3NE]{figures/fig_alloc_#1_yogi.dat};
+\addplot[color=locMW, mark=square*]   table[x=age, y=k3MW]{figures/fig_alloc_#1_yogi.dat};
+\addplot[color=locS,  mark=triangle*] table[x=age, y=k3S]{figures/fig_alloc_#1_yogi.dat};
+\addplot[color=locW,  mark=diamond*]  table[x=age, y=k3W]{figures/fig_alloc_#1_yogi.dat};
 \end{groupplot}
 \end{tikzpicture}}
 

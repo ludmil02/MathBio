@@ -15,7 +15,16 @@ is the constant factor `Ac`.
 
 ## Contents
 
+| directory | |
+| --- | --- |
+| `Mathematica_Wolfram/` | the notebooks, `settings_zf_jg.wl` and `ref_h.wls` |
+| `code/` | the python, its `*_results.txt` and `intermediate/` |
+| `notes/` | the main document and `bib_mb.bib`; `notes/figures/` the `fig_*.dat` files of the figures; `notes/suplemental/` the supplement and the superseded three-dose note |
+| `old_files/` | superseded material |
+
 ### Notebooks
+
+In `Mathematica_Wolfram/`.
 
 | file | |
 | --- | --- |
@@ -25,6 +34,11 @@ is the constant factor `Ac`.
 | `16_Group_Model_Results_t=347_ZF.nb` | the model solution at `t = 347`: `mS`, `mV`, `mP`, the `psi` and `s` factors, and `C2`, the primary-series doses by location and age group.  It no longer writes anything to disk. |
 
 ### Python
+
+In `code/`.  Run the scripts from `code/`: the imports are between files of that
+directory, and each `*_results.txt` is written to the working directory.  The
+csv files under `old_files/`, the files of `Mathematica_Wolfram/` and the
+`fig_*.dat` files in `notes/figures/` are located from the script's own path.
 
 The python reproduces `eigenvalues_H_ZF_JG.nb` and carries the optimization
 that `min_rho_single_dose_H_ZF_JG.nb` repeats in Wolfram.
@@ -36,16 +50,16 @@ that `min_rho_single_dose_H_ZF_JG.nb` repeats in Wolfram.
 | `zf_jg_doses.py` | the constraint right hand sides: `b1` from `C2`, and `b2 = b3 = 0`, no booster budget having been specified. |
 | `smoke_zf_jg.py` | checks `zf_jg.py` against the notebook, per `chi`. |
 | `gp_single_dose.py` | the minimization for `b2 = b3 = 0` with the weekly budget `b1`, the same problem as `min_rho_single_dose_H_ZF_JG.nb`, three ways: the interior penalty method of Theorem 3.2 on the product of simplices, the geometric program (S4.2) of the supplement, and eight random starts; then the optimality conditions (3.21) and John's allocation for comparison.  Reproduces `rho = 2.9059382878` (John's `2.9312317763`) and every number of Section S2 of the supplement.  The Arnoldi start vector is fixed, so a run reproduces to the last digit. |
-| `plot_chi1_single_dose.py` | solves the single dose problem as `gp_single_dose.py` does and writes `fig_chi1_single_dose.dat`, the minimizing `chi1`, and `fig_chi1_john.dat`, the `chi1` of John's method for the same `b1` (units `1e-3` per day, one column per location).  The write-up plots the two side by side with pgfplots in Section 3.2. |
+| `plot_chi1_single_dose.py` | solves the single dose problem as `gp_single_dose.py` does and writes `notes/figures/fig_chi1_single_dose.dat`, the minimizing `chi1`, and `notes/figures/fig_chi1_john.dat`, the `chi1` of John's method for the same `b1` (units `1e-3` per day, one column per location).  The write-up plots the two side by side with pgfplots in Section 3.2. |
 | `gs_three_dose.py` | three doses, the weekly test instance (`sigma2 = sigma3 = P`, `b2 = b3 = b1/4`): the joint local method (trust region interior point) and block Gauss-Seidel over the dose types, from the barycenter and the 48 starts near a vertex of one factor, with a KKT check at every endpoint.  Writes `gs_three_dose_results.txt`; runs in about 6 minutes.  Table T3.1 of the earlier version of the three-dose note, `old_files/math_bio_three_doses.tex`.  The Yogi scripts import from it the instance, the objective function, its gradient (4.4) of the main document, the 49 starts and the KKT check; `gauss_seidel` takes an optional `hist` list that records `rho` per sweep. |
 | `test_barycenter_three_dose.py` | 36 three-dose instances (weekly or daily `b1`, six ratios `(b2, b3)/b1`, `sigma2`, `sigma3` = `P` or `P` times log-normal noise): the joint method and Gauss-Seidel from the barycenter against the best of 69 joint starts.  Writes `test_barycenter_three_dose_results.txt`; took 88 minutes, two instances taking 22 and 39 minutes.  Section T4 of the earlier version; in Section 4.4 of the main document the best of the 69 interior point runs is the reference `rho_best`, read by `yogi_instances_three_dose.py`. |
 | `yogi_three_dose.py` | projected Yogi, Algorithm 1 of Section 4.3 of the main document: the weighted projection onto the simplices (Lemma 4.1(b)), the stationarity measure `r` (4.8), and the run on the weekly instance from the 49 starts.  All end at `rho = 1.661826042009` with `r < 1e-10`.  Writes `yogi_three_dose_results.txt`; with `--tmax 200000` it took 939 s.  Table 4.1.  `yogi` takes an optional `hist` list that records `(t, rho, r)` per iteration. |
 | `yogi_instances_three_dose.py` | projected Yogi from the barycenter on the 36 instances of `test_barycenter_three_dose.py`, against the best of its 69 interior point runs: successful in 31, below that value in two of them.  Writes `yogi_instances_three_dose_results.txt`; took 71 s.  Table 4.2. |
-| `plot_yogi_three_dose.py` | the data of the figures of Section 4.4: `fig_yogi_hist_{bary,k3,k2}.dat`, the relative excess and `r` per iteration from three starts (Figure 4.1), `fig_gs_hist_{bary,k3}.dat`, Gauss-Seidel per sweep (in no figure of the main document), and `fig_alloc_{s2,p}_{joint,yogi}.dat`, `chi_k` at the endpoints of the interior point method and of Yogi in the two instances in which Yogi gives the smaller value (Figures 4.2 and 4.3, units `1e-3` per day).  About 6 minutes. |
+| `plot_yogi_three_dose.py` | the data of the figures of Section 4.4, written to `notes/figures/`: `fig_yogi_hist_{bary,k3,k2}.dat`, the relative excess and `r` per iteration from three starts (Figure 4.1), `fig_gs_hist_{bary,k3}.dat`, Gauss-Seidel per sweep (in no figure of the main document), and `fig_alloc_{s2,p}_{joint,yogi}.dat`, `chi_k` at the endpoints of the interior point method and of Yogi in the two instances in which Yogi gives the smaller value (Figures 4.2 and 4.3, units `1e-3` per day).  About 6 minutes. |
 | `check_block2.py` | samples `g_p` of (2.4) in the second dose: `log g` is not convex and `g` not monotone in `u2`.  Section 4 of the main document. |
 | `check_gs_endpoints.py` | two Gauss-Seidel endpoints of `gs_three_dose.py` with larger `rho`: local minimizers to the resolution of a random-direction test, and a violation of convexity on the segment to the joint minimizer.  Section T3 of the earlier version. |
 | `reduced_test.py` | checks that the reduced problem `min rho(A1 diag(g))`, of order `N`, is the original one, of order `2N`, with `eigenvalues_H_ZF_JG.nb` as reference.  It minimizes both, for one dose with the budgets `b1/7`, `b1` (the write-up's) and `3 b1` and for three doses on test data (`sigma2 = sigma3 = P`, `b2 = b3 = b1/4`) from four common starts; then, for 23 values of `chi` including all the minimizers, it compares `diag(d) P A1 P^T` with the notebook's `NGM` entrywise, the eigenvalues of `A1 diag(g)` with those of the notebook's `NGM`, and `rho`. |
-| `ref_h.wls` | the Wolfram script `reduced_test.py` calls: it runs `settings_zf_jg.wl` with that `chi` and then the input cells of `eigenvalues_H_ZF_JG.nb` for each `chi` of `intermediate/cases.json`, with `Export` and `SetDirectory` disabled, and stores `NGM`, `Y`, `Z`, `rho` and sixteen eigenvalues in `intermediate/ref_h.json`.  The notebook is not modified. |
+| `../Mathematica_Wolfram/ref_h.wls` | the Wolfram script `reduced_test.py` calls: it runs `settings_zf_jg.wl` with that `chi` and then the input cells of `eigenvalues_H_ZF_JG.nb` for each `chi` of `intermediate/cases.json`, with `Export` and `SetDirectory` disabled, and stores `NGM`, `Y`, `Z`, `rho` and sixteen eigenvalues in `intermediate/ref_h.json`.  The notebook is not modified. |
 
 `NGM` is built three ways, which is the point of the checks:
 
@@ -64,6 +78,7 @@ that `min_rho_single_dose_H_ZF_JG.nb` repeats in Wolfram.
 
 Run the model and the test with
 
+    cd code
     python3 -u zf_jg.py
     python3 -u smoke_zf_jg.py [--seed S] [--random K] [--tol T]
     python3 -u reduced_test.py
@@ -91,7 +106,9 @@ formulations.
 
 ### Write-up
 
-`math_bio_positive_matrices_clean.tex` — minimizing the spectral radius of a
+In `notes/`, with `bib_mb.bib` and, in `notes/figures/`, the `fig_*.dat` files; build in `notes/`.
+
+`min_spectral_radius_vaccination.tex` — minimizing the spectral radius of a
 diagonally scaled positive matrix.  Section 1 defines the next generation matrix
 `D(u) Ac` and the constraints as the notebooks have them; section 2 gives the equivalent
 problem `min rho(A1 diag(g))` with `A1` of order `N = mn` against the `2N` of
@@ -120,7 +137,11 @@ appendix B collects the facts used.  The main document refers to nothing
 outside itself.  Bibliography in `bib_mb.bib`, which also keeps the unused
 `2015Kingma_Ba`.
 
-`math_bio_positive_matrices_supplement.tex` — what is not needed for the
+In `notes/suplemental/`, built there, the two documents below; each takes
+`../bib_mb.bib` and the main document's labels from
+`../min_spectral_radius_vaccination.aux`.
+
+`min_spectral_radius_vaccination_supplement.tex` — what is not needed for the
 theorems and the algorithm, its numbers prefixed S: S1 the bounds
 `(1 - eps1) rho(A1) <= rho <= rho(A1)`, S2 the numerical test for the single
 dose (every number from `gp_single_dose.py`) and the stored allocation
@@ -146,9 +167,9 @@ notebooks are in `old_files/`.  Two of them are read: `gp_single_dose.py` and
 `reduced_test.py` take `S` from `old_files/solution_nb_Data/s1Matrix.csv`, and
 `reduced_test.py` takes `P` from `p1Matrix.csv` in the same directory.
 
-### `intermediate/`
+### `code/intermediate/`
 
-Files produced by a run and not kept under any other name: `cases.json` and
+Not tracked (in `.gitignore`).  Files produced by a run and not kept under any other name: `cases.json` and
 `ref_h.json` of `reduced_test.py`, and `reduced_test.log`, the output of its
 last run; `yogi_three_dose.log`, `yogi_instances_three_dose.log` and
 `plot_yogi_three_dose.log`, the output of the last runs of the Yogi scripts.

@@ -18,12 +18,14 @@ Usage:
     python3 -u plot_yogi_three_dose.py
 """
 
+import os
 import numpy as np
 
 import gs_three_dose as T
 import yogi_three_dose as Y
 from test_barycenter_three_dose import set_instance
 
+NOTES = os.path.join(T.G.ROOT, "notes", "figures")   # read by the tex in notes/
 LOC = ["NE", "MW", "S", "W"]
 FLOOR = 1e-16                       # relative excesses below this are plotted at it
 YOGI = dict(eta=1e-2, beta1=0.9, beta2=0.999, eps=1e-8, tol=1e-10, tmax=200000)
@@ -35,6 +37,7 @@ def start(name):
 
 
 def write_hist(fname, rows, rho_star, cols):
+    fname = os.path.join(NOTES, fname)
     rows = np.array(rows, dtype=float)
     keep = np.unique(np.r_[np.arange(0, len(rows), max(1, len(rows) // MAXROWS)), len(rows) - 1])
     with open(fname, "w") as fh:
@@ -46,6 +49,7 @@ def write_hist(fname, rows, rho_star, cols):
 
 
 def write_alloc(fname, x):
+    fname = os.path.join(NOTES, fname)
     chi = [1e3 * T.SCALES[k] * x.reshape(3, T.N)[k] for k in range(3)]   # 1e-3 per day
     with open(fname, "w") as fh:
         fh.write("age " + " ".join("k%d%s" % (k + 1, l) for k in range(3) for l in LOC) + "\n")
