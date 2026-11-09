@@ -25,7 +25,7 @@ import gs_three_dose as T
 import yogi_three_dose as Y
 from test_barycenter_three_dose import set_instance
 
-NOTES = os.path.join(T.G.ROOT, "notes", "figures")   # read by the tex in notes/
+NOTES = os.path.join(T.G.ROOT, "notes", "suplemental")   # read by make_figures.py
 LOC = ["NE", "MW", "S", "W"]
 FLOOR = 1e-16                       # relative excesses below this are plotted at it
 YOGI = dict(eta=1e-2, beta1=0.9, beta2=0.999, eps=1e-8, tol=1e-10, tmax=200000)

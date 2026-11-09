@@ -1,4 +1,6 @@
 *.dat
+# the data of the figures, read by code/make_figures.py
+!notes/suplemental/fig_*.dat
 
 # old_files: only the notebooks, tex and python are tracked
 old_files/**
