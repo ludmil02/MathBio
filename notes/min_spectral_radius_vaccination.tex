@@ -471,6 +471,20 @@ the minimum
 attained at the $\chi_1$ in Table~\ref{tab-chi1} and Figure~\ref{fig-chi1}. In
 every location the age group $60+$ receives no doses.
 
+Table~\ref{tab-chi1} also checks the conditions~\eqref{kkt} at the minimizer.
+Let $r_p$ be the left-hand side of~\eqref{kkt} divided by $\sigma_{1,p}$, and
+$\mu_i$ the mean of $r_p$ over the groups $0$--$59$ of location $i$, which
+receive doses. The column ``spread'' is $\max\left|r_p/\mu_i-1\right|$ over
+these groups, zero at a minimizer; ``ratio at $60+$'' is $r_p/\mu_i$ for the
+group $60+$, which receives no doses, at most $1$ at a minimizer; ``dose
+residual'' is $\left|\sum_j\chi_{1,ij}\sigma_{1,ij}/b_{1i}-1\right|$, zero when
+the constraint is active.
+
+Figure~\ref{fig-chi1} compares the minimizer with the $\chi_1$ of John's
+method, the age profile of the left Perron vector of $\operatorname{NGM}$ at
+$\bm\chi=0$ scaled in each location to spend the same budget $b_{1i}$. Both
+plots have one line per location and the same scale.
+
 \begin{table}[ht]
 \centering
 \small
@@ -485,26 +499,15 @@ South     & $3.736$ & $3.721$ & $3.439$ & $0$ & $1.2\cdot 10^{-9}$  & $0.318$ & 
 West      & $5.229$ & $4.836$ & $4.402$ & $0$ & $2.6\cdot 10^{-9}$  & $0.243$ & $5.8\cdot 10^{-13}$\\
 \hline
 \end{tabular}
-\caption{The minimizer $\chi_{1,ij}$ for the weekly budget $b_{1i}$, and the
-verification of the Karush--Kuhn--Tucker conditions~\eqref{kkt} at it. With
-$r_p$ the left-hand side of~\eqref{kkt} divided by $\sigma_{1,p}$ and
-$\mu_i$ the mean of $r_p$ over the groups $0$--$59$ of location $i$, which
-receive doses: ``spread'' is $\max\left|r_p/\mu_i-1\right|$ over these groups
-(zero at a minimizer); ``ratio at $60+$'' is $r_p/\mu_i$ for the group $60+$,
-which receives no doses (at most $1$ at a minimizer); ``dose residual'' is
-$\left|\sum_j\chi_{1,ij}\sigma_{1,ij}/b_{1i}-1\right|$ (zero when the
-constraint is active).}\label{tab-chi1}
+\caption{The minimizer $\chi_1$ for the weekly budget and the optimality
+conditions~\eqref{kkt}.}\label{tab-chi1}
 \end{table}
 
 \begin{figure}[ht]
 \centering
 \subfloat[minimizer, $\rho=2.9059$]{\includegraphics[width=0.4\textwidth]{fig_chi1_min}}\hspace{0.1\textwidth}
 \subfloat[John's method, $\rho=2.9312$]{\includegraphics[width=0.4\textwidth]{fig_chi1_john}}
-\caption{Left: the minimizer $\chi_1$ of Table~\ref{tab-chi1}. Right: the
-$\chi_1$ of John's method, the age profile of the left Perron vector of
-$\operatorname{NGM}$ at $\bm\chi=0$ scaled in each location to spend the same
-budget $b_{1i}$. One line per location; the same scale in both
-plots.}\label{fig-chi1}
+\caption{The minimizer $\chi_1$ and the $\chi_1$ of John's method.}\label{fig-chi1}
 \end{figure}
 
 The computations are reproduced by two Mathematica notebooks, which share
@@ -575,7 +578,7 @@ adaptive method Yogi of~\cite{2018Zaheer_Yogi}, with each step projected onto
 $\mathcal{S}$ in the metric of its diagonal preconditioner. The method uses the
 gradient of $\Theta$ and no Hessian.
 
-\subsection{Smoothness and the gradient}
+\subsection{Properties of the objective function}
 
 For $\widehat{\bm u}\in\mathcal{S}$ all $\chi_{k,p}\ge 0$, so
 $\pi_{1,p},\pi_{2,p}\ge 0$ and $\pi_{3,p}\ge 1$ in~\eqref{g-def}; the
@@ -725,7 +728,7 @@ and by Lemma~\ref{t-fixed} it vanishes exactly at the points satisfying the
 Karush--Kuhn--Tucker conditions. It needs no threshold to decide which entries
 of $\widehat{\bm u}$ are positive.
 
-\subsection{Projected Yogi}\label{sec-yogi}
+\subsection{Optimization via projected Yogi method}\label{sec-yogi}
 
 Algorithm~\ref{t-alg-yogi} states the method. Squares, square roots, products,
 quotients and $\operatorname{sign}$ of vectors are taken entrywise. Compared
@@ -826,7 +829,7 @@ group $j$.
 
 From every start the method ends at $\rho=1.661826042009$, the values agreeing
 to $10^{-12}$, with $r<10^{-10}$. Table~\ref{t-tab-yogi} gives the iterations
-and the times. The slow runs are the $11$ starts with dose $2$ at a vertex in
+and the times, the latter totals over the starts of each column. The slow runs are the $11$ starts with dose $2$ at a vertex in
 locations $2$, $3$ and $4$, which took between $20546$ and $166447$
 iterations; with $t_{\max}=2\cdot 10^4$ eight of them stop at $r$ between
 $4\cdot 10^{-6}$ and $1.2\cdot 10^{-4}$, with $\rho$ at most
@@ -845,14 +848,15 @@ iterations & $652$ & $3159$--$15460$ & $12699$--$166447$ & $1118$--$3354$\\
 time & $0.5$ s & $90$ s & $822$ s & $27$ s\\
 \hline
 \end{tabular}
-\caption{Projected Yogi on the weekly instance from the $49$
-starts; times are totals over the starts of the column. Every run ends at
-$\rho=1.6618$.}\label{t-tab-yogi}
+\caption{Projected Yogi on the weekly instance from the $49$ starts.}\label{t-tab-yogi}
 \end{table}
 
 Figure~\ref{t-fig-conv} shows the relative excess $(\rho-\rho^*)/\rho^*$ over
-$\rho^*=1.661826042009$ and the stationarity measure $r$ along three runs. The
-relative excess falls below $10^{-8}$ after $174$ iterations from the
+$\rho^*=1.661826042009$ and the stationarity measure $r$ of~\eqref{t-r} per
+iteration along three runs, from the barycenter and from the starts
+$(k,i,j)=(3,1,4)$ and $(2,4,1)$. The iteration count is on a logarithmic
+scale and the start, iteration $0$, is not shown; excesses below $10^{-16}$,
+rounding, are shown at $10^{-16}$. The relative excess falls below $10^{-8}$ after $174$ iterations from the
 barycenter, after $340$ from the start $(3,1,4)$, and after $37290$ from the
 start $(2,4,1)$, the slowest of Table~\ref{t-tab-yogi}, along which $r$
 decreases slowly over most of the run.
@@ -861,12 +865,7 @@ decreases slowly over most of the run.
 \centering
 \subfloat[relative excess]{\includegraphics[width=0.4\textwidth]{fig_yogi_conv_excess}}\hspace{0.1\textwidth}
 \subfloat[stationarity measure]{\includegraphics[width=0.4\textwidth]{fig_yogi_conv_r}}
-\caption{Projected Yogi on the weekly instance from the barycenter
-and from the starts $(k,i,j)=(3,1,4)$ and $(2,4,1)$: the relative excess over
-$\rho^*=1.6618$ (left) and $r$ of~\eqref{t-r} (right) per iteration.
-The iteration count is on a logarithmic scale, and the start, iteration $0$,
-is not shown. Excesses below $10^{-16}$, rounding, are shown at
-$10^{-16}$.}\label{t-fig-conv}
+\caption{Projected Yogi on the weekly instance from three starts.}\label{t-fig-conv}
 \end{figure}
 
 \paragraph{Thirty-six instances.} To test whether the barycenter is a reliable
@@ -877,7 +876,9 @@ weekly or daily ($b_{1i}/7$); the ratios
 \end{equation}
 and $\sigma_{2,ij}$, $\sigma_{3,ij}$ equal to $P_{ij}$, or equal to
 $P_{ij}e^{Z_{ij}/2}$ and $P_{ij}e^{Z'_{ij}/2}$ with independent standard
-normal $Z$, $Z'$, for two seeds. For each instance $\rho_{\mathrm{best}}$ is
+normal $Z$, $Z'$, for two seeds. Seed $s\in\{1,2\}$ means that $Z$ and then
+$Z'$, each $m\times n$ with the entries in row order, are drawn by
+\texttt{numpy.random.default\_rng(s).standard\_normal}. For each instance $\rho_{\mathrm{best}}$ is
 the smallest value known: that of $69$ runs of the trust region interior point
 method of~\cite{1999Byrd_Hribar_Nocedal} in all $3N$ variables, from the $49$
 starts above and $20$ random points of $\mathcal{S}$, or that of
@@ -889,8 +890,10 @@ $10897$ iterations, $71$~s for all $36$ instances, and ends with $r<10^{-10}$
 in every instance. It is successful in $31$ instances, $14$ of the $18$
 weekly and $17$ of the $18$ daily. In two of them its value is smaller than
 that of all $69$ interior point runs, by $0.13$ and $0.025$ per cent, and is
-$\rho_{\mathrm{best}}$. Table~\ref{t-tab-yogi-inst} lists these two and the
-five instances in which it is not successful. Four of the five are weekly,
+$\rho_{\mathrm{best}}$. Table~\ref{t-tab-yogi-inst} lists these two (top) and
+the five instances in which it is not successful (bottom), with the best $\rho$
+of the interior point runs, $\rho$ of projected Yogi, and its relative excess
+$(\rho-\rho_{\mathrm{best}})/\rho_{\mathrm{best}}$. Four of the five are weekly,
 two of them with the smallest budgets $b_{2i}=b_{3i}=b_{1i}/16$; the misses are
 up to $1.2$ per cent. At these five endpoints $r<10^{-10}$, so they are points
 satisfying the Karush--Kuhn--Tucker conditions to this accuracy with $\rho$
@@ -914,11 +917,9 @@ weekly & $(\tfrac18,\tfrac12)$       & seed $2$ & $1.3770$ & $1.3820$ & $3.6\cdo
 daily  & $(\tfrac1{16},\tfrac1{16})$ & $P$      & $4.0391$ & $4.0403$ & $2.9\cdot 10^{-4}$\\
 \hline
 \end{tabular}
-\caption{The instances in which projected Yogi from the barycenter
-gives $\rho_{\mathrm{best}}$ below the best of $69$ interior point runs (top),
-and those in which it is not successful (bottom). The columns give the best
-$\rho$ of the interior point runs, $\rho$ of projected Yogi, and
-its relative excess $(\rho-\rho_{\mathrm{best}})/\rho_{\mathrm{best}}$.}\label{t-tab-yogi-inst}
+\caption{Projected Yogi from the barycenter: the instances in which it
+improves on the interior point runs, and those in which it is not
+successful.}\label{t-tab-yogi-inst}
 \end{table}
 
 Figures~\ref{t-fig-alloc-s2-k1}--\ref{t-fig-alloc-s2-k3}
@@ -926,7 +927,11 @@ and~\ref{t-fig-alloc-p-k1}--\ref{t-fig-alloc-p-k3} show, for the two
 instances at the top of Table~\ref{t-tab-yogi-inst}, the allocations
 $\chi_{k,ij}$ at the endpoint of projected Yogi and at that of the
 interior point method from the barycenter, which gives the best of the $69$
-interior point values. The two allocations differ mainly in one location. In
+interior point values: one figure per dose type, in units of $10^{-3}$ per
+day, the interior point endpoint on the left and projected Yogi on the right,
+one line per location and the same scale in both plots. The first instance has
+$b_{2i}=b_{3i}=b_{1i}/4$ and $\sigma_2$, $\sigma_3$ of seed $2$; the second
+$b_{2i}=b_{1i}/8$, $b_{3i}=b_{1i}/2$ and $\sigma_2=\sigma_3=P$. The two allocations differ mainly in one location. In
 the first instance the interior point endpoint gives the group $60+$ of the
 South $\chi_{2}=0.0162$ and $\chi_{3}=0.0211$ per day, and that of
 projected Yogi gives this group no second or third doses and their
@@ -943,52 +948,48 @@ this group.
 \centering
 \subfloat[interior point method, $\rho=1.7118$]{\includegraphics[width=0.4\textwidth]{fig_alloc_s2_joint_k1}}\hspace{0.1\textwidth}
 \subfloat[projected Yogi, $\rho=1.7095$]{\includegraphics[width=0.4\textwidth]{fig_alloc_s2_yogi_k1}}
-\caption{The weekly instance with $b_{2i}=b_{3i}=b_{1i}/4$ and $\sigma_2$,
-$\sigma_3$ of seed $2$: the allocation $\chi_1$, in units of $10^{-3}$ per
-day, at the endpoints of the interior point method (left) and of projected
-Yogi (right), both from the barycenter. One line per location; the same
-scale in both plots.}\label{t-fig-alloc-s2-k1}
+\caption{The allocation $\chi_1$ for the weekly budget,
+$b_{2i}=b_{3i}=b_{1i}/4$, and $\sigma_2$, $\sigma_3$ of seed $2$.}\label{t-fig-alloc-s2-k1}
 \end{figure}
 
 \begin{figure}[htbp]
 \centering
 \subfloat[interior point method, $\rho=1.7118$]{\includegraphics[width=0.4\textwidth]{fig_alloc_s2_joint_k2}}\hspace{0.1\textwidth}
 \subfloat[projected Yogi, $\rho=1.7095$]{\includegraphics[width=0.4\textwidth]{fig_alloc_s2_yogi_k2}}
-\caption{As Figure~\ref{t-fig-alloc-s2-k1}, for the allocation
-$\chi_2$.}\label{t-fig-alloc-s2-k2}
+\caption{The allocation $\chi_2$ for the weekly budget,
+$b_{2i}=b_{3i}=b_{1i}/4$, and $\sigma_2$, $\sigma_3$ of seed $2$.}\label{t-fig-alloc-s2-k2}
 \end{figure}
 
 \begin{figure}[htbp]
 \centering
 \subfloat[interior point method, $\rho=1.7118$]{\includegraphics[width=0.4\textwidth]{fig_alloc_s2_joint_k3}}\hspace{0.1\textwidth}
 \subfloat[projected Yogi, $\rho=1.7095$]{\includegraphics[width=0.4\textwidth]{fig_alloc_s2_yogi_k3}}
-\caption{As Figure~\ref{t-fig-alloc-s2-k1}, for the allocation
-$\chi_3$.}\label{t-fig-alloc-s2-k3}
+\caption{The allocation $\chi_3$ for the weekly budget,
+$b_{2i}=b_{3i}=b_{1i}/4$, and $\sigma_2$, $\sigma_3$ of seed $2$.}\label{t-fig-alloc-s2-k3}
 \end{figure}
 
 \begin{figure}[htbp]
 \centering
 \subfloat[interior point method, $\rho=1.3088$]{\includegraphics[width=0.4\textwidth]{fig_alloc_p_joint_k1}}\hspace{0.1\textwidth}
 \subfloat[projected Yogi, $\rho=1.3085$]{\includegraphics[width=0.4\textwidth]{fig_alloc_p_yogi_k1}}
-\caption{As Figure~\ref{t-fig-alloc-s2-k1}, for the weekly instance with
-$b_{2i}=b_{1i}/8$, $b_{3i}=b_{1i}/2$ and $\sigma_2=\sigma_3=P$: the
-allocation $\chi_1$.}\label{t-fig-alloc-p-k1}
+\caption{The allocation $\chi_1$ for the weekly budget,
+$b_{2i}=b_{1i}/8$, $b_{3i}=b_{1i}/2$, and $\sigma_2=\sigma_3=P$.}\label{t-fig-alloc-p-k1}
 \end{figure}
 
 \begin{figure}[htbp]
 \centering
 \subfloat[interior point method, $\rho=1.3088$]{\includegraphics[width=0.4\textwidth]{fig_alloc_p_joint_k2}}\hspace{0.1\textwidth}
 \subfloat[projected Yogi, $\rho=1.3085$]{\includegraphics[width=0.4\textwidth]{fig_alloc_p_yogi_k2}}
-\caption{As Figure~\ref{t-fig-alloc-p-k1}, for the allocation
-$\chi_2$.}\label{t-fig-alloc-p-k2}
+\caption{The allocation $\chi_2$ for the weekly budget,
+$b_{2i}=b_{1i}/8$, $b_{3i}=b_{1i}/2$, and $\sigma_2=\sigma_3=P$.}\label{t-fig-alloc-p-k2}
 \end{figure}
 
 \begin{figure}[htbp]
 \centering
 \subfloat[interior point method, $\rho=1.3088$]{\includegraphics[width=0.4\textwidth]{fig_alloc_p_joint_k3}}\hspace{0.1\textwidth}
 \subfloat[projected Yogi, $\rho=1.3085$]{\includegraphics[width=0.4\textwidth]{fig_alloc_p_yogi_k3}}
-\caption{As Figure~\ref{t-fig-alloc-p-k1}, for the allocation
-$\chi_3$.}\label{t-fig-alloc-p-k3}
+\caption{The allocation $\chi_3$ for the weekly budget,
+$b_{2i}=b_{1i}/8$, $b_{3i}=b_{1i}/2$, and $\sigma_2=\sigma_3=P$.}\label{t-fig-alloc-p-k3}
 \end{figure}
 
 In practice the method should be run from several starts, the barycenter, the
