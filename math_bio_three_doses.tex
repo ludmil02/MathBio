@@ -1,0 +1,587 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{amsthm,latexsym,mathrsfs}
+\usepackage{bm,bbm,dsfont}
+\usepackage{color,graphicx}
+\usepackage[latin1]{inputenc}
+\usepackage[english]{babel}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepgfplotslibrary{groupplots}
+% the colors of the locations, as in the main document
+\definecolor{locNE}{HTML}{2A78D6}
+\definecolor{locMW}{HTML}{EB6834}
+\definecolor{locS}{HTML}{1BAF7A}
+\definecolor{locW}{HTML}{EDA100}
+\usepackage{xr-hyper}
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
+% labels of the main document, prefixed M-: build it first, so that its .aux exists
+\externaldocument[M-]{math_bio_positive_matrices_clean}
+
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+% section numbers in headings followed by a period
+\makeatletter
+\renewcommand\@seccntformat[1]{\csname the#1\endcsname.\quad}
+\makeatother
+
+\everymath{\displaystyle}
+\numberwithin{equation}{section}
+\renewcommand{\thesection}{T\arabic{section}}
+
+\title{Three doses: a projected adaptive gradient method\thanks{Parts of this manuscript were edited with the assistance of an AI tool (Claude Opus 5.5, Anthropic). The authors are solely responsible for all proofs and statements.}}
+\author{Zhilan \and John \and Yuliya \and Ludmil}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Companion to ``Minimizing the spectral radius of a diagonally scaled positive
+matrix''. Equation, theorem and section numbers without a prefix T refer to
+that document. For the three-dose problem~\eqref{M-three-program}, which is not
+convex, we use the adaptive gradient method Yogi with each step projected onto
+the feasible set in the metric of its preconditioner. We show that its fixed
+points, and its limits when they exist, are exactly the points satisfying the
+Karush--Kuhn--Tucker conditions, and test it on $37$ instances.
+\end{abstract}
+
+\section{The problem}\label{t-problem}
+
+We consider~\eqref{M-three-program} with $b_{k,i}>0$ for all $k=1:3$ and
+$i=1:m$. By property~(\ref{M-simplex-product}) of Section~\ref{M-sec-reduced}
+the feasible set is
+$\mathcal{S}=\mathcal{S}_1\times\mathcal{S}_2\times\mathcal{S}_3$, with
+$\mathcal{S}_k=\left(\Delta_{n-1}\right)^m$ the set of admissible
+$\widehat{\bm u}_k=\left(\widehat u_{k,ij}\right)$, a product of $3m$
+simplices, and the objective function is
+\begin{equation}\label{t-F}
+F(\widehat{\bm u}_1,\widehat{\bm u}_2,\widehat{\bm u}_3)
+=\log\rho\left(A_1\operatorname{diag}\left(\bm g\left(\bm\chi\right)\right)\right),
+\qquad \chi_{k,p}=\frac{b_{k,i}}{\sigma_{k,ij}}\,\widehat u_{k,ij},
+\end{equation}
+with $\bm g$ given by~\eqref{M-g-def}. With the eigenvectors $\bm v,\bm w>0$
+of~\eqref{M-perron}, the argument that gives~\eqref{M-grad} gives
+\begin{equation}\label{t-grad}
+\frac{\partial F}{\partial\widehat u_{k,ij}}
+=\frac{1}{\rho}\cdot\frac{\left(A_1^T\bm w\right)_pv_p}{\langle\bm w,\bm v\rangle}
+\cdot\frac{\partial g_p}{\partial \chi_{k,p}}\cdot\frac{b_{k,i}}{\sigma_{k,ij}},
+\qquad p=(i-1)n+j .
+\end{equation}
+Each evaluation of the gradient needs one Perron vector of
+$A_1\operatorname{diag}(\bm g)$ and one of its transpose.
+
+Unlike the single dose of Section~\ref{M-sec-single}, $F$ is not convex. The
+dose $\chi_{2,p}$ enters both $\pi_{1,p}$, through
+$\omega_v+\varepsilon_2\chi_{2,p}$, and $\pi_{2,p}$ in~\eqref{M-g-def}. For
+$200\,000$ points $(\chi_{1,p},\chi_{2,p},\chi_{3,p})$ drawn log-uniformly from
+$\left[10^{-5},10^{-1.5}\right]^3$, with the parameters of the model,
+$\varepsilon_1=\varepsilon_2=\varepsilon_3=0.8$ and $\omega=\omega_v=1/182.5$,
+the smallest value of $\chi_{2,p}^2\,\partial^2\log g_p/\partial \chi_{2,p}^2$
+is $-0.154$, and $g_p$ increases with $\chi_{2,p}$ at $24.0$ per cent of the
+points. The equality constraints therefore cannot be relaxed to inequalities as
+in Section~\ref{M-sec-single}. Section~\ref{t-results} shows points satisfying
+the Karush--Kuhn--Tucker conditions with different values of $F$; for a convex
+differentiable function on a convex set every such point is a global
+minimizer~\cite[Section 4.2.3]{2004Boyd_Vandenberghe}, so these values also
+show that $F$ is not convex.
+
+\section{Projected Yogi}\label{t-yogi}
+
+We minimize $F$ in all $3N$ variables with the adaptive method Yogi
+of~\cite{2018Zaheer_Yogi}, with each step projected onto $\mathcal{S}$ in the metric of its diagonal preconditioner.
+The method uses the gradient~\eqref{t-grad} and no Hessian.
+
+\subsection{Smoothness of the objective function}
+
+For $\widehat{\bm u}\in\mathcal{S}$ all $\chi_{k,p}\ge 0$, so
+$\pi_{1,p},\pi_{2,p}\ge 0$ and $\pi_{3,p}\ge 1$ in~\eqref{M-g-def}; the
+numerator of $g_p$ is at least $1$ and its denominator at least $1$, and $g_p$
+is a rational function of $\bm\chi$ with a positive denominator on a
+neighbourhood of $\mathcal{S}$. Hence $g_p>0$ there, and
+$A_1\operatorname{diag}(\bm g)$ is non-negative and irreducible with the
+pattern of $A_1$. Its spectral radius is a simple eigenvalue, so it is an
+analytic function of the entries near every such $\bm g$
+(see~\cite[Section 6.3]{1985Horn_Johnson}), and $F$ is $C^\infty$ on a
+neighbourhood of the compact set $\mathcal{S}$. In particular $\nabla F$,
+given by~\eqref{t-grad}, is continuous and bounded on $\mathcal{S}$, and we
+put
+\begin{equation}\label{t-G}
+G=\max_{\widehat{\bm u}\in\mathcal{S}}\left\|\nabla F\left(\widehat{\bm u}\right)\right\|_\infty<\infty .
+\end{equation}
+
+\subsection{Projection in a diagonal metric}
+
+For a vector $\bm d\in\mathbb{R}^n$ with $\bm d>0$ and $\bm z\in\mathbb{R}^n$ let
+\begin{equation}\label{t-proj}
+\Pi^{\bm d}(\bm z)=\operatorname*{arg\,min}_{\bm y\in\Delta_{n-1}}\
+\frac12\sum_{j=1}^n d_j\left(y_j-z_j\right)^2 .
+\end{equation}
+For $\mathcal{S}$, a product of $3m$ simplices, and a diagonal matrix $D>0$
+of order $3N$, $\Pi^D_{\mathcal{S}}$ applies~\eqref{t-proj} to each factor
+$(k,i)$ with the diagonal entries of $D$ of that factor. With $D=I$ this is
+the Euclidean projection $\Pi_{\mathcal{S}}$.
+
+\begin{lemma}\label{t-proj-prop}
+Let $\bm d>0$ and $\bm z\in\mathbb{R}^n$.
+\begin{enumerate}
+\item[(a)] Problem~\eqref{t-proj} has a unique solution $\bm y$, and
+$\bm y\in\Delta_{n-1}$ is this solution if and only if
+\begin{equation}\label{t-vi}
+\sum_{j=1}^n d_j\left(z_j-y_j\right)\left(x_j-y_j\right)\le 0
+\quad\text{for all }\bm x\in\Delta_{n-1}.
+\end{equation}
+\item[(b)] The solution is $y_j=\max\left(z_j-\lambda/d_j,0\right)$, where
+$\lambda$ is the unique root of
+\begin{equation*}
+\varphi(\lambda)=\sum_j\max\left(z_j-\lambda/d_j,0\right)=1 .
+\end{equation*}
+\item[(c)] $\Pi^{\bm d}(\bm z)$ is a continuous function of $(\bm z,\bm d)$
+on $\mathbb{R}^n\times(0,\infty)^n$.
+\end{enumerate}
+\end{lemma}
+\begin{proof}
+(a) The objective function of~\eqref{t-proj} is continuous and strictly convex,
+and $\Delta_{n-1}$ is compact and convex, so the minimizer exists and is
+unique. For a convex differentiable function on a convex set, a point is a
+minimizer if and only if the directional derivative towards every point of the
+set is non-negative~\cite[Section 4.2.3]{2004Boyd_Vandenberghe}; here this
+derivative is $\sum_j d_j(y_j-z_j)(x_j-y_j)$, which is~\eqref{t-vi}.
+
+(b) The function $\varphi$ is continuous and non-increasing, it is
+$0$ for $\lambda\ge\max_j d_jz_j$, and $\varphi(\lambda)\to\infty$ as
+$\lambda\to-\infty$. Where $\varphi(\lambda)>0$ at least one term is positive,
+and that term is strictly decreasing in $\lambda$, so $\varphi$ is strictly
+decreasing on $\{\varphi>0\}$ and $\varphi(\lambda)=1$ has exactly one root.
+For this $\lambda$ the vector $\bm y$ lies in $\Delta_{n-1}$. For
+$\bm x\in\Delta_{n-1}$, $d_j(z_j-y_j)=\lambda$ if $y_j>0$, and
+$d_j(z_j-y_j)=d_jz_j\le\lambda$ if $y_j=0$; hence
+\begin{equation}
+\sum_j d_j(z_j-y_j)(x_j-y_j)
+=\lambda\sum_{y_j>0}(x_j-y_j)+\sum_{y_j=0}d_jz_jx_j
+\le\lambda\sum_{y_j>0}(x_j-y_j)+\lambda\sum_{y_j=0}x_j
+=\lambda\left(1-1\right)=0,
+\end{equation}
+using $x_j\ge 0$, $\sum_jx_j=1$ and $\sum_{y_j>0}y_j=1$. By (a), $\bm y$ is the
+solution.
+
+(c) The function $\varphi(\lambda;\bm z,\bm d)$ is jointly continuous. Let
+$(\bm z_\ell,\bm d_\ell)\to(\bm z,\bm d)$, with roots $\lambda_\ell$ and
+$\lambda$. For $\delta>0$, $\varphi(\lambda-\delta;\bm z,\bm d)>1>\varphi(\lambda+\delta;\bm z,\bm d)$
+by the strict decrease in (b), so for $\ell$ large the same inequalities hold
+with $(\bm z_\ell,\bm d_\ell)$, and $|\lambda_\ell-\lambda|<\delta$. Hence
+$\lambda_\ell\to\lambda$, and the formula in (b) is continuous in
+$(\lambda,\bm z,\bm d)$.
+\end{proof}
+
+The root in (b) is computed exactly: on each interval between consecutive
+values of $d_jz_j$, $\varphi$ is affine in $\lambda$.
+
+\begin{lemma}\label{t-fixed}
+Let $D>0$ be diagonal of order $3N$, $\eta>0$, and
+$\widehat{\bm u}\in\mathcal{S}$. The following are equivalent:
+\begin{enumerate}
+\item[(a)] $\widehat{\bm u}=\Pi^D_{\mathcal{S}}\left(\widehat{\bm u}-\eta D^{-1}\nabla F\left(\widehat{\bm u}\right)\right)$;
+\item[(b)] $\nabla F\left(\widehat{\bm u}\right)^T\left(\bm x-\widehat{\bm u}\right)\ge 0$ for all $\bm x\in\mathcal{S}$;
+\item[(c)] for each factor $(k,i)$ there is $\lambda_{k,i}$ with
+$\partial F/\partial\widehat u_{k,ij}=\lambda_{k,i}$ where $\widehat u_{k,ij}>0$
+and $\partial F/\partial\widehat u_{k,ij}\ge\lambda_{k,i}$ where $\widehat u_{k,ij}=0$,
+\end{enumerate}
+that is, $\widehat{\bm u}$ satisfies the Karush--Kuhn--Tucker conditions
+of~\eqref{M-three-program}. In particular the condition does not depend on $D$
+and $\eta$.
+\end{lemma}
+\begin{proof}
+(a)$\Leftrightarrow$(b). Apply Lemma~\ref{t-proj-prop}(a) to each factor
+with
+\begin{equation*}
+\bm y=\widehat{\bm u}_{k,i\cdot},\qquad
+\bm z=\widehat{\bm u}_{k,i\cdot}-\eta D_{k,i}^{-1}\nabla_{k,i}F,
+\end{equation*}
+where the subscript $k,i$ denotes the entries of the factor. Then
+$d_j(z_j-y_j)=-\eta\,\partial F/\partial\widehat u_{k,ij}$, and~\eqref{t-vi}
+holding in every factor is the statement that
+$\nabla_{k,i}F^T(\bm x_{k,i}-\widehat{\bm u}_{k,i\cdot})\ge 0$ for all
+$\bm x_{k,i}\in\Delta_{n-1}$ and all $(k,i)$. Since $\mathcal{S}$ is the
+product of the factors, this is (b).
+
+(b)$\Leftrightarrow$(c). Condition (b) says that $\widehat{\bm u}_{k,i\cdot}$
+minimizes the linear function $\bm c^T\bm x$, $\bm c=\nabla_{k,i}F$, over
+$\Delta_{n-1}$ in every factor. The minimum of $\bm c^T\bm x$ over
+$\Delta_{n-1}$ is $\min_jc_j$, and
+$\bm c^T\bm y-\min_jc_j=\sum_jy_j\left(c_j-\min_lc_l\right)$, which vanishes for
+$\bm y\in\Delta_{n-1}$ if and only if $y_j=0$ whenever $c_j>\min_lc_l$. This
+is (c) with $\lambda_{k,i}=\min_jc_j$. Conversely, under (c),
+$\lambda_{k,i}\le c_j$ for all $j$ with equality on the support of $\bm y$,
+which has at least one element, so $\lambda_{k,i}=\min_jc_j$.
+
+Finally, the Karush--Kuhn--Tucker conditions of~\eqref{M-three-program} in the
+variables $\widehat{\bm u}$, with the constraints $\sum_j\widehat u_{k,ij}=1$
+and $\widehat u_{k,ij}\ge 0$, are (c) with the multiplier $\lambda_{k,i}$ of
+the equality constraint of the factor.
+\end{proof}
+
+With $D=I$ and $\eta=1$ we use
+\begin{equation}\label{t-r}
+r\left(\widehat{\bm u}\right)=\left\|\widehat{\bm u}-\Pi_{\mathcal{S}}\left(\widehat{\bm u}-\nabla F\left(\widehat{\bm u}\right)\right)\right\|_\infty
+\end{equation}
+as the measure of stationarity: $r\ge 0$ on $\mathcal{S}$, it is continuous,
+and by Lemma~\ref{t-fixed} it vanishes exactly at the points satisfying
+the Karush--Kuhn--Tucker conditions. It needs no threshold to decide which
+entries of $\widehat{\bm u}$ are positive.
+
+\subsection{The method}
+
+Algorithm~\ref{t-alg-yogi} states the method. Squares, square roots, products,
+quotients and $\operatorname{sign}$ of vectors are taken entrywise. Compared
+with the method as stated in~\cite{2018Zaheer_Yogi}, the gradient is exact
+rather than stochastic, and the step is followed by the projection; we start
+the second moment $\bm s$ at the square of the first gradient, and divide the
+first moment by $1-\beta_1^t$.
+
+\begin{algorithm}[ht]
+\caption{Projected Yogi}\label{t-alg-yogi}
+\begin{algorithmic}[1]
+\Require a start $\widehat{\bm u}^{(0)}\in\mathcal{S}$; a step $\eta>0$;
+$\beta_1\in[0,1)$, $\beta_2\in(0,1)$, $\epsilon>0$; a tolerance $\mathrm{tol}$
+and a maximal number of iterations $t_{\max}$
+\State $\bm q\gets\nabla F\left(\widehat{\bm u}^{(0)}\right)$, $\bm \mu\gets\bm 0$, $\bm s\gets\bm q^2$
+\For{$t=1,\ldots,t_{\max}$}
+  \State $\bm q\gets\nabla F\left(\widehat{\bm u}^{(t-1)}\right)$
+  \State $\bm\mu\gets\beta_1\bm\mu+(1-\beta_1)\bm q$
+  \State $\bm s\gets\bm s-(1-\beta_2)\operatorname{sign}\left(\bm s-\bm q^2\right)\bm q^2$
+  \State $D\gets\operatorname{diag}\left(\sqrt{\bm s}+\epsilon\right)$
+  \State $\widehat{\bm u}^{(t)}\gets\Pi^D_{\mathcal{S}}\left(\widehat{\bm u}^{(t-1)}-\eta D^{-1}\bm\mu/\left(1-\beta_1^t\right)\right)$
+  \If{$r\left(\widehat{\bm u}^{(t)}\right)<\mathrm{tol}$}
+    \State \textbf{break}
+  \EndIf
+\EndFor
+\State \Return $\widehat{\bm u}^{(t)}$, $\rho=\exp F\left(\widehat{\bm u}^{(t)}\right)$
+\end{algorithmic}
+\end{algorithm}
+
+\begin{lemma}\label{t-yogi-limit}
+Let $\widehat{\bm u}^{(t)}$, $\bm\mu$, $\bm s$ be the iterates of
+Algorithm~\ref{t-alg-yogi} with $t_{\max}=\infty$ and $\mathrm{tol}=0$, and
+$G$ as in~\eqref{t-G}.
+\begin{enumerate}
+\item[(a)] Every iterate lies in $\mathcal{S}$, and
+$0\le s_l\le S:=\max\left(\left\|\bm s^{(0)}\right\|_\infty,(2-\beta_2)G^2\right)$
+for every entry $l$ and every $t$. Hence
+$\epsilon I\le D\le\left(\sqrt{S}+\epsilon\right)I$.
+\item[(b)] If $\widehat{\bm u}^{(t)}\to\widehat{\bm u}^*$, then
+$\widehat{\bm u}^*$ satisfies the Karush--Kuhn--Tucker conditions
+of~\eqref{M-three-program}.
+\end{enumerate}
+\end{lemma}
+\begin{proof}
+(a) The iterates lie in $\mathcal{S}$ because they are values of
+$\Pi^D_{\mathcal{S}}$. Fix an entry $l$, write $s$ for $s_l$ before the update
+and $q^2\le G^2$ for $q_l^2$. If $s>q^2$, the update gives
+$s-(1-\beta_2)q^2$, which lies in $\left(\beta_2q^2,s\right)$ if $q\ne 0$ and
+equals $s$ if $q=0$. If $s<q^2$, it gives $s+(1-\beta_2)q^2\in\left[0,(2-\beta_2)q^2\right]$
+when $s\ge 0$. If $s=q^2$, $s$ is unchanged. By induction from
+$\bm s^{(0)}=\bm q^2\ge 0$, each entry stays non-negative, and it either does
+not increase or ends at most $(2-\beta_2)G^2$; hence it never exceeds $S$.
+
+(b) By continuity of $\nabla F$,
+$\bm q^{(t)}=\nabla F\left(\widehat{\bm u}^{(t-1)}\right)\to\nabla F\left(\widehat{\bm u}^*\right)$.
+The moment
+\begin{equation*}
+\bm\mu^{(t)}=(1-\beta_1)\sum_{\tau=1}^t\beta_1^{t-\tau}\bm q^{(\tau)}
+\end{equation*}
+is a weighted mean with weights summing to $1-\beta_1^t$, so
+$\bm\mu^{(t)}/\left(1-\beta_1^t\right)\to\nabla F\left(\widehat{\bm u}^*\right)$.
+By (a) the matrices $D^{(t)}$ lie in a compact set of positive diagonal
+matrices, so a subsequence converges to some $D^*\ge\epsilon I$. Along this
+subsequence, the continuity of Lemma~\ref{t-proj-prop}(c) in the update
+of $\widehat{\bm u}^{(t)}$ gives
+\begin{equation*}
+\widehat{\bm u}^*=\Pi^{D^*}_{\mathcal{S}}\left(\widehat{\bm u}^*-\eta D^{*-1}\nabla F\left(\widehat{\bm u}^*\right)\right),
+\end{equation*}
+and Lemma~\ref{t-fixed} applies.
+\end{proof}
+
+Lemma~\ref{t-yogi-limit} does not assert that the iterates converge, nor
+that $F$ decreases along them; the analysis of~\cite{2018Zaheer_Yogi} is for
+unconstrained problems with stochastic gradients and does not cover the
+projection. The method is local, and on the non-convex
+problem~\eqref{M-three-program} its limit, when there is one, depends on the
+start.
+
+\section{Results}\label{t-results}
+
+In all runs $\eta=10^{-2}$, $\beta_1=0.9$, $\beta_2=0.999$,
+$\epsilon=10^{-8}$, $\mathrm{tol}=10^{-10}$ and $t_{\max}=2\cdot 10^5$; no run
+reached $t_{\max}$. With $\eta=10^{-3}$ the run from the barycenter of the
+weekly instance below had $r=1.3\cdot 10^{-7}$ after $5000$ iterations,
+against convergence in $652$ iterations with $\eta=10^{-2}$.
+
+\subsection{The weekly instance}
+
+The instance is that of Section~S3 of the supplement: $b_{1i}$ the weekly
+budget of the first dose, $b_{2i}=b_{3i}=b_{1i}/4$, and
+$\sigma_{2,ij}=\sigma_{3,ij}=P_{ij}$, the numbers of partially protected
+individuals, no budget for the second and third doses being given with the
+data of~\cite{JZh}; $m=n=4$ and $N=16$. We run Algorithm~\ref{t-alg-yogi} from
+$49$ starts: the barycenter $\overline{\bm u}$ of $\mathcal{S}$,
+$\overline u_{k,ij}=1/n$, and the $3mn=48$ points obtained from it by
+replacing one factor $(k,i)$ with $(1-\delta)\bm e_j+\delta\mathbbm{1}/n$,
+$\delta=10^{-3}$. In the start $(k,i,j)$ all doses of type $k$ in location $i$
+go, up to $\delta$, to the age group $j$.
+
+From every start the method ends at $\rho=1.661826042009$, the values agreeing
+to $10^{-12}$, with $r<10^{-10}$. Table~\ref{t-tab-yogi} gives the iterations
+and the times. The slow runs are the $11$ starts with dose $2$ at a vertex in
+locations $2$, $3$ and $4$, which took between $20546$ and $166447$
+iterations; with $t_{\max}=2\cdot 10^4$ eight of them stop at $r$ between
+$4\cdot 10^{-6}$ and $1.2\cdot 10^{-4}$, with $\rho$ at most
+$3.3\cdot 10^{-7}$ relative above the final value. This is the slow final
+phase of a first-order method, not a different limit.
+
+\begin{table}[ht]
+\centering
+\small
+\begin{tabular}{lcccc}
+\hline
+starts & barycenter & dose $1$ at a vertex & dose $2$ at a vertex & dose $3$ at a vertex\\
+ & ($1$) & ($16$) & ($16$) & ($16$)\\
+\hline
+iterations & $652$ & $3159$--$15460$ & $12699$--$166447$ & $1118$--$3354$\\
+time & $0.5$ s & $90$ s & $822$ s & $27$ s\\
+\hline
+\end{tabular}
+\caption{Algorithm~\ref{t-alg-yogi} on the weekly instance from the $49$
+starts; times are totals over the starts of the column. Every run ends at
+$\rho=1.661826042009$.}\label{t-tab-yogi}
+\end{table}
+
+Figure~\ref{t-fig-conv} shows the relative excess $(\rho-\rho^*)/\rho^*$ over
+$\rho^*=1.661826042009$ and the stationarity measure $r$ along three runs. The
+relative excess falls below $10^{-8}$ after $174$ iterations from the
+barycenter, after $340$ from the start $(3,1,4)$, and after $37290$ from the
+start $(2,4,1)$, the slowest of Table~\ref{t-tab-yogi}, along which $r$
+decreases slowly over most of the run.
+
+\pgfplotsset{conv panel/.style={
+  width=0.47\textwidth, height=0.36\textwidth,
+  xmode=log, xlabel={iteration},
+  ymode=log, ymin=1e-16, ymax=2,
+  ymajorgrids, grid style={gray!25},
+  axis lines*=left, title style={font=\small},
+  tick label style={font=\scriptsize}, label style={font=\small},
+  legend cell align=left,
+  legend style={draw=none, fill=white, fill opacity=0.8, text opacity=1, font=\scriptsize},
+  every axis plot/.append style={line width=1.0pt}}}
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}
+\begin{groupplot}[group style={group size=2 by 1, horizontal sep=1.4cm}, conv panel]
+\nextgroupplot[title={relative excess}, ylabel={$(\rho-\rho^*)/\rho^*$}, legend pos=south west]
+\addplot[color=locNE] table[x=it, y=excess]{fig_yogi_hist_bary.dat};
+\addplot[color=locMW] table[x=it, y=excess]{fig_yogi_hist_k3.dat};
+\addplot[color=locS]  table[x=it, y=excess]{fig_yogi_hist_k2.dat};
+\legend{barycenter, {$(3,1,4)$}, {$(2,4,1)$}}
+\nextgroupplot[title={stationarity measure}, ylabel={$r$}]
+\addplot[color=locNE] table[x=it, y=r]{fig_yogi_hist_bary.dat};
+\addplot[color=locMW] table[x=it, y=r]{fig_yogi_hist_k3.dat};
+\addplot[color=locS]  table[x=it, y=r]{fig_yogi_hist_k2.dat};
+\end{groupplot}
+\end{tikzpicture}
+\caption{Algorithm~\ref{t-alg-yogi} on the weekly instance from the barycenter
+and from the starts $(k,i,j)=(3,1,4)$ and $(2,4,1)$: the relative excess over
+$\rho^*=1.661826042009$ (left) and $r$ of~\eqref{t-r} (right) per iteration.
+The iteration count is on a logarithmic scale, and the start, iteration $0$,
+is not shown. Excesses below $10^{-16}$, rounding, are shown at
+$10^{-16}$.}\label{t-fig-conv}
+\end{figure}
+
+\subsection{Thirty-six instances}
+
+To test whether the barycenter is a reliable start we varied the data in $36$
+instances: the first-dose budget $b_{1i}$ weekly or daily ($b_{1i}/7$); the
+ratios
+\begin{equation}
+\frac{(b_{2i},b_{3i})}{b_{1i}}\in\left\{\left(\tfrac1{16},\tfrac1{16}\right),\left(\tfrac14,\tfrac14\right),(1,1),(4,4),\left(\tfrac12,\tfrac18\right),\left(\tfrac18,\tfrac12\right)\right\};
+\end{equation}
+and $\sigma_{2,ij}$, $\sigma_{3,ij}$ equal to $P_{ij}$, or equal to
+$P_{ij}e^{Z_{ij}/2}$ and $P_{ij}e^{Z'_{ij}/2}$ with independent standard
+normal $Z$, $Z'$, for two seeds. For each instance $\rho_{\mathrm{best}}$ is
+the smallest value known: that of $69$ runs of the trust region interior point
+method of~\cite{1999Byrd_Hribar_Nocedal} in all variables, from the $49$
+starts above and $20$ random points of $\mathcal{S}$, or that of
+Algorithm~\ref{t-alg-yogi} from the barycenter if it is smaller. A run is
+successful if its $\rho$ is at most $(1+10^{-7})\rho_{\mathrm{best}}$.
+
+From the barycenter, Algorithm~\ref{t-alg-yogi} takes between $545$ and
+$10897$ iterations, $71$~s for all $36$ instances, and ends with $r<10^{-10}$
+in every instance. It is successful in $31$ instances, $14$ of the $18$
+weekly and $17$ of the $18$ daily. In two of them its value is smaller than
+that of all $69$ interior point runs, by $0.13$ and $0.025$ per cent, and is
+$\rho_{\mathrm{best}}$. Table~\ref{t-tab-yogi-inst} lists these two and the
+five instances in which it is not successful. Four of the five are weekly,
+two of them with the smallest budgets $b_{2i}=b_{3i}=b_{1i}/16$; the misses are
+up to $1.2$ per cent. At these five endpoints $r<10^{-10}$, so they are points
+satisfying the Karush--Kuhn--Tucker conditions to this accuracy with $\rho$
+above $\rho_{\mathrm{best}}$, and $F$ is not convex on these instances.
+
+\begin{table}[ht]
+\centering
+\small
+\begin{tabular}{lllccc}
+\hline
+budget & $(b_{2i},b_{3i})/b_{1i}$ & $\sigma_2,\sigma_3$ & interior point &
+Alg.~\ref{t-alg-yogi} & relative excess\\
+\hline
+weekly & $(\tfrac14,\tfrac14)$       & seed $2$ & $1.7117509539$ & $1.7095128048$ & $0$\\
+weekly & $(\tfrac18,\tfrac12)$       & $P$      & $1.3088277638$ & $1.3084969664$ & $0$\\
+\hline
+weekly & $(\tfrac1{16},\tfrac1{16})$ & $P$      & $2.5031932862$ & $2.5334636776$ & $1.2\cdot 10^{-2}$\\
+weekly & $(\tfrac1{16},\tfrac1{16})$ & seed $2$ & $2.4252749378$ & $2.4383599028$ & $5.4\cdot 10^{-3}$\\
+weekly & $(\tfrac18,\tfrac12)$       & seed $1$ & $1.2363297040$ & $1.2376346772$ & $1.1\cdot 10^{-3}$\\
+weekly & $(\tfrac18,\tfrac12)$       & seed $2$ & $1.3770469379$ & $1.3819571439$ & $3.6\cdot 10^{-3}$\\
+daily  & $(\tfrac1{16},\tfrac1{16})$ & $P$      & $4.0391397841$ & $4.0402962781$ & $2.9\cdot 10^{-4}$\\
+\hline
+\end{tabular}
+\caption{The instances in which Algorithm~\ref{t-alg-yogi} from the barycenter
+gives $\rho_{\mathrm{best}}$ below the best of $69$ interior point runs (top),
+and those in which it is not successful (bottom). The columns give the best
+$\rho$ of the interior point runs, $\rho$ of Algorithm~\ref{t-alg-yogi}, and
+its relative excess $(\rho-\rho_{\mathrm{best}})/\rho_{\mathrm{best}}$.}\label{t-tab-yogi-inst}
+\end{table}
+
+Figures~\ref{t-fig-alloc-s2} and~\ref{t-fig-alloc-p} show, for the two
+instances at the top of Table~\ref{t-tab-yogi-inst}, the allocations
+$\chi_{k,ij}$ at the endpoint of Algorithm~\ref{t-alg-yogi} and at that of the
+interior point method from the barycenter, which gives the best of the $69$
+interior point values. The two allocations differ mainly in one location. In
+the first instance the interior point endpoint gives the group $60+$ of the
+South $\chi_{2}=0.0162$ and $\chi_{3}=0.0211$ per day, and that of
+Algorithm~\ref{t-alg-yogi} gives this group no second or third doses and their
+budget to the groups $0$--$59$ of the South. In the second instance the same
+holds for the group $60+$ of the West, with $\chi_{2}=0.0098$ and
+$\chi_{3}=0.0181$ per day at the interior point endpoint. In the other three
+locations the entries above $10^{-3}$ per day agree to $2.2$ per cent; the
+smaller ones, first doses to the group $60+$, differ by up to
+$3\cdot 10^{-4}$ per day. As for the single dose, where the group $60+$
+receives no doses at the minimizer, the smaller value moves doses away from
+this group.
+
+\pgfplotsset{alloc panel/.style={
+  width=0.46\textwidth, height=0.26\textwidth,
+  xtick={0,1,2,3}, xticklabels={0--19,20--39,40--59,60+},
+  ymin=0, ymajorgrids, grid style={gray!25},
+  axis lines*=left, title style={font=\small},
+  tick label style={font=\scriptsize}, label style={font=\small},
+  legend cell align=left,
+  legend style={draw=none, fill=none, font=\scriptsize},
+  every axis plot/.append style={line width=1.0pt, mark size=1.8pt}}}
+% #1: file stem, #2: rho of the interior point method, #3: rho of Yogi
+\newcommand{\allocfigure}[3]{%
+\begin{tikzpicture}
+\begin{groupplot}[group style={group size=2 by 3, horizontal sep=1.2cm,
+    vertical sep=1.3cm, xticklabels at=edge bottom}, alloc panel]
+\nextgroupplot[title={interior point method, $\rho=#2$}, ymax=6, ylabel={$\chi_1$}, legend pos=south west]
+\addplot[color=locNE, mark=*]         table[x=age, y=k1NE]{fig_alloc_#1_joint.dat};
+\addplot[color=locMW, mark=square*]   table[x=age, y=k1MW]{fig_alloc_#1_joint.dat};
+\addplot[color=locS,  mark=triangle*] table[x=age, y=k1S]{fig_alloc_#1_joint.dat};
+\addplot[color=locW,  mark=diamond*]  table[x=age, y=k1W]{fig_alloc_#1_joint.dat};
+\legend{Northeast, Midwest, South, West}
+\nextgroupplot[title={Algorithm~\ref{t-alg-yogi}, $\rho=#3$}, ymax=6]
+\addplot[color=locNE, mark=*]         table[x=age, y=k1NE]{fig_alloc_#1_yogi.dat};
+\addplot[color=locMW, mark=square*]   table[x=age, y=k1MW]{fig_alloc_#1_yogi.dat};
+\addplot[color=locS,  mark=triangle*] table[x=age, y=k1S]{fig_alloc_#1_yogi.dat};
+\addplot[color=locW,  mark=diamond*]  table[x=age, y=k1W]{fig_alloc_#1_yogi.dat};
+\nextgroupplot[ymax=60, ylabel={$\chi_2$}]
+\addplot[color=locNE, mark=*]         table[x=age, y=k2NE]{fig_alloc_#1_joint.dat};
+\addplot[color=locMW, mark=square*]   table[x=age, y=k2MW]{fig_alloc_#1_joint.dat};
+\addplot[color=locS,  mark=triangle*] table[x=age, y=k2S]{fig_alloc_#1_joint.dat};
+\addplot[color=locW,  mark=diamond*]  table[x=age, y=k2W]{fig_alloc_#1_joint.dat};
+\nextgroupplot[ymax=60]
+\addplot[color=locNE, mark=*]         table[x=age, y=k2NE]{fig_alloc_#1_yogi.dat};
+\addplot[color=locMW, mark=square*]   table[x=age, y=k2MW]{fig_alloc_#1_yogi.dat};
+\addplot[color=locS,  mark=triangle*] table[x=age, y=k2S]{fig_alloc_#1_yogi.dat};
+\addplot[color=locW,  mark=diamond*]  table[x=age, y=k2W]{fig_alloc_#1_yogi.dat};
+\nextgroupplot[ymax=100, ylabel={$\chi_3$}, xlabel={age group (years)}]
+\addplot[color=locNE, mark=*]         table[x=age, y=k3NE]{fig_alloc_#1_joint.dat};
+\addplot[color=locMW, mark=square*]   table[x=age, y=k3MW]{fig_alloc_#1_joint.dat};
+\addplot[color=locS,  mark=triangle*] table[x=age, y=k3S]{fig_alloc_#1_joint.dat};
+\addplot[color=locW,  mark=diamond*]  table[x=age, y=k3W]{fig_alloc_#1_joint.dat};
+\nextgroupplot[ymax=100, xlabel={age group (years)}]
+\addplot[color=locNE, mark=*]         table[x=age, y=k3NE]{fig_alloc_#1_yogi.dat};
+\addplot[color=locMW, mark=square*]   table[x=age, y=k3MW]{fig_alloc_#1_yogi.dat};
+\addplot[color=locS,  mark=triangle*] table[x=age, y=k3S]{fig_alloc_#1_yogi.dat};
+\addplot[color=locW,  mark=diamond*]  table[x=age, y=k3W]{fig_alloc_#1_yogi.dat};
+\end{groupplot}
+\end{tikzpicture}}
+
+\begin{figure}[ht]
+\centering
+\allocfigure{s2}{1.7117509539}{1.7095128048}
+\caption{The weekly instance with $b_{2i}=b_{3i}=b_{1i}/4$ and $\sigma_2$,
+$\sigma_3$ of seed $2$: the allocations $\chi_1$, $\chi_2$, $\chi_3$ (rows),
+in units of $10^{-3}$ per day, at the endpoints of the interior point method
+(left) and of Algorithm~\ref{t-alg-yogi} (right), both from the barycenter. One
+line per location; the same scale in each row.}\label{t-fig-alloc-s2}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\allocfigure{p}{1.3088277638}{1.3084969664}
+\caption{As Figure~\ref{t-fig-alloc-s2}, for the weekly instance with
+$b_{2i}=b_{1i}/8$, $b_{3i}=b_{1i}/2$ and $\sigma_2=\sigma_3=P$.}\label{t-fig-alloc-p}
+\end{figure}
+
+\section{Conclusions}\label{t-conclusions}
+
+\begin{enumerate}
+\item The three-dose problem~\eqref{M-three-program} is not convex: the
+second dose enters $g_p$ non-convexly, and on five of the $36$ instances
+Algorithm~\ref{t-alg-yogi} ends at points satisfying the
+Karush--Kuhn--Tucker conditions with $\rho$ above the smallest value known.
+Theorems~\ref{M-global} and~\ref{M-barrier} have no analogue here.
+\item Projected Yogi, Algorithm~\ref{t-alg-yogi}, needs one gradient, that is,
+two Perron vectors, per iteration and no Hessian. Its fixed points are exactly
+the points satisfying the Karush--Kuhn--Tucker conditions
+(Lemma~\ref{t-fixed}), and so is its limit when the iterates converge
+(Lemma~\ref{t-yogi-limit}); we have no proof that they converge.
+\item On the weekly instance it reaches $\rho=1.661826042009$ from all $49$
+starts, with $r<10^{-10}$, in $652$ to $166447$ iterations.
+\item From the barycenter it is successful in $31$ of $36$ instances, and in
+two of them its value is smaller than that of $69$ interior point runs. The
+misses are up to $1.2$ per cent, and the hard instances are those with small
+second- and third-dose budgets.
+\item In practice the method should be run from several starts, the
+barycenter, the starts near the vertices and random points, and the smallest
+value kept; no single start is guaranteed to give the global minimum. These
+tests use second and third dose data chosen for lack of data, $\sigma_2$ and
+$\sigma_3$ built from the numbers of partially protected individuals.
+\end{enumerate}
+
+The computations are in the following files:
+\begin{itemize}
+\item \texttt{check\_block2.py}: the sampling for the second dose in
+Section~\ref{t-problem};
+\item \texttt{yogi\_three\_dose.py}: Algorithm~\ref{t-alg-yogi} on the weekly
+instance from the $49$ starts, and Table~\ref{t-tab-yogi};
+\item \texttt{yogi\_instances\_three\_dose.py}: Algorithm~\ref{t-alg-yogi} on
+the $36$ instances, and Table~\ref{t-tab-yogi-inst};
+\item \texttt{test\_barycenter\_three\_dose.py}: the $69$ interior point runs
+per instance;
+\item \texttt{plot\_yogi\_three\_dose.py}: the data of
+Figures~\ref{t-fig-conv}, \ref{t-fig-alloc-s2} and~\ref{t-fig-alloc-p}.
+\end{itemize}
+
+\bibliographystyle{plain}
+\bibliography{bib_mb}
+
+\end{document}
