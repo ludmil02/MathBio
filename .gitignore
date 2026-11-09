@@ -1,7 +1,14 @@
 *.dat
 
-# everything under old_files
-old_files/
+# old_files: only the notebooks, tex and python are tracked
+old_files/**
+!old_files/**/
+!old_files/**/*.nb
+!old_files/**/*.tex
+!old_files/**/*.py
+# the two csv files the code reads
+!old_files/solution_nb_Data/s1Matrix.csv
+!old_files/solution_nb_Data/p1Matrix.csv
 
 # files produced by runs (reduced_test.py, ref_h.wls, Yogi scripts)
 intermediate/
