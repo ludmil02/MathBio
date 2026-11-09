@@ -5,6 +5,8 @@
 \usepackage{amsthm,latexsym,mathrsfs}
 \usepackage{bm,bbm,dsfont}
 \usepackage{color,graphicx}
+\graphicspath{{../figures/}}
+\DeclareGraphicsExtensions{.png,.pdf}
 \usepackage[latin1]{inputenc}
 \usepackage[english]{babel}
 \usepackage{algorithm}
@@ -366,7 +368,7 @@ decreases slowly over most of the run.
 
 \begin{figure}[ht]
 \centering
-\includegraphics[width=\textwidth]{../figures/fig_yogi_conv.pdf}
+\includegraphics[width=\textwidth]{fig_yogi_conv}
 \caption{Algorithm~\ref{t-alg-yogi} on the weekly instance from the barycenter
 and from the starts $(k,i,j)=(3,1,4)$ and $(2,4,1)$: the relative excess over
 $\rho^*=1.661826042009$ (left) and $r$ of~\eqref{t-r} (right) per iteration.
@@ -448,7 +450,7 @@ this group.
 
 \begin{figure}[ht]
 \centering
-\includegraphics[width=\textwidth]{../figures/fig_alloc_s2.pdf}
+\includegraphics[width=\textwidth]{fig_alloc_s2}
 \caption{The weekly instance with $b_{2i}=b_{3i}=b_{1i}/4$ and $\sigma_2$,
 $\sigma_3$ of seed $2$: the allocations $\chi_1$, $\chi_2$, $\chi_3$ (rows),
 in units of $10^{-3}$ per day, at the endpoints of the interior point method
@@ -458,7 +460,7 @@ line per location; the same scale in each row.}\label{t-fig-alloc-s2}
 
 \begin{figure}[ht]
 \centering
-\includegraphics[width=\textwidth]{../figures/fig_alloc_p.pdf}
+\includegraphics[width=\textwidth]{fig_alloc_p}
 \caption{As Figure~\ref{t-fig-alloc-s2}, for the weekly instance with
 $b_{2i}=b_{1i}/8$, $b_{3i}=b_{1i}/2$ and $\sigma_2=\sigma_3=P$.}\label{t-fig-alloc-p}
 \end{figure}
