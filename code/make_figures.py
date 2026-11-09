@@ -1,6 +1,6 @@
-"""Figures of notes/min_spectral_radius_vaccination.tex, as pdf and png.
+"""Figures of notes/min_spectral_radius_vaccination.tex, as png.
 
-Reads the .dat files in notes/suplemental/, which plot_chi1_single_dose.py and
+Reads the .dat files in notes/figures/dat/, which plot_chi1_single_dose.py and
 plot_yogi_three_dose.py write, and writes to notes/figures/:
 
   fig_chi1        Figure 3.1, the minimizing chi1 and the chi1 of John's method;
@@ -22,7 +22,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DAT = os.path.join(ROOT, "notes", "suplemental")
+DAT = os.path.join(ROOT, "notes", "figures", "dat")
 OUT = os.path.join(ROOT, "notes", "figures")
 
 WIDTH = 6.5
@@ -49,10 +49,10 @@ def read(name):
 
 
 def save(fig, stem):
-    for ext, kw in (("pdf", {}), ("png", {"dpi": 300})):
-        fig.savefig(os.path.join(OUT, "%s.%s" % (stem, ext)), **kw)
+    path = os.path.join(OUT, stem + ".png")
+    fig.savefig(path, dpi=300)
     plt.close(fig)
-    print("written", os.path.join(OUT, stem + ".{pdf,png}"))
+    print("written", path)
 
 
 def age_axis(ax, labels=True):
