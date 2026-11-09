@@ -60,7 +60,7 @@
 \section{Formulation of the problem}\label{sec-ngm}
 
 
-The problem is to find $\widehat\chi_k\in\mathbb{R}^{m\times n}$, $k=1:3$, such that
+We consider the following optimization problem: Find $\widehat\chi_k\in\mathbb{R}^{m\times n}$, $k=1:3$, such that
 \begin{equation}\label{the-min-ij}
 \begin{aligned}
 &\left(\widehat\chi_1,\widehat\chi_2,\widehat\chi_3\right)
@@ -117,292 +117,426 @@ valued function $\bm d(\bm\chi)\in\mathbb{R}^{2N}$, given by
 \begin{equation}\label{yz}
 d_{2p-1}=y_p,\qquad d_{2p}=z_p,
 \end{equation}
-the pair $(y_p,z_p)$ are derived from the equilibrium fractions of the model.
-The specific formulae for $A_c$, $\bm y$, and $\bm z$ are found in
-Appendix~\ref{sec-reduction}, equations~\eqref{ac-assembled} and~\eqref{yz-def}.
+where $y_p$ and $z_p$ are derived from the equilibrium fractions of the
+model. Following~\cite{JZh}, for $p=1:N$,
+\begin{equation}\label{yz-def}
+\begin{aligned}
+&y_p=\widetilde s_p,\qquad
+z_p=\left\lbrack(1-\varepsilon_1)+\pi_{2,p}\right\rbrack\pi_{1,p}\,\widetilde s_p,
+\qquad\mbox{where}\\
+&\widetilde s_p=\left\lbrack
+1+\pi_{1,p}\left(1+\pi_{2,p}+\pi_{2,p}\pi_{3,p}\right)\right\rbrack^{-1},
+\qquad\mbox{and}\\
+&\pi_{1,p}=\frac{\chi_{1,p}}{\omega_v+\varepsilon_2\chi_{2,p}},\qquad
+\pi_{2,p}=\frac{\varepsilon_2\chi_{2,p}}{\omega},\qquad
+\pi_{3,p}=1+\frac{\varepsilon_3\chi_{3,p}}{\omega}.
+\end{aligned}
+\end{equation}
+The specific formula for $A_c$ is found in Appendix~\ref{sec-reduction},
+equation~\eqref{ac-assembled}.
 
 \section{An equivalent reduced problem on a product of simplices}\label{sec-reduced}
 
-Let
+We first reduce the order of the matrix $\operatorname{NGM}$ by half, and then we rescale the variables to map the admissible region $\mathfrak{S}$ to a product of simplices. Let us introduce the matrix 
 \begin{equation}\label{p-def}
 \mathscr{P}=\sum_{p=1}^{N}\left(\bm e_{2p-1}+\bm e_{2p}\right)\bm e_p^T
 \in\mathbb{R}^{2N\times N}
 \end{equation}
-be the $2N\times N$ matrix repeating each component of a vector twice, so that
+The product of this matrix by a vector repeats each component of the vector twice. 
+Next, we note an identity for $\mathscr{P}^T\mathscr{P}$  and we also 
+introduce $A_1\in\mathbb{R}^{N\times N}$:
 \begin{equation}\label{p-identities}
 \mathscr{P}^T\mathscr{P}=2I_N \quad\mbox{and define}\quad
 A_1=\frac{1}{4}\,\mathscr{P}^TA_c\mathscr{P}\in\mathbb{R}^{N\times N},
 \end{equation}
-of half the order of $A_c$. We then have the following equivalence of the spectral radii of the two matrices (see also Appendix~\ref{sec-reduction}):
+We then have the following equivalence of the spectral radii of the two matrices (see Theorem~\ref{reduction} in Appendix~\ref{sec-reduction}):
 \begin{equation}\label{rho-equal}
 \rho\left(\operatorname{diag}(\bm d)A_c\right)=\rho\left(A_1\operatorname{diag}(\bm g)\right).
 \end{equation}
-Here the components of $\bm g$ are
+Here the components of $\bm g$ are, by~\eqref{yz-def},
 \begin{equation}\label{g-def}
-g_p=\frac{1+(1-\varepsilon_1)\pi_{1,p}+\pi_{1,p}\pi_{2,p}}
+  \begin{aligned}
+g_p&=y_p+z_p
+=\left\lbrack 1+(1-\varepsilon_1)\pi_{1,p}+\pi_{1,p}\pi_{2,p}\right\rbrack\widetilde s_p\\
+&=\frac{1+(1-\varepsilon_1)\pi_{1,p}+\pi_{1,p}\pi_{2,p}}
 {1+\pi_{1,p}+\pi_{1,p}\pi_{2,p}+\pi_{1,p}\pi_{2,p}\pi_{3,p}}\ \in(0,1],
-\qquad
-\begin{aligned}
-&\pi_{1,p}=\frac{\chi_{1,p}}{\omega_v+\varepsilon_2\chi_{2,p}},\\
-&\pi_{2,p}=\frac{\varepsilon_2\chi_{2,p}}{\omega},\\
-&\pi_{3,p}=1+\frac{\varepsilon_3\chi_{3,p}}{\omega},
-\end{aligned}
+  \end{aligned}
 \end{equation}
-Each $g_p=y_p+z_p$ depends on $\chi_{1,p}$, $\chi_{2,p}$ and $\chi_{3,p}$.
+with $\pi_{1,p}$, $\pi_{2,p}$ and $\pi_{3,p}$ as in~\eqref{yz-def}. Each $g_p$
+depends on $\chi_{1,p}$, $\chi_{2,p}$ and $\chi_{3,p}$.
 
-The constraints~\eqref{constraints} decouple over the pairs $(k,i)$. If
-$b_{k,i}=0$, the constraint is $\sum_j\sigma_{k,ij}\chi_{k,ij}=0$ with
-$\sigma_{k,ij}>0$ and $\chi_{k,ij}\ge 0$, so $\chi_{k,ij}=0$ for $j=1:n$; these
-variables are zero and are not rescaled. If $b_{k,i}>0$, we rescale the
-constraint by $u_{k,ij}=\sigma_{k,ij}\chi_{k,ij}/b_{k,i}$, which turns
-it into $\sum_ju_{k,ij}=1$, $u_{k,ij}\ge 0$, that is,
-$\bm u_{k,i}$ lies in the simplex $\Delta_{n-1}$. The feasible set and
-the objective function then have the following properties.
-\begin{enumerate}
-\renewcommand{\theenumi}{\roman{enumi}}
-\renewcommand{\labelenumi}{(\theenumi)}
-\item\label{simplex-product} The rescaling is a bijection of $\mathfrak{S}$
-onto the product $\mathcal{S}$ of the simplices $\Delta_{n-1}$, one for each pair
-$(k,i)$ with $b_{k,i}>0$, with inverse
+\begin{remark}\label{rem:b}
+The constraints~\eqref{constraints} decouple over the pairs $(k,i)$. If $b_{k,i}=0$, then, since $\sigma_{k,ij}>0$ and $\chi_{k,ij}\ge 0$, the constraint implies that $\chi_{k,ij}=0$ for $j=1:n$. Therefore we need to consider only the pairs $(k,i)$ with $b_{k,i}>0$; if $b_{k,i}=0$ for all $k$ and $i$, then $\bm\chi=0$ is the only admissible point. The single dose of Section~\ref{sec-single} is the case $b_{2,i}=b_{3,i}=0$ for all $i$.
+\end{remark}
+
+For $b_{k,i}>0$ we change variables: for $i=1:m$ and $k=1,2,3$,
 \begin{equation}\label{u-of-chihat}
-\chi_{k,p}=\frac{b_{k,i}}{\sigma_{k,ij}}\,u_{k,ij},\qquad
-p=(i-1)n+j,\qquad j=1:n .
+  \begin{aligned}
+& u_{k,p}=\frac{\sigma_{k,p}\chi_{k,p}}{b_{k,i}},\qquad
+\chi_{k,p}=\frac{b_{k,i}u_{k,p}}{\sigma_{k,p}},\qquad
+p\in I_i=\left\{(i-1)n+1,\ldots,in\right\},
+  \end{aligned}
 \end{equation}
-In particular $\mathfrak{S}$ is compact and convex.
-\item\label{reduced-item} Problem~\ref{ngm-problem} is equivalent to
+and, as for $\bm\chi$ in~\eqref{flat}, we also write $u_{k,ij}=u_{k,p}$.
+
+The Problem~\ref{ngm-problem} is then equivalent to: Find $\widehat{\bm u}\in\mathbb{R}^{3N}$ such that
 \begin{equation}\label{reduced-problem}
-\min_{\bm u\in\mathcal{S}}\
-\rho\left(A_1\operatorname{diag}\left(\bm g\right)\right),
+  \begin{aligned}
+& \widehat{\bm u}\in\operatorname*{arg\,min}\left\{\rho\left(A_1\operatorname{diag}\left(\bm g(\bm u)\right)\right)\;\mbox{subject to}\;\bm u\in\mathcal{S}\right\},\quad\mbox{where}\\
+&\mathcal{S}:=\left\{\bm u\in\mathbb{R}^{3N}\ :\ \sum_{p\in I_i}u_{k,p}=1,\quad u_{k,p}\ge 0\right\},
+  \end{aligned}
 \end{equation}
-with $\bm g$ given by~\eqref{g-def} and $\bm\chi$ by~\eqref{u-of-chihat}, and the
-minimum is attained. Indeed, by~\eqref{ngm} and Theorem~\ref{reduction}
-in~\S\ref{sec-reduction} the
-objective function of Problem~\ref{ngm-problem} equals
-$\rho\left(A_1\operatorname{diag}(\bm g(\bm\chi))\right)$ for every $\bm\chi\ge 0$,
-and by~(\ref{simplex-product}) $\bm\chi\in\mathfrak{S}$ if and only if
-$\bm u\in\mathcal{S}$; the set $\mathcal{S}$ is compact and the
-objective function is continuous.
-\item\label{mono-g} If $0<\bm g\le\widetilde{\bm g}$, then
-$\rho\left(A_1\operatorname{diag}(\bm g)\right)
-\le\rho\left(A_1\operatorname{diag}(\widetilde{\bm g})\right)$,
-since $0\le A_1\operatorname{diag}(\bm g)\le A_1\operatorname{diag}(\widetilde{\bm g})$
-(see Theorem~\ref{mono} in~\S\ref{sec-facts}). The inequality is strict if
-$A_1$ is irreducible.
-\end{enumerate}
+with $\bm g$ given by~\eqref{g-def}. We would like to point out that $\mathcal{S}$ as well as $\mathfrak{S}$ are {\bf compact and convex}. 
+
+Furthermore, by~\eqref{ngm} and Theorem~\ref{reduction} the objective function of
+Problem~\ref{ngm-problem} equals $\rho\left(A_1\operatorname{diag}(\bm g)\right)$
+for every $\bm\chi\ge 0$, and $\bm\chi\in\mathfrak{S}$ if and only if
+$\bm u\in\mathcal{S}$. The minimum is attained, since $\mathcal{S}$ is compact
+and the objective function is continuous.
 
 \section{Optimization for a single dose}\label{sec-single}
 
 Suppose that only doses of the first type are available, $b_{2i}=b_{3i}=0$ for
 all $i$. Since the coefficients
 $\sigma_{2,p}$ and $\sigma_{3,p}$ are positive, this implies that
-$\bm\chi_2=\bm\chi_3=0$. Then $\pi_{2,p}=0$, the value of
-$\pi_{3,p}$ is
-immaterial, and with
+$\bm\chi_2=\bm\chi_3=0$. After changing variables again we have
 \begin{equation}\label{t-def}
-t_p=1+\frac{\chi_{1,p}}{\omega_v}\ \ge 1,\qquad \widetilde s_p=\frac{1}{t_p},
+\begin{aligned}
+&t_p=1+\frac{\chi_{1,p}}{\omega_v}\ \ge 1,\qquad
+\chi_{1,p}=\omega_v\left(t_p-1\right),\\
+&y_p=\frac{1}{t_p},\qquad
+z_p=(1-\varepsilon_1)\left(1-\frac{1}{t_p}\right),\qquad
+g_p=(1-\varepsilon_1)+\frac{\varepsilon_1}{t_p},\\
+&A_1\operatorname{diag}(\bm g)=(1-\varepsilon_1)A_1+\varepsilon_1A_1\operatorname{diag}(\bm t)^{-1}.
+\end{aligned}
 \end{equation}
-formula~\eqref{g-def} becomes
-$g_p=(1-\varepsilon_1)+\varepsilon_1\widetilde s_p$. Then we have
-\begin{equation}\label{split}
-A_1\operatorname{diag}(\bm g)=(1-\varepsilon_1)A_1+\varepsilon_1A_1\operatorname{diag}(\bm t)^{-1}.
-\end{equation}
-Since $\chi_{1,p}=\omega_v(t_p-1)$, the constraints are:
+Throughout this section the efficacy satisfies $0<\varepsilon_1\le 1$. Then
+$g_p>0$ for $t_p>0$, and $g_p$ is strictly decreasing in $t_p$.
+By~\eqref{t-def}, the constraints are:
 \begin{equation}\label{t-constraint}
 \sum_{j=1}^{n}\sigma_{1,p}\,t_p\le c_i,\quad i=1:m,\qquad \bm t\ge\mathbbm{1},
 \qquad c_i=\frac{b_{1i}}{\omega_v}+\sum_{j=1}^{n}\sigma_{1,p}.
 \end{equation}
-Clearly, the equalities of~\eqref{constraints} have been relaxed to inequalities:
-$g_p$ is strictly decreasing in $t_p$, so by property~(\ref{mono-g}) increasing a single
-$t_p$ strictly decreases the objective function, and a minimizer of the relaxed problem
-meets the constraints with equality. The single-dose problem is
+The spectral radius is monotone in $\bm g$:
+\begin{equation}\label{mono-g}
+0<\bm g\le\widetilde{\bm g}\quad\Longrightarrow\quad
+\rho\left(A_1\operatorname{diag}(\bm g)\right)
+\le\rho\left(A_1\operatorname{diag}(\widetilde{\bm g})\right),
+\end{equation}
+since $0\le A_1\operatorname{diag}(\bm g)\le A_1\operatorname{diag}(\widetilde{\bm g})$
+(see Theorem~\ref{mono} in Appendix~\ref{sec-facts}). The inequality is strict
+if $A_1$ is irreducible and $\bm g\neq\widetilde{\bm g}$.
+Clearly, the equalities of~\eqref{constraints} have been relaxed to inequalities;
+Corollary~\ref{all-active} below shows that a minimizer of the relaxed problem
+meets them with equality. The single-dose problem is
 \begin{equation}\label{t-program}
 \min\ \Psi(\bm t),\qquad
 \Psi(\bm t)=\log\rho\left(A_1\operatorname{diag}(\bm g)\right),
 \qquad\mbox{subject to}\qquad\eqref{t-constraint} .
 \end{equation}
 We assume $b_{1i}>0$ for $i=1:m$; a location with $b_{1i}=0$ has $t_p=1$ for
-all its $n$ age groups by~\eqref{t-constraint} and can be removed. In the
-variables $\bm u_1$ of property~(\ref{simplex-product}),
-\begin{equation}\label{w-def}
-u_{1,ij}=\frac{\sigma_{1,ij}\chi_{1,ij}}{b_{1i}}
-=\frac{\omega_v\sigma_{1,p}}{b_{1i}}\left(t_p-1\right),
-\end{equation}
-the constraints~\eqref{t-constraint} read $\bm u_1\ge 0$ and
-$\sum_ju_{1,ij}\le 1$, $i=1:m$. The feasible set
+all its $n$ age groups by~\eqref{t-constraint} and can be removed. The feasible set
+of~\eqref{t-program} is
 \begin{equation}\label{Kt-def}
-K=\left\{\bm t\in\mathbb{R}^N\ :\ \bm t\ \mbox{satisfies~\eqref{t-constraint}}\right\}
+\mathcal{K}=\left\{\bm t\in\mathbb{R}^N\ :\ \bm t\ \mbox{satisfies~\eqref{t-constraint}}\right\}.
 \end{equation}
-of~\eqref{t-program} is therefore the image of the product of $m$ solid
-standard simplices
-\begin{equation}\label{K-def}
-\mathcal{K}=\left\{\bm u_1\in\mathbb{R}^{N}\ :\ \bm u_1\ge 0,\
-\sum_{j=1}^{n}u_{1,ij}\le 1,\ i=1:m\right\}
-\end{equation}
-under the affine bijection $\bm t=\mathbbm{1}+L\bm u_1$ of
-$\mathbb{R}^N$, with $L$ the positive diagonal matrix of entries
-$b_{1i}/\left(\omega_v\sigma_{1,p}\right)$; that is,
-$K=\mathbbm{1}+L\mathcal{K}$.
 
-\begin{theorem}\label{global}
-Let $A_1\ge 0$ be irreducible. Then
-the minimum in~\eqref{t-program} is attained, the minimizer is unique, every
-local minimizer is also a global minimizer. Moreover, the Karush--Kuhn--Tucker
-conditions are necessary and sufficient for finding a global minimum.
+\begin{theorem}\label{active}
+Let $A_1\ge 0$ with $\rho(A_1)>0$, let $\bm t\in\mathcal{K}$, and suppose that the
+constraint of location $i$ in~\eqref{t-constraint} is inactive at $\bm t$,
+that is, $\sum_{p\in I_i}\sigma_{1,p}t_p<c_i$. Then:
+\begin{enumerate}
+\renewcommand{\labelenumi}{(\roman{enumi})}
+\item there is $\widetilde{\bm t}\in\mathcal{K}$ which differs from $\bm t$ in
+one component only, at which the constraint of location $i$ is active, the
+other constraints of~\eqref{t-constraint} being as at $\bm t$, and
+$\Psi\left(\widetilde{\bm t}\right)\le\Psi(\bm t)$;
+\item if $A_1$ is irreducible, then $\Psi\left(\widetilde{\bm t}\right)<\Psi(\bm t)$,
+and $\bm t$ is not a local minimizer of $\Psi$ on $\mathcal{K}$.
+\end{enumerate}
 \end{theorem}
 \begin{proof}
-The feasible set $K$ is closed, and bounded because $\bm t\ge\mathbbm{1}$ and
-$\sigma_{1,p}>0$ give $1\le t_p\le c_i/\sigma_{1,p}$; it is convex, being the
-image of the convex set $\mathcal{K}$ in~\eqref{K-def} under an affine map. For $\bm t>0$ one has $\bm g>0$, so
-$A_1\operatorname{diag}(\bm g)\ge 0$ has the same zero entries as $A_1$ and is
-irreducible, and by Theorem~\ref{pf} in~\S\ref{sec-facts} its spectral radius is a
-simple eigenvalue, hence a real-analytic function of the entries, which are
-real-analytic in $\bm t$. Monotonicity is property~(\ref{mono-g}) together with the
-strict decrease of $g_p$ in $t_p$.
+Fix $q\in I_i$ and put
+$\delta_{\max}=\left(c_i-\sum_{p\in I_i}\sigma_{1,p}t_p\right)/\sigma_{1,q}>0$.
+For $0<\delta\le\delta_{\max}$ let $\bm t_\delta=\bm t+\delta\bm e_q$. Then
+$\bm t_\delta\ge\bm t\ge\mathbbm{1}$, the sums of the locations other than $i$
+are unchanged, and
+$\sum_{p\in I_i}\sigma_{1,p}\left(\bm t_\delta\right)_p=\sum_{p\in I_i}\sigma_{1,p}t_p+\sigma_{1,q}\delta\le c_i$,
+with equality for $\delta=\delta_{\max}$. Hence $\bm t_\delta\in\mathcal{K}$.
+Since $\varepsilon_1>0$, the function $g_q=(1-\varepsilon_1)+\varepsilon_1/t_q$
+is strictly decreasing in $t_q$, while $g_p$ for $p\neq q$ does not change.
+Therefore the vector $\bm g_\delta$ at $\bm t_\delta$ satisfies
+$0<\bm g_\delta\le\bm g$ and $\bm g_\delta\neq\bm g$, and
+by~\eqref{mono-g},
+$\rho\left(A_1\operatorname{diag}\left(\bm g_\delta\right)\right)\le\rho\left(A_1\operatorname{diag}(\bm g)\right)$,
+that is, $\Psi\left(\bm t_\delta\right)\le\Psi(\bm t)$. Taking
+$\widetilde{\bm t}=\bm t_{\delta_{\max}}$ proves (i).
 
-For convexity write $\Psi(\bm t)=\Phi\left(\bm\xi(\bm t)\right)$ with
-$\Phi(\bm\xi)=\log\rho\left(A_1\operatorname{diag}\left(e^{\bm\xi}\right)\right)$
-(see~\eqref{phi-def} in~\S\ref{sec-facts}) and $\xi_p(t_p)=\log g_p(t_p)$. Each $\xi_p$ is strictly convex: with
-$a=1-\varepsilon_1\ge 0$, $b=\varepsilon_1>0$ and $g=a+b/t$,
+If $A_1$ is irreducible, the inequality~\eqref{mono-g} is strict, so
+$\Psi\left(\bm t_\delta\right)<\Psi(\bm t)$ for every $0<\delta\le\delta_{\max}$.
+For $\delta=\delta_{\max}$ this is the first claim of (ii), and since
+$\bm t_\delta\to\bm t$ as $\delta\to 0$, every neighbourhood of $\bm t$ contains
+points of $\mathcal{K}$ with a smaller value of $\Psi$, so $\bm t$ is not a
+local minimizer.
+\end{proof}
+
+\begin{corollary}\label{all-active}
+Let $A_1\ge 0$ with $\rho(A_1)>0$. The minimum of $\Psi$ on $\mathcal{K}$ equals its minimum on
+$\left\{\bm t\in\mathcal{K}:\sum_{p\in I_i}\sigma_{1,p}t_p=c_i,\ i=1:m\right\}$.
+In particular, $\Psi$ has a minimizer on $\mathcal{K}$ at which all $m$
+constraints are active, and if $A_1$ is irreducible, then every local minimizer of $\Psi$ on
+$\mathcal{K}$ meets all $m$ constraints with equality.
+\end{corollary}
+\begin{proof}
+Start from any $\bm t\in\mathcal{K}$ and apply Theorem~\ref{active}(i) to
+the inactive constraints one location at a time. A step at location $i$
+changes only a component $t_q$ with $q\in I_i$, so the constraints made active
+before stay active, and after at most $m$ steps we reach a point of
+$\mathcal{K}$ at which all $m$ constraints are active and the value of $\Psi$
+is at most $\Psi(\bm t)$. Hence the two minima are equal. The set of points of
+$\mathcal{K}$ at which all $m$ constraints are active is closed and bounded,
+since $1\le t_p\le c_i/\sigma_{1,p}$ for $p\in I_i$. On it $\Psi$ is
+continuous: $\bm g$ is continuous in $\bm t>0$, the spectral radius is a
+continuous function of the entries, and with $\gamma=\min_p g_p>0$,
+Theorem~\ref{mono} in~\S\ref{sec-facts} gives
+$\rho\left(A_1\operatorname{diag}(\bm g)\right)\ge\gamma\rho(A_1)>0$. So $\Psi$
+attains its minimum on this set, and by the equality of the two minima this is a
+minimizer of $\Psi$ on $\mathcal{K}$. The statement on local minimizers is
+Theorem~\ref{active}(ii).
+\end{proof}
+
+\paragraph{Minimization in the kernel}
+For location $i$ let $\bm\sigma_i=\left(\sigma_{1,p}\right)_{p\in I_i}\in\mathbb{R}^n$,
+and let
+\begin{equation}\label{X-def}
+X=\operatorname{diag}\left(\bm\sigma_1^T,\ldots,\bm\sigma_m^T\right)\in\mathbb{R}^{m\times N}
+\end{equation}
+be the block diagonal matrix with the row vectors $\bm\sigma_i^T$ as its
+diagonal blocks. The $m$ constraints of~\eqref{t-constraint} read
+$X\bm t\le\bm c$, and by Corollary~\ref{all-active} we may minimize over the set
+$\left\{\bm t:\ X\bm t=\bm c,\ \bm t\ge\mathbbm{1}\right\}$. As $\sigma_{1,p}>0$,
+the matrix $X$ has rank $m$, and a vector $\bm h\in\mathbb{R}^N$ lies in its
+kernel if and only if $\sum_{p\in I_i}\sigma_{1,p}h_p=0$ for $i=1:m$. Hence
+\begin{equation}\label{ker-X}
+\ker X=\bm\sigma_1^{\perp}\oplus\cdots\oplus\bm\sigma_m^{\perp},\qquad
+\dim\ker X=m(n-1),
+\end{equation}
+where $\bm\sigma_i^{\perp}\subset\mathbb{R}^n$ is the orthogonal complement of
+$\bm\sigma_i$ and acts on the components $p\in I_i$. A basis of $\ker X$ is
+formed by the $m(n-1)$ vectors
+$\bm e_p/\sigma_{1,p}-\bm e_{p+1}/\sigma_{1,p+1}$, where $p$ and $p+1$ both lie in $I_i$,
+$i=1:m$; such a vector moves doses between two age groups of one location and
+keeps the total of that location. The orthogonal projection onto $\ker X$ is
+\begin{equation}\label{ker-proj}
+P=I-\operatorname{diag}\left(\frac{\bm\sigma_1\bm\sigma_1^T}{\|\bm\sigma_1\|^2},\ldots,
+\frac{\bm\sigma_m\bm\sigma_m^T}{\|\bm\sigma_m\|^2}\right),
+\end{equation}
+and its application to a vector costs $O(N)$ operations.
+
+Fix $\bm t_0$ with $X\bm t_0=\bm c$ and $\bm t_0\ge\mathbbm{1}$, for instance
+\begin{equation}\label{t0-def}
+t_{0,p}=1+\frac{b_{1i}}{n\,\omega_v\sigma_{1,p}},\qquad p\in I_i,
+\end{equation}
+which divides the doses of location $i$ equally among its $n$ age groups. Every
+$\bm t$ with $X\bm t=\bm c$ is $\bm t=\bm t_0+\bm h$ with $\bm h\in\ker X$, and
+$\bm t\ge\mathbbm{1}$ if and only if $h_p\ge 1-t_{0,p}$. The single-dose problem
+is therefore
+\begin{equation}\label{ker-program}
+\min\ \Psi\left(\bm t_0+\bm h\right)\qquad\mbox{subject to}\qquad
+\bm h\in\ker X,\quad h_p\ge 1-t_{0,p},\ p=1:N .
+\end{equation}
+Only lower bounds appear, but the feasible set of~\eqref{ker-program} is
+bounded: for $p\in I_i$ the kernel condition and the lower bounds give
 \begin{equation}
-\xi''=\frac{g''g-\left(g'\right)^2}{g^2},\qquad
-g''g-\left(g'\right)^2=\frac{2b}{t^3}\left(a+\frac{b}{t}\right)-\frac{b^2}{t^4}
-=\frac{2ab}{t^3}+\frac{b^2}{t^4}>0 .
+\sigma_{1,p}h_p=-\sum_{q\in I_i,\,q\neq p}\sigma_{1,q}h_q
+\le\sum_{q\in I_i,\,q\neq p}\sigma_{1,q}\left(t_{0,q}-1\right).
 \end{equation}
-By Lemma~\ref{log-convex} in~\S\ref{sec-facts} the function $\Phi$ is convex, and by
-property~(\ref{mono-g}) it is strictly increasing in each argument. Let
-$\bm t\neq\bm t'$ be positive, let $0<\lambda<1$, and set
-$\bm t_\lambda=\lambda\bm t+(1-\lambda)\bm t'$. Since each $\xi_p$ is strictly
-convex,
-\begin{equation}\label{xi-strict}
-\bm\xi\left(\bm t_\lambda\right)\le\lambda\,\bm\xi(\bm t)+(1-\lambda)\,\bm\xi(\bm t'),
-\end{equation}
-with strict inequality in every component $p$ for which $t_p\neq t'_p$, so the
-two sides of~\eqref{xi-strict} are distinct. Therefore
-\begin{equation}\label{psi-strict}
-\Psi\left(\bm t_\lambda\right)=\Phi\left(\bm\xi\left(\bm t_\lambda\right)\right)
-<\Phi\left(\lambda\,\bm\xi(\bm t)+(1-\lambda)\,\bm\xi(\bm t')\right)
-\le\lambda\Psi(\bm t)+(1-\lambda)\Psi(\bm t'),
-\end{equation}
-where the first inequality is property~(\ref{mono-g}) and the second is the
-convexity of $\Phi$. Thus $\Psi$ is strictly convex.
+For the location $i$ the feasible set is a simplex of dimension $n-1$,
+translated by $-\bm t_0$, and the feasible set of~\eqref{ker-program} is the
+product of these $m$ simplices. If no bound is active at the minimizer, then the
+minimizer of~\eqref{ker-program} is characterized by $P\nabla\Psi=0$; otherwise
+the bounds $h_p\ge 1-t_{0,p}$ have to be enforced, by projection or by a barrier.
 
-The feasible set is compact and $\Psi$ is continuous, so the minimum is
-attained. If $\bm t\neq\bm t'$ were two minimizers, then
+\begin{theorem}\label{global}
+Let $A_1\ge 0$ with $\rho(A_1)>0$. Then $\Psi$ is convex and continuous
+on $\mathcal{K}$, the minimum in~\eqref{t-program} is attained, and every local
+minimizer is a global minimizer. If in addition $A_1$ is irreducible, then the
+minimizer is unique, $\Psi$ is continuously differentiable on
+$\left\{\bm t>0\right\}$, and the Karush--Kuhn--Tucker conditions are necessary
+and sufficient for a global minimum.
+\end{theorem}
+\begin{proof}
+The feasible set $\mathcal{K}$ is closed, and bounded because $\bm t\ge\mathbbm{1}$ and
+$\sigma_{1,p}>0$ give $1\le t_p\le c_i/\sigma_{1,p}$; it is convex, being an
+intersection of half-spaces. For $\bm t>0$ one has $g_p\ge\gamma=\min_p g_p>0$, so
+$A_1\operatorname{diag}(\bm g)\ge\gamma A_1$ and, by Theorem~\ref{mono}
+in~\S\ref{sec-facts}, $\rho\left(A_1\operatorname{diag}(\bm g)\right)\ge\gamma\rho(A_1)>0$.
+The spectral radius is a continuous function of the entries, so $\Psi$ is
+continuous on $\{\bm t>0\}$.
+
+For convexity let $\bm t\neq\bm t'$ be positive, let $0<\lambda<1$, and set
+$\bm t_\lambda=\lambda\bm t+(1-\lambda)\bm t'$. We write $\bm g$, $\bm g'$ and
+$\bm g_\lambda$ for the vectors $\bm g$ of~\eqref{t-def} at $\bm t$, $\bm t'$
+and $\bm t_\lambda$, and $\bm g^{\lambda}\bm g'^{\,1-\lambda}$ for the vector
+with components $g_p^{\lambda}g_p'^{\,1-\lambda}$. We first show
+\begin{equation}\label{g-strict}
+\bm g_\lambda\le\bm g^{\lambda}\bm g'^{\,1-\lambda},
+\end{equation}
+with strict inequality in every component $p$ for which $t_p\neq t'_p$.
+Fix $p$, and write $t=t_p$, $t'=t'_p$, $a=1-\varepsilon_1\ge 0$ and
+$b=\varepsilon_1>0$. The weighted inequality between the arithmetic and the
+geometric mean gives $\lambda t+(1-\lambda)t'\ge t^{\lambda}t'^{\,1-\lambda}$,
+with equality only if $t=t'$, and H\"older's inequality with exponents
+$1/\lambda$ and $1/(1-\lambda)$ gives
+$x_1^{\lambda}y_1^{1-\lambda}+x_2^{\lambda}y_2^{1-\lambda}\le\left(x_1+x_2\right)^{\lambda}\left(y_1+y_2\right)^{1-\lambda}$
+for $x_l,y_l\ge 0$. Applying these two in turn,
+\begin{equation}
+\begin{aligned}
+\left(\bm g_\lambda\right)_p
+&=a+\frac{b}{\lambda t+(1-\lambda)t'}
+\le a^{\lambda}a^{1-\lambda}+\left(\frac{b}{t}\right)^{\lambda}\left(\frac{b}{t'}\right)^{1-\lambda}\\
+&\le\left(a+\frac{b}{t}\right)^{\lambda}\left(a+\frac{b}{t'}\right)^{1-\lambda}
+=g_p^{\lambda}g_p'^{\,1-\lambda},
+\end{aligned}
+\end{equation}
+and the first inequality is strict if $t\neq t'$. This
+proves~\eqref{g-strict}. Lemma~\ref{log-convex} in~\S\ref{sec-facts}, applied to
+the points $\bm\xi$ and $\bm\eta$ with $e^{\bm\xi}=\bm g$ and $e^{\bm\eta}=\bm g'$, states
+\begin{equation}
+\rho\left(A_1\operatorname{diag}\left(\bm g^{\lambda}\bm g'^{\,1-\lambda}\right)\right)
+\le\rho\left(A_1\operatorname{diag}(\bm g)\right)^{\lambda}
+\rho\left(A_1\operatorname{diag}(\bm g')\right)^{1-\lambda}.
+\end{equation}
+Therefore
+\begin{equation}\label{psi-strict}
+\rho\left(A_1\operatorname{diag}\left(\bm g_\lambda\right)\right)
+\le\rho\left(A_1\operatorname{diag}\left(\bm g^{\lambda}\bm g'^{\,1-\lambda}\right)\right)
+\le\rho\left(A_1\operatorname{diag}(\bm g)\right)^{\lambda}
+\rho\left(A_1\operatorname{diag}(\bm g')\right)^{1-\lambda},
+\end{equation}
+where the first inequality is~\eqref{g-strict} with property~\eqref{mono-g}.
+Taking logarithms,
+$\Psi\left(\bm t_\lambda\right)\le\lambda\Psi(\bm t)+(1-\lambda)\Psi(\bm t')$,
+and $\Psi$ is convex. The feasible set is compact and
+$\Psi$ is continuous, so the minimum is attained, and every local minimizer of
+a convex function on a convex set is a global minimizer.
+
+Let now $A_1$ be irreducible. For $\bm t>0$ the matrix
+$A_1\operatorname{diag}(\bm g)\ge 0$ has the same zero entries as $A_1$ and is
+irreducible, so by Theorem~\ref{pf} in~\S\ref{sec-facts} its spectral radius
+is a simple eigenvalue, hence a continuously differentiable function of the
+entries, which are continuously differentiable in $\bm t$. By
+Theorem~\ref{mono} the inequality~\eqref{mono-g} is strict and, the two sides
+of~\eqref{g-strict} being distinct, the first inequality in~\eqref{psi-strict}
+is strict: $\Psi$ is strictly convex. If $\bm t\neq\bm t'$ were two minimizers, then
 $\bm t_{1/2}$ would be feasible, the feasible set being convex, and
-by~\eqref{psi-strict} the value $\Psi\left(\bm t_{1/2}\right)$ would be smaller
-than the minimum; hence the minimizer is unique. The last two assertions are the
-standard properties of a
-convex objective function on a convex set, and of a convex program whose constraints are
-affine.
+$\Psi\left(\bm t_{1/2}\right)$ would be smaller than the minimum; hence the
+minimizer is unique. The Karush--Kuhn--Tucker conditions are necessary and
+sufficient for a continuously differentiable convex function on a set defined
+by affine constraints.
 \end{proof}
 
 The minimizer can be computed by an interior penalty method: a logarithmic
-barrier for the constraints of $\mathcal{K}$ is added to the objective function with a
+barrier for the constraints~\eqref{t-constraint} is added to the objective function with a
 weight $\mu>0$, and $\mu$ is driven to zero~\cite{1968Fiacco_McCormick},
 \cite[Chapter 11]{2004Boyd_Vandenberghe}. The next theorem shows that for the
 single dose problem this method is well defined for every $\mu$, converges to
 the minimizer, and comes with an explicit bound for the error in the objective
 function. Let
 \begin{equation}\label{psi-hat}
-\Upsilon(\bm u_1)=\Psi\left(\mathbbm{1}+L\bm u_1\right),
-\qquad
-B(\bm u_1)=-\sum_{i=1}^{m}\sum_{j=1}^{n}\log u_{1,ij}
--\sum_{i=1}^{m}\log\left(1-\sum_{j=1}^{n}u_{1,ij}\right),
+B(\bm t)=-\sum_{p=1}^{N}\log\left(t_p-1\right)
+-\sum_{i=1}^{m}\log\left(c_i-\sum_{p\in I_i}\sigma_{1,p}t_p\right),
 \end{equation}
 the barrier $B$ being defined on the interior
-$\mathcal{K}^\circ=\left\{\bm u_1>0,\ \sum_ju_{1,ij}<1,\ i=1:m\right\}$
-of $\mathcal{K}$, and for $\mu>0$ let $F_\mu=\Upsilon+\mu B$ on $\mathcal{K}^\circ$.
+$\mathcal{K}^\circ=\left\{\bm t>\mathbbm{1},\ \sum_{p\in I_i}\sigma_{1,p}t_p<c_i,\ i=1:m\right\}$
+of $\mathcal{K}$, and for $\mu>0$ let $F_\mu=\Psi+\mu B$ on $\mathcal{K}^\circ$.
 
 \begin{theorem}\label{barrier}
-Let $A_1\ge 0$ be irreducible. Then:
+Let $A_1\ge 0$ be irreducible, and let $\widehat{\bm t}$ be the minimizer
+of~\eqref{t-program} given by Theorem~\ref{global}. Then:
 \begin{enumerate}
 \renewcommand{\labelenumi}{(\roman{enumi})}
-\item $\Upsilon$ has a unique minimizer $\widehat{\bm u}_1$ on $\mathcal{K}$, and
-$\widehat{\bm t}=\mathbbm{1}+L\widehat{\bm u}_1$ is the unique minimizer
-of~\eqref{t-program}.
 \item For every $\mu>0$ the function $F_\mu$ has a unique minimizer
-$\bm u_1(\mu)$ in $\mathcal{K}^\circ$.
+$\bm t(\mu)$ in $\mathcal{K}^\circ$.
 \item For every $\mu>0$,
 \begin{equation}\label{gap}
-0\le\Upsilon\left(\bm u_1(\mu)\right)-\Upsilon\left(\widehat{\bm u}_1\right)\le\mu\,m(n+1).
+0\le\Psi\left(\bm t(\mu)\right)-\Psi\left(\widehat{\bm t}\right)\le\mu\,m(n+1).
 \end{equation}
-\item $\bm u_1(\mu)\to\widehat{\bm u}_1$ as $\mu\to 0$.
+\item $\bm t(\mu)\to\widehat{\bm t}$ as $\mu\to 0$.
 \end{enumerate}
 \end{theorem}
 \begin{proof}
-The map $\bm u_1\mapsto\mathbbm{1}+L\bm u_1$ is an affine
-bijection of $\mathbb{R}^N$ that carries $\mathcal{K}$ onto the feasible set
-$K$ of~\eqref{t-program}, so (i) is Theorem~\ref{global} in the variables
-$\bm u_1$. By Theorem~\ref{global} and its proof, $\Psi$ is strictly
-convex and continuously differentiable on $\{\bm t>0\}$; composed with an
-injective affine map, $\Upsilon$ is strictly convex and continuously
-differentiable on the open set $\left\{\bm u_1:\mathbbm{1}+L\bm u_1>0\right\}$,
-which contains $\mathcal{K}$.
+By Theorem~\ref{global} and its proof, $\Psi$ is strictly convex and
+continuously differentiable on $\{\bm t>0\}$, which contains $\mathcal{K}$.
 
-(ii) The set $\mathcal{K}^\circ$ is not empty: it contains $u_{1,ij}=1/(2n)$.
+(i) The set $\mathcal{K}^\circ$ is not empty: it contains the point with
+$t_p=1+b_{1i}/\left(2n\,\omega_v\sigma_{1,p}\right)$, $p\in I_i$, for which
+$\sum_{p\in I_i}\sigma_{1,p}t_p=c_i-b_{1i}/(2\omega_v)<c_i$.
 On $\mathcal{K}^\circ$ each of the $m(n+1)$ affine functions
 \begin{equation}\label{slacks}
-s_{ij}(\bm u_1)=u_{1,ij},\qquad
-s_{i}(\bm u_1)=1-\sum_{j=1}^{n}u_{1,ij}
+s_{p}(\bm t)=t_p-1,\qquad
+s_{i}(\bm t)=c_i-\sum_{p\in I_i}\sigma_{1,p}t_p
 \end{equation}
 is positive, so $B$ is finite and, as a sum of the convex functions $-\log s$,
 convex. Hence $F_\mu$ is strictly convex on $\mathcal{K}^\circ$ and has at most one
-minimizer. On $\mathcal{K}$ every $s$ in~\eqref{slacks} is at most $1$, so each term
-$-\log s$ of $B$ is non-negative on $\mathcal{K}^\circ$. Fix $\bm u_1^0\in \mathcal{K}^\circ$,
-put $c=F_\mu(\bm u_1^0)$, and let
-$E=\left\{\bm u_1\in \mathcal{K}^\circ: F_\mu(\bm u_1)\le c\right\}$.
-For $\bm u_1\in E$ and each $s$ in~\eqref{slacks},
+minimizer. On $\mathcal{K}$ every $s$ in~\eqref{slacks} is at most
+$C=\max_{i}\max\left(c_i,\max_{p\in I_i}c_i/\sigma_{1,p}\right)$, so each term
+$-\log s$ of $B$ is at least $-\log C$ on $\mathcal{K}^\circ$. Fix $\bm t^0\in \mathcal{K}^\circ$,
+put $\gamma=F_\mu(\bm t^0)$, and let
+$E=\left\{\bm t\in \mathcal{K}^\circ: F_\mu(\bm t)\le \gamma\right\}$.
+For $\bm t\in E$ and each $s$ in~\eqref{slacks},
 \begin{equation}
--\mu\log s(\bm u_1)\le\mu B(\bm u_1)
-\le c-\Upsilon(\bm u_1)\le c-\Upsilon(\widehat{\bm u}_1),
+-\mu\log s(\bm t)\le\mu B(\bm t)+\mu\left(m(n+1)-1\right)\log C
+\le \gamma-\Psi(\widehat{\bm t})+\mu\left(m(n+1)-1\right)\log C,
 \end{equation}
-so $s(\bm u_1)\ge\delta=\exp\left(-\left(c-\Upsilon(\widehat{\bm u}_1)\right)/\mu\right)>0$.
+so $s(\bm t)\ge\delta=C^{1-m(n+1)}\exp\left(-\left(\gamma-\Psi(\widehat{\bm t})\right)/\mu\right)>0$.
 Thus $E$ lies in the compact set
 \begin{equation}
-\mathcal{K}_\delta=\left\{\bm u_1\in\mathcal{K}\ :\ s(\bm u_1)\ge\delta\
+\mathcal{K}_\delta=\left\{\bm t\in\mathcal{K}\ :\ s(\bm t)\ge\delta\
 \mbox{for every $s$ in~\eqref{slacks}}\right\}\subset \mathcal{K}^\circ,
 \end{equation}
 on which $F_\mu$ is continuous. As a sublevel set of $F_\mu$ in $\mathcal{K}_\delta$, the
 set $E$ is closed, hence compact, and it is not empty since it contains
-$\bm u_1^0$. So $F_\mu$ attains its minimum over $E$, and this is its
+$\bm t^0$. So $F_\mu$ attains its minimum over $E$, and this is its
 minimum over $\mathcal{K}^\circ$.
 
-(iii) The left inequality holds because $\bm u_1(\mu)\in\mathcal{K}$. At the
-interior minimizer $\bm u_1=\bm u_1(\mu)$ the gradient of
-$F_\mu$ vanishes:
+(ii) The left inequality holds because $\bm t(\mu)\in\mathcal{K}$. At the
+interior minimizer $\bm t=\bm t(\mu)$ the gradient of
+$F_\mu$ vanishes: for $p\in I_i$,
 \begin{equation}\label{barrier-stationary}
-\frac{\partial\Upsilon}{\partial u_{1,ij}}(\bm u_1)
-=\lambda_{ij}-\nu_i,\qquad
-\lambda_{ij}=\frac{\mu}{u_{1,ij}},\qquad
-\nu_i=\frac{\mu}{1-\sum_{l=1}^{n}u_{1,il}} ,
+\frac{\partial\Psi}{\partial t_p}(\bm t)
+=\lambda_p-\sigma_{1,p}\nu_i,\qquad
+\lambda_p=\frac{\mu}{t_p-1},\qquad
+\nu_i=\frac{\mu}{c_i-\sum_{l\in I_i}\sigma_{1,l}t_l} ,
 \end{equation}
-with $\lambda_{ij}>0$ and $\nu_i>0$. Let $\bm y\in\mathcal{K}$. By convexity of
-$\Upsilon$ and~\eqref{barrier-stationary},
+with $\lambda_p>0$ and $\nu_i>0$. Let $\bm y\in\mathcal{K}$. By convexity of
+$\Psi$ and~\eqref{barrier-stationary},
 \begin{equation}
-\Upsilon(\bm y)\ge\Upsilon(\bm u_1)
-+\sum_{i,j}\lambda_{ij}\left(y_{ij}-u_{1,ij}\right)
--\sum_{i}\nu_i\sum_{j}\left(y_{ij}-u_{1,ij}\right).
+\Psi(\bm y)\ge\Psi(\bm t)
++\sum_{p}\lambda_p\left(y_p-t_p\right)
+-\sum_{i}\nu_i\sum_{p\in I_i}\sigma_{1,p}\left(y_p-t_p\right).
 \end{equation}
-In the first sum $\lambda_{ij}y_{ij}\ge 0$ and $\lambda_{ij}u_{1,ij}=\mu$,
+In the first sum
+$\lambda_p\left(y_p-t_p\right)=\lambda_p\left(y_p-1\right)-\lambda_p\left(t_p-1\right)\ge-\mu$,
 so the sum is at least $-mn\mu$. In the second,
 \begin{equation}
--\sum_j\left(y_{ij}-u_{1,ij}\right)
-=\left(1-\sum_j y_{ij}\right)-\left(1-\sum_ju_{1,ij}\right),
+-\sum_{p\in I_i}\sigma_{1,p}\left(y_p-t_p\right)
+=\left(c_i-\sum_{p\in I_i}\sigma_{1,p}y_p\right)-\left(c_i-\sum_{p\in I_i}\sigma_{1,p}t_p\right),
 \end{equation}
-and $\nu_i\left(1-\sum_j y_{ij}\right)\ge 0$ while
-$\nu_i\left(1-\sum_ju_{1,ij}\right)=\mu$, so the second term is at least
-$-m\mu$. Hence $\Upsilon(\bm y)\ge\Upsilon(\bm u_1(\mu))-\mu\,m(n+1)$
-for every $\bm y\in\mathcal{K}$, and $\bm y=\widehat{\bm u}_1$ gives~\eqref{gap}.
+and $\nu_i\left(c_i-\sum_{p\in I_i}\sigma_{1,p}y_p\right)\ge 0$ while
+$\nu_i\left(c_i-\sum_{p\in I_i}\sigma_{1,p}t_p\right)=\mu$, so the second term is at least
+$-m\mu$. Hence $\Psi(\bm y)\ge\Psi(\bm t(\mu))-\mu\,m(n+1)$
+for every $\bm y\in\mathcal{K}$, and $\bm y=\widehat{\bm t}$ gives~\eqref{gap}.
 
-(iv) Let $\mu_k\to 0$. By~\eqref{gap},
-$\Upsilon\left(\bm u_1(\mu_k)\right)\to\Upsilon\left(\widehat{\bm u}_1\right)$.
-The points $\bm u_1(\mu_k)$ lie in the compact set $\mathcal{K}$; if
-$\overline{\bm u}_1$ is the limit of a subsequence, then by continuity
-$\Upsilon(\overline{\bm u}_1)=\Upsilon(\widehat{\bm u}_1)$, so
-$\overline{\bm u}_1$ minimizes $\Upsilon$ on $\mathcal{K}$ and $\overline{\bm u}_1=\widehat{\bm u}_1$
-by (i). Every subsequence of $\left(\bm u_1(\mu_k)\right)$ thus has a
-further subsequence converging to $\widehat{\bm u}_1$, and therefore
-$\bm u_1(\mu_k)\to\widehat{\bm u}_1$.
+(iii) Let $\mu_k\to 0$. By~\eqref{gap},
+$\Psi\left(\bm t(\mu_k)\right)\to\Psi\left(\widehat{\bm t}\right)$.
+The points $\bm t(\mu_k)$ lie in the compact set $\mathcal{K}$; if
+$\overline{\bm t}$ is the limit of a subsequence, then by continuity
+$\Psi(\overline{\bm t})=\Psi(\widehat{\bm t})$, so
+$\overline{\bm t}$ minimizes $\Psi$ on $\mathcal{K}$ and $\overline{\bm t}=\widehat{\bm t}$
+by Theorem~\ref{global}. Every subsequence of $\left(\bm t(\mu_k)\right)$ thus has a
+further subsequence converging to $\widehat{\bm t}$, and therefore
+$\bm t(\mu_k)\to\widehat{\bm t}$.
 \end{proof}
 
 \subsection{The algorithm}\label{sec-algorithm}
@@ -411,7 +545,7 @@ The method of Theorem~\ref{barrier} minimizes $F_{\mu}$ for a decreasing
 sequence of weights $\mu$, each minimization started from the previous
 minimizer; by~\eqref{gap} the objective function is within $\mu\,m(n+1)$ of the
 minimum, which gives a stopping rule. Each step needs the gradient of
-$\Upsilon$, and for this the eigenvectors corresponding to the spectral
+$\Psi$, and for this the eigenvectors corresponding to the spectral
 radii of $A_1\operatorname{diag}(\bm g)$ and
 $\left[A_1\operatorname{diag}(\bm g)\right]^T$ suffice. Let
 \begin{equation}\label{perron}
@@ -426,13 +560,14 @@ and since $dg_p/dt_p=-\varepsilon_1/t_p^2$ the chain rule gives
 =-\frac{\varepsilon_1}{\rho\,t_p^2}\cdot
 \frac{\left(A_1^T\bm w\right)_p v_p}{\langle\bm w,\bm v\rangle}\ <0 ,
 \end{equation}
-the sign because $\bm v>0$, $\bm w>0$ and no column of $A_1$ vanishes, and
-$\partial\Upsilon/\partial u_{1,ij}=L_{pp}\,\partial\Psi/\partial t_p$.
+the sign because $\bm v>0$, $\bm w>0$ and no column of $A_1$ vanishes.
 No differences of eigenvalue computations are needed. The two eigenvectors are
-computed by Arnoldi. The variables $\bm u_1$ are used rather than
-$\bm t$: in $\bm t$ the coefficients $\sigma_{1,p}$ of~\eqref{t-constraint} are
-of order $10^{7}$ against a $\bm t$ of order one, and a solver stalls. The
-implementation uses the trust region interior point method
+computed by Arnoldi. In $\bm t$ the coefficients $\sigma_{1,p}$
+of~\eqref{t-constraint} are of order $10^{7}$ against a $\bm t$ of order one,
+and a solver stalls; the computation is therefore done in the scaled variables
+$u_{1,p}=\omega_v\sigma_{1,p}\left(t_p-1\right)/b_{1i}$ of~\eqref{u-of-chihat},
+in which the constraints~\eqref{t-constraint} read $u_{1,p}\ge 0$ and
+$\sum_{p\in I_i}u_{1,p}\le 1$. The implementation uses the trust region interior point method
 of~\cite{1999Byrd_Hribar_Nocedal}, which minimizes the barrier functions
 $F_\mu$ approximately, with the gradient~\eqref{grad} and a quasi-Newton
 Hessian.
@@ -516,7 +651,7 @@ the spectrum of $\operatorname{NGM}$, $\rho=4.4230681092$ at $\bm\chi=0$, and
 John's method: the age profile of the left Perron vector, plotted per location.
 The notebook \texttt{min\_rho\_single\_dose\_H\_ZF\_JG.nb} solves the single
 dose problem~\eqref{t-program} with the weekly budget $b_{1i}$: an interior
-point method on the product of simplices $\mathcal{K}$, with the gradient~\eqref{grad},
+point method in the scaled variables $u_{1,p}$, with the gradient~\eqref{grad},
 followed by a quasi-Newton method on the groups that receive doses. It checks
 the optimality conditions~\eqref{kkt}, gives the minimum $\rho=2.9059382878$ and
 the $\chi_1$ of Table~\ref{tab-chi1}, and compares them with John's method,
@@ -531,7 +666,7 @@ Table~\ref{tab-chi1} are computed by it.
 When doses of the second or third type are available as well, $b_{2i}>0$ or
 $b_{3i}>0$ for some $i$, the variables $\bm\chi_2$ and $\bm\chi_3$ do not vanish,
 and each $g_p$ in~\eqref{g-def} depends on $\chi_{1,p}$, $\chi_{2,p}$ and
-$\chi_{3,p}$. In the variables $\bm u$ of property~(\ref{simplex-product})
+$\chi_{3,p}$. In the variables $\bm u$ of~\eqref{u-of-chihat}
 the problem is
 \begin{equation}\label{three-program}
 \min_{\bm u\in\mathcal{S}}\
@@ -553,7 +688,7 @@ to~\eqref{three-program}, and a local method finds a local minimizer.
 
 In fact the objective function is not convex. The dose $\chi_{2,p}$ enters both
 $\pi_{1,p}$, through $\omega_v+\varepsilon_2\chi_{2,p}$, and $\pi_{2,p}$
-in~\eqref{g-def}. For $200\,000$ points $(\chi_{1,p},\chi_{2,p},\chi_{3,p})$
+in~\eqref{yz-def}. For $200\,000$ points $(\chi_{1,p},\chi_{2,p},\chi_{3,p})$
 drawn log-uniformly from $\left[10^{-5},10^{-1.5}\right]^3$, with the
 parameters of the model, $\varepsilon_1=\varepsilon_2=\varepsilon_3=0.8$ and
 $\omega=\omega_v=1/182.5$, the smallest value of
@@ -582,14 +717,15 @@ gradient of $\Theta$ and no Hessian.
 \subsection{Properties of the objective function}
 
 For $\bm u\in\mathcal{S}$ all $\chi_{k,p}\ge 0$, so
-$\pi_{1,p},\pi_{2,p}\ge 0$ and $\pi_{3,p}\ge 1$ in~\eqref{g-def}; the
-numerator of $g_p$ is at least $1$ and its denominator at least $1$, and $g_p$
+$\pi_{1,p},\pi_{2,p}\ge 0$ and $\pi_{3,p}\ge 1$ in~\eqref{yz-def}; the
+numerator of $g_p$ in~\eqref{g-def} is at least $1$ and its denominator at least $1$, and $g_p$
 is a rational function of $\bm\chi$ with a positive denominator on a
 neighbourhood of $\mathcal{S}$. Hence $g_p>0$ there, and
 $A_1\operatorname{diag}(\bm g)\ge 0$ has the same zero entries as $A_1$ and is
 irreducible. By Theorem~\ref{pf} in~\S\ref{sec-facts} its spectral radius is a
-simple eigenvalue, hence a real-analytic function of the entries, and $\Theta$
-is real-analytic on a neighbourhood of the compact set $\mathcal{S}$. In
+simple eigenvalue, hence a continuously differentiable function of the
+entries, and $\Theta$ is continuously differentiable on a neighbourhood of the
+compact set $\mathcal{S}$. In
 particular $\nabla\Theta$ is continuous and bounded on $\mathcal{S}$, and we
 put
 \begin{equation}\label{t-G}
@@ -1053,21 +1189,8 @@ right and using $\mathscr{P}^T\mathscr{P}=2I_N$ twice, we obtain the definition
 of $A_1$ in~\eqref{p-identities}.
 
 
-Next, we consider the quantities $y_p$ and $z_p$. Following~\cite{JZh}, for $p=1:N$ we have
-\begin{equation}\label{fractions}
-\widetilde s_p=\left\lbrack
-1+\pi_{1,p}\left(1+\pi_{2,p}+\pi_{2,p}\pi_{3,p}\right)\right\rbrack^{-1},
-\qquad \widetilde v_p=\pi_{1,p}\,\widetilde s_p,
-\end{equation}
-with $\pi_{1,p}$, $\pi_{2,p}$ and $\pi_{3,p}$ as in~\eqref{g-def}, and the
-entries of~\eqref{yz} are
-\begin{equation}\label{yz-def}
-y_p=\widetilde s_p,\qquad
-z_p=\left\lbrack(1-\varepsilon_1)+\pi_{2,p}\right\rbrack\widetilde v_p .
-\end{equation}
-Using $\widetilde v_p=\pi_{1,p}\widetilde s_p$ we find the 
-closed form of 
-$g_p$ in~\eqref{g-def}. Moreover, since $\widetilde s_p\in(0,1]$, one has $0<g_p\le 1$, with $g_p=1$ exactly when $\chi_{1,p}=0$.
+Next, we consider the quantities $y_p$ and $z_p$ of~\eqref{yz-def}. Adding
+them we find the closed form of $g_p$ in~\eqref{g-def}. Moreover, since $\widetilde s_p\in(0,1]$, one has $0<g_p\le 1$, with $g_p=1$ exactly when $\chi_{1,p}=0$.
 
 We also have the following identity: $\bm d$ as in~\eqref{yz} and $\bm g=\bm y+\bm z$,
 \begin{equation}\label{ptdp}
