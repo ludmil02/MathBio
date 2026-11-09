@@ -12,6 +12,7 @@
 \usepackage[english]{babel}
 \usepackage{algorithm}
 \usepackage{algpseudocode}
+\usepackage{placeins}
 \usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
 
 \theoremstyle{plain}
@@ -497,12 +498,13 @@ constraint is active).}\label{tab-chi1}
 
 \begin{figure}[ht]
 \centering
-\includegraphics[width=\textwidth]{fig_chi1}
+\subfloat[minimizer, $\rho=2.9059$]{\includegraphics[width=0.4\textwidth]{fig_chi1_min}}\hspace{0.1\textwidth}
+\subfloat[John's method, $\rho=2.9312$]{\includegraphics[width=0.4\textwidth]{fig_chi1_john}}
 \caption{Left: the minimizer $\chi_1$ of Table~\ref{tab-chi1}. Right: the
 $\chi_1$ of John's method, the age profile of the left Perron vector of
 $\operatorname{NGM}$ at $\bm\chi=0$ scaled in each location to spend the same
 budget $b_{1i}$. One line per location; the same scale in both
-panels.}\label{fig-chi1}
+plots.}\label{fig-chi1}
 \end{figure}
 
 The computations are reproduced by two Mathematica notebooks, which share
@@ -857,7 +859,8 @@ decreases slowly over most of the run.
 
 \begin{figure}[ht]
 \centering
-\includegraphics[width=\textwidth]{fig_yogi_conv}
+\subfloat[relative excess]{\includegraphics[width=0.4\textwidth]{fig_yogi_conv_excess}}\hspace{0.1\textwidth}
+\subfloat[stationarity measure]{\includegraphics[width=0.4\textwidth]{fig_yogi_conv_r}}
 \caption{Projected Yogi on the weekly instance from the barycenter
 and from the starts $(k,i,j)=(3,1,4)$ and $(2,4,1)$: the relative excess over
 $\rho^*=1.6618$ (left) and $r$ of~\eqref{t-r} (right) per iteration.
@@ -918,7 +921,8 @@ $\rho$ of the interior point runs, $\rho$ of projected Yogi, and
 its relative excess $(\rho-\rho_{\mathrm{best}})/\rho_{\mathrm{best}}$.}\label{t-tab-yogi-inst}
 \end{table}
 
-Figures~\ref{t-fig-alloc-s2} and~\ref{t-fig-alloc-p} show, for the two
+Figures~\ref{t-fig-alloc-s2-k1}--\ref{t-fig-alloc-s2-k3}
+and~\ref{t-fig-alloc-p-k1}--\ref{t-fig-alloc-p-k3} show, for the two
 instances at the top of Table~\ref{t-tab-yogi-inst}, the allocations
 $\chi_{k,ij}$ at the endpoint of projected Yogi and at that of the
 interior point method from the barycenter, which gives the best of the $69$
@@ -935,21 +939,56 @@ $3\cdot 10^{-4}$ per day. As for the single dose, where the group $60+$
 receives no doses at the minimizer, the smaller value moves doses away from
 this group.
 
-\begin{figure}[ht]
+\begin{figure}[htbp]
 \centering
-\includegraphics[width=\textwidth]{fig_alloc_s2}
+\subfloat[interior point method, $\rho=1.7118$]{\includegraphics[width=0.4\textwidth]{fig_alloc_s2_joint_k1}}\hspace{0.1\textwidth}
+\subfloat[projected Yogi, $\rho=1.7095$]{\includegraphics[width=0.4\textwidth]{fig_alloc_s2_yogi_k1}}
 \caption{The weekly instance with $b_{2i}=b_{3i}=b_{1i}/4$ and $\sigma_2$,
-$\sigma_3$ of seed $2$: the allocations $\chi_1$, $\chi_2$, $\chi_3$ (rows),
-in units of $10^{-3}$ per day, at the endpoints of the interior point method
-(left) and of projected Yogi (right), both from the barycenter. One
-line per location; the same scale in each row.}\label{t-fig-alloc-s2}
+$\sigma_3$ of seed $2$: the allocation $\chi_1$, in units of $10^{-3}$ per
+day, at the endpoints of the interior point method (left) and of projected
+Yogi (right), both from the barycenter. One line per location; the same
+scale in both plots.}\label{t-fig-alloc-s2-k1}
 \end{figure}
 
-\begin{figure}[ht]
+\begin{figure}[htbp]
 \centering
-\includegraphics[width=\textwidth]{fig_alloc_p}
-\caption{As Figure~\ref{t-fig-alloc-s2}, for the weekly instance with
-$b_{2i}=b_{1i}/8$, $b_{3i}=b_{1i}/2$ and $\sigma_2=\sigma_3=P$.}\label{t-fig-alloc-p}
+\subfloat[interior point method, $\rho=1.7118$]{\includegraphics[width=0.4\textwidth]{fig_alloc_s2_joint_k2}}\hspace{0.1\textwidth}
+\subfloat[projected Yogi, $\rho=1.7095$]{\includegraphics[width=0.4\textwidth]{fig_alloc_s2_yogi_k2}}
+\caption{As Figure~\ref{t-fig-alloc-s2-k1}, for the allocation
+$\chi_2$.}\label{t-fig-alloc-s2-k2}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\subfloat[interior point method, $\rho=1.7118$]{\includegraphics[width=0.4\textwidth]{fig_alloc_s2_joint_k3}}\hspace{0.1\textwidth}
+\subfloat[projected Yogi, $\rho=1.7095$]{\includegraphics[width=0.4\textwidth]{fig_alloc_s2_yogi_k3}}
+\caption{As Figure~\ref{t-fig-alloc-s2-k1}, for the allocation
+$\chi_3$.}\label{t-fig-alloc-s2-k3}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\subfloat[interior point method, $\rho=1.3088$]{\includegraphics[width=0.4\textwidth]{fig_alloc_p_joint_k1}}\hspace{0.1\textwidth}
+\subfloat[projected Yogi, $\rho=1.3085$]{\includegraphics[width=0.4\textwidth]{fig_alloc_p_yogi_k1}}
+\caption{As Figure~\ref{t-fig-alloc-s2-k1}, for the weekly instance with
+$b_{2i}=b_{1i}/8$, $b_{3i}=b_{1i}/2$ and $\sigma_2=\sigma_3=P$: the
+allocation $\chi_1$.}\label{t-fig-alloc-p-k1}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\subfloat[interior point method, $\rho=1.3088$]{\includegraphics[width=0.4\textwidth]{fig_alloc_p_joint_k2}}\hspace{0.1\textwidth}
+\subfloat[projected Yogi, $\rho=1.3085$]{\includegraphics[width=0.4\textwidth]{fig_alloc_p_yogi_k2}}
+\caption{As Figure~\ref{t-fig-alloc-p-k1}, for the allocation
+$\chi_2$.}\label{t-fig-alloc-p-k2}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\subfloat[interior point method, $\rho=1.3088$]{\includegraphics[width=0.4\textwidth]{fig_alloc_p_joint_k3}}\hspace{0.1\textwidth}
+\subfloat[projected Yogi, $\rho=1.3085$]{\includegraphics[width=0.4\textwidth]{fig_alloc_p_yogi_k3}}
+\caption{As Figure~\ref{t-fig-alloc-p-k1}, for the allocation
+$\chi_3$.}\label{t-fig-alloc-p-k3}
 \end{figure}
 
 In practice the method should be run from several starts, the barycenter, the
@@ -968,9 +1007,10 @@ Table~\ref{t-tab-yogi-inst};
 \item \texttt{test\_barycenter\_three\_dose.py}: the $69$ interior point runs
 per instance;
 \item \texttt{plot\_yogi\_three\_dose.py}: the data of
-Figures~\ref{t-fig-conv}, \ref{t-fig-alloc-s2} and~\ref{t-fig-alloc-p}.
+Figures~\ref{t-fig-conv} and~\ref{t-fig-alloc-s2-k1}--\ref{t-fig-alloc-p-k3}.
 \end{itemize}
 
+\FloatBarrier
 \appendix
 
 \section{On the equivalence of the two formulations}\label{sec-reduction}

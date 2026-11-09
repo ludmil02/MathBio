@@ -1,6 +1,6 @@
 *.dat
-# the data of the figures, read by code/make_figures.py
-!notes/suplemental/fig_*.dat
+# the data of the figures, read by code/python/make_figures.py
+!notes/figures/dat/fig_*.dat
 
 # old_files: only the notebooks, tex and python are tracked
 old_files/**
@@ -16,9 +16,9 @@ old_files/**
 intermediate/
 
 # python kept only locally: no computation of notes/min_spectral_radius_vaccination.tex
-code/check_gs_endpoints.py
-code/reduced_test.py
-code/smoke_zf_jg.py
+code/python/check_gs_endpoints.py
+code/python/reduced_test.py
+code/python/smoke_zf_jg.py
 
 # pdfs that a tex file in this repository regenerates
 min_spectral_radius_vaccination.pdf

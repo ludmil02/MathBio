@@ -53,7 +53,7 @@ from zf_jg import ac_matrix, ngm_factored, dominant, john_method
 from zf_jg_doses import dose_budgets
 
 RHO_REPORTED = 2.9059382878      # Section S2 and min_rho_single_dose_H_ZF_JG.nb
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))   # the repository
+ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))   # the repository
 S_CSV = os.path.join(ROOT, "old_files/solution_nb_Data/s1Matrix.csv")
 
 
@@ -279,16 +279,16 @@ if __name__ == "__main__":
     print("\n--- the optimality conditions (3.21) at the route A point ---")
     ratio, ta, rho_at = red.marginal(ra.x)
     what = ra.x.reshape(m, n)
-    print("  max relative slack in the dose constraints: %.3e"
-          % np.abs((s_mat * omv * (ta.reshape(m, n) - 1.0)).sum(axis=1) / b1 - 1).max())
+    resid = np.abs((s_mat * omv * (ta.reshape(m, n) - 1.0)).sum(axis=1) / b1 - 1)
+    print("  max relative slack in the dose constraints: %.3e" % resid.max())
     for i in range(m):
         free = what[i] > 1e-8          # what is normalized, so this is relative
         mu = ratio[i, free].mean()
         print("    location %d: mu = %.6e, spread over free groups %.2e,"
-              " at the bound: %s, their ratio/mu = %s"
+              " at the bound: %s, their ratio/mu = %s, dose residual %.1e"
               % (i, mu, np.abs(ratio[i, free] / mu - 1).max(),
                  np.where(~free)[0].tolist(),
-                 np.array2string(ratio[i, ~free] / mu, precision=4)))
+                 np.array2string(ratio[i, ~free] / mu, precision=4), resid[i]))
 
     print("\n--- the minimizer ---")
     np.set_printoptions(precision=6, suppress=True, linewidth=200)

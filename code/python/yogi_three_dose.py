@@ -14,11 +14,13 @@ computed exactly per factor (Proposition T5.1(b)).  Stops when the
 stationarity measure r(u) = ||u - Pi_S(u - grad F(u))||_inf (T5.4) is below
 TOL, or after TMAX iterations.
 
-Writes the log to stdout and the per-start results to yogi_three_dose_results.txt.
+Writes the log to stdout and the per-start results to yogi_three_dose_results.txt,
+or to the file given by --out.  With --only nothing is written unless --out is given.
 
 Usage:
     python3 -u yogi_three_dose.py [--eta E] [--beta1 B1] [--beta2 B2]
                                   [--eps EPS] [--tol T] [--tmax N] [--only NAME]
+                                  [--out FILE]
 """
 
 import argparse
@@ -79,8 +81,9 @@ if __name__ == "__main__":
     ap.add_argument("--beta2", type=float, default=0.999)
     ap.add_argument("--eps", type=float, default=1e-8)
     ap.add_argument("--tol", type=float, default=1e-10)
-    ap.add_argument("--tmax", type=int, default=20000)
+    ap.add_argument("--tmax", type=int, default=200000)
     ap.add_argument("--only", default=None, help="run one start, e.g. barycenter or 'k=3 i=1 j=4'")
+    ap.add_argument("--out", default=None, help="results file, default " + OUT)
     a = ap.parse_args()
     print("eta=%g beta1=%g beta2=%g eps=%g tol=%g tmax=%d"
           % (a.eta, a.beta1, a.beta2, a.eps, a.tol, a.tmax), flush=True)
@@ -98,14 +101,15 @@ if __name__ == "__main__":
         rows.append((name, rho, it, el, r, sp, ex))
         print("%-12s rho=%.12f it=%6d %6.1fs r=%.1e kkt %.1e %+.1e" % rows[-1], flush=True)
     print("total %.1f s" % (time.time() - t_all))
-    if a.only is None:
-        with open(OUT, "w") as fh:
+    out = a.out if a.out is not None else (OUT if a.only is None else None)
+    if out is not None:
+        with open(out, "w") as fh:
             fh.write("# eta=%g beta1=%g beta2=%g eps=%g tol=%g tmax=%d\n"
                      % (a.eta, a.beta1, a.beta2, a.eps, a.tol, a.tmax))
             fh.write("# start rho it seconds r spread excess\n")
             for rw in rows:
                 fh.write("%s %.12f %d %.2f %.3e %.3e %.3e\n" % ((rw[0].replace(" ", "_"),) + rw[1:]))
-        print("written", OUT)
+        print("written", out)
     vals = np.array([rw[1] for rw in rows])
     print("starts %d, min %.12f max %.12f, distinct to 1e-8: %s"
           % (len(vals), vals.min(), vals.max(), np.unique(np.round(vals, 8))))
