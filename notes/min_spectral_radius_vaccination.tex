@@ -1005,8 +1005,10 @@ decreases slowly over most of the run.
 \caption{Projected Yogi on the weekly instance from three starts.}\label{t-fig-conv}
 \end{figure}
 
-\paragraph{Thirty-six instances.} To test whether the barycenter is a reliable
-start we varied the data in $36$ instances: the first-dose budget $b_{1i}$
+% \paragraph{Thirty-six instances.} To test whether the barycenter is a reliable
+% start we varied the data in $36$ instances: the first-dose budget $b_{1i}$
+\paragraph{Thirty-six instances.} We ran projected Yogi from the barycenter
+on $36$ instances with varied data: the first-dose budget $b_{1i}$
 weekly or daily ($b_{1i}/7$); the ratios
 \begin{equation}
 \frac{(b_{2i},b_{3i})}{b_{1i}}\in\left\{\left(\tfrac1{16},\tfrac1{16}\right),\left(\tfrac14,\tfrac14\right),(1,1),(4,4),\left(\tfrac12,\tfrac18\right),\left(\tfrac18,\tfrac12\right)\right\};
@@ -1015,119 +1017,182 @@ and $\sigma_{2,ij}$, $\sigma_{3,ij}$ equal to $P_{ij}$, or equal to
 $P_{ij}e^{Z_{ij}/2}$ and $P_{ij}e^{Z'_{ij}/2}$ with independent standard
 normal $Z$, $Z'$, for two seeds. Seed $s\in\{1,2\}$ means that $Z$ and then
 $Z'$, each $m\times n$ with the entries in row order, are drawn by
-\texttt{numpy.random.default\_rng(s).standard\_normal}. For each instance $\rho_{\mathrm{best}}$ is
-the smallest value known: that of $69$ runs of the trust region interior point
-method of~\cite{1999Byrd_Hribar_Nocedal} in all $3N$ variables, from the $49$
-starts above and $20$ random points of $\mathcal{S}$, or that of
-projected Yogi from the barycenter if it is smaller. A run is
-successful if its $\rho$ is at most $(1+10^{-7})\rho_{\mathrm{best}}$.
+\texttt{numpy.random.default\_rng(s).standard\_normal}.
+% For each instance $\rho_{\mathrm{best}}$ is
+% the smallest value known: that of $69$ runs of the trust region interior point
+% method of~\cite{1999Byrd_Hribar_Nocedal} in all $3N$ variables, from the $49$
+% starts above and $20$ random points of $\mathcal{S}$, or that of
+% projected Yogi from the barycenter if it is smaller. A run is
+% successful if its $\rho$ is at most $(1+10^{-7})\rho_{\mathrm{best}}$.
 
 From the barycenter, projected Yogi takes between $545$ and
 $10897$ iterations, $66$~s for all $36$ instances, and ends with $r<10^{-10}$
-in every instance. It is successful in $31$ instances, $14$ of the $18$
-weekly and $17$ of the $18$ daily. In two of them its value is smaller than
-that of all $69$ interior point runs, by $0.13$ and $0.025$ per cent, and is
-$\rho_{\mathrm{best}}$. Table~\ref{t-tab-yogi-inst} lists these two (top) and
-the five instances in which it is not successful (bottom), with the best $\rho$
-of the interior point runs, $\rho$ of projected Yogi, and its relative excess
-$(\rho-\rho_{\mathrm{best}})/\rho_{\mathrm{best}}$. Four of the five are weekly,
-two of them with the smallest budgets $b_{2i}=b_{3i}=b_{1i}/16$; the misses are
-up to $1.2$ per cent. At these five endpoints $r<10^{-10}$, so they are points
-satisfying the Karush--Kuhn--Tucker conditions to this accuracy with $\rho$
-above $\rho_{\mathrm{best}}$, and $\Theta$ is not convex on these instances.
+in every instance.
+% It is successful in $31$ instances, $14$ of the $18$
+% weekly and $17$ of the $18$ daily. In two of them its value is smaller than
+% that of all $69$ interior point runs, by $0.13$ and $0.025$ per cent, and is
+% $\rho_{\mathrm{best}}$. Table~\ref{t-tab-yogi-inst} lists these two (top) and
+% the five instances in which it is not successful (bottom), with the best $\rho$
+% of the interior point runs, $\rho$ of projected Yogi, and its relative excess
+% $(\rho-\rho_{\mathrm{best}})/\rho_{\mathrm{best}}$. Four of the five are weekly,
+% two of them with the smallest budgets $b_{2i}=b_{3i}=b_{1i}/16$; the misses are
+% up to $1.2$ per cent. At these five endpoints $r<10^{-10}$, so they are points
+% satisfying the Karush--Kuhn--Tucker conditions to this accuracy with $\rho$
+% above $\rho_{\mathrm{best}}$, and $\Theta$ is not convex on these instances.
 
-\begin{table}[ht]
-\centering
-\small
-\begin{tabular}{lllccc}
-\hline
-budget & $(b_{2i},b_{3i})/b_{1i}$ & $\sigma_2,\sigma_3$ & interior point &
-projected Yogi & relative excess\\
-\hline
-weekly & $(\tfrac14,\tfrac14)$       & seed $2$ & $1.7118$ & $1.7095$ & $0$\\
-weekly & $(\tfrac18,\tfrac12)$       & $P$      & $1.3088$ & $1.3085$ & $0$\\
-\hline
-weekly & $(\tfrac1{16},\tfrac1{16})$ & $P$      & $2.5032$ & $2.5335$ & $1.2\cdot 10^{-2}$\\
-weekly & $(\tfrac1{16},\tfrac1{16})$ & seed $2$ & $2.4253$ & $2.4384$ & $5.4\cdot 10^{-3}$\\
-weekly & $(\tfrac18,\tfrac12)$       & seed $1$ & $1.2363$ & $1.2376$ & $1.1\cdot 10^{-3}$\\
-weekly & $(\tfrac18,\tfrac12)$       & seed $2$ & $1.3770$ & $1.3820$ & $3.6\cdot 10^{-3}$\\
-daily  & $(\tfrac1{16},\tfrac1{16})$ & $P$      & $4.0391$ & $4.0403$ & $2.9\cdot 10^{-4}$\\
-\hline
-\end{tabular}
-\caption{Projected Yogi from the barycenter: the instances in which it
-improves on the interior point runs, and those in which it is not
-successful.}\label{t-tab-yogi-inst}
-\end{table}
+\begin{remark}\label{t-rem-interior}
+For comparison, on each of the $36$ instances we also ran the trust region
+interior point method of~\cite{1999Byrd_Hribar_Nocedal} in all $3N$
+variables, $69$ times: from the $49$ starts above and from $20$ random points
+of $\mathcal{S}$. Let $\rho_{\mathrm{best}}$ be the smallest value given by
+these runs and by projected Yogi from the barycenter. In $31$ of the $36$
+instances projected Yogi from the barycenter gives $\rho$ at most
+$(1+10^{-7})\rho_{\mathrm{best}}$, and in two of these its value is smaller
+than that of all $69$ interior point runs, by $0.13$ and $0.025$ per cent. In
+the other five, four of them weekly, its $\rho$ exceeds $\rho_{\mathrm{best}}$
+by up to $1.2$ per cent, while $r<10^{-10}$ at its endpoint. These endpoints
+satisfy the Karush--Kuhn--Tucker conditions to this accuracy with $\rho$ above
+$\rho_{\mathrm{best}}$, so $\Theta$ is not convex on these instances, and a
+single start does not in general give the global minimum.
+\end{remark}
+%
+% \begin{table}[ht]
+% \centering
+% \small
+% \begin{tabular}{lllccc}
+% \hline
+% budget & $(b_{2i},b_{3i})/b_{1i}$ & $\sigma_2,\sigma_3$ & interior point &
+% projected Yogi & relative excess\\
+% \hline
+% weekly & $(\tfrac14,\tfrac14)$       & seed $2$ & $1.7118$ & $1.7095$ & $0$\\
+% weekly & $(\tfrac18,\tfrac12)$       & $P$      & $1.3088$ & $1.3085$ & $0$\\
+% \hline
+% weekly & $(\tfrac1{16},\tfrac1{16})$ & $P$      & $2.5032$ & $2.5335$ & $1.2\cdot 10^{-2}$\\
+% weekly & $(\tfrac1{16},\tfrac1{16})$ & seed $2$ & $2.4253$ & $2.4384$ & $5.4\cdot 10^{-3}$\\
+% weekly & $(\tfrac18,\tfrac12)$       & seed $1$ & $1.2363$ & $1.2376$ & $1.1\cdot 10^{-3}$\\
+% weekly & $(\tfrac18,\tfrac12)$       & seed $2$ & $1.3770$ & $1.3820$ & $3.6\cdot 10^{-3}$\\
+% daily  & $(\tfrac1{16},\tfrac1{16})$ & $P$      & $4.0391$ & $4.0403$ & $2.9\cdot 10^{-4}$\\
+% \hline
+% \end{tabular}
+% \caption{Projected Yogi from the barycenter: the instances in which it
+% improves on the interior point runs, and those in which it is not
+% successful.}\label{t-tab-yogi-inst}
+% \end{table}
 
-Figures~\ref{t-fig-alloc-s2-k1}--\ref{t-fig-alloc-s2-k3}
-and~\ref{t-fig-alloc-p-k1}--\ref{t-fig-alloc-p-k3} show, for the two
-instances at the top of Table~\ref{t-tab-yogi-inst}, the allocations
-$\chi_{k,ij}$ at the endpoint of projected Yogi and at that of the
-interior point method from the barycenter, which gives the best of the $69$
-interior point values: one figure per dose type, in units of $10^{-3}$ per
-day, the interior point endpoint on the left and projected Yogi on the right,
-one line per location and the same scale in both plots. The first instance has
-$b_{2i}=b_{3i}=b_{1i}/4$ and $\sigma_2$, $\sigma_3$ of seed $2$; the second
-$b_{2i}=b_{1i}/8$, $b_{3i}=b_{1i}/2$ and $\sigma_2=\sigma_3=P$. The two allocations differ mainly in one location. In
-the first instance the interior point endpoint gives the group $60+$ of the
-South $\chi_{2}=0.0162$ and $\chi_{3}=0.0211$ per day, and that of
-projected Yogi gives this group no second or third doses and their
-budget to the groups $0$--$59$ of the South. In the second instance the same
-holds for the group $60+$ of the West, with $\chi_{2}=0.0098$ and
-$\chi_{3}=0.0181$ per day at the interior point endpoint. In the other three
-locations the entries above $10^{-3}$ per day agree to $2.2$ per cent; the
-smaller ones, first doses to the group $60+$, differ by up to
-$3\cdot 10^{-4}$ per day. As for the single dose, where the group $60+$
-receives no doses at the minimizer, the smaller value moves doses away from
-this group.
+Figure~\ref{t-fig-alloc-yogi} shows, for two of the
+weekly instances, the allocations $\chi_{k,ij}$ at the endpoint of projected
+Yogi from the barycenter, in units of $10^{-3}$ per day, one line per
+location. The first instance has $b_{2i}=b_{3i}=b_{1i}/4$ and $\sigma_2$,
+$\sigma_3$ of seed $2$, and $\rho=1.7095$; the second $b_{2i}=b_{1i}/8$,
+$b_{3i}=b_{1i}/2$ and $\sigma_2=\sigma_3=P$, and $\rho=1.3085$. In the first
+instance the group $60+$ of the South receives no second or third doses, and
+their budget goes to the groups $0$--$59$ of the South; in the second the same
+holds for the group $60+$ of the West. As for the single dose, where the group
+$60+$ receives no doses at the minimizer, doses go away from this group.
 
-\begin{figure}[htbp]
-\centering
-\subfloat[interior point method, $\rho=1.7118$]{\includegraphics[width=0.4\textwidth]{fig_alloc_s2_joint_k1}}\hspace{0.1\textwidth}
-\subfloat[projected Yogi, $\rho=1.7095$]{\includegraphics[width=0.4\textwidth]{fig_alloc_s2_yogi_k1}}
-\caption{The allocation $\chi_1$ for the weekly budget,
-$b_{2i}=b_{3i}=b_{1i}/4$, and $\sigma_2$, $\sigma_3$ of seed $2$.}\label{t-fig-alloc-s2-k1}
-\end{figure}
-
-\begin{figure}[htbp]
-\centering
-\subfloat[interior point method, $\rho=1.7118$]{\includegraphics[width=0.4\textwidth]{fig_alloc_s2_joint_k2}}\hspace{0.1\textwidth}
-\subfloat[projected Yogi, $\rho=1.7095$]{\includegraphics[width=0.4\textwidth]{fig_alloc_s2_yogi_k2}}
-\caption{The allocation $\chi_2$ for the weekly budget,
-$b_{2i}=b_{3i}=b_{1i}/4$, and $\sigma_2$, $\sigma_3$ of seed $2$.}\label{t-fig-alloc-s2-k2}
-\end{figure}
-
-\begin{figure}[htbp]
-\centering
-\subfloat[interior point method, $\rho=1.7118$]{\includegraphics[width=0.4\textwidth]{fig_alloc_s2_joint_k3}}\hspace{0.1\textwidth}
-\subfloat[projected Yogi, $\rho=1.7095$]{\includegraphics[width=0.4\textwidth]{fig_alloc_s2_yogi_k3}}
-\caption{The allocation $\chi_3$ for the weekly budget,
-$b_{2i}=b_{3i}=b_{1i}/4$, and $\sigma_2$, $\sigma_3$ of seed $2$.}\label{t-fig-alloc-s2-k3}
-\end{figure}
-
-\begin{figure}[htbp]
-\centering
-\subfloat[interior point method, $\rho=1.3088$]{\includegraphics[width=0.4\textwidth]{fig_alloc_p_joint_k1}}\hspace{0.1\textwidth}
-\subfloat[projected Yogi, $\rho=1.3085$]{\includegraphics[width=0.4\textwidth]{fig_alloc_p_yogi_k1}}
-\caption{The allocation $\chi_1$ for the weekly budget,
-$b_{2i}=b_{1i}/8$, $b_{3i}=b_{1i}/2$, and $\sigma_2=\sigma_3=P$.}\label{t-fig-alloc-p-k1}
-\end{figure}
+% Figures~\ref{t-fig-alloc-s2-k1}--\ref{t-fig-alloc-s2-k3}
+% and~\ref{t-fig-alloc-p-k1}--\ref{t-fig-alloc-p-k3} show, for the two
+% instances at the top of Table~\ref{t-tab-yogi-inst}, the allocations
+% $\chi_{k,ij}$ at the endpoint of projected Yogi and at that of the
+% interior point method from the barycenter, which gives the best of the $69$
+% interior point values: one figure per dose type, in units of $10^{-3}$ per
+% day, the interior point endpoint on the left and projected Yogi on the right,
+% one line per location and the same scale in both plots. The first instance has
+% $b_{2i}=b_{3i}=b_{1i}/4$ and $\sigma_2$, $\sigma_3$ of seed $2$; the second
+% $b_{2i}=b_{1i}/8$, $b_{3i}=b_{1i}/2$ and $\sigma_2=\sigma_3=P$. The two allocations differ mainly in one location. In
+% the first instance the interior point endpoint gives the group $60+$ of the
+% South $\chi_{2}=0.0162$ and $\chi_{3}=0.0211$ per day, and that of
+% projected Yogi gives this group no second or third doses and their
+% budget to the groups $0$--$59$ of the South. In the second instance the same
+% holds for the group $60+$ of the West, with $\chi_{2}=0.0098$ and
+% $\chi_{3}=0.0181$ per day at the interior point endpoint. In the other three
+% locations the entries above $10^{-3}$ per day agree to $2.2$ per cent; the
+% smaller ones, first doses to the group $60+$, differ by up to
+% $3\cdot 10^{-4}$ per day. As for the single dose, where the group $60+$
+% receives no doses at the minimizer, the smaller value moves doses away from
+% this group.
 
 \begin{figure}[htbp]
 \centering
-\subfloat[interior point method, $\rho=1.3088$]{\includegraphics[width=0.4\textwidth]{fig_alloc_p_joint_k2}}\hspace{0.1\textwidth}
-\subfloat[projected Yogi, $\rho=1.3085$]{\includegraphics[width=0.4\textwidth]{fig_alloc_p_yogi_k2}}
-\caption{The allocation $\chi_2$ for the weekly budget,
-$b_{2i}=b_{1i}/8$, $b_{3i}=b_{1i}/2$, and $\sigma_2=\sigma_3=P$.}\label{t-fig-alloc-p-k2}
+\subfloat[$\chi_1$, first instance]{\includegraphics[width=0.32\textwidth]{fig_alloc_s2_yogi_k1}}\hfill
+\subfloat[$\chi_2$, first instance]{\includegraphics[width=0.32\textwidth]{fig_alloc_s2_yogi_k2}}\hfill
+\subfloat[$\chi_3$, first instance]{\includegraphics[width=0.32\textwidth]{fig_alloc_s2_yogi_k3}}\\
+\subfloat[$\chi_1$, second instance]{\includegraphics[width=0.32\textwidth]{fig_alloc_p_yogi_k1}}\hfill
+\subfloat[$\chi_2$, second instance]{\includegraphics[width=0.32\textwidth]{fig_alloc_p_yogi_k2}}\hfill
+\subfloat[$\chi_3$, second instance]{\includegraphics[width=0.32\textwidth]{fig_alloc_p_yogi_k3}}
+\caption{The allocations at the endpoint of projected Yogi for the weekly
+budget. Top row: $b_{2i}=b_{3i}=b_{1i}/4$, $\sigma_2$, $\sigma_3$ of seed $2$,
+$\rho=1.7095$. Bottom row: $b_{2i}=b_{1i}/8$, $b_{3i}=b_{1i}/2$,
+$\sigma_2=\sigma_3=P$, $\rho=1.3085$.}\label{t-fig-alloc-yogi}
 \end{figure}
 
-\begin{figure}[htbp]
-\centering
-\subfloat[interior point method, $\rho=1.3088$]{\includegraphics[width=0.4\textwidth]{fig_alloc_p_joint_k3}}\hspace{0.1\textwidth}
-\subfloat[projected Yogi, $\rho=1.3085$]{\includegraphics[width=0.4\textwidth]{fig_alloc_p_yogi_k3}}
-\caption{The allocation $\chi_3$ for the weekly budget,
-$b_{2i}=b_{1i}/8$, $b_{3i}=b_{1i}/2$, and $\sigma_2=\sigma_3=P$.}\label{t-fig-alloc-p-k3}
-\end{figure}
+% \begin{figure}[htbp]
+% \centering
+% \subfloat[$\chi_1$]{\includegraphics[width=0.4\textwidth]{fig_alloc_s2_yogi_k1}}\hspace{0.1\textwidth}
+% \subfloat[$\chi_2$]{\includegraphics[width=0.4\textwidth]{fig_alloc_s2_yogi_k2}}\\
+% \subfloat[$\chi_3$]{\includegraphics[width=0.4\textwidth]{fig_alloc_s2_yogi_k3}}
+% \caption{The allocations at the endpoint of projected Yogi, $\rho=1.7095$,
+% for the weekly budget, $b_{2i}=b_{3i}=b_{1i}/4$, and $\sigma_2$, $\sigma_3$
+% of seed $2$.}\label{t-fig-alloc-s2}
+% \end{figure}
+%
+% \begin{figure}[htbp]
+% \centering
+% \subfloat[$\chi_1$]{\includegraphics[width=0.4\textwidth]{fig_alloc_p_yogi_k1}}\hspace{0.1\textwidth}
+% \subfloat[$\chi_2$]{\includegraphics[width=0.4\textwidth]{fig_alloc_p_yogi_k2}}\\
+% \subfloat[$\chi_3$]{\includegraphics[width=0.4\textwidth]{fig_alloc_p_yogi_k3}}
+% \caption{The allocations at the endpoint of projected Yogi, $\rho=1.3085$,
+% for the weekly budget, $b_{2i}=b_{1i}/8$, $b_{3i}=b_{1i}/2$, and
+% $\sigma_2=\sigma_3=P$.}\label{t-fig-alloc-p}
+% \end{figure}
+
+% \begin{figure}[htbp]
+% \centering
+% \subfloat[interior point method, $\rho=1.7118$]{\includegraphics[width=0.4\textwidth]{fig_alloc_s2_joint_k1}}\hspace{0.1\textwidth}
+% \subfloat[projected Yogi, $\rho=1.7095$]{\includegraphics[width=0.4\textwidth]{fig_alloc_s2_yogi_k1}}
+% \caption{The allocation $\chi_1$ for the weekly budget,
+% $b_{2i}=b_{3i}=b_{1i}/4$, and $\sigma_2$, $\sigma_3$ of seed $2$.}\label{t-fig-alloc-s2-k1}
+% \end{figure}
+%
+% \begin{figure}[htbp]
+% \centering
+% \subfloat[interior point method, $\rho=1.7118$]{\includegraphics[width=0.4\textwidth]{fig_alloc_s2_joint_k2}}\hspace{0.1\textwidth}
+% \subfloat[projected Yogi, $\rho=1.7095$]{\includegraphics[width=0.4\textwidth]{fig_alloc_s2_yogi_k2}}
+% \caption{The allocation $\chi_2$ for the weekly budget,
+% $b_{2i}=b_{3i}=b_{1i}/4$, and $\sigma_2$, $\sigma_3$ of seed $2$.}\label{t-fig-alloc-s2-k2}
+% \end{figure}
+%
+% \begin{figure}[htbp]
+% \centering
+% \subfloat[interior point method, $\rho=1.7118$]{\includegraphics[width=0.4\textwidth]{fig_alloc_s2_joint_k3}}\hspace{0.1\textwidth}
+% \subfloat[projected Yogi, $\rho=1.7095$]{\includegraphics[width=0.4\textwidth]{fig_alloc_s2_yogi_k3}}
+% \caption{The allocation $\chi_3$ for the weekly budget,
+% $b_{2i}=b_{3i}=b_{1i}/4$, and $\sigma_2$, $\sigma_3$ of seed $2$.}\label{t-fig-alloc-s2-k3}
+% \end{figure}
+%
+% \begin{figure}[htbp]
+% \centering
+% \subfloat[interior point method, $\rho=1.3088$]{\includegraphics[width=0.4\textwidth]{fig_alloc_p_joint_k1}}\hspace{0.1\textwidth}
+% \subfloat[projected Yogi, $\rho=1.3085$]{\includegraphics[width=0.4\textwidth]{fig_alloc_p_yogi_k1}}
+% \caption{The allocation $\chi_1$ for the weekly budget,
+% $b_{2i}=b_{1i}/8$, $b_{3i}=b_{1i}/2$, and $\sigma_2=\sigma_3=P$.}\label{t-fig-alloc-p-k1}
+% \end{figure}
+%
+% \begin{figure}[htbp]
+% \centering
+% \subfloat[interior point method, $\rho=1.3088$]{\includegraphics[width=0.4\textwidth]{fig_alloc_p_joint_k2}}\hspace{0.1\textwidth}
+% \subfloat[projected Yogi, $\rho=1.3085$]{\includegraphics[width=0.4\textwidth]{fig_alloc_p_yogi_k2}}
+% \caption{The allocation $\chi_2$ for the weekly budget,
+% $b_{2i}=b_{1i}/8$, $b_{3i}=b_{1i}/2$, and $\sigma_2=\sigma_3=P$.}\label{t-fig-alloc-p-k2}
+% \end{figure}
+%
+% \begin{figure}[htbp]
+% \centering
+% \subfloat[interior point method, $\rho=1.3088$]{\includegraphics[width=0.4\textwidth]{fig_alloc_p_joint_k3}}\hspace{0.1\textwidth}
+% \subfloat[projected Yogi, $\rho=1.3085$]{\includegraphics[width=0.4\textwidth]{fig_alloc_p_yogi_k3}}
+% \caption{The allocation $\chi_3$ for the weekly budget,
+% $b_{2i}=b_{1i}/8$, $b_{3i}=b_{1i}/2$, and $\sigma_2=\sigma_3=P$.}\label{t-fig-alloc-p-k3}
+% \end{figure}
 
 In practice the method should be run from several starts, the barycenter, the
 starts near the vertices and random points, and the smallest value kept; no
@@ -1140,12 +1205,16 @@ The computations are in the following python files:
 \item \texttt{check\_block2.py}: the sampling for the second dose above;
 \item \texttt{yogi\_three\_dose.py}: projected Yogi on the weekly
 instance from the $49$ starts, and Table~\ref{t-tab-yogi};
-\item \texttt{yogi\_instances\_three\_dose.py}: the $36$ instances, and
-Table~\ref{t-tab-yogi-inst};
+% \item \texttt{yogi\_instances\_three\_dose.py}: the $36$ instances, and
+% Table~\ref{t-tab-yogi-inst};
+% \item \texttt{test\_barycenter\_three\_dose.py}: the $69$ interior point runs
+% per instance;
+\item \texttt{yogi\_instances\_three\_dose.py}: the $36$ instances;
 \item \texttt{test\_barycenter\_three\_dose.py}: the $69$ interior point runs
-per instance;
+per instance in Remark~\ref{t-rem-interior};
 \item \texttt{plot\_yogi\_three\_dose.py}: the data of
-Figures~\ref{t-fig-conv} and~\ref{t-fig-alloc-s2-k1}--\ref{t-fig-alloc-p-k3}.
+Figures~\ref{t-fig-conv} and~\ref{t-fig-alloc-yogi}.
+% Figures~\ref{t-fig-conv} and~\ref{t-fig-alloc-s2-k1}--\ref{t-fig-alloc-p-k3}.
 \end{itemize}
 
 \FloatBarrier
@@ -1328,269 +1397,6 @@ matrix, and $\rho\left(A\operatorname{diag}\left(e^{\bm\xi}\right)\right)>0$, so
 $\Phi_\varepsilon(\bm\xi)\to\Phi(\bm\xi)$ as $\varepsilon\to 0$ for every
 $\bm\xi$. A pointwise limit of convex functions is convex.
 \end{proof}
-
-\section{First and second variation of the objective function}\label{sec-variation}
-
-Throughout this appendix $A\ge 0$ is irreducible and $\Phi$ is the
-function~\eqref{phi-def} of Lemma~\ref{log-convex}. For
-$\bm\xi\in\mathbb{R}^N$ we write $A_e=A\operatorname{diag}\left(e^{\bm\xi}\right)$
-and $\rho=\rho(A_e)$. As in the proof of Lemma~\ref{log-convex}, $A_e$ and $A_e^T$
-are irreducible, and by Theorem~\ref{pf} the spectral radius $\rho>0$ is a
-simple eigenvalue and there are $\bm v>0$ and $\bm w>0$ with
-\begin{equation}\label{v-perron}
-A_e\bm v=\rho\,\bm v,\qquad A_e^T\bm w=\rho\,\bm w,\qquad \langle\bm w,\bm v\rangle=1 .
-\end{equation}
-We put $\bm\varphi=\bm w\odot\bm v$, so that $\bm\varphi>0$ and
-$\sum_p\varphi_p=1$, and $W=\operatorname{diag}(\bm w)$,
-$V=\operatorname{diag}(\bm v)$.
-
-\begin{lemma}\label{v-border}
-The matrix
-\begin{equation}\label{v-border-matrix}
-B=\begin{pmatrix}\rho I-A_e&\bm v\\ \bm w^T&0\end{pmatrix}\in\mathbb{R}^{(N+1)\times(N+1)}
-\end{equation}
-is nonsingular. For $\bm x\in\mathbb{R}^N$ let $R\bm x=\bm y$, where
-$(\bm y,\alpha)$ is the solution of
-\begin{equation}\label{v-border-system}
-B\begin{pmatrix}\bm y\\ \alpha\end{pmatrix}
-=\begin{pmatrix}\bm x-\bm v\langle\bm w,\bm x\rangle\\ 0\end{pmatrix}.
-\end{equation}
-Then $\alpha=0$, the map $R$ is linear, and
-\begin{equation}\label{v-R}
-(\rho I-A_e)R=I-\bm v\bm w^T,\qquad R(\rho I-A_e)=I-\bm v\bm w^T,\qquad
-R\bm v=0,\qquad \bm w^TR=0 .
-\end{equation}
-The matrix $R^T$ is obtained in the same way from $A_e^T$, with $\bm v$ and
-$\bm w$ exchanged.
-\end{lemma}
-\begin{proof}
-Let $(\rho I-A_e)\bm y+\alpha\bm v=0$ and $\langle\bm w,\bm y\rangle=0$. Pairing
-the first equation with $\bm w$ and using $\bm w^T(\rho I-A_e)=0$ gives
-$\alpha\langle\bm w,\bm v\rangle=\alpha=0$. Then $(\rho I-A_e)\bm y=0$, and
-since $\rho$ is a simple eigenvalue, $\bm y=c\bm v$ with
-$c=\langle\bm w,\bm y\rangle=0$. Hence $B$ is nonsingular.
-
-Pairing the first equation of~\eqref{v-border-system} with $\bm w$ gives
-$\alpha=\langle\bm w,\bm x\rangle-\langle\bm w,\bm v\rangle\langle\bm w,\bm x\rangle=0$,
-so $(\rho I-A_e)R\bm x=\bm x-\bm v\langle\bm w,\bm x\rangle$ and
-$\langle\bm w,R\bm x\rangle=0$; these are the first and the last identity
-in~\eqref{v-R}, and $R$ is linear since $B^{-1}$ is. For $\bm x=\bm v$ the right-hand side
-of~\eqref{v-border-system} vanishes, so $R\bm v=0$. For the second identity let
-$\bm x\in\mathbb{R}^N$ and $\bm z=(\rho I-A_e)\bm x$. Then
-$\langle\bm w,\bm z\rangle=0$, so $(\rho I-A_e)R\bm z=\bm z=(\rho I-A_e)\bm x$,
-hence $R\bm z-\bm x=c\bm v$, and pairing with $\bm w$ gives
-$c=-\langle\bm w,\bm x\rangle$. Thus $R(\rho I-A_e)\bm x=\bm x-\bm v\langle\bm w,\bm x\rangle$.
-
-Transposing the second and the third identity in~\eqref{v-R} gives
-$(\rho I-A_e^T)R^T=I-\bm w\bm v^T$ and $\bm v^TR^T=0$. The first part of the
-proof, applied to the irreducible matrix $A_e^T$ with $\bm v$ and $\bm w$
-exchanged, shows that these two identities determine $R^T\bm x$ as the solution of the
-corresponding bordered system.
-\end{proof}
-
-The matrix $R$ is the group inverse of $\rho I-A_e$~\cite{1975Meyer}; this is
-not used below.
-
-\begin{theorem}\label{v-phi}
-The function $\Phi$ is infinitely differentiable on $\mathbb{R}^N$, and
-\begin{equation}\label{v-phi-derivs}
-\nabla\Phi(\bm\xi)=\bm\varphi,\qquad
-\nabla^2\Phi(\bm\xi)=-\operatorname{diag}(\bm\varphi)+\bm\varphi\bm\varphi^T
-+\rho\left(WRV+VR^TW\right).
-\end{equation}
-\end{theorem}
-\begin{proof}
-Fix $\bm\xi^0$, and let $A_{e,0}$, $\rho_0$, $\bm v$, $\bm w$ and $R$ be the
-quantities above at $\bm\xi^0$. The function
-$F:\mathbb{R}^N\times\mathbb{R}^N\times\mathbb{R}\to\mathbb{R}^{N+1}$,
-\begin{equation}
-F(\bm\xi,\bm x,\lambda)=\begin{pmatrix}\left(\lambda I-A\operatorname{diag}\left(e^{\bm\xi}\right)\right)\bm x\\ \langle\bm w,\bm x\rangle-1\end{pmatrix},
-\end{equation}
-is infinitely differentiable, $F(\bm\xi^0,\bm v,\rho_0)=0$, and its Jacobian
-with respect to $(\bm x,\lambda)$ at this point is the matrix $B$
-of~\eqref{v-border-matrix} with its first block row multiplied by $-1$, nonsingular by
-Lemma~\ref{v-border}. By the implicit function theorem there are a
-neighbourhood $U$ of $\bm\xi^0$ and infinitely differentiable functions
-$\bm x(\bm\xi)$ and $\lambda(\bm\xi)$ on $U$ with $\bm x(\bm\xi^0)=\bm v$,
-$\lambda(\bm\xi^0)=\rho_0$ and
-$A\operatorname{diag}\left(e^{\bm\xi}\right)\bm x(\bm\xi)=\lambda(\bm\xi)\bm x(\bm\xi)$.
-Since $\bm v>0$ we may take $U$ so small that $\bm x(\bm\xi)>0$ on $U$. For
-$\bm\xi\in U$ let $\widetilde{\bm w}>0$ be the vector given by Theorem~\ref{pf}
-for $\left(A\operatorname{diag}\left(e^{\bm\xi}\right)\right)^T$; then
-$\lambda(\bm\xi)\langle\widetilde{\bm w},\bm x(\bm\xi)\rangle
-=\rho\left(A\operatorname{diag}\left(e^{\bm\xi}\right)\right)\langle\widetilde{\bm w},\bm x(\bm\xi)\rangle$
-and $\langle\widetilde{\bm w},\bm x(\bm\xi)\rangle>0$, so
-$\lambda(\bm\xi)=\rho\left(A\operatorname{diag}\left(e^{\bm\xi}\right)\right)>0$.
-Hence $\Phi=\log\lambda$ is infinitely differentiable on $U$.
-
-Fix $\bm h\in\mathbb{R}^N$, put $H=\operatorname{diag}(\bm h)$ and
-$\bm\xi(s)=\bm\xi^0+s\bm h$, and write $A_e(s)$, $\lambda(s)$ and $\bm x(s)$ for
-the quantities at $\bm\xi(s)$, with primes for derivatives in $s$ at $s=0$.
-Since $A_e(s)=A_{e,0}\operatorname{diag}\left(e^{s\bm h}\right)$, we have $A_e'=A_{e,0}H$ and
-$A_e''=A_{e,0}H^2$. Differentiating $A_e(s)\bm x(s)=\lambda(s)\bm x(s)$ and
-$\langle\bm w,\bm x(s)\rangle=1$ once and twice at $s=0$,
-\begin{align}
-&A_e'\bm v+A_{e,0}\bm x'=\lambda'\bm v+\rho_0\bm x',\qquad \langle\bm w,\bm x'\rangle=0,\label{v-first}\\
-&A_e''\bm v+2A_e'\bm x'+A_{e,0}\bm x''=\lambda''\bm v+2\lambda'\bm x'+\rho_0\bm x'' .\label{v-second}
-\end{align}
-Pairing~\eqref{v-first} with $\bm w$ and using $\bm w^TA_{e,0}=\rho_0\bm w^T$ gives
-\begin{equation}
-\lambda'=\bm w^TA_{e,0}H\bm v=\rho_0\,\bm w^TH\bm v=\rho_0\langle\bm\varphi,\bm h\rangle,
-\end{equation}
-so the derivative of $\Phi\left(\bm\xi(s)\right)$ at $s=0$ is
-$\lambda'/\rho_0=\langle\bm\varphi,\bm h\rangle$, which is the first identity
-in~\eqref{v-phi-derivs}. Moreover~\eqref{v-first} gives
-$(\rho_0I-A_{e,0})\bm x'=A_e'\bm v-\lambda'\bm v=\left(I-\bm v\bm w^T\right)A_e'\bm v$,
-since $\bm w^TA_e'\bm v=\lambda'$, and with $\langle\bm w,\bm x'\rangle=0$ and
-Lemma~\ref{v-border}, $\bm x'=RA_e'\bm v=RA_{e,0}H\bm v$. Pairing~\eqref{v-second}
-with $\bm w$ and using $\langle\bm w,\bm x'\rangle=0$,
-\begin{equation}
-\lambda''=\bm w^TA_e''\bm v+2\,\bm w^TA_e'\bm x'
-=\rho_0\sum_p\varphi_ph_p^2+2\rho_0\,\bm w^THRA_{e,0}H\bm v .
-\end{equation}
-By~\eqref{v-R}, $RA_{e,0}=R(A_{e,0}-\rho_0I)+\rho_0R=-\left(I-\bm v\bm w^T\right)+\rho_0R$, and therefore
-\begin{equation}
-\bm w^THRA_{e,0}H\bm v=-\sum_p\varphi_ph_p^2+\langle\bm\varphi,\bm h\rangle^2
-+\rho_0\,\bm h^TWRV\bm h .
-\end{equation}
-The second derivative of $\Phi\left(\bm\xi(s)\right)$ at $s=0$ is
-\begin{equation}
-\frac{\lambda''}{\rho_0}-\left(\frac{\lambda'}{\rho_0}\right)^2
-=-\sum_p\varphi_ph_p^2+\langle\bm\varphi,\bm h\rangle^2+2\rho_0\,\bm h^TWRV\bm h ,
-\end{equation}
-and since $\bm h^TWRV\bm h=\bm h^TVR^TW\bm h$, this is $\bm h^T\mathcal{H}\bm h$
-with $\mathcal{H}$ the symmetric matrix on the right of~\eqref{v-phi-derivs}.
-A symmetric matrix is determined by its quadratic form, so
-$\nabla^2\Phi(\bm\xi^0)=\mathcal{H}$.
-\end{proof}
-
-By~\eqref{v-R}, $\nabla^2\Phi(\bm\xi)\mathbbm{1}=0$, in agreement with
-$\Phi(\bm\xi+c\mathbbm{1})=\Phi(\bm\xi)+c$, and by Lemma~\ref{log-convex} the
-matrix $\nabla^2\Phi(\bm\xi)$ is positive semidefinite.
-
-\begin{lemma}\label{v-g}
-For $\chi_1,\chi_2,\chi_3\ge 0$ the function $g$ of~\eqref{g-def}, with the
-index $p$ omitted, is $g=P/Q$ with
-\begin{equation}\label{v-PQ}
-\begin{aligned}
-P&=\omega_v+(1-\varepsilon_1)\chi_1+\varepsilon_2\chi_2+\frac{\varepsilon_2}{\omega}\chi_1\chi_2,\\
-Q&=\omega_v+\chi_1+\varepsilon_2\chi_2+\frac{2\varepsilon_2}{\omega}\chi_1\chi_2
-+\frac{\varepsilon_2\varepsilon_3}{\omega^2}\chi_1\chi_2\chi_3 .
-\end{aligned}
-\end{equation}
-In particular $P,Q\ge\omega_v>0$, and $\xi=\log g=\log P-\log Q$ satisfies
-\begin{equation}\label{v-logg}
-\frac{\partial\xi}{\partial\chi_k}=\frac{\partial_kP}{P}-\frac{\partial_kQ}{Q},\qquad
-\frac{\partial^2\xi}{\partial\chi_k\partial\chi_l}
-=\frac{\partial_{kl}P}{P}-\frac{\partial_kP\,\partial_lP}{P^2}
--\frac{\partial_{kl}Q}{Q}+\frac{\partial_kQ\,\partial_lQ}{Q^2},
-\end{equation}
-where
-\begin{equation}\label{v-PQ-derivs}
-\begin{aligned}
-\nabla P&=\left(1-\varepsilon_1+\frac{\varepsilon_2}{\omega}\chi_2,\
-\varepsilon_2+\frac{\varepsilon_2}{\omega}\chi_1,\ 0\right),\\
-\nabla Q&=\left(1+\frac{2\varepsilon_2}{\omega}\chi_2+\frac{\varepsilon_2\varepsilon_3}{\omega^2}\chi_2\chi_3,\
-\varepsilon_2+\frac{2\varepsilon_2}{\omega}\chi_1+\frac{\varepsilon_2\varepsilon_3}{\omega^2}\chi_1\chi_3,\
-\frac{\varepsilon_2\varepsilon_3}{\omega^2}\chi_1\chi_2\right),
-\end{aligned}
-\end{equation}
-$\partial_{kk}P=\partial_{kk}Q=0$, $\partial_{13}P=\partial_{23}P=0$, and
-$\partial_{12}P=\varepsilon_2/\omega$,
-$\partial_{12}Q=2\varepsilon_2/\omega+\varepsilon_2\varepsilon_3\chi_3/\omega^2$,
-$\partial_{13}Q=\varepsilon_2\varepsilon_3\chi_2/\omega^2$,
-$\partial_{23}Q=\varepsilon_2\varepsilon_3\chi_1/\omega^2$.
-\end{lemma}
-\begin{proof}
-Multiply the numerator and the denominator of~\eqref{g-def} by
-$\omega_v+\varepsilon_2\chi_2>0$. By~\eqref{yz-def},
-$\left(\omega_v+\varepsilon_2\chi_2\right)\pi_1=\chi_1$,
-$\left(\omega_v+\varepsilon_2\chi_2\right)\pi_1\pi_2=\varepsilon_2\chi_1\chi_2/\omega$ and
-$\left(\omega_v+\varepsilon_2\chi_2\right)\pi_1\pi_2\pi_3
-=\varepsilon_2\chi_1\chi_2/\omega+\varepsilon_2\varepsilon_3\chi_1\chi_2\chi_3/\omega^2$,
-which gives~\eqref{v-PQ}. Every coefficient in~\eqref{v-PQ} is non-negative,
-since $0<\varepsilon_1\le 1$, so $P,Q\ge\omega_v$. The remaining formulas are
-direct differentiation; $P$ and $Q$ are affine in each $\chi_k$ separately,
-so $\partial_{kk}P=\partial_{kk}Q=0$.
-\end{proof}
-
-We return to the setting of Section~\ref{sec-three}: $b_{k,i}>0$ for all $k$
-and $i$, and $A_1\ge 0$ irreducible. For $\bm u\in\mathcal{S}$ let
-$\bm\xi(\bm u)=\log\bm g\left(\bm\chi(\bm u)\right)$, so that
-$\Theta(\bm u)=\Phi\left(\bm\xi(\bm u)\right)$ with $\Phi$ as
-in~\eqref{phi-def} for $A=A_1$, and let $\rho$, $\bm v$, $\bm w$,
-$\bm\varphi$ and $R$ be the quantities of~\eqref{v-perron}
-and Lemma~\ref{v-border} at $\bm\xi(\bm u)$. With
-$c_{k,p}=b_{k,i}/\sigma_{k,p}$ for $p\in I_i$, so that
-$\chi_{k,p}=c_{k,p}u_{k,p}$ by~\eqref{u-of-chihat}, put
-\begin{equation}\label{v-a}
-a_{k,p}=c_{k,p}\frac{\partial\xi_p}{\partial\chi_{k,p}},\qquad
-E_{kl,p}=c_{k,p}c_{l,p}\frac{\partial^2\xi_p}{\partial\chi_{k,p}\partial\chi_{l,p}},
-\end{equation}
-given by~\eqref{v-logg} at $\left(\chi_{1,p},\chi_{2,p},\chi_{3,p}\right)$.
-
-\begin{theorem}\label{v-theta}
-The function $\Theta$ is infinitely differentiable on a neighbourhood of
-$\mathcal{S}$, and for $k,l=1,2,3$ and $p,q=1:N$,
-\begin{equation}\label{v-theta-derivs}
-\frac{\partial\Theta}{\partial u_{k,p}}=\varphi_p\,a_{k,p},\qquad
-\frac{\partial^2\Theta}{\partial u_{k,p}\partial u_{l,q}}
-=a_{k,p}\left(\nabla^2\Phi\right)_{pq}a_{l,q}+\delta_{pq}\,\varphi_p\,E_{kl,p},
-\end{equation}
-with $\nabla^2\Phi$ of~\eqref{v-phi-derivs} at $\bm\xi(\bm u)$. In
-particular, for $\bm h\in\mathbb{R}^{3N}$ with $\sum_{p\in I_i}h_{k,p}=0$
-for all $k$ and $i$, the directions tangent to $\mathcal{S}$, the first and the second
-variation of $\Theta$ at $\bm u$ are
-\begin{equation}\label{v-variations}
-\delta\Theta(\bm u)[\bm h]=\sum_{p=1}^{N}\varphi_p\zeta_p,\qquad
-\delta^2\Theta(\bm u)[\bm h]=\bm\zeta^T\nabla^2\Phi\,\bm\zeta
-+\sum_{p=1}^{N}\varphi_p\sum_{k,l=1}^{3}E_{kl,p}h_{k,p}h_{l,p},
-\end{equation}
-where $\zeta_p=\sum_{k=1}^{3}a_{k,p}h_{k,p}$.
-\end{theorem}
-\begin{proof}
-By Lemma~\ref{v-g}, $P$ and $Q$ are positive on the closed orthant
-$\chi\ge 0$, hence, being continuous, on an open neighbourhood of it, and there
-$\xi_p=\log P_p-\log Q_p$ is infinitely differentiable. The map
-$\bm u\mapsto\bm\chi(\bm u)$ is linear, so $\bm\xi(\bm u)$ is infinitely
-differentiable on a neighbourhood of $\mathcal{S}$, and so is $\Theta$, by
-Theorem~\ref{v-phi}. The component $\xi_p$ depends only on $u_{1,p}$,
-$u_{2,p}$ and $u_{3,p}$, with
-$\partial\xi_p/\partial u_{k,p}=a_{k,p}$ and
-$\partial^2\xi_p/\partial u_{k,p}\partial u_{l,p}=E_{kl,p}$. The chain rule gives
-\begin{equation}
-\frac{\partial\Theta}{\partial u_{k,p}}=\frac{\partial\Phi}{\partial\xi_p}a_{k,p},\qquad
-\frac{\partial^2\Theta}{\partial u_{k,p}\partial u_{l,q}}
-=a_{k,p}\frac{\partial^2\Phi}{\partial\xi_p\partial\xi_q}a_{l,q}
-+\delta_{pq}\frac{\partial\Phi}{\partial\xi_p}E_{kl,p},
-\end{equation}
-and Theorem~\ref{v-phi} gives~\eqref{v-theta-derivs}.
-Then~\eqref{v-variations} is $\nabla\Theta^T\bm h$ and
-$\bm h^T\nabla^2\Theta\,\bm h$.
-\end{proof}
-
-The first identity in~\eqref{v-theta-derivs} is~\eqref{t-grad}: the vector
-$\bm w$ of~\eqref{perron} is a multiple of the one in~\eqref{v-perron}, and
-$\operatorname{diag}(\bm g)A_1^T\bm w=\rho\bm w$ gives
-$\left(A_1^T\bm w\right)_pv_p/\rho=w_pv_p/g_p$, while
-$\partial\xi_p/\partial\chi_{k,p}=\left(\partial g_p/\partial\chi_{k,p}\right)/g_p$.
-
-A product $\nabla^2\Theta\,\bm h$ needs, besides the eigenvectors
-$\bm v$ and $\bm w$ used by the gradient, the two vectors
-$R\left(\bm v\odot\bm\zeta\right)$ and $R^T\left(\bm w\odot\bm\zeta\right)$,
-that is, one solution of the bordered system~\eqref{v-border-system} and one of the
-corresponding system for $A_e^T$, both of order $N+1$. No matrix needs to be
-formed: the python file \texttt{second\_variation.py} solves the two systems
-by GMRES with products by $A_e$ and $A_e^T$. On the weekly instance of
-Section~\ref{sec-three-numerics}, at the barycenter of $\mathcal{S}$, where
-$\rho=1.9660001326$, and at a random interior point, where
-$\rho=2.0749258646$, the gradient~\eqref{v-theta-derivs} agrees with the
-gradient~\eqref{t-grad} computed with $\partial g_p/\partial\chi_{k,p}$ by
-complex step to $4.3\cdot 10^{-16}$ and $2.2\cdot 10^{-15}$ relative. For three
-random tangent directions $\bm h$ at each point, $\nabla^2\Theta\,\bm h$ agrees
-with central differences of $\nabla\Theta$ to $3\cdot 10^{-9}$ relative, and
-$\delta^2\Theta(\bm u)[\bm h]$ with the second difference of $\Theta$ with step
-$10^{-3}$ to $8\cdot 10^{-6}$ relative.
 
 \bibliographystyle{plain}
 \bibliography{bib_mb}
