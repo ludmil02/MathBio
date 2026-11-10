@@ -58,6 +58,7 @@ that `min_rho_single_dose_H_ZF_JG.nb` repeats in Wolfram.
 | `yogi_instances_three_dose.py` | projected Yogi from the barycenter on the 36 instances of `test_barycenter_three_dose.py`, against the best of its 69 interior point runs: successful in 31, below that value in two of them.  Writes `yogi_instances_three_dose_results.txt`; took 66 s.  Table 4.2. |
 | `plot_yogi_three_dose.py` | the data of the figures of Section 4.4, written to `notes/figures/dat/`: `fig_yogi_hist_{bary,k3,k2}.dat`, the relative excess and `r` per iteration from three starts (Figure 4.1), `fig_gs_hist_{bary,k3}.dat`, Gauss-Seidel per sweep (in no figure of the main document), and `fig_alloc_{s2,p}_{joint,yogi}.dat`, `chi_k` at the endpoints of the interior point method and of Yogi in the two instances in which Yogi gives the smaller value (Figures 4.2–4.7, units `1e-3` per day).  Took 139 s. |
 | `make_figures.py` | the figures of the write-up with matplotlib, from the `.dat` files in `notes/figures/dat/`, one plot per png (300 dpi) in `notes/figures/`, 2.6 in wide, included at `0.4\textwidth`: `fig_chi1_{min,john}` (Figure 3.1), `fig_yogi_conv_{excess,r}` (Figure 4.1), `fig_alloc_s2_{joint,yogi}_k{1,2,3}` (Figures 4.2–4.4) and `fig_alloc_p_{joint,yogi}_k{1,2,3}` (Figures 4.5–4.7).  Run it after either plot script. |
+| `second_variation.py` | the gradient and the Hessian-vector product of `Theta` by Theorem C.5 of the main document: `R` of Lemma C.1 by GMRES on the bordered systems, `log g = log P - log Q` of Lemma C.4.  On the weekly instance, at the barycenter and at a random interior point, checks the gradient against `value_grad` of `gs_three_dose.py` and `H h` and `h^T H h` against finite differences.  A few seconds; log only, in `intermediate/second_variation.log`.  Appendix C. |
 | `run_all.sh` | runs every script above whose output enters the main document, in dependency order; see *Reproducing the main document* below. |
 | `check_block2.py` | samples `g_p` of (2.4) in the second dose: `log g` is not convex and `g` not monotone in `u2`.  Section 4 of the main document. |
 | `check_gs_endpoints.py` | two Gauss-Seidel endpoints of `gs_three_dose.py` with larger `rho`: local minimizers to the resolution of a random-direction test, and a violation of convexity on the segment to the joint minimizer.  Section T3 of the earlier version. |
@@ -135,7 +136,10 @@ the 36 instances, Tables 4.1 and 4.2 and Figures 4.1--4.7.  Values of `rho` in
 figures and tables have four decimals.
 The hypothesis on `A1` throughout is `A1 >= 0` irreducible; for the data of the
 model `A1 > 0`.  Appendix A proves the equivalence of the two matrices,
-appendix B collects the facts used.  The main document refers to nothing
+appendix B collects the facts used, appendix C gives the first and second
+variation of `Theta`: the gradient and Hessian of `log rho(A diag(e^xi))` through
+the bordered system of the Perron pair, and of `log g` as a quotient of two
+multilinear polynomials.  The main document refers to nothing
 outside itself.  Bibliography in `bib_mb.bib`, which also keeps the unused
 `2015Kingma_Ba`.
 
@@ -234,6 +238,7 @@ Where each number comes from:
 | Figure 4.1 and the 174, 340, 37290 iterations | `fig_yogi_hist_{bary,k3,k2}.dat` of `plot_yogi_three_dose.py` |
 | `rho_best` of the 36 instances, the interior point column of Table 4.2 | `test_barycenter_three_dose_results.txt` |
 | the 36 instances: iterations, time, 31 successes, Table 4.2 | `yogi_instances_three_dose_results.txt` |
+| Appendix C: the two `rho` and the agreements of the gradient and of `H h` | `second_variation.py`, `intermediate/second_variation.log` |
 | Figures 4.2–4.7 and the allocations quoted with them | `fig_alloc_{s2,p}_{joint,yogi}.dat` of `plot_yogi_three_dose.py`, then `make_figures.py` |
 
 The run of 2026-11-08/09 reproduced all of these.  Its `.dat` files and the
