@@ -1329,6 +1329,269 @@ $\Phi_\varepsilon(\bm\xi)\to\Phi(\bm\xi)$ as $\varepsilon\to 0$ for every
 $\bm\xi$. A pointwise limit of convex functions is convex.
 \end{proof}
 
+\section{First and second variation of the objective function}\label{sec-variation}
+
+Throughout this appendix $A\ge 0$ is irreducible and $\Phi$ is the
+function~\eqref{phi-def} of Lemma~\ref{log-convex}. For
+$\bm\xi\in\mathbb{R}^N$ we write $M=A\operatorname{diag}\left(e^{\bm\xi}\right)$
+and $\rho=\rho(M)$. As in the proof of Lemma~\ref{log-convex}, $M$ and $M^T$
+are irreducible, and by Theorem~\ref{pf} the spectral radius $\rho>0$ is a
+simple eigenvalue and there are $\bm v>0$ and $\bm w>0$ with
+\begin{equation}\label{v-perron}
+M\bm v=\rho\,\bm v,\qquad M^T\bm w=\rho\,\bm w,\qquad \langle\bm w,\bm v\rangle=1 .
+\end{equation}
+We put $\bm\varphi=\bm w\odot\bm v$, so that $\bm\varphi>0$ and
+$\sum_p\varphi_p=1$, and $W=\operatorname{diag}(\bm w)$,
+$V=\operatorname{diag}(\bm v)$.
+
+\begin{lemma}\label{v-border}
+The matrix
+\begin{equation}\label{v-border-matrix}
+B=\begin{pmatrix}\rho I-M&\bm v\\ \bm w^T&0\end{pmatrix}\in\mathbb{R}^{(N+1)\times(N+1)}
+\end{equation}
+is nonsingular. For $\bm x\in\mathbb{R}^N$ let $R\bm x=\bm y$, where
+$(\bm y,\alpha)$ is the solution of
+\begin{equation}\label{v-border-system}
+B\begin{pmatrix}\bm y\\ \alpha\end{pmatrix}
+=\begin{pmatrix}\bm x-\bm v\langle\bm w,\bm x\rangle\\ 0\end{pmatrix}.
+\end{equation}
+Then $\alpha=0$, the map $R$ is linear, and
+\begin{equation}\label{v-R}
+(\rho I-M)R=I-\bm v\bm w^T,\qquad R(\rho I-M)=I-\bm v\bm w^T,\qquad
+R\bm v=0,\qquad \bm w^TR=0 .
+\end{equation}
+The matrix $R^T$ is obtained in the same way from $M^T$, with $\bm v$ and
+$\bm w$ exchanged.
+\end{lemma}
+\begin{proof}
+Let $(\rho I-M)\bm y+\alpha\bm v=0$ and $\langle\bm w,\bm y\rangle=0$. Pairing
+the first equation with $\bm w$ and using $\bm w^T(\rho I-M)=0$ gives
+$\alpha\langle\bm w,\bm v\rangle=\alpha=0$. Then $(\rho I-M)\bm y=0$, and
+since $\rho$ is a simple eigenvalue, $\bm y=c\bm v$ with
+$c=\langle\bm w,\bm y\rangle=0$. Hence $B$ is nonsingular.
+
+Pairing the first equation of~\eqref{v-border-system} with $\bm w$ gives
+$\alpha=\langle\bm w,\bm x\rangle-\langle\bm w,\bm v\rangle\langle\bm w,\bm x\rangle=0$,
+so $(\rho I-M)R\bm x=\bm x-\bm v\langle\bm w,\bm x\rangle$ and
+$\langle\bm w,R\bm x\rangle=0$; these are the first and the last identity
+in~\eqref{v-R}, and $R$ is linear since $B^{-1}$ is. For $\bm x=\bm v$ the right-hand side
+of~\eqref{v-border-system} vanishes, so $R\bm v=0$. For the second identity let
+$\bm x\in\mathbb{R}^N$ and $\bm z=(\rho I-M)\bm x$. Then
+$\langle\bm w,\bm z\rangle=0$, so $(\rho I-M)R\bm z=\bm z=(\rho I-M)\bm x$,
+hence $R\bm z-\bm x=c\bm v$, and pairing with $\bm w$ gives
+$c=-\langle\bm w,\bm x\rangle$. Thus $R(\rho I-M)\bm x=\bm x-\bm v\langle\bm w,\bm x\rangle$.
+
+Transposing the second and the third identity in~\eqref{v-R} gives
+$(\rho I-M^T)R^T=I-\bm w\bm v^T$ and $\bm v^TR^T=0$. The first part of the
+proof, applied to the irreducible matrix $M^T$ with $\bm v$ and $\bm w$
+exchanged, shows that these two identities determine $R^T\bm x$ as the solution of the
+corresponding bordered system.
+\end{proof}
+
+The matrix $R$ is the group inverse of $\rho I-M$~\cite{1975Meyer}; this is
+not used below.
+
+\begin{theorem}\label{v-phi}
+The function $\Phi$ is infinitely differentiable on $\mathbb{R}^N$, and
+\begin{equation}\label{v-phi-derivs}
+\nabla\Phi(\bm\xi)=\bm\varphi,\qquad
+\nabla^2\Phi(\bm\xi)=-\operatorname{diag}(\bm\varphi)+\bm\varphi\bm\varphi^T
++\rho\left(WRV+VR^TW\right).
+\end{equation}
+\end{theorem}
+\begin{proof}
+Fix $\bm\xi^0$, and let $M_0$, $\rho_0$, $\bm v$, $\bm w$ and $R$ be the
+quantities above at $\bm\xi^0$. The function
+$F:\mathbb{R}^N\times\mathbb{R}^N\times\mathbb{R}\to\mathbb{R}^{N+1}$,
+\begin{equation}
+F(\bm\xi,\bm x,\lambda)=\begin{pmatrix}\left(\lambda I-A\operatorname{diag}\left(e^{\bm\xi}\right)\right)\bm x\\ \langle\bm w,\bm x\rangle-1\end{pmatrix},
+\end{equation}
+is infinitely differentiable, $F(\bm\xi^0,\bm v,\rho_0)=0$, and its Jacobian
+with respect to $(\bm x,\lambda)$ at this point is the matrix $B$
+of~\eqref{v-border-matrix} with its first block row multiplied by $-1$, nonsingular by
+Lemma~\ref{v-border}. By the implicit function theorem there are a
+neighbourhood $U$ of $\bm\xi^0$ and infinitely differentiable functions
+$\bm x(\bm\xi)$ and $\lambda(\bm\xi)$ on $U$ with $\bm x(\bm\xi^0)=\bm v$,
+$\lambda(\bm\xi^0)=\rho_0$ and
+$A\operatorname{diag}\left(e^{\bm\xi}\right)\bm x(\bm\xi)=\lambda(\bm\xi)\bm x(\bm\xi)$.
+Since $\bm v>0$ we may take $U$ so small that $\bm x(\bm\xi)>0$ on $U$. For
+$\bm\xi\in U$ let $\widetilde{\bm w}>0$ be the vector given by Theorem~\ref{pf}
+for $\left(A\operatorname{diag}\left(e^{\bm\xi}\right)\right)^T$; then
+$\lambda(\bm\xi)\langle\widetilde{\bm w},\bm x(\bm\xi)\rangle
+=\rho\left(A\operatorname{diag}\left(e^{\bm\xi}\right)\right)\langle\widetilde{\bm w},\bm x(\bm\xi)\rangle$
+and $\langle\widetilde{\bm w},\bm x(\bm\xi)\rangle>0$, so
+$\lambda(\bm\xi)=\rho\left(A\operatorname{diag}\left(e^{\bm\xi}\right)\right)>0$.
+Hence $\Phi=\log\lambda$ is infinitely differentiable on $U$.
+
+Fix $\bm h\in\mathbb{R}^N$, put $H=\operatorname{diag}(\bm h)$ and
+$\bm\xi(s)=\bm\xi^0+s\bm h$, and write $M(s)$, $\lambda(s)$ and $\bm x(s)$ for
+the quantities at $\bm\xi(s)$, with primes for derivatives in $s$ at $s=0$.
+Since $M(s)=M_0\operatorname{diag}\left(e^{s\bm h}\right)$, we have $M'=M_0H$ and
+$M''=M_0H^2$. Differentiating $M(s)\bm x(s)=\lambda(s)\bm x(s)$ and
+$\langle\bm w,\bm x(s)\rangle=1$ once and twice at $s=0$,
+\begin{align}
+&M'\bm v+M_0\bm x'=\lambda'\bm v+\rho_0\bm x',\qquad \langle\bm w,\bm x'\rangle=0,\label{v-first}\\
+&M''\bm v+2M'\bm x'+M_0\bm x''=\lambda''\bm v+2\lambda'\bm x'+\rho_0\bm x'' .\label{v-second}
+\end{align}
+Pairing~\eqref{v-first} with $\bm w$ and using $\bm w^TM_0=\rho_0\bm w^T$ gives
+\begin{equation}
+\lambda'=\bm w^TM_0H\bm v=\rho_0\,\bm w^TH\bm v=\rho_0\langle\bm\varphi,\bm h\rangle,
+\end{equation}
+so the derivative of $\Phi\left(\bm\xi(s)\right)$ at $s=0$ is
+$\lambda'/\rho_0=\langle\bm\varphi,\bm h\rangle$, which is the first identity
+in~\eqref{v-phi-derivs}. Moreover~\eqref{v-first} gives
+$(\rho_0I-M_0)\bm x'=M'\bm v-\lambda'\bm v=\left(I-\bm v\bm w^T\right)M'\bm v$,
+since $\bm w^TM'\bm v=\lambda'$, and with $\langle\bm w,\bm x'\rangle=0$ and
+Lemma~\ref{v-border}, $\bm x'=RM'\bm v=RM_0H\bm v$. Pairing~\eqref{v-second}
+with $\bm w$ and using $\langle\bm w,\bm x'\rangle=0$,
+\begin{equation}
+\lambda''=\bm w^TM''\bm v+2\,\bm w^TM'\bm x'
+=\rho_0\sum_p\varphi_ph_p^2+2\rho_0\,\bm w^THRM_0H\bm v .
+\end{equation}
+By~\eqref{v-R}, $RM_0=R(M_0-\rho_0I)+\rho_0R=-\left(I-\bm v\bm w^T\right)+\rho_0R$, and therefore
+\begin{equation}
+\bm w^THRM_0H\bm v=-\sum_p\varphi_ph_p^2+\langle\bm\varphi,\bm h\rangle^2
++\rho_0\,\bm h^TWRV\bm h .
+\end{equation}
+The second derivative of $\Phi\left(\bm\xi(s)\right)$ at $s=0$ is
+\begin{equation}
+\frac{\lambda''}{\rho_0}-\left(\frac{\lambda'}{\rho_0}\right)^2
+=-\sum_p\varphi_ph_p^2+\langle\bm\varphi,\bm h\rangle^2+2\rho_0\,\bm h^TWRV\bm h ,
+\end{equation}
+and since $\bm h^TWRV\bm h=\bm h^TVR^TW\bm h$, this is $\bm h^T\mathcal{H}\bm h$
+with $\mathcal{H}$ the symmetric matrix on the right of~\eqref{v-phi-derivs}.
+A symmetric matrix is determined by its quadratic form, so
+$\nabla^2\Phi(\bm\xi^0)=\mathcal{H}$.
+\end{proof}
+
+By~\eqref{v-R}, $\nabla^2\Phi(\bm\xi)\mathbbm{1}=0$, in agreement with
+$\Phi(\bm\xi+c\mathbbm{1})=\Phi(\bm\xi)+c$, and by Lemma~\ref{log-convex} the
+matrix $\nabla^2\Phi(\bm\xi)$ is positive semidefinite.
+
+\begin{lemma}\label{v-g}
+For $\chi_1,\chi_2,\chi_3\ge 0$ the function $g$ of~\eqref{g-def}, with the
+index $p$ omitted, is $g=P/Q$ with
+\begin{equation}\label{v-PQ}
+\begin{aligned}
+P&=\omega_v+(1-\varepsilon_1)\chi_1+\varepsilon_2\chi_2+\frac{\varepsilon_2}{\omega}\chi_1\chi_2,\\
+Q&=\omega_v+\chi_1+\varepsilon_2\chi_2+\frac{2\varepsilon_2}{\omega}\chi_1\chi_2
++\frac{\varepsilon_2\varepsilon_3}{\omega^2}\chi_1\chi_2\chi_3 .
+\end{aligned}
+\end{equation}
+In particular $P,Q\ge\omega_v>0$, and $\xi=\log g=\log P-\log Q$ satisfies
+\begin{equation}\label{v-logg}
+\frac{\partial\xi}{\partial\chi_k}=\frac{\partial_kP}{P}-\frac{\partial_kQ}{Q},\qquad
+\frac{\partial^2\xi}{\partial\chi_k\partial\chi_l}
+=\frac{\partial_{kl}P}{P}-\frac{\partial_kP\,\partial_lP}{P^2}
+-\frac{\partial_{kl}Q}{Q}+\frac{\partial_kQ\,\partial_lQ}{Q^2},
+\end{equation}
+where
+\begin{equation}\label{v-PQ-derivs}
+\begin{aligned}
+\nabla P&=\left(1-\varepsilon_1+\frac{\varepsilon_2}{\omega}\chi_2,\
+\varepsilon_2+\frac{\varepsilon_2}{\omega}\chi_1,\ 0\right),\\
+\nabla Q&=\left(1+\frac{2\varepsilon_2}{\omega}\chi_2+\frac{\varepsilon_2\varepsilon_3}{\omega^2}\chi_2\chi_3,\
+\varepsilon_2+\frac{2\varepsilon_2}{\omega}\chi_1+\frac{\varepsilon_2\varepsilon_3}{\omega^2}\chi_1\chi_3,\
+\frac{\varepsilon_2\varepsilon_3}{\omega^2}\chi_1\chi_2\right),
+\end{aligned}
+\end{equation}
+$\partial_{kk}P=\partial_{kk}Q=0$, $\partial_{13}P=\partial_{23}P=0$, and
+$\partial_{12}P=\varepsilon_2/\omega$,
+$\partial_{12}Q=2\varepsilon_2/\omega+\varepsilon_2\varepsilon_3\chi_3/\omega^2$,
+$\partial_{13}Q=\varepsilon_2\varepsilon_3\chi_2/\omega^2$,
+$\partial_{23}Q=\varepsilon_2\varepsilon_3\chi_1/\omega^2$.
+\end{lemma}
+\begin{proof}
+Multiply the numerator and the denominator of~\eqref{g-def} by
+$\omega_v+\varepsilon_2\chi_2>0$. By~\eqref{yz-def},
+$\left(\omega_v+\varepsilon_2\chi_2\right)\pi_1=\chi_1$,
+$\left(\omega_v+\varepsilon_2\chi_2\right)\pi_1\pi_2=\varepsilon_2\chi_1\chi_2/\omega$ and
+$\left(\omega_v+\varepsilon_2\chi_2\right)\pi_1\pi_2\pi_3
+=\varepsilon_2\chi_1\chi_2/\omega+\varepsilon_2\varepsilon_3\chi_1\chi_2\chi_3/\omega^2$,
+which gives~\eqref{v-PQ}. Every coefficient in~\eqref{v-PQ} is non-negative,
+since $0<\varepsilon_1\le 1$, so $P,Q\ge\omega_v$. The remaining formulas are
+direct differentiation; $P$ and $Q$ are affine in each $\chi_k$ separately,
+so $\partial_{kk}P=\partial_{kk}Q=0$.
+\end{proof}
+
+We return to the setting of Section~\ref{sec-three}: $b_{k,i}>0$ for all $k$
+and $i$, and $A_1\ge 0$ irreducible. For $\bm u\in\mathcal{S}$ let
+$\bm\xi(\bm u)=\log\bm g\left(\bm\chi(\bm u)\right)$, so that
+$\Theta(\bm u)=\Phi\left(\bm\xi(\bm u)\right)$ with $\Phi$ as
+in~\eqref{phi-def} for $A=A_1$, and let $\rho$, $\bm v$, $\bm w$,
+$\bm\varphi$ and $R$ be the quantities of~\eqref{v-perron}
+and Lemma~\ref{v-border} at $\bm\xi(\bm u)$. With
+$c_{k,p}=b_{k,i}/\sigma_{k,p}$ for $p\in I_i$, so that
+$\chi_{k,p}=c_{k,p}u_{k,p}$ by~\eqref{u-of-chihat}, put
+\begin{equation}\label{v-a}
+a_{k,p}=c_{k,p}\frac{\partial\xi_p}{\partial\chi_{k,p}},\qquad
+E_{kl,p}=c_{k,p}c_{l,p}\frac{\partial^2\xi_p}{\partial\chi_{k,p}\partial\chi_{l,p}},
+\end{equation}
+given by~\eqref{v-logg} at $\left(\chi_{1,p},\chi_{2,p},\chi_{3,p}\right)$.
+
+\begin{theorem}\label{v-theta}
+The function $\Theta$ is infinitely differentiable on a neighbourhood of
+$\mathcal{S}$, and for $k,l=1,2,3$ and $p,q=1:N$,
+\begin{equation}\label{v-theta-derivs}
+\frac{\partial\Theta}{\partial u_{k,p}}=\varphi_p\,a_{k,p},\qquad
+\frac{\partial^2\Theta}{\partial u_{k,p}\partial u_{l,q}}
+=a_{k,p}\left(\nabla^2\Phi\right)_{pq}a_{l,q}+\delta_{pq}\,\varphi_p\,E_{kl,p},
+\end{equation}
+with $\nabla^2\Phi$ of~\eqref{v-phi-derivs} at $\bm\xi(\bm u)$. In
+particular, for $\bm h\in\mathbb{R}^{3N}$ with $\sum_{p\in I_i}h_{k,p}=0$
+for all $k$ and $i$, the directions tangent to $\mathcal{S}$, the first and the second
+variation of $\Theta$ at $\bm u$ are
+\begin{equation}\label{v-variations}
+\delta\Theta(\bm u)[\bm h]=\sum_{p=1}^{N}\varphi_p\zeta_p,\qquad
+\delta^2\Theta(\bm u)[\bm h]=\bm\zeta^T\nabla^2\Phi\,\bm\zeta
++\sum_{p=1}^{N}\varphi_p\sum_{k,l=1}^{3}E_{kl,p}h_{k,p}h_{l,p},
+\end{equation}
+where $\zeta_p=\sum_{k=1}^{3}a_{k,p}h_{k,p}$.
+\end{theorem}
+\begin{proof}
+By Lemma~\ref{v-g}, $P$ and $Q$ are positive on the closed orthant
+$\chi\ge 0$, hence, being continuous, on an open neighbourhood of it, and there
+$\xi_p=\log P_p-\log Q_p$ is infinitely differentiable. The map
+$\bm u\mapsto\bm\chi(\bm u)$ is linear, so $\bm\xi(\bm u)$ is infinitely
+differentiable on a neighbourhood of $\mathcal{S}$, and so is $\Theta$, by
+Theorem~\ref{v-phi}. The component $\xi_p$ depends only on $u_{1,p}$,
+$u_{2,p}$ and $u_{3,p}$, with
+$\partial\xi_p/\partial u_{k,p}=a_{k,p}$ and
+$\partial^2\xi_p/\partial u_{k,p}\partial u_{l,p}=E_{kl,p}$. The chain rule gives
+\begin{equation}
+\frac{\partial\Theta}{\partial u_{k,p}}=\frac{\partial\Phi}{\partial\xi_p}a_{k,p},\qquad
+\frac{\partial^2\Theta}{\partial u_{k,p}\partial u_{l,q}}
+=a_{k,p}\frac{\partial^2\Phi}{\partial\xi_p\partial\xi_q}a_{l,q}
++\delta_{pq}\frac{\partial\Phi}{\partial\xi_p}E_{kl,p},
+\end{equation}
+and Theorem~\ref{v-phi} gives~\eqref{v-theta-derivs}.
+Then~\eqref{v-variations} is $\nabla\Theta^T\bm h$ and
+$\bm h^T\nabla^2\Theta\,\bm h$.
+\end{proof}
+
+The first identity in~\eqref{v-theta-derivs} is~\eqref{t-grad}: the vector
+$\bm w$ of~\eqref{perron} is a multiple of the one in~\eqref{v-perron}, and
+$\operatorname{diag}(\bm g)A_1^T\bm w=\rho\bm w$ gives
+$\left(A_1^T\bm w\right)_pv_p/\rho=w_pv_p/g_p$, while
+$\partial\xi_p/\partial\chi_{k,p}=\left(\partial g_p/\partial\chi_{k,p}\right)/g_p$.
+
+A product $\nabla^2\Theta\,\bm h$ needs, besides the eigenvectors
+$\bm v$ and $\bm w$ used by the gradient, the two vectors
+$R\left(\bm v\odot\bm\zeta\right)$ and $R^T\left(\bm w\odot\bm\zeta\right)$,
+that is, one solution of the bordered system~\eqref{v-border-system} and one of the
+corresponding system for $M^T$, both of order $N+1$. No matrix needs to be
+formed: the python file \texttt{second\_variation.py} solves the two systems
+by GMRES with products by $M$ and $M^T$. On the weekly instance of
+Section~\ref{sec-three-numerics}, at the barycenter of $\mathcal{S}$, where
+$\rho=1.9660001326$, and at a random interior point, where
+$\rho=2.0749258646$, the gradient~\eqref{v-theta-derivs} agrees with the
+gradient~\eqref{t-grad} computed with $\partial g_p/\partial\chi_{k,p}$ by
+complex step to $4.3\cdot 10^{-16}$ and $2.2\cdot 10^{-15}$ relative. For three
+random tangent directions $\bm h$ at each point, $\nabla^2\Theta\,\bm h$ agrees
+with central differences of $\nabla\Theta$ to $3\cdot 10^{-9}$ relative, and
+$\delta^2\Theta(\bm u)[\bm h]$ with the second difference of $\Theta$ with step
+$10^{-3}$ to $8\cdot 10^{-6}$ relative.
+
 \bibliographystyle{plain}
 \bibliography{bib_mb}
 

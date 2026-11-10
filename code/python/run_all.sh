@@ -36,6 +36,7 @@ run reduced_test          reduced_test.py          # needs wolframscript
 run plot_chi1_single_dose plot_chi1_single_dose.py
 run gs_three_dose         gs_three_dose.py
 run check_gs_endpoints    check_gs_endpoints.py
+run second_variation      second_variation.py
 wait
 
 run yogi_three_dose            yogi_three_dose.py
