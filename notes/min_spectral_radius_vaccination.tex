@@ -1282,18 +1282,18 @@ h_p(\bm\xi,\bm\zeta)&=\log\frac{\left(A\operatorname{diag}\left(e^{\bm\xi}\right
 \end{equation}
 
 \emph{Step 1: $\Phi(\bm\xi)=\min_{\bm\zeta}F(\bm\xi,\bm\zeta)$.} Fix $\bm\xi$
-and put $M=A\operatorname{diag}\left(e^{\bm\xi}\right)$. Since $e^{\bm\xi}>0$,
-the matrix $M\ge 0$ has the same zero entries as $A$, so $M$ and $M^T$ are
+and put $A_e=A\operatorname{diag}\left(e^{\bm\xi}\right)$. Since $e^{\bm\xi}>0$,
+the matrix $A_e\ge 0$ has the same zero entries as $A$, so $A_e$ and $A_e^T$ are
 irreducible, and by Theorem~\ref{pf} there are $\bm v>0$ and $\bm w>0$ with
-$M\bm v=\rho(M)\bm v$ and $M^T\bm w=\rho(M)\bm w$. For $\bm\zeta=\log\bm v$
-every $h_p$ equals $\log\rho(M)$, so $F(\bm\xi,\log\bm v)=\Phi(\bm\xi)$. For
+$A_e\bm v=\rho(A_e)\bm v$ and $A_e^T\bm w=\rho(A_e)\bm w$. For $\bm\zeta=\log\bm v$
+every $h_p$ equals $\log\rho(A_e)$, so $F(\bm\xi,\log\bm v)=\Phi(\bm\xi)$. For
 any $\bm\zeta$, put $\bm x=e^{\bm\zeta}>0$ and $\theta=e^{F(\bm\xi,\bm\zeta)}$;
-then $M\bm x\le\theta\bm x$, and pairing with $\bm w>0$,
+then $A_e\bm x\le\theta\bm x$, and pairing with $\bm w>0$,
 \begin{equation}
-\rho(M)\langle\bm w,\bm x\rangle=\langle M^T\bm w,\bm x\rangle
-=\langle\bm w,M\bm x\rangle\le\theta\langle\bm w,\bm x\rangle .
+\rho(A_e)\langle\bm w,\bm x\rangle=\langle A_e^T\bm w,\bm x\rangle
+=\langle\bm w,A_e\bm x\rangle\le\theta\langle\bm w,\bm x\rangle .
 \end{equation}
-As $\langle\bm w,\bm x\rangle>0$, $\rho(M)\le\theta$, that is,
+As $\langle\bm w,\bm x\rangle>0$, $\rho(A_e)\le\theta$, that is,
 $\Phi(\bm\xi)\le F(\bm\xi,\bm\zeta)$.
 
 \emph{Step 2: $F$ is jointly convex in $(\bm\xi,\bm\zeta)$.} Each $e^{h_p}$ is
@@ -1333,12 +1333,12 @@ $\bm\xi$. A pointwise limit of convex functions is convex.
 
 Throughout this appendix $A\ge 0$ is irreducible and $\Phi$ is the
 function~\eqref{phi-def} of Lemma~\ref{log-convex}. For
-$\bm\xi\in\mathbb{R}^N$ we write $M=A\operatorname{diag}\left(e^{\bm\xi}\right)$
-and $\rho=\rho(M)$. As in the proof of Lemma~\ref{log-convex}, $M$ and $M^T$
+$\bm\xi\in\mathbb{R}^N$ we write $A_e=A\operatorname{diag}\left(e^{\bm\xi}\right)$
+and $\rho=\rho(A_e)$. As in the proof of Lemma~\ref{log-convex}, $A_e$ and $A_e^T$
 are irreducible, and by Theorem~\ref{pf} the spectral radius $\rho>0$ is a
 simple eigenvalue and there are $\bm v>0$ and $\bm w>0$ with
 \begin{equation}\label{v-perron}
-M\bm v=\rho\,\bm v,\qquad M^T\bm w=\rho\,\bm w,\qquad \langle\bm w,\bm v\rangle=1 .
+A_e\bm v=\rho\,\bm v,\qquad A_e^T\bm w=\rho\,\bm w,\qquad \langle\bm w,\bm v\rangle=1 .
 \end{equation}
 We put $\bm\varphi=\bm w\odot\bm v$, so that $\bm\varphi>0$ and
 $\sum_p\varphi_p=1$, and $W=\operatorname{diag}(\bm w)$,
@@ -1347,7 +1347,7 @@ $V=\operatorname{diag}(\bm v)$.
 \begin{lemma}\label{v-border}
 The matrix
 \begin{equation}\label{v-border-matrix}
-B=\begin{pmatrix}\rho I-M&\bm v\\ \bm w^T&0\end{pmatrix}\in\mathbb{R}^{(N+1)\times(N+1)}
+B=\begin{pmatrix}\rho I-A_e&\bm v\\ \bm w^T&0\end{pmatrix}\in\mathbb{R}^{(N+1)\times(N+1)}
 \end{equation}
 is nonsingular. For $\bm x\in\mathbb{R}^N$ let $R\bm x=\bm y$, where
 $(\bm y,\alpha)$ is the solution of
@@ -1357,38 +1357,38 @@ B\begin{pmatrix}\bm y\\ \alpha\end{pmatrix}
 \end{equation}
 Then $\alpha=0$, the map $R$ is linear, and
 \begin{equation}\label{v-R}
-(\rho I-M)R=I-\bm v\bm w^T,\qquad R(\rho I-M)=I-\bm v\bm w^T,\qquad
+(\rho I-A_e)R=I-\bm v\bm w^T,\qquad R(\rho I-A_e)=I-\bm v\bm w^T,\qquad
 R\bm v=0,\qquad \bm w^TR=0 .
 \end{equation}
-The matrix $R^T$ is obtained in the same way from $M^T$, with $\bm v$ and
+The matrix $R^T$ is obtained in the same way from $A_e^T$, with $\bm v$ and
 $\bm w$ exchanged.
 \end{lemma}
 \begin{proof}
-Let $(\rho I-M)\bm y+\alpha\bm v=0$ and $\langle\bm w,\bm y\rangle=0$. Pairing
-the first equation with $\bm w$ and using $\bm w^T(\rho I-M)=0$ gives
-$\alpha\langle\bm w,\bm v\rangle=\alpha=0$. Then $(\rho I-M)\bm y=0$, and
+Let $(\rho I-A_e)\bm y+\alpha\bm v=0$ and $\langle\bm w,\bm y\rangle=0$. Pairing
+the first equation with $\bm w$ and using $\bm w^T(\rho I-A_e)=0$ gives
+$\alpha\langle\bm w,\bm v\rangle=\alpha=0$. Then $(\rho I-A_e)\bm y=0$, and
 since $\rho$ is a simple eigenvalue, $\bm y=c\bm v$ with
 $c=\langle\bm w,\bm y\rangle=0$. Hence $B$ is nonsingular.
 
 Pairing the first equation of~\eqref{v-border-system} with $\bm w$ gives
 $\alpha=\langle\bm w,\bm x\rangle-\langle\bm w,\bm v\rangle\langle\bm w,\bm x\rangle=0$,
-so $(\rho I-M)R\bm x=\bm x-\bm v\langle\bm w,\bm x\rangle$ and
+so $(\rho I-A_e)R\bm x=\bm x-\bm v\langle\bm w,\bm x\rangle$ and
 $\langle\bm w,R\bm x\rangle=0$; these are the first and the last identity
 in~\eqref{v-R}, and $R$ is linear since $B^{-1}$ is. For $\bm x=\bm v$ the right-hand side
 of~\eqref{v-border-system} vanishes, so $R\bm v=0$. For the second identity let
-$\bm x\in\mathbb{R}^N$ and $\bm z=(\rho I-M)\bm x$. Then
-$\langle\bm w,\bm z\rangle=0$, so $(\rho I-M)R\bm z=\bm z=(\rho I-M)\bm x$,
+$\bm x\in\mathbb{R}^N$ and $\bm z=(\rho I-A_e)\bm x$. Then
+$\langle\bm w,\bm z\rangle=0$, so $(\rho I-A_e)R\bm z=\bm z=(\rho I-A_e)\bm x$,
 hence $R\bm z-\bm x=c\bm v$, and pairing with $\bm w$ gives
-$c=-\langle\bm w,\bm x\rangle$. Thus $R(\rho I-M)\bm x=\bm x-\bm v\langle\bm w,\bm x\rangle$.
+$c=-\langle\bm w,\bm x\rangle$. Thus $R(\rho I-A_e)\bm x=\bm x-\bm v\langle\bm w,\bm x\rangle$.
 
 Transposing the second and the third identity in~\eqref{v-R} gives
-$(\rho I-M^T)R^T=I-\bm w\bm v^T$ and $\bm v^TR^T=0$. The first part of the
-proof, applied to the irreducible matrix $M^T$ with $\bm v$ and $\bm w$
+$(\rho I-A_e^T)R^T=I-\bm w\bm v^T$ and $\bm v^TR^T=0$. The first part of the
+proof, applied to the irreducible matrix $A_e^T$ with $\bm v$ and $\bm w$
 exchanged, shows that these two identities determine $R^T\bm x$ as the solution of the
 corresponding bordered system.
 \end{proof}
 
-The matrix $R$ is the group inverse of $\rho I-M$~\cite{1975Meyer}; this is
+The matrix $R$ is the group inverse of $\rho I-A_e$~\cite{1975Meyer}; this is
 not used below.
 
 \begin{theorem}\label{v-phi}
@@ -1400,7 +1400,7 @@ The function $\Phi$ is infinitely differentiable on $\mathbb{R}^N$, and
 \end{equation}
 \end{theorem}
 \begin{proof}
-Fix $\bm\xi^0$, and let $M_0$, $\rho_0$, $\bm v$, $\bm w$ and $R$ be the
+Fix $\bm\xi^0$, and let $A_{e,0}$, $\rho_0$, $\bm v$, $\bm w$ and $R$ be the
 quantities above at $\bm\xi^0$. The function
 $F:\mathbb{R}^N\times\mathbb{R}^N\times\mathbb{R}\to\mathbb{R}^{N+1}$,
 \begin{equation}
@@ -1424,33 +1424,33 @@ $\lambda(\bm\xi)=\rho\left(A\operatorname{diag}\left(e^{\bm\xi}\right)\right)>0$
 Hence $\Phi=\log\lambda$ is infinitely differentiable on $U$.
 
 Fix $\bm h\in\mathbb{R}^N$, put $H=\operatorname{diag}(\bm h)$ and
-$\bm\xi(s)=\bm\xi^0+s\bm h$, and write $M(s)$, $\lambda(s)$ and $\bm x(s)$ for
+$\bm\xi(s)=\bm\xi^0+s\bm h$, and write $A_e(s)$, $\lambda(s)$ and $\bm x(s)$ for
 the quantities at $\bm\xi(s)$, with primes for derivatives in $s$ at $s=0$.
-Since $M(s)=M_0\operatorname{diag}\left(e^{s\bm h}\right)$, we have $M'=M_0H$ and
-$M''=M_0H^2$. Differentiating $M(s)\bm x(s)=\lambda(s)\bm x(s)$ and
+Since $A_e(s)=A_{e,0}\operatorname{diag}\left(e^{s\bm h}\right)$, we have $A_e'=A_{e,0}H$ and
+$A_e''=A_{e,0}H^2$. Differentiating $A_e(s)\bm x(s)=\lambda(s)\bm x(s)$ and
 $\langle\bm w,\bm x(s)\rangle=1$ once and twice at $s=0$,
 \begin{align}
-&M'\bm v+M_0\bm x'=\lambda'\bm v+\rho_0\bm x',\qquad \langle\bm w,\bm x'\rangle=0,\label{v-first}\\
-&M''\bm v+2M'\bm x'+M_0\bm x''=\lambda''\bm v+2\lambda'\bm x'+\rho_0\bm x'' .\label{v-second}
+&A_e'\bm v+A_{e,0}\bm x'=\lambda'\bm v+\rho_0\bm x',\qquad \langle\bm w,\bm x'\rangle=0,\label{v-first}\\
+&A_e''\bm v+2A_e'\bm x'+A_{e,0}\bm x''=\lambda''\bm v+2\lambda'\bm x'+\rho_0\bm x'' .\label{v-second}
 \end{align}
-Pairing~\eqref{v-first} with $\bm w$ and using $\bm w^TM_0=\rho_0\bm w^T$ gives
+Pairing~\eqref{v-first} with $\bm w$ and using $\bm w^TA_{e,0}=\rho_0\bm w^T$ gives
 \begin{equation}
-\lambda'=\bm w^TM_0H\bm v=\rho_0\,\bm w^TH\bm v=\rho_0\langle\bm\varphi,\bm h\rangle,
+\lambda'=\bm w^TA_{e,0}H\bm v=\rho_0\,\bm w^TH\bm v=\rho_0\langle\bm\varphi,\bm h\rangle,
 \end{equation}
 so the derivative of $\Phi\left(\bm\xi(s)\right)$ at $s=0$ is
 $\lambda'/\rho_0=\langle\bm\varphi,\bm h\rangle$, which is the first identity
 in~\eqref{v-phi-derivs}. Moreover~\eqref{v-first} gives
-$(\rho_0I-M_0)\bm x'=M'\bm v-\lambda'\bm v=\left(I-\bm v\bm w^T\right)M'\bm v$,
-since $\bm w^TM'\bm v=\lambda'$, and with $\langle\bm w,\bm x'\rangle=0$ and
-Lemma~\ref{v-border}, $\bm x'=RM'\bm v=RM_0H\bm v$. Pairing~\eqref{v-second}
+$(\rho_0I-A_{e,0})\bm x'=A_e'\bm v-\lambda'\bm v=\left(I-\bm v\bm w^T\right)A_e'\bm v$,
+since $\bm w^TA_e'\bm v=\lambda'$, and with $\langle\bm w,\bm x'\rangle=0$ and
+Lemma~\ref{v-border}, $\bm x'=RA_e'\bm v=RA_{e,0}H\bm v$. Pairing~\eqref{v-second}
 with $\bm w$ and using $\langle\bm w,\bm x'\rangle=0$,
 \begin{equation}
-\lambda''=\bm w^TM''\bm v+2\,\bm w^TM'\bm x'
-=\rho_0\sum_p\varphi_ph_p^2+2\rho_0\,\bm w^THRM_0H\bm v .
+\lambda''=\bm w^TA_e''\bm v+2\,\bm w^TA_e'\bm x'
+=\rho_0\sum_p\varphi_ph_p^2+2\rho_0\,\bm w^THRA_{e,0}H\bm v .
 \end{equation}
-By~\eqref{v-R}, $RM_0=R(M_0-\rho_0I)+\rho_0R=-\left(I-\bm v\bm w^T\right)+\rho_0R$, and therefore
+By~\eqref{v-R}, $RA_{e,0}=R(A_{e,0}-\rho_0I)+\rho_0R=-\left(I-\bm v\bm w^T\right)+\rho_0R$, and therefore
 \begin{equation}
-\bm w^THRM_0H\bm v=-\sum_p\varphi_ph_p^2+\langle\bm\varphi,\bm h\rangle^2
+\bm w^THRA_{e,0}H\bm v=-\sum_p\varphi_ph_p^2+\langle\bm\varphi,\bm h\rangle^2
 +\rho_0\,\bm h^TWRV\bm h .
 \end{equation}
 The second derivative of $\Phi\left(\bm\xi(s)\right)$ at $s=0$ is
@@ -1579,9 +1579,9 @@ A product $\nabla^2\Theta\,\bm h$ needs, besides the eigenvectors
 $\bm v$ and $\bm w$ used by the gradient, the two vectors
 $R\left(\bm v\odot\bm\zeta\right)$ and $R^T\left(\bm w\odot\bm\zeta\right)$,
 that is, one solution of the bordered system~\eqref{v-border-system} and one of the
-corresponding system for $M^T$, both of order $N+1$. No matrix needs to be
+corresponding system for $A_e^T$, both of order $N+1$. No matrix needs to be
 formed: the python file \texttt{second\_variation.py} solves the two systems
-by GMRES with products by $M$ and $M^T$. On the weekly instance of
+by GMRES with products by $A_e$ and $A_e^T$. On the weekly instance of
 Section~\ref{sec-three-numerics}, at the barycenter of $\mathcal{S}$, where
 $\rho=1.9660001326$, and at a random interior point, where
 $\rho=2.0749258646$, the gradient~\eqref{v-theta-derivs} agrees with the
