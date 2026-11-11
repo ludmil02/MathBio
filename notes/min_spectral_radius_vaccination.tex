@@ -42,6 +42,7 @@
 \numberwithin{equation}{section}
 \numberwithin{figure}{section}
 \numberwithin{table}{section}
+\numberwithin{algorithm}{section}
 
 
 \title{Minimizing the spectral radius of a diagonally scaled positive matrix\thanks{Parts of this manuscript were edited with the assistance of an AI tool (Claude Opus 5.5, Anthropic). The authors are solely responsible for all proofs and statements.}}
@@ -257,158 +258,13 @@ Corollary~\ref{all-active} there is a solution to~\eqref{t-program} (a
 minimizer) which satisfies all constraints
 with equalities, i.e.\ all constraints are {\bf active}.
 
-\begin{theorem}\label{active}
-Let $A_1\ge 0$ with $\rho(A_1)>0$, let $\bm t\in\mathcal{K}$, and suppose that the
-constraint of location $i$ in~\eqref{t-constraint} is inactive at $\bm t$,
-that is, $\sum_{p\in I_i}\widetilde\sigma_pt_p<c_i$. Then:
-\begin{enumerate}
-\renewcommand{\labelenumi}{(\roman{enumi})}
-\item there is $\widetilde{\bm t}\in\mathcal{K}$ which differs from $\bm t$ in
-one component only, at which the constraint of location $i$ is active, the
-other constraints of~\eqref{t-constraint} being as at $\bm t$, and
-$\Psi\left(\widetilde{\bm t}\right)\le\Psi(\bm t)$;
-\item if $A_1$ is irreducible, then $\Psi\left(\widetilde{\bm t}\right)<\Psi(\bm t)$,
-and $\bm t$ is not a local minimizer of $\Psi$ on $\mathcal{K}$.
-\end{enumerate}
-\end{theorem}
-\begin{proof}
-Fix $q\in I_i$ and put
-$\delta_{\max}=\left(c_i-\sum_{p\in I_i}\widetilde\sigma_pt_p\right)/\widetilde\sigma_q>0$.
-For $0<\delta\le\delta_{\max}$ let $\bm t_\delta=\bm t+\delta\bm e_q$. Then
-$\bm t_\delta\ge\bm t\ge\mathbbm{1}$, the sums of the locations other than $i$
-are unchanged, and
-$\sum_{p\in I_i}\widetilde\sigma_p\left(\bm t_\delta\right)_p=\sum_{p\in I_i}\widetilde\sigma_pt_p+\widetilde\sigma_q\delta\le c_i$,
-with equality for $\delta=\delta_{\max}$. Hence $\bm t_\delta\in\mathcal{K}$.
-Since $e_q>0$, the function $g_q=(1-e_q)+e_q/t_q$
-is strictly decreasing in $t_q$, while $g_p$ for $p\neq q$ does not change.
-Therefore the vector $\bm g_\delta$ at $\bm t_\delta$ satisfies
-$0<\bm g_\delta\le\bm g$ and $\bm g_\delta\neq\bm g$. Hence
-$0\le A_1\operatorname{diag}\left(\bm g_\delta\right)\le A_1\operatorname{diag}(\bm g)$,
-and by Theorem~\ref{mono} in Appendix~\ref{sec-facts},
-$\rho\left(A_1\operatorname{diag}\left(\bm g_\delta\right)\right)\le\rho\left(A_1\operatorname{diag}(\bm g)\right)$,
-that is, $\Psi\left(\bm t_\delta\right)\le\Psi(\bm t)$. Taking
-$\widetilde{\bm t}=\bm t_{\delta_{\max}}$ proves (i).
-
-If $A_1$ is irreducible, then so is $A_1\operatorname{diag}(\bm g)$, and it has
-no zero column, so $A_1\operatorname{diag}\left(\bm g_\delta\right)\neq A_1\operatorname{diag}(\bm g)$
-and the inequality of Theorem~\ref{mono} is strict. Hence
-$\Psi\left(\bm t_\delta\right)<\Psi(\bm t)$ for every $0<\delta\le\delta_{\max}$.
-For $\delta=\delta_{\max}$ this is the first claim of (ii), and since
-$\bm t_\delta\to\bm t$ as $\delta\to 0$, every neighbourhood of $\bm t$ contains
-points of $\mathcal{K}$ with a smaller value of $\Psi$, so $\bm t$ is not a
-local minimizer.
-\end{proof}
-
-\begin{corollary}\label{all-active}
-Let $A_1\ge 0$ with $\rho(A_1)>0$. The minimum of $\Psi$ on $\mathcal{K}$ equals its minimum on
-$\left\{\bm t\in\mathcal{K}:\sum_{p\in I_i}\widetilde\sigma_pt_p=c_i,\ i=1:m\right\}$.
-In particular, $\Psi$ has a minimizer on $\mathcal{K}$ at which all $m$
-constraints are active, and if $A_1$ is irreducible, then every local minimizer of $\Psi$ on
-$\mathcal{K}$ meets all $m$ constraints with equality.
-\end{corollary}
-\begin{proof}
-Start from any $\bm t\in\mathcal{K}$ and apply Theorem~\ref{active}(i) to
-the inactive constraints one location at a time. A step at location $i$
-changes only a component $t_q$ with $q\in I_i$, so the constraints made active
-before stay active, and after at most $m$ steps we reach a point of
-$\mathcal{K}$ at which all $m$ constraints are active and the value of $\Psi$
-is at most $\Psi(\bm t)$. Hence the two minima are equal. The set of points of
-$\mathcal{K}$ at which all $m$ constraints are active is closed and bounded,
-since $1\le t_p\le c_i/\widetilde\sigma_p$ for $p\in I_i$. On it $\Psi$ is
-continuous: $\bm g$ is continuous in $\bm t>0$, the spectral radius is a
-continuous function of the entries, and with $\gamma=\min_p g_p>0$,
-Theorem~\ref{mono} in~\S\ref{sec-facts} gives
-$\rho\left(A_1\operatorname{diag}(\bm g)\right)\ge\gamma\rho(A_1)>0$. So $\Psi$
-attains its minimum on this set, and by the equality of the two minima this is a
-minimizer of $\Psi$ on $\mathcal{K}$. The statement on local minimizers is
-Theorem~\ref{active}(ii).
-\end{proof}
-
-\begin{theorem}\label{global}
-Let $A_1\ge 0$ with $\rho(A_1)>0$. Then $\Psi$ is convex and continuous
-on $\mathcal{K}$, the minimum in~\eqref{t-program} is attained, and every local
-minimizer is a global minimizer. If in addition $A_1$ is irreducible, then the
-minimizer is unique.
-% , $\Psi$ is continuously differentiable on
-% $\left\{\bm t>0\right\}$, and the Karush--Kuhn--Tucker conditions are necessary
-% and sufficient for a global minimum.
-\end{theorem}
-\begin{proof}
-The feasible set $\mathcal{K}$ is closed, and bounded because $\bm t\ge\mathbbm{1}$ and
-$\widetilde\sigma_p>0$ give $1\le t_p\le c_i/\widetilde\sigma_p$; it is convex, being an
-intersection of half-spaces. For $\bm t>0$ one has $g_p\ge\gamma=\min_p g_p>0$, so
-$A_1\operatorname{diag}(\bm g)\ge\gamma A_1$ and, by Theorem~\ref{mono}
-in~\S\ref{sec-facts}, $\rho\left(A_1\operatorname{diag}(\bm g)\right)\ge\gamma\rho(A_1)>0$.
-The spectral radius is a continuous function of the entries, so $\Psi$ is
-continuous on $\{\bm t>0\}$.
-
-For convexity let $\bm t\neq\bm t'$ be positive, let $0<\lambda<1$, and set
-$\bm t_\lambda=\lambda\bm t+(1-\lambda)\bm t'$. We write $\bm g$, $\bm g'$ and
-$\bm g_\lambda$ for the vectors $\bm g$ of~\eqref{t-def} at $\bm t$, $\bm t'$
-and $\bm t_\lambda$, and $\bm g^{\lambda}\bm g'^{\,1-\lambda}$ for the vector
-with components $g_p^{\lambda}g_p'^{\,1-\lambda}$. We first show
-\begin{equation}\label{g-strict}
-\bm g_\lambda\le\bm g^{\lambda}\bm g'^{\,1-\lambda},
-\end{equation}
-with strict inequality in every component $p$ for which $t_p\neq t'_p$.
-Fix $p$, and write $t=t_p$, $t'=t'_p$, $a=1-e_p\ge 0$ and
-$b=e_p>0$. The weighted inequality between the arithmetic and the
-geometric mean gives $\lambda t+(1-\lambda)t'\ge t^{\lambda}t'^{\,1-\lambda}$,
-with equality only if $t=t'$, and H\"older's inequality with exponents
-$1/\lambda$ and $1/(1-\lambda)$ gives
-$x_1^{\lambda}y_1^{1-\lambda}+x_2^{\lambda}y_2^{1-\lambda}\le\left(x_1+x_2\right)^{\lambda}\left(y_1+y_2\right)^{1-\lambda}$
-for $x_l,y_l\ge 0$. Applying these two in turn,
-\begin{equation}
-\begin{aligned}
-\left(\bm g_\lambda\right)_p
-&=a+\frac{b}{\lambda t+(1-\lambda)t'}
-\le a^{\lambda}a^{1-\lambda}+\left(\frac{b}{t}\right)^{\lambda}\left(\frac{b}{t'}\right)^{1-\lambda}\\
-&\le\left(a+\frac{b}{t}\right)^{\lambda}\left(a+\frac{b}{t'}\right)^{1-\lambda}
-=g_p^{\lambda}g_p'^{\,1-\lambda},
-\end{aligned}
-\end{equation}
-and the first inequality is strict if $t\neq t'$. This
-proves~\eqref{g-strict}. Lemma~\ref{log-convex} in~\S\ref{sec-facts}, applied to
-the points $\bm\xi$ and $\bm\eta$ with $e^{\bm\xi}=\bm g$ and $e^{\bm\eta}=\bm g'$, states
-\begin{equation}
-\rho\left(A_1\operatorname{diag}\left(\bm g^{\lambda}\bm g'^{\,1-\lambda}\right)\right)
-\le\rho\left(A_1\operatorname{diag}(\bm g)\right)^{\lambda}
-\rho\left(A_1\operatorname{diag}(\bm g')\right)^{1-\lambda}.
-\end{equation}
-Therefore
-\begin{equation}\label{psi-strict}
-\rho\left(A_1\operatorname{diag}\left(\bm g_\lambda\right)\right)
-\le\rho\left(A_1\operatorname{diag}\left(\bm g^{\lambda}\bm g'^{\,1-\lambda}\right)\right)
-\le\rho\left(A_1\operatorname{diag}(\bm g)\right)^{\lambda}
-\rho\left(A_1\operatorname{diag}(\bm g')\right)^{1-\lambda},
-\end{equation}
-where the first inequality follows from Theorem~\ref{mono}, since
-by~\eqref{g-strict}
-$0\le A_1\operatorname{diag}\left(\bm g_\lambda\right)\le A_1\operatorname{diag}\left(\bm g^{\lambda}\bm g'^{\,1-\lambda}\right)$.
-By the weighted inequality between the arithmetic and the geometric mean, the
-right-hand side of~\eqref{psi-strict} is at most
-$\lambda\Psi(\bm t)+(1-\lambda)\Psi(\bm t')$, so
-$\Psi\left(\bm t_\lambda\right)\le\lambda\Psi(\bm t)+(1-\lambda)\Psi(\bm t')$,
-and $\Psi$ is convex. The feasible set is compact and
-$\Psi$ is continuous, so the minimum is attained, and every local minimizer of
-a convex function on a convex set is a global minimizer.
-
-Let now $A_1$ be irreducible.
-% For $\bm t>0$ the matrix
-% $A_1\operatorname{diag}(\bm g)\ge 0$ has the same zero entries as $A_1$ and is
-% irreducible, so by Theorem~\ref{pf} in~\S\ref{sec-facts} its spectral radius
-% is a simple eigenvalue, hence a continuously differentiable function of the
-% entries, which are continuously differentiable in $\bm t$.
-The two sides of~\eqref{g-strict} being distinct, the two matrices compared
-in the first inequality of~\eqref{psi-strict} are distinct, the larger one is
-irreducible, and by Theorem~\ref{mono} this inequality is strict: $\Psi$ is strictly convex. If $\bm t\neq\bm t'$ were two minimizers, then
-$\bm t_{1/2}$ would be feasible, the feasible set being convex, and
-$\Psi\left(\bm t_{1/2}\right)$ would be smaller than the minimum; hence the
-minimizer is unique.
-% The Karush--Kuhn--Tucker conditions are necessary and
-% sufficient for a continuously differentiable convex function on a set defined
-% by affine constraints.
-\end{proof}
+In Appendix~\ref{sec-single-theory} we show, for $A_1\ge 0$ with
+$\rho(A_1)>0$, that a constraint that is inactive at a point of $\mathcal{K}$
+can be made active without increasing $\Psi$ (Theorem~\ref{active}), so that
+$\Psi$ has a minimizer on $\mathcal{K}$ at which all constraints are active
+(Corollary~\ref{all-active}), and that $\Psi$ is convex and continuous on
+$\mathcal{K}$, so that every local minimizer is a global minimizer, unique if
+$A_1$ is irreducible (Theorem~\ref{global}).
 
 \subsection{Optimality conditions}\label{sec-algorithm}
 
@@ -425,13 +281,15 @@ A_1\operatorname{diag}(\bm g)\,\bm v=\rho\,\bm v,\qquad
 \end{equation}
 Then
 $\partial\rho/\partial g_p=\left(A_1^T\bm w\right)_pv_p/\langle\bm w,\bm v\rangle$,
-and since $dg_p/dt_p=-e_p/t_p^2$ the chain rule gives
+and the chain rule gives
 \begin{equation}\label{grad}
+\frac{dg_p}{dt_p}=-\frac{e_p}{t_p^2},\qquad
 \frac{\partial\Psi}{\partial t_p}
 =-\frac{e_p}{t_p^2}\cdot
 \frac{\left(A_1^T\bm w\right)_p v_p}{\langle\bm w,\bm v\rangle}\ <0 ,
 \end{equation}
-the sign because $\bm v>0$, $\bm w>0$ and no column of $A_1$ vanishes.
+where the inequality holds because $e_p>0$, $v_p>0$, and
+$\left(A_1^T\bm w\right)_p>0$.
 
 With multipliers $\mu_i$ for the constraints $\sum_{p\in I_i}\widetilde\sigma_pt_p\le c_i$
 and $\nu_p$ for $t_p\ge 1$, the Lagrangian is
@@ -448,7 +306,7 @@ The KKT conditions for the Lagrangian are equivalent to (for $i=1:m$ and $p\in I
 \frac{\left(A_1^T\bm w\right)_pv_p}{\langle\bm w,\bm v\rangle}\right).
 \end{aligned}
 \end{equation}
-The budget constraints are written with equality in~\eqref{kkt}, since
+The constraints are written with equality in~\eqref{kkt}, since
 by Corollary~\ref{all-active} they are active at the minimizer. The fraction
 in the last line of~\eqref{kkt} is positive and $\nu_p\ge 0$, so $\mu_i>0$ for
 every $i$. For a coordinate with $t_p>1$ one has $\nu_p=0$, so
@@ -472,7 +330,7 @@ zero entries as $A_1$ and is irreducible, so by Theorem~\ref{pf}
 in~\S\ref{sec-facts} its spectral radius is a simple eigenvalue with the
 positive eigenvectors $\bm v$ and $\bm w$ of~\eqref{perron}. A simple
 eigenvalue is a differentiable function of the entries of the matrix, with
-the derivative $\partial\rho/\partial g_p$ given before~\eqref{grad}; see
+the derivative $\partial\rho/\partial g_p$ given by~\eqref{grad}; see
 Horn and Johnson~\cite[Section 6.3]{1985Horn_Johnson}. The entries are differentiable in $\bm t$,
 so $\Psi$ is differentiable at $\bm t$, its partial derivatives are given
 by~\eqref{grad}, and~\eqref{kkt} reads
@@ -503,7 +361,7 @@ of~\eqref{t-constraint} are affine and satisfied by some point, so
 the Karush--Kuhn--Tucker conditions hold at the minimizer
 $\widehat{\bm t}$; see Boyd and
 Vandenberghe~\cite[Sections 5.2.3 and 5.5.3]{2004Boyd_Vandenberghe}. By
-Corollary~\ref{all-active} the budget constraints hold with equality at
+Corollary~\ref{all-active} the constraints hold with equality at
 $\widehat{\bm t}$, which gives the equality in~\eqref{kkt}.
 \end{proof}
 
@@ -624,8 +482,8 @@ maximal number of iterations $n_{iter}$
 \end{algorithmic}
 \end{algorithm}
 
-Every iterate $\bm t^{(k+1)}$ lies in $\mathcal{K}$ and spends every budget
-exactly. If $\bm t^{(k+1)}=\bm t^{(k)}$, then by Lemma~\ref{frozen} the
+Every iterate $\bm t^{(k+1)}$ lies in $\mathcal{K}$ and uses all available
+doses in every location. If $\bm t^{(k+1)}=\bm t^{(k)}$, then by Lemma~\ref{frozen} the
 point $\bm t^{(k)}$ satisfies~\eqref{kkt} with the eigenvectors at
 $\bm t^{(k)}$, and by Proposition~\ref{kkt-sufficient} it is the minimizer
 $\widehat{\bm t}$. We do not prove that the iteration converges; its
@@ -634,8 +492,8 @@ convergence on the data of~\cite{JZh} is reported in~\S\ref{sec-numerics}.
 \subsection{Numerical results}\label{sec-numerics}
 
 For the data of~\cite{JZh}, with $m=n=4$ (four locations and four age groups),
-the right-hand side of~\eqref{constraints} is the weekly budget $b_{1i}$ of
-doses of the primary series in location $i$, and $\sigma_{1,ij}$ is the number
+the right-hand side of~\eqref{constraints} is the number $b_{1i}$ of
+doses of the primary series available weekly in location $i$, and $\sigma_{1,ij}$ is the number
 of susceptible individuals.
 
 The implementations below minimize $\log\Psi$, which has the same minimizer
@@ -655,7 +513,7 @@ conditions~\eqref{kkt} are verified at the computed point.
 
 The fixed point iteration of~\S\ref{sec-fixed-point}, started from the
 uniform allocation $t_p=c_i/\sum_{q\in I_i}\widetilde\sigma_q$, $p\in I_i$, which
-spends every budget, stops after $45$ iterations, when
+uses all available doses, stops after $45$ iterations, when
 $\max_p\left|t_p^{(k+1)}-t_p^{(k)}\right|/\max_pt_p^{(k)}<10^{-13}$. The
 spectral radius at the last iterate agrees with the minimum below to the ten
 digits given, the group $60+$ has $t_p=1$ in every location, and the
@@ -687,7 +545,7 @@ the constraint is active.
 
 Figure~\ref{fig-chi1} compares the minimizer with the $\chi_1$ of John's
 method, the age profile of the left Perron vector of $\operatorname{NGM}$ at
-$\bm\chi=0$ scaled in each location to spend the same budget $b_{1i}$. Both
+$\bm\chi=0$ scaled in each location to use the same number $b_{1i}$ of doses. Both
 plots have one line per location and the same scale.
 
 \begin{table}[ht]
@@ -704,7 +562,7 @@ South     & $3.736$ & $3.721$ & $3.439$ & $0$ & $6.2\cdot 10^{-13}$ & $0.318$ & 
 West      & $5.229$ & $4.836$ & $4.402$ & $0$ & $8.7\cdot 10^{-13}$ & $0.243$ & $9.6\cdot 10^{-13}$\\
 \hline
 \end{tabular}
-\caption{The minimizer $\chi_1$ for the weekly budget and the optimality
+\caption{The minimizer $\chi_1$ for the weekly doses and the optimality
 conditions~\eqref{kkt}.}\label{tab-chi1}
 \end{table}
 
@@ -723,7 +581,7 @@ there changes both. The notebook \texttt{eigenvalues\_H\_ZF\_JG.nb} computes
 the spectrum of $\operatorname{NGM}$, $\rho=4.4230681092$ at $\bm\chi=0$, and
 John's method: the age profile of the left Perron vector, plotted per location.
 The notebook \texttt{min\_rho\_single\_dose\_H\_ZF\_JG.nb} solves the single
-dose problem~\eqref{t-program} with the weekly budget $b_{1i}$: an interior
+dose problem~\eqref{t-program} with the weekly doses $b_{1i}$: an interior
 point method in the scaled variables $u_{1,p}$, with the gradient~\eqref{grad},
 followed by a quasi-Newton method on the groups that receive doses. It checks
 the optimality conditions~\eqref{kkt}, gives the minimum $\rho=2.9059382878$ and
@@ -739,143 +597,93 @@ The fixed point iteration is in \texttt{fixed\_point\_single\_dose.py}.
 When doses of the second or third type are available as well, $b_{2i}>0$ or
 $b_{3i}>0$ for some $i$, the variables $\bm\chi_2$ and $\bm\chi_3$ do not vanish,
 and each $g_p$ in~\eqref{g-def} depends on $\chi_{1,p}$, $\chi_{2,p}$ and
-$\chi_{3,p}$. In the variables $\bm u$ of~\eqref{u-of-chihat}
-the problem is
+$\chi_{3,p}$. We use the variables $\bm u$ of~\eqref{u-of-chihat}, a scaling
+of $\bm\chi$, and write $\bm g(\bm u)$ for $\bm g$ at the corresponding
+$\bm\chi$, the coordinates with $b_{k,i}=0$ being zero. The problem is
 \begin{equation}\label{three-program}
 \min_{\bm u\in\mathcal{S}}\
-\log\rho\left(A_1\operatorname{diag}\left(\bm g\left(\bm\chi(\bm u)\right)\right)\right),
+\log\rho\left(A_1\operatorname{diag}\left(\bm g(\bm u)\right)\right).
 \end{equation}
-with $\bm\chi(\bm u)$ given by~\eqref{u-of-chihat} and the
-coordinates with $b_{k,i}=0$ equal to zero. The feasible set $\mathcal{S}$ is
+The feasible set $\mathcal{S}$ is
 the product of the simplices $\Delta_{n-1}$, one for each pair $(k,i)$ with
 $b_{k,i}>0$, and the minimum is attained.
 
-The argument of Section~\ref{sec-single} is not available here. The function
-$\Phi$ is convex in $\bm\xi=\log\bm g$ by Lemma~\ref{log-convex} in~\S\ref{sec-facts}, but the
-objective function of~\eqref{three-program} is $\Phi$ composed with
-$\bm u\mapsto\log\bm g\left(\bm\chi(\bm u)\right)$.
-For a single dose the proof of Theorem~\ref{global} uses the convexity of each
-component of this map; for three doses we have not established it, nor the
-convexity of the set $\left\{\log\bm g(\bm\chi):\bm\chi\in\mathfrak{S}\right\}$. Theorem~\ref{global} therefore does not apply
-to~\eqref{three-program}, and a local method finds a local minimizer.
-
-In fact the objective function is not convex. The dose $\chi_{2,p}$ enters both
-$\pi_{1,p}$, through $\omega_v+\varepsilon_2\chi_{2,p}$, and $\pi_{2,p}$
-in~\eqref{yz-def}. For $200\,000$ points $(\chi_{1,p},\chi_{2,p},\chi_{3,p})$
-drawn log-uniformly from $\left[10^{-5},10^{-1.5}\right]^3$, with the
-parameters of the model, $\varepsilon_1=\varepsilon_2=\varepsilon_3=0.8$ and
-$\omega=\omega_v=1/182.5$, the smallest value of
-$\chi_{2,p}^2\,\partial^2\log g_p/\partial \chi_{2,p}^2$ is $-0.154$, and $g_p$
-increases with $\chi_{2,p}$ at $24.0$ per cent of the points. The equality
-constraints therefore cannot be relaxed to inequalities as in
-Section~\ref{sec-single}.
-
-In the rest of this section we assume $b_{k,i}>0$ for all $k=1:3$ and
-$i=1:m$, and that $A_1\ge 0$ is irreducible.
-
-\subsection{An alternating method}\label{sec-alternating}
-
-Each sweep updates $\bm\chi_1$, $\bm\chi_3$ and $\bm\chi_2$ in turn, the
-other two doses fixed at their current values; every iterate satisfies the
-constraints~\eqref{constraints}.
-
-\emph{The first dose.} With $\bm\chi_2=\bm\theta$ and $\bm\chi_3=\bm\zeta$
-fixed, the minimization of $\Psi(\bm\chi_1,\bm\theta,\bm\zeta)$ over $\bm\chi_1$
-is the problem of Section~\ref{sec-single}. Its minimizer is unique
-(Theorem~\ref{global}) and is computed by Algorithm~\ref{alg-fixed-point}.
-
-\emph{The third dose.} Let $\bm\chi_1$ and $\bm\chi_2$ be fixed with
-$\chi_{1,p}\chi_{2,p}>0$ for all $p$, and let $g^0_p>0$ be the value of
-$g_p$ at $\chi_{3,p}=0$. Multiplying the numerator and the denominator
-of~\eqref{g-def} by $\omega_v+\varepsilon_2\chi_{2,p}$ and using~\eqref{yz-def},
-the numerator does not depend on $\chi_{3,p}$ and the denominator is
-$Q^0_p+Q^1_p\chi_{3,p}$ with
-\begin{equation*}
-Q^0_p=\omega_v+\chi_{1,p}+\varepsilon_2\chi_{2,p}+\frac{2\varepsilon_2}{\omega}\chi_{1,p}\chi_{2,p},\qquad
-Q^1_p=\frac{\varepsilon_2\varepsilon_3}{\omega^2}\chi_{1,p}\chi_{2,p}.
-\end{equation*}
-With $t_p=1+Q^1_p\chi_{3,p}/Q^0_p$ one has $g_p=g^0_p/t_p$, so
-\begin{equation}\label{alt-third}
-A_1\operatorname{diag}(\bm g)=\left(A_1\operatorname{diag}\left(\bm g^0\right)\right)\operatorname{diag}(\bm t)^{-1}.
-\end{equation}
-This is~\eqref{t-def} with $e_p=1$ and $A_1$ replaced by the irreducible
-matrix $A_1\operatorname{diag}\left(\bm g^0\right)$, and the constraints
-of~\eqref{constraints} for $k=3$ become~\eqref{t-constraint} with
-$\widetilde\sigma_p=\sigma_{3,p}Q^0_p/\left(\omega_vQ^1_p\right)$ and
-$c_i=b_{3i}/\omega_v+\sum_{p\in I_i}\widetilde\sigma_p$. Hence the results of
-Section~\ref{sec-single} and Algorithm~\ref{alg-fixed-point} apply to the
-minimization over $\bm\chi_3$. If $\chi_{1,p}\chi_{2,p}=0$, then $Q^1_p=0$
-and $g_p$ does not depend on $\chi_{3,p}$.
-
-\emph{The second dose.} With $\bm\chi_1=\bm\theta$ and $\bm\chi_3=\bm\zeta$
-fixed, the same multiplication gives
-$g_p=\left(P^0_p+P^1_p\chi_{2,p}\right)/\left(Q^0_p+Q^1_p\chi_{2,p}\right)$
-with $P^0_p=\omega_v+(1-\varepsilon_1)\theta_p$,
-$Q^0_p=\omega_v+\theta_p$, $P^1_p=\varepsilon_2\left(1+\theta_p/\omega\right)$
-and
-$Q^1_p=\varepsilon_2\left(1+2\theta_p/\omega+\varepsilon_3\theta_p\zeta_p/\omega^2\right)$,
-so that
-$\partial g_p/\partial\chi_{2,p}=-D_p/\left(Q^0_p+Q^1_p\chi_{2,p}\right)^2$ with
-\begin{equation}\label{alt-D}
-D_p=P^0_pQ^1_p-P^1_pQ^0_p
-=\varepsilon_2\theta_p\left(\frac{\omega_v}{\omega}+\omega_vs_p-\varepsilon_1
-+\theta_p\left(\frac{1-2\varepsilon_1}{\omega}+(1-\varepsilon_1)s_p\right)\right),\qquad
-s_p=\frac{\varepsilon_3\zeta_p}{\omega^2}.
-\end{equation}
-If $D_p<0$, then $g_p$ increases with $\chi_{2,p}$, and
-Section~\ref{sec-single} does not apply. With the parameters of the model,
+The results of Section~\ref{sec-single} do not extend to~\eqref{three-program}:
+the objective function is not convex. For $200\,000$ points
+$(\chi_{1,p},\chi_{2,p},\chi_{3,p})$ drawn log-uniformly from
+$\left[10^{-5},10^{-1.5}\right]^3$, with the parameters of the model,
 $\varepsilon_1=\varepsilon_2=\varepsilon_3=0.8$ and $\omega=\omega_v=1/182.5$,
-and with $\zeta_p=0$, this is the case whenever $\theta_p>\omega/3$. We minimize
-$\Psi(\bm\theta,\bm\chi_2,\bm\zeta)$ over $\bm\chi_2$ by projected Yogi,
-\S\ref{sec-yogi}.
+$g_p$ increases with $\chi_{2,p}$ at $24.0$ per cent of the points, and
+$\chi_{2,p}^2\,\partial^2\log g_p/\partial \chi_{2,p}^2$ is as small as
+$-0.154$. The methods below are local. They compute points satisfying the
+Karush--Kuhn--Tucker conditions of~\eqref{three-program}, and whether such a
+point is a global minimizer is not known; Section~\ref{sec-three-numerics}
+shows such points with different values of the objective function. In the rest
+of this section $b_{k,i}>0$ for all $k=1:3$ and $i=1:m$, and $A_1\ge 0$ is
+irreducible.
 
-The steps for $\bm\chi_1$ and $\bm\chi_3$ return the minimum over their
-block, so they do not increase $\rho$; the step for $\bm\chi_2$ is a local
-method.
+\subsection{Methods}\label{sec-alternating}
 
-\subsection{Projected Yogi for the second dose}\label{sec-yogi}
-
-In the variables $\bm u$ of~\eqref{u-of-chihat} for $k=2$, the feasible set
-of $\bm\chi_2$ is $\mathcal{S}_2=\left(\Delta_{n-1}\right)^m$, and we write
-\begin{equation}\label{t-F}
-\Theta(\bm u)=\log\Psi\left(\bm\theta,\bm\chi_2(\bm u),\bm\zeta\right),\qquad \bm u\in\mathcal{S}_2 .
-\end{equation}
-With the eigenvectors $\bm v,\bm w>0$ of~\eqref{perron}, the argument that
-gives~\eqref{grad} gives
+We write
+$\Theta(\bm u)=\log\rho\left(A_1\operatorname{diag}\left(\bm g(\bm u)\right)\right)$
+for the objective function of~\eqref{three-program}. With the eigenvectors
+$\bm v,\bm w>0$ of~\eqref{perron}, the argument that gives~\eqref{grad} gives
 \begin{equation}\label{t-grad}
-\frac{\partial\Theta}{\partial u_{2,ij}}
+\frac{\partial\Theta}{\partial u_{k,ij}}
 =\frac{1}{\rho}\cdot\frac{\left(A_1^T\bm w\right)_pv_p}{\langle\bm w,\bm v\rangle}
-\cdot\frac{\partial g_p}{\partial \chi_{2,p}}\cdot\frac{b_{2,i}}{\sigma_{2,ij}},
+\cdot\frac{\partial g_p}{\partial \chi_{k,p}}\cdot\frac{b_{k,i}}{\sigma_{k,ij}},
 \qquad p=(i-1)n+j .
 \end{equation}
-For a diagonal $D>0$ of order $N$ let
-$\Pi^D_{\mathcal{S}_2}(\bm z)=\operatorname*{arg\,min}_{\bm y\in\mathcal{S}_2}\frac12(\bm y-\bm z)^TD(\bm y-\bm z)$,
-and $\Pi_{\mathcal{S}_2}=\Pi^I_{\mathcal{S}_2}$. The problem decouples over the
-factors of $\mathcal{S}_2$; in a factor with entries $d_j$ of $D$ the solution
-is $y_j=\max\left(z_j-\lambda/d_j,0\right)$, with $\lambda$ the root of
-$\sum_j\max\left(z_j-\lambda/d_j,0\right)=1$, which is computed exactly since
-the left-hand side is piecewise affine and non-increasing in $\lambda$. As the
-measure of stationarity we use
+With $\Pi_{\mathcal{S}}$ the Euclidean projection onto $\mathcal{S}$, computed
+exactly factor by factor, the measure of stationarity is
 \begin{equation}\label{t-r}
-r(\bm u)=\left\|\bm u-\Pi_{\mathcal{S}_2}\left(\bm u-\nabla\Theta(\bm u)\right)\right\|_\infty .
+r(\bm u)=\left\|\bm u-\Pi_{\mathcal{S}}\left(\bm u-\nabla\Theta(\bm u)\right)\right\|_\infty ,
 \end{equation}
-By the characterization of the projection onto a convex set,
-$r(\bm u)=0$ if and only if
-$\nabla\Theta(\bm u)^T(\bm x-\bm u)\ge 0$ for all $\bm x\in\mathcal{S}_2$, that
-is, $\bm u$ satisfies the Karush--Kuhn--Tucker conditions of the minimization
-of $\Theta$ on $\mathcal{S}_2$~\cite[Section 4.2.3]{2004Boyd_Vandenberghe}.
+and $r(\bm u)=0$ if and only if $\bm u$ satisfies the Karush--Kuhn--Tucker
+conditions of~\eqref{three-program}~\cite[Section 4.2.3]{2004Boyd_Vandenberghe}.
 
-Algorithm~\ref{t-alg-yogi} states the method. Squares, square roots, products,
-quotients and $\operatorname{sign}$ of vectors are taken entrywise. Compared
-with the method as stated in~\cite{2018Zaheer_Yogi}, the gradient is exact
-rather than stochastic, and the step is followed by the projection; we start
-the second moment $\bm s$ at the square of the first gradient, and divide the
-first moment $\bm\kappa$ by $1-\beta_1^t$.
+We use the trust region interior point method
+of~\cite{1999Byrd_Hribar_Nocedal} in all $3N$ variables, and, when it is slow,
+the following alternating method. Each sweep updates $\bm\chi_1$, $\bm\chi_3$
+and $\bm\chi_2$ in turn, the other two doses fixed at their current values.
+\begin{itemize}
+\item With $\bm\chi_2=\bm\theta$ and $\bm\chi_3=\bm\zeta$ fixed, the
+minimization over $\bm\chi_1$ is the problem of Section~\ref{sec-single}; it
+is solved by Algorithm~\ref{alg-fixed-point}.
+\item With $\bm\chi_1$ and $\bm\chi_2$ fixed, multiplying the numerator and the
+denominator of~\eqref{g-def} by $\omega_v+\varepsilon_2\chi_{2,p}$ shows that
+the numerator does not depend on $\chi_{3,p}$ and the denominator is affine in
+it, so $g_p=g^0_p/t_p$, with $g^0_p$ the value at $\chi_{3,p}=0$ and $t_p\ge 1$
+affine in $\chi_{3,p}$. The minimization over $\bm\chi_3$ is then of the form
+of Section~\ref{sec-single}, with $e_p=1$ and $A_1$ replaced by
+$A_1\operatorname{diag}\left(\bm g^0\right)$, and is solved by
+Algorithm~\ref{alg-fixed-point}. Where $\chi_{1,p}\chi_{2,p}=0$, $g_p$ does not
+depend on $\chi_{3,p}$, and these $p$ receive no third doses.
+\item With $\bm\chi_1$ and $\bm\chi_3$ fixed, $g_p$ can increase with
+$\chi_{2,p}$, and Section~\ref{sec-single} does not apply; $\Theta$ is
+minimized over the factors of $\bm\chi_2$ by projected Yogi,
+Algorithm~\ref{t-alg-yogi}.
+\end{itemize}
+The constraints are a product over the three doses, so the
+Karush--Kuhn--Tucker conditions of~\eqref{three-program} are those of the
+three minimizations together: a point at which no step changes the iterate
+satisfies them. The method stops when $r<10^{-10}$; we do not prove that it
+converges, and it did so in every run below.
+
+\paragraph{Projected Yogi.}
+Algorithm~\ref{t-alg-yogi} is the adaptive method Yogi
+of~\cite{2018Zaheer_Yogi} with the exact gradient, each step projected onto the
+feasible set in the metric of its diagonal preconditioner,
+$\Pi^D(\bm z)=\operatorname*{arg\,min}_{\bm y}\frac12(\bm y-\bm z)^TD(\bm y-\bm z)$
+over the factors of $\bm\chi_2$ in $\mathcal{S}$, which is computed exactly
+factor by factor. Squares, square roots, products, quotients and
+$\operatorname{sign}$ of vectors are taken entrywise, and $r$ is~\eqref{t-r}
+restricted to the factors of $\bm\chi_2$.
 
 \begin{algorithm}[ht]
 \caption{Projected Yogi}\label{t-alg-yogi}
 \begin{algorithmic}[1]
-\Require a start $\bm u^{(0)}\in\mathcal{S}_2$; a step $\eta>0$;
+\Require a start $\bm u^{(0)}$; a step $\eta>0$;
 $\beta_1\in[0,1)$, $\beta_2\in(0,1)$, $\epsilon>0$; a tolerance $\mathrm{tol}$
 and a maximal number of iterations $t_{\max}$
 \State $\bm q\gets\nabla\Theta\left(\bm u^{(0)}\right)$, $\bm\kappa\gets\bm 0$, $\bm s\gets\bm q^2$
@@ -884,16 +692,14 @@ and a maximal number of iterations $t_{\max}$
   \State $\bm\kappa\gets\beta_1\bm\kappa+(1-\beta_1)\bm q$
   \State $\bm s\gets\bm s-(1-\beta_2)\operatorname{sign}\left(\bm s-\bm q^2\right)\bm q^2$
   \State $D\gets\operatorname{diag}\left(\sqrt{\bm s}+\epsilon\right)$
-  \State $\bm u^{(t)}\gets\Pi^D_{\mathcal{S}_2}\left(\bm u^{(t-1)}-\eta D^{-1}\bm\kappa/\left(1-\beta_1^t\right)\right)$
+  \State $\bm u^{(t)}\gets\Pi^D\left(\bm u^{(t-1)}-\eta D^{-1}\bm\kappa/\left(1-\beta_1^t\right)\right)$
   \If{$r\left(\bm u^{(t)}\right)<\mathrm{tol}$}
     \State \textbf{break}
   \EndIf
 \EndFor
-\State \Return $\bm u^{(t)}$, $\rho=\exp\Theta\left(\bm u^{(t)}\right)$
+\State \Return $\bm u^{(t)}$
 \end{algorithmic}
 \end{algorithm}
-
-We do not prove that the iterates converge.
 
 \subsection{Numerical results}\label{sec-three-numerics}
 
@@ -901,28 +707,23 @@ We do not prove that the iterates converge.
 The results about a single dose ($\chi_1$) look great. For the second dose ($\chi_2$), I am not sure how you did it. For the applications in our model, notice that the numbers of vaccine doses in the constraints are weekly numbers, and the numbers of susceptibles (S) and vaccined with dose 1 (V) will change at the end of the week after applied the optimal allocations. So, we will need to calculate the new S and V first, and then based on the updated S and V to determine the optimal $\chi_1$ and $\chi_2$ for the following week.
 }
 
-The computations start with the trust region interior point method
-of~\cite{1999Byrd_Hribar_Nocedal} in all $3N$ variables $\bm u$, with the
-gradient computed as in~\eqref{t-grad} for each $k$, for at most $500$
-iterations. If the method stops earlier by its own tolerances, its point is
-the result. Otherwise the alternating method of~\S\ref{sec-alternating} is
-started from its point and stopped when $r<10^{-10}$, where $r$ is defined
-as in~\eqref{t-r} with all $3N$ variables in place of those of
-$\bm\chi_2$; by the product structure of the constraints, a point at which
-no step of the alternating method changes the iterate satisfies the
-Karush--Kuhn--Tucker conditions in all $3N$ variables. In the steps for
+Each run starts with the trust region method, with the
+gradient~\eqref{t-grad}, for at most $500$ iterations. If the method stops
+earlier by its own tolerances, its point is the result. Otherwise the
+alternating method of~\S\ref{sec-alternating} is started from its point and
+stopped when $r<10^{-10}$. In the steps for
 $\bm\chi_1$ and $\bm\chi_3$, Algorithm~\ref{alg-fixed-point} stops at the
 relative change $10^{-13}$; in the step for $\bm\chi_2$,
 Algorithm~\ref{t-alg-yogi} has $\eta=10^{-2}$, $\beta_1=0.9$,
 $\beta_2=0.999$, $\epsilon=10^{-8}$, $\mathrm{tol}=10^{-11}$ and
 $t_{\max}=2\cdot 10^4$.
 
-\paragraph{Instances and starts.} In the weekly instance the budget $b_{1i}$
-and $\sigma_{1,ij}$ are those of Section~\ref{sec-numerics}; no budget for the
-second and third doses is given with the data of~\cite{JZh}, and we take
+\paragraph{Instances and starts.} In the weekly instance the doses $b_{1i}$
+and $\sigma_{1,ij}$ are those of Section~\ref{sec-numerics}; no numbers of
+second and third doses are given with the data of~\cite{JZh}, and we take
 $b_{2i}=b_{3i}=b_{1i}/4$ and $\sigma_{2,ij}=\sigma_{3,ij}=P_{ij}$, the numbers
 of partially protected individuals. The $36$ instances vary these data: the
-budget $b_{1i}$ weekly or daily ($b_{1i}/7$); the ratios
+doses $b_{1i}$ weekly or daily ($b_{1i}/7$); the ratios
 \begin{equation*}
 \frac{(b_{2i},b_{3i})}{b_{1i}}\in\left\{\left(\tfrac1{16},\tfrac1{16}\right),\left(\tfrac14,\tfrac14\right),(1,1),(4,4),\left(\tfrac12,\tfrac18\right),\left(\tfrac18,\tfrac12\right)\right\};
 \end{equation*}
@@ -997,7 +798,7 @@ Table~\ref{t-tab-tralt-miss} lists the other $12$.
 \small
 \begin{tabular}{llccc}
 \hline
-budget & $(b_{2i},b_{3i})/b_{1i}$ & $\sigma_2,\sigma_3$ & runs at $\rho_{\mathrm{ref}}$ & largest relative excess\\
+doses & $(b_{2i},b_{3i})/b_{1i}$ & $\sigma_2,\sigma_3$ & runs at $\rho_{\mathrm{ref}}$ & largest relative excess\\
 \hline
 daily  & $(\tfrac18,\tfrac12)$       & $P$      & $1^*$  & $3.2\cdot 10^{-3}$\\
 weekly & $(\tfrac1{16},\tfrac1{16})$ & seed $2$ & $1^*$  & $5.4\cdot 10^{-3}$\\
@@ -1258,6 +1059,164 @@ is convex. The spectral radius depends continuously on the entries of the
 matrix, and $\rho\left(A\operatorname{diag}\left(e^{\bm\xi}\right)\right)>0$, so
 $\Phi_\varepsilon(\bm\xi)\to\Phi(\bm\xi)$ as $\varepsilon\to 0$ for every
 $\bm\xi$. A pointwise limit of convex functions is convex.
+\end{proof}
+
+\section{Active constraints and convexity for the first dose}\label{sec-single-theory}
+
+This appendix contains the results on problem~\eqref{t-program} stated in
+Section~\ref{sec-single}.
+
+\begin{theorem}\label{active}
+Let $A_1\ge 0$ with $\rho(A_1)>0$, let $\bm t\in\mathcal{K}$, and suppose that the
+constraint of location $i$ in~\eqref{t-constraint} is inactive at $\bm t$,
+that is, $\sum_{p\in I_i}\widetilde\sigma_pt_p<c_i$. Then:
+\begin{enumerate}
+\renewcommand{\labelenumi}{(\roman{enumi})}
+\item there is $\widetilde{\bm t}\in\mathcal{K}$ which differs from $\bm t$ in
+one component only, at which the constraint of location $i$ is active, the
+other constraints of~\eqref{t-constraint} being as at $\bm t$, and
+$\Psi\left(\widetilde{\bm t}\right)\le\Psi(\bm t)$;
+\item if $A_1$ is irreducible, then $\Psi\left(\widetilde{\bm t}\right)<\Psi(\bm t)$,
+and $\bm t$ is not a local minimizer of $\Psi$ on $\mathcal{K}$.
+\end{enumerate}
+\end{theorem}
+\begin{proof}
+Fix $q\in I_i$ and put
+$\delta_{\max}=\left(c_i-\sum_{p\in I_i}\widetilde\sigma_pt_p\right)/\widetilde\sigma_q>0$.
+For $0<\delta\le\delta_{\max}$ let $\bm t_\delta=\bm t+\delta\bm e_q$. Then
+$\bm t_\delta\ge\bm t\ge\mathbbm{1}$, the sums of the locations other than $i$
+are unchanged, and
+$\sum_{p\in I_i}\widetilde\sigma_p\left(\bm t_\delta\right)_p=\sum_{p\in I_i}\widetilde\sigma_pt_p+\widetilde\sigma_q\delta\le c_i$,
+with equality for $\delta=\delta_{\max}$. Hence $\bm t_\delta\in\mathcal{K}$.
+Since $e_q>0$, the function $g_q=(1-e_q)+e_q/t_q$
+is strictly decreasing in $t_q$, while $g_p$ for $p\neq q$ does not change.
+Therefore the vector $\bm g_\delta$ at $\bm t_\delta$ satisfies
+$0<\bm g_\delta\le\bm g$ and $\bm g_\delta\neq\bm g$. Hence
+$0\le A_1\operatorname{diag}\left(\bm g_\delta\right)\le A_1\operatorname{diag}(\bm g)$,
+and by Theorem~\ref{mono} in Appendix~\ref{sec-facts},
+$\rho\left(A_1\operatorname{diag}\left(\bm g_\delta\right)\right)\le\rho\left(A_1\operatorname{diag}(\bm g)\right)$,
+that is, $\Psi\left(\bm t_\delta\right)\le\Psi(\bm t)$. Taking
+$\widetilde{\bm t}=\bm t_{\delta_{\max}}$ proves (i).
+
+If $A_1$ is irreducible, then so is $A_1\operatorname{diag}(\bm g)$, and it has
+no zero column, so $A_1\operatorname{diag}\left(\bm g_\delta\right)\neq A_1\operatorname{diag}(\bm g)$
+and the inequality of Theorem~\ref{mono} is strict. Hence
+$\Psi\left(\bm t_\delta\right)<\Psi(\bm t)$ for every $0<\delta\le\delta_{\max}$.
+For $\delta=\delta_{\max}$ this is the first claim of (ii), and since
+$\bm t_\delta\to\bm t$ as $\delta\to 0$, every neighbourhood of $\bm t$ contains
+points of $\mathcal{K}$ with a smaller value of $\Psi$, so $\bm t$ is not a
+local minimizer.
+\end{proof}
+
+\begin{corollary}\label{all-active}
+Let $A_1\ge 0$ with $\rho(A_1)>0$. The minimum of $\Psi$ on $\mathcal{K}$ equals its minimum on
+$\left\{\bm t\in\mathcal{K}:\sum_{p\in I_i}\widetilde\sigma_pt_p=c_i,\ i=1:m\right\}$.
+In particular, $\Psi$ has a minimizer on $\mathcal{K}$ at which all $m$
+constraints are active, and if $A_1$ is irreducible, then every local minimizer of $\Psi$ on
+$\mathcal{K}$ meets all $m$ constraints with equality.
+\end{corollary}
+\begin{proof}
+Start from any $\bm t\in\mathcal{K}$ and apply Theorem~\ref{active}(i) to
+the inactive constraints one location at a time. A step at location $i$
+changes only a component $t_q$ with $q\in I_i$, so the constraints made active
+before stay active, and after at most $m$ steps we reach a point of
+$\mathcal{K}$ at which all $m$ constraints are active and the value of $\Psi$
+is at most $\Psi(\bm t)$. Hence the two minima are equal. The set of points of
+$\mathcal{K}$ at which all $m$ constraints are active is closed and bounded,
+since $1\le t_p\le c_i/\widetilde\sigma_p$ for $p\in I_i$. On it $\Psi$ is
+continuous: $\bm g$ is continuous in $\bm t>0$, the spectral radius is a
+continuous function of the entries, and with $\gamma=\min_p g_p>0$,
+Theorem~\ref{mono} in~\S\ref{sec-facts} gives
+$\rho\left(A_1\operatorname{diag}(\bm g)\right)\ge\gamma\rho(A_1)>0$. So $\Psi$
+attains its minimum on this set, and by the equality of the two minima this is a
+minimizer of $\Psi$ on $\mathcal{K}$. The statement on local minimizers is
+Theorem~\ref{active}(ii).
+\end{proof}
+
+\begin{theorem}\label{global}
+Let $A_1\ge 0$ with $\rho(A_1)>0$. Then $\Psi$ is convex and continuous
+on $\mathcal{K}$, the minimum in~\eqref{t-program} is attained, and every local
+minimizer is a global minimizer. If in addition $A_1$ is irreducible, then the
+minimizer is unique.
+% , $\Psi$ is continuously differentiable on
+% $\left\{\bm t>0\right\}$, and the Karush--Kuhn--Tucker conditions are necessary
+% and sufficient for a global minimum.
+\end{theorem}
+\begin{proof}
+The feasible set $\mathcal{K}$ is closed, and bounded because $\bm t\ge\mathbbm{1}$ and
+$\widetilde\sigma_p>0$ give $1\le t_p\le c_i/\widetilde\sigma_p$; it is convex, being an
+intersection of half-spaces. For $\bm t>0$ one has $g_p\ge\gamma=\min_p g_p>0$, so
+$A_1\operatorname{diag}(\bm g)\ge\gamma A_1$ and, by Theorem~\ref{mono}
+in~\S\ref{sec-facts}, $\rho\left(A_1\operatorname{diag}(\bm g)\right)\ge\gamma\rho(A_1)>0$.
+The spectral radius is a continuous function of the entries, so $\Psi$ is
+continuous on $\{\bm t>0\}$.
+
+For convexity let $\bm t\neq\bm t'$ be positive, let $0<\lambda<1$, and set
+$\bm t_\lambda=\lambda\bm t+(1-\lambda)\bm t'$. We write $\bm g$, $\bm g'$ and
+$\bm g_\lambda$ for the vectors $\bm g$ of~\eqref{t-def} at $\bm t$, $\bm t'$
+and $\bm t_\lambda$, and $\bm g^{\lambda}\bm g'^{\,1-\lambda}$ for the vector
+with components $g_p^{\lambda}g_p'^{\,1-\lambda}$. We first show
+\begin{equation}\label{g-strict}
+\bm g_\lambda\le\bm g^{\lambda}\bm g'^{\,1-\lambda},
+\end{equation}
+with strict inequality in every component $p$ for which $t_p\neq t'_p$.
+Fix $p$, and write $t=t_p$, $t'=t'_p$, $a=1-e_p\ge 0$ and
+$b=e_p>0$. The weighted inequality between the arithmetic and the
+geometric mean gives $\lambda t+(1-\lambda)t'\ge t^{\lambda}t'^{\,1-\lambda}$,
+with equality only if $t=t'$, and H\"older's inequality with exponents
+$1/\lambda$ and $1/(1-\lambda)$ gives
+$x_1^{\lambda}y_1^{1-\lambda}+x_2^{\lambda}y_2^{1-\lambda}\le\left(x_1+x_2\right)^{\lambda}\left(y_1+y_2\right)^{1-\lambda}$
+for $x_l,y_l\ge 0$. Applying these two in turn,
+\begin{equation}
+\begin{aligned}
+\left(\bm g_\lambda\right)_p
+&=a+\frac{b}{\lambda t+(1-\lambda)t'}
+\le a^{\lambda}a^{1-\lambda}+\left(\frac{b}{t}\right)^{\lambda}\left(\frac{b}{t'}\right)^{1-\lambda}\\
+&\le\left(a+\frac{b}{t}\right)^{\lambda}\left(a+\frac{b}{t'}\right)^{1-\lambda}
+=g_p^{\lambda}g_p'^{\,1-\lambda},
+\end{aligned}
+\end{equation}
+and the first inequality is strict if $t\neq t'$. This
+proves~\eqref{g-strict}. Lemma~\ref{log-convex} in~\S\ref{sec-facts}, applied to
+the points $\bm\xi$ and $\bm\eta$ with $e^{\bm\xi}=\bm g$ and $e^{\bm\eta}=\bm g'$, states
+\begin{equation}
+\rho\left(A_1\operatorname{diag}\left(\bm g^{\lambda}\bm g'^{\,1-\lambda}\right)\right)
+\le\rho\left(A_1\operatorname{diag}(\bm g)\right)^{\lambda}
+\rho\left(A_1\operatorname{diag}(\bm g')\right)^{1-\lambda}.
+\end{equation}
+Therefore
+\begin{equation}\label{psi-strict}
+\rho\left(A_1\operatorname{diag}\left(\bm g_\lambda\right)\right)
+\le\rho\left(A_1\operatorname{diag}\left(\bm g^{\lambda}\bm g'^{\,1-\lambda}\right)\right)
+\le\rho\left(A_1\operatorname{diag}(\bm g)\right)^{\lambda}
+\rho\left(A_1\operatorname{diag}(\bm g')\right)^{1-\lambda},
+\end{equation}
+where the first inequality follows from Theorem~\ref{mono}, since
+by~\eqref{g-strict}
+$0\le A_1\operatorname{diag}\left(\bm g_\lambda\right)\le A_1\operatorname{diag}\left(\bm g^{\lambda}\bm g'^{\,1-\lambda}\right)$.
+By the weighted inequality between the arithmetic and the geometric mean, the
+right-hand side of~\eqref{psi-strict} is at most
+$\lambda\Psi(\bm t)+(1-\lambda)\Psi(\bm t')$, so
+$\Psi\left(\bm t_\lambda\right)\le\lambda\Psi(\bm t)+(1-\lambda)\Psi(\bm t')$,
+and $\Psi$ is convex. The feasible set is compact and
+$\Psi$ is continuous, so the minimum is attained, and every local minimizer of
+a convex function on a convex set is a global minimizer.
+
+Let now $A_1$ be irreducible.
+% For $\bm t>0$ the matrix
+% $A_1\operatorname{diag}(\bm g)\ge 0$ has the same zero entries as $A_1$ and is
+% irreducible, so by Theorem~\ref{pf} in~\S\ref{sec-facts} its spectral radius
+% is a simple eigenvalue, hence a continuously differentiable function of the
+% entries, which are continuously differentiable in $\bm t$.
+The two sides of~\eqref{g-strict} being distinct, the two matrices compared
+in the first inequality of~\eqref{psi-strict} are distinct, the larger one is
+irreducible, and by Theorem~\ref{mono} this inequality is strict: $\Psi$ is strictly convex. If $\bm t\neq\bm t'$ were two minimizers, then
+$\bm t_{1/2}$ would be feasible, the feasible set being convex, and
+$\Psi\left(\bm t_{1/2}\right)$ would be smaller than the minimum; hence the
+minimizer is unique.
+% The Karush--Kuhn--Tucker conditions are necessary and
+% sufficient for a continuously differentiable convex function on a set defined
+% by affine constraints.
 \end{proof}
 
 \bibliographystyle{plain}
