@@ -120,9 +120,59 @@ def fig_alloc(stem):
             save(fig, "fig_alloc_%s_%s_k%d" % (stem, kind, k + 1))
 
 
+def fig_tralt_conv():
+    """Section 4.3: the trust region phase (excess per iteration) and the
+    alternating phase (excess and r per sweep), weekly b2 = b1/8, b3 = b1/2, P."""
+    runs = [("bary", "barycenter", LOC[0][2]), ("k1", r"$(1,1,4)$", LOC[1][2]),
+            ("k2", r"$(2,4,4)$", LOC[2][2])]
+    fig, ax = plt.subplots(figsize=(WIDTH, 2.1))
+    for key, lab, col in runs:
+        d = read("fig_tralt_tr_%s.dat" % key)
+        ax.semilogy(d["it"], d["excess"], color=col, lw=1.0, label=lab)
+    ax.set_ylim(1e-16, 2)
+    ax.set_xlabel("trust region iteration")
+    ax.set_ylabel(r"$(\rho-\rho_{\mathrm{ref}})/\rho_{\mathrm{ref}}$")
+    ax.legend(loc="lower left")
+    save(fig, "fig_tralt_tr")
+    fig, ax = plt.subplots(figsize=(WIDTH, 2.1))
+    for key, lab, col in runs[1:]:
+        d = read("fig_tralt_alt_%s.dat" % key)
+        ax.semilogy(d["sweep"], d["excess"], color=col, lw=1.0, marker="o", ms=3, label=lab + r", excess")
+        ax.semilogy(d["sweep"], d["r"], color=col, lw=1.0, ls="--", marker="s", ms=3, label=lab + r", $r$")
+    ax.set_ylim(1e-16, 2)
+    ax.set_xlabel("sweep")
+    ax.legend(loc="upper right")
+    save(fig, "fig_tralt_alt")
+
+
+def fig_alloc_tralt():
+    ymax = [6, 60, 100]
+    for stem in ("q", "p"):
+        d = read("fig_alloc_tralt_%s.dat" % stem)
+        for k in range(3):
+            fig, ax = plt.subplots(figsize=(WIDTH, 1.8))
+            for short, full, col, mk in LOC:
+                ax.plot(d["age"], d["k%d%s" % (k + 1, short)], color=col, marker=mk,
+                        lw=1.0, ms=3.5, label=full)
+            age_axis(ax)
+            ax.set_ylim(0, ymax[k])
+            ax.set_xlabel("age group (years)")
+            ax.set_ylabel(r"$\chi_%d$ ($10^{-3}$ per day)" % (k + 1))
+            if stem == "q" and k == 0:
+                ax.legend(loc="lower left")
+            save(fig, "fig_alloc_tralt_%s_k%d" % (stem, k + 1))
+
+
 if __name__ == "__main__":
+    import sys
     os.makedirs(OUT, exist_ok=True)
+    if "--tralt" in sys.argv:          # only the figures of Section 4.3
+        fig_tralt_conv()
+        fig_alloc_tralt()
+        sys.exit(0)
     fig_chi1()
     fig_yogi_conv()
     fig_alloc("s2")
     fig_alloc("p")
+    fig_tralt_conv()
+    fig_alloc_tralt()

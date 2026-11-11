@@ -198,36 +198,53 @@ and the objective function is continuous.
 
 \section{Optimization for a single dose}\label{sec-single}
 
-Suppose that only doses of the first type are available, $b_{2i}=b_{3i}=0$ for
-all $i$. Since the coefficients
-$\sigma_{2,p}$ and $\sigma_{3,p}$ are positive, this implies that
-$\bm\chi_2=\bm\chi_3=0$. After changing variables again we have
+In this section the second and third doses are fixed,
+$\bm\chi_2=\bm\theta\ge 0$ and $\bm\chi_3=\bm\zeta\ge 0$, and we minimize
+$\Psi(\bm\chi_1,\bm\theta,\bm\zeta)=\rho\left(\operatorname{NGM}(\bm\chi_1,\bm\theta,\bm\zeta)\right)$ over
+$\bm\chi_1$. The single dose problem, in which only doses of the first type
+are available, $b_{2i}=b_{3i}=0$ for all $i$, is the case
+$\bm\theta=\bm\zeta=0$, since the coefficients $\sigma_{2,p}$ and
+$\sigma_{3,p}$ are positive. Throughout this section
+$0<\varepsilon_l\le 1$, $l=1,2,3$. Let
+\begin{equation}\label{t-coeffs}
+\omega_p=\omega_v+\varepsilon_2\theta_p,\qquad
+\gamma_p=1+\frac{2\varepsilon_2}{\omega}\theta_p+\frac{\varepsilon_2\varepsilon_3}{\omega^2}\theta_p\zeta_p,\qquad
+e_p=\frac{1}{\gamma_p}\left(\varepsilon_1+\frac{\varepsilon_2}{\omega}\theta_p+\frac{\varepsilon_2\varepsilon_3}{\omega^2}\theta_p\zeta_p\right).
+\end{equation}
+Multiplying the numerator and the denominator of~\eqref{g-def} by $\omega_p>0$
+and using~\eqref{yz-def} gives
+\begin{equation}\label{t-PQ}
+g_p=\frac{\omega_p+\left(1-\varepsilon_1+\varepsilon_2\theta_p/\omega\right)\chi_{1,p}}{\omega_p+\gamma_p\chi_{1,p}},
+\end{equation}
+and $1-\varepsilon_1+\varepsilon_2\theta_p/\omega=\gamma_p(1-e_p)$. Hence, with
+$t_p$ as below, the denominator is $\omega_pt_p$, the numerator is
+$\omega_p\left(e_p+(1-e_p)t_p\right)$, and the change of variables
 \begin{equation}\label{t-def}
 \begin{aligned}
-&t_p=1+\frac{\chi_{1,p}}{\omega_v}\ \ge 1,\qquad
-\chi_{1,p}=\omega_v\left(t_p-1\right),\\
-&y_p=\frac{1}{t_p},\qquad
-z_p=(1-\varepsilon_1)\left(1-\frac{1}{t_p}\right),\qquad
-g_p=(1-\varepsilon_1)+\frac{\varepsilon_1}{t_p},\\
-&A_1\operatorname{diag}(\bm g)=(1-\varepsilon_1)A_1+\varepsilon_1A_1\operatorname{diag}(\bm t)^{-1}.
+&t_p=1+\frac{\gamma_p}{\omega_p}\chi_{1,p}\ \ge 1,\qquad
+\chi_{1,p}=\frac{\omega_p}{\gamma_p}\left(t_p-1\right),\\
+&g_p=(1-e_p)+\frac{e_p}{t_p},\qquad
+A_1\operatorname{diag}(\bm g)=A_1\operatorname{diag}(\mathbbm{1}-\bm e)+A_1\operatorname{diag}(\bm e)\operatorname{diag}(\bm t)^{-1}.
 \end{aligned}
 \end{equation}
-Throughout this section the efficacy satisfies $0<\varepsilon_1\le 1$. Then
-$g_p>0$ for $t_p>0$, and $g_p$ is strictly decreasing in $t_p$.
-Using~\eqref{t-def} we can rewrite the single-dose
-problem as:
+Here $0<e_p\le 1$, since
+$\gamma_p(1-e_p)=1-\varepsilon_1+\varepsilon_2\theta_p/\omega\ge 0$; for
+$\bm\theta=\bm\zeta=0$, $t_p=1+\chi_{1,p}/\omega_v$ and $e_p=\varepsilon_1$.
+Then $g_p>0$ for $t_p>0$, and $g_p$ is strictly decreasing in $t_p$.
+Using~\eqref{t-def} we can rewrite the problem as:
 \begin{subequations}\label{t-program}
 \begin{align}
 &\widehat{\bm t}\in\operatorname*{arg\,min}\ \Psi(\bm t),\qquad
 \Psi(\bm t)=\rho\left(A_1\operatorname{diag}(\bm g)\right),\\
 &\mbox{subject to}\qquad
-\sum_{p\in I_i}\sigma_{1,p}\,t_p\le c_i,\qquad \bm t\ge\mathbbm{1},\label{t-constraint}\\
-&\mbox{where}\quad c_i=\frac{b_{1i}}{\omega_v}+\sum_{p\in I_i}\sigma_{1,p},
-\quad\mbox{and}\quad g_p=(1-\varepsilon_1)+\frac{\varepsilon_1}{t_p},\quad p\in I_i,\quad i=1:m.\nonumber
+\sum_{p\in I_i}\widetilde\sigma_p\,t_p\le c_i,\qquad \bm t\ge\mathbbm{1},\label{t-constraint}\\
+&\mbox{where}\quad \widetilde\sigma_p=\frac{\omega_p}{\omega_v\gamma_p}\sigma_{1,p},\quad
+c_i=\frac{b_{1i}}{\omega_v}+\sum_{p\in I_i}\widetilde\sigma_p,
+\quad\mbox{and}\quad g_p=(1-e_p)+\frac{e_p}{t_p},\quad p\in I_i,\quad i=1:m.\nonumber
 \end{align}
 \end{subequations}
 We assume $b_{1i}>0$ for $i=1:m$: if $b_{1i}=0$ for some $i$ then,
-by~\eqref{t-constraint} and $\sigma_{1,p}>0$, we have that $t_p=1$ for all
+by~\eqref{t-constraint} and $\widetilde\sigma_p>0$, we have that $t_p=1$ for all
 $p\in I_i$ so these unknowns can be eliminated. We denote the set of vectors satisfying
 the constraints in~\eqref{t-constraint} by $\mathcal{K}$, namely,
 \begin{equation}\label{Kt-def}
@@ -242,7 +259,7 @@ with equalities, i.e.\ all constraints are {\bf active}.
 \begin{theorem}\label{active}
 Let $A_1\ge 0$ with $\rho(A_1)>0$, let $\bm t\in\mathcal{K}$, and suppose that the
 constraint of location $i$ in~\eqref{t-constraint} is inactive at $\bm t$,
-that is, $\sum_{p\in I_i}\sigma_{1,p}t_p<c_i$. Then:
+that is, $\sum_{p\in I_i}\widetilde\sigma_pt_p<c_i$. Then:
 \begin{enumerate}
 \renewcommand{\labelenumi}{(\roman{enumi})}
 \item there is $\widetilde{\bm t}\in\mathcal{K}$ which differs from $\bm t$ in
@@ -255,13 +272,13 @@ and $\bm t$ is not a local minimizer of $\Psi$ on $\mathcal{K}$.
 \end{theorem}
 \begin{proof}
 Fix $q\in I_i$ and put
-$\delta_{\max}=\left(c_i-\sum_{p\in I_i}\sigma_{1,p}t_p\right)/\sigma_{1,q}>0$.
+$\delta_{\max}=\left(c_i-\sum_{p\in I_i}\widetilde\sigma_pt_p\right)/\widetilde\sigma_q>0$.
 For $0<\delta\le\delta_{\max}$ let $\bm t_\delta=\bm t+\delta\bm e_q$. Then
 $\bm t_\delta\ge\bm t\ge\mathbbm{1}$, the sums of the locations other than $i$
 are unchanged, and
-$\sum_{p\in I_i}\sigma_{1,p}\left(\bm t_\delta\right)_p=\sum_{p\in I_i}\sigma_{1,p}t_p+\sigma_{1,q}\delta\le c_i$,
+$\sum_{p\in I_i}\widetilde\sigma_p\left(\bm t_\delta\right)_p=\sum_{p\in I_i}\widetilde\sigma_pt_p+\widetilde\sigma_q\delta\le c_i$,
 with equality for $\delta=\delta_{\max}$. Hence $\bm t_\delta\in\mathcal{K}$.
-Since $\varepsilon_1>0$, the function $g_q=(1-\varepsilon_1)+\varepsilon_1/t_q$
+Since $e_q>0$, the function $g_q=(1-e_q)+e_q/t_q$
 is strictly decreasing in $t_q$, while $g_p$ for $p\neq q$ does not change.
 Therefore the vector $\bm g_\delta$ at $\bm t_\delta$ satisfies
 $0<\bm g_\delta\le\bm g$ and $\bm g_\delta\neq\bm g$. Hence
@@ -283,7 +300,7 @@ local minimizer.
 
 \begin{corollary}\label{all-active}
 Let $A_1\ge 0$ with $\rho(A_1)>0$. The minimum of $\Psi$ on $\mathcal{K}$ equals its minimum on
-$\left\{\bm t\in\mathcal{K}:\sum_{p\in I_i}\sigma_{1,p}t_p=c_i,\ i=1:m\right\}$.
+$\left\{\bm t\in\mathcal{K}:\sum_{p\in I_i}\widetilde\sigma_pt_p=c_i,\ i=1:m\right\}$.
 In particular, $\Psi$ has a minimizer on $\mathcal{K}$ at which all $m$
 constraints are active, and if $A_1$ is irreducible, then every local minimizer of $\Psi$ on
 $\mathcal{K}$ meets all $m$ constraints with equality.
@@ -296,7 +313,7 @@ before stay active, and after at most $m$ steps we reach a point of
 $\mathcal{K}$ at which all $m$ constraints are active and the value of $\Psi$
 is at most $\Psi(\bm t)$. Hence the two minima are equal. The set of points of
 $\mathcal{K}$ at which all $m$ constraints are active is closed and bounded,
-since $1\le t_p\le c_i/\sigma_{1,p}$ for $p\in I_i$. On it $\Psi$ is
+since $1\le t_p\le c_i/\widetilde\sigma_p$ for $p\in I_i$. On it $\Psi$ is
 continuous: $\bm g$ is continuous in $\bm t>0$, the spectral radius is a
 continuous function of the entries, and with $\gamma=\min_p g_p>0$,
 Theorem~\ref{mono} in~\S\ref{sec-facts} gives
@@ -317,7 +334,7 @@ minimizer is unique.
 \end{theorem}
 \begin{proof}
 The feasible set $\mathcal{K}$ is closed, and bounded because $\bm t\ge\mathbbm{1}$ and
-$\sigma_{1,p}>0$ give $1\le t_p\le c_i/\sigma_{1,p}$; it is convex, being an
+$\widetilde\sigma_p>0$ give $1\le t_p\le c_i/\widetilde\sigma_p$; it is convex, being an
 intersection of half-spaces. For $\bm t>0$ one has $g_p\ge\gamma=\min_p g_p>0$, so
 $A_1\operatorname{diag}(\bm g)\ge\gamma A_1$ and, by Theorem~\ref{mono}
 in~\S\ref{sec-facts}, $\rho\left(A_1\operatorname{diag}(\bm g)\right)\ge\gamma\rho(A_1)>0$.
@@ -333,8 +350,8 @@ with components $g_p^{\lambda}g_p'^{\,1-\lambda}$. We first show
 \bm g_\lambda\le\bm g^{\lambda}\bm g'^{\,1-\lambda},
 \end{equation}
 with strict inequality in every component $p$ for which $t_p\neq t'_p$.
-Fix $p$, and write $t=t_p$, $t'=t'_p$, $a=1-\varepsilon_1\ge 0$ and
-$b=\varepsilon_1>0$. The weighted inequality between the arithmetic and the
+Fix $p$, and write $t=t_p$, $t'=t'_p$, $a=1-e_p\ge 0$ and
+$b=e_p>0$. The weighted inequality between the arithmetic and the
 geometric mean gives $\lambda t+(1-\lambda)t'\ge t^{\lambda}t'^{\,1-\lambda}$,
 with equality only if $t=t'$, and H\"older's inequality with exponents
 $1/\lambda$ and $1/(1-\lambda)$ gives
@@ -407,40 +424,46 @@ A_1\operatorname{diag}(\bm g)\,\bm v=\rho\,\bm v,\qquad
 \end{equation}
 Then
 $\partial\rho/\partial g_p=\left(A_1^T\bm w\right)_pv_p/\langle\bm w,\bm v\rangle$,
-and since $dg_p/dt_p=-\varepsilon_1/t_p^2$ the chain rule gives
+and since $dg_p/dt_p=-e_p/t_p^2$ the chain rule gives
 \begin{equation}\label{grad}
 \frac{\partial\Psi}{\partial t_p}
-=-\frac{\varepsilon_1}{t_p^2}\cdot
+=-\frac{e_p}{t_p^2}\cdot
 \frac{\left(A_1^T\bm w\right)_p v_p}{\langle\bm w,\bm v\rangle}\ <0 ,
 \end{equation}
 the sign because $\bm v>0$, $\bm w>0$ and no column of $A_1$ vanishes.
 
-With multipliers $\mu_i$ for the constraints $\sum_{p\in I_i}\sigma_{1,p}t_p\le c_i$
+With multipliers $\mu_i$ for the constraints $\sum_{p\in I_i}\widetilde\sigma_pt_p\le c_i$
 and $\nu_p$ for $t_p\ge 1$, the Lagrangian is
-$\Psi+\sum_i\mu_i\left(\sum_{p\in I_i}\sigma_{1,p}t_p-c_i\right)
-+\sum_p\nu_p\left(1-t_p\right)$, and the Karush--Kuhn--Tucker conditions
-are, for $p\in I_i$, $i=1:m$,
-\begin{align}
-&\frac{\varepsilon_1}{t_p^2}\cdot
+\begin{equation}\label{lagrangian}
+\mathcal{L}(\bm t,\bm\mu,\bm\nu):=\Psi(\bm t)
++\sum_{i=1}^m\mu_i\left(\sum_{p\in I_i}\widetilde\sigma_pt_p-c_i\right)
++\sum_{p=1}^N\nu_p\left(1-t_p\right).
+\end{equation}
+The KKT conditions for the Lagrangian are equivalent to (for $i=1:m$ and $p\in I_i$):
+\begin{equation}\label{kkt}
+\begin{aligned}
+&\sum_{p\in I_i}\widetilde\sigma_pt_p=c_i,\qquad t_p\ge 1,\qquad \nu_p\ge 0,\qquad \nu_p\left(t_p-1\right)=0,\\
+&\mu_i=\frac{1}{\widetilde\sigma_p}\left(\nu_p+\frac{e_p}{t_p^2}\cdot
+\frac{\left(A_1^T\bm w\right)_pv_p}{\langle\bm w,\bm v\rangle}\right).
+\end{aligned}
+\end{equation}
+The budget constraints are written with equality in~\eqref{kkt}, since
+by Corollary~\ref{all-active} they are active at the minimizer. The fraction
+in the last line of~\eqref{kkt} is positive and $\nu_p\ge 0$, so $\mu_i>0$ for
+every $i$. For a coordinate with $t_p>1$ one has $\nu_p=0$, so
+\begin{equation}\label{ratio}
+r_p:=\frac{e_p}{t_p^2\,\widetilde\sigma_p}\cdot
 \frac{\left(A_1^T\bm w\right)_pv_p}{\langle\bm w,\bm v\rangle}
-=\mu_i\,\sigma_{1,p}-\nu_p ,\label{kkt}\\
-&\sum_{p\in I_i}\sigma_{1,p}t_p=c_i,\qquad t_p\ge 1,\label{kkt-feas}\\
-&\mu_i\ge 0,\qquad \nu_p\ge 0,\label{kkt-sign}\\
-&\nu_p\left(t_p-1\right)=0 .\label{kkt-compl}
-\end{align}
-The budget constraints are written with equality in~\eqref{kkt-feas}, since
-by Corollary~\ref{all-active} they are active at the minimizer; the left-hand
-side of~\eqref{kkt} is positive, so $\mu_i>0$ for every $i$. For a coordinate with $t_p>1$ one has $\nu_p=0$, so the
-left-hand side divided by $\sigma_{1,p}$ equals $\mu_i$ and is the same for
-every such $j$ at the index $i$; for a coordinate at $t_p=1$ that ratio is at
-most $\mu_i$. That these conditions characterize the minimizer is the content
+\end{equation}
+equals $\mu_i$ and is the same for every such $p$ at the index $i$; for a
+coordinate at $t_p=1$ the ratio $r_p$ is at most $\mu_i$. That these conditions characterize the minimizer is the content
 of the next proposition.
 
 \begin{proposition}\label{kkt-sufficient}
 Let $A_1\ge 0$ be irreducible. A point $\bm t\in\mathcal{K}$ is the minimizer
 $\widehat{\bm t}$ of~\eqref{t-program} if and only if there are multipliers
-$\mu_i$, $i=1:m$, and $\nu_p$, $p=1:N$, such that~\eqref{kkt}--\eqref{kkt-compl}
-hold.
+$\mu_i$, $i=1:m$, and $\nu_p$, $p=1:N$, such that~\eqref{kkt}
+holds.
 \end{proposition}
 \begin{proof}
 For $\bm t>0$ the matrix $A_1\operatorname{diag}(\bm g)\ge 0$ has the same
@@ -452,7 +475,7 @@ the derivative $\partial\rho/\partial g_p$ given before~\eqref{grad}; see
 Horn and Johnson~\cite[Section 6.3]{1985Horn_Johnson}. The entries are differentiable in $\bm t$,
 so $\Psi$ is differentiable at $\bm t$, its partial derivatives are given
 by~\eqref{grad}, and~\eqref{kkt} reads
-$\partial\Psi/\partial t_p(\bm t)=-\mu_i\sigma_{1,p}+\nu_p$ for $p\in I_i$.
+$\partial\Psi/\partial t_p(\bm t)=-\mu_i\widetilde\sigma_p+\nu_p$ for $p\in I_i$.
 
 Let $\bm y\in\mathcal{K}$ and $0<s<1$. Since $\Psi$ is convex
 (Theorem~\ref{global}),
@@ -460,14 +483,16 @@ $\Psi\left(\bm t+s(\bm y-\bm t)\right)-\Psi(\bm t)\le s\left(\Psi(\bm y)-\Psi(\b
 We divide by $s$ and let $s\to 0$:
 \begin{equation}
 \Psi(\bm y)-\Psi(\bm t)\ge\sum_p\frac{\partial\Psi}{\partial t_p}(\bm t)\left(y_p-t_p\right)
-=\sum_i\mu_i\sum_{p\in I_i}\sigma_{1,p}\left(t_p-y_p\right)
+=\sum_i\mu_i\sum_{p\in I_i}\widetilde\sigma_p\left(t_p-y_p\right)
 +\sum_p\nu_p\left(y_p-t_p\right).
 \end{equation}
-By~\eqref{kkt-feas}, \eqref{kkt-sign} and~\eqref{kkt-compl},
-$\mu_i\sum_{p\in I_i}\sigma_{1,p}\left(t_p-y_p\right)
-=\mu_i\left(c_i-\sum_{p\in I_i}\sigma_{1,p}y_p\right)\ge 0$ and
-$\nu_p\left(y_p-t_p\right)=\nu_p\left(y_p-1\right)\ge 0$, because
-$\bm y\in\mathcal{K}$. Hence $\Psi(\bm y)\ge\Psi(\bm t)$ for every
+By the KKT conditions given in~\eqref{kkt},
+\begin{align*}
+&\mu_i\sum_{p\in I_i}\widetilde\sigma_p\left(t_p-y_p\right)
+=\mu_i\left(c_i-\sum_{p\in I_i}\widetilde\sigma_py_p\right)\ge 0,\\
+&\nu_p\left(y_p-t_p\right)=\nu_p\left(y_p-1\right)\ge 0,
+\end{align*}
+because $\bm y\in\mathcal{K}$. Hence $\Psi(\bm y)\ge\Psi(\bm t)$ for every
 $\bm y\in\mathcal{K}$, and $\bm t=\widehat{\bm t}$ by the uniqueness in
 Theorem~\ref{global}.
 
@@ -478,8 +503,132 @@ the Karush--Kuhn--Tucker conditions hold at the minimizer
 $\widehat{\bm t}$; see Boyd and
 Vandenberghe~\cite[Sections 5.2.3 and 5.5.3]{2004Boyd_Vandenberghe}. By
 Corollary~\ref{all-active} the budget constraints hold with equality at
-$\widehat{\bm t}$, which gives~\eqref{kkt-feas}.
+$\widehat{\bm t}$, which gives the equality in~\eqref{kkt}.
 \end{proof}
+
+\subsection{A fixed point iteration}\label{sec-fixed-point}
+
+The conditions~\eqref{kkt} depend on $\bm t$ in two ways: explicitly, through
+$t_p$, and through the eigenvectors $\bm v$ and $\bm w$ of~\eqref{perron}.
+With the eigenvectors fixed, the conditions decouple over the locations and
+are solved in closed form up to one scalar equation per location. For
+$\bm v>0$ and $\bm w>0$ let
+\begin{equation}\label{a-p}
+a_p=\frac{\left(A_1^T\bm w\right)_pv_p}{\langle\bm w,\bm v\rangle}>0,
+\qquad p=1:N ;
+\end{equation}
+$a_p$ does not change when $\bm v$ or $\bm w$ is multiplied by a positive
+number.
+
+\begin{lemma}\label{frozen}
+Let $a_p>0$, $\widetilde\sigma_p>0$ for $p\in I_i$, and
+$c_i>\sum_{p\in I_i}\widetilde\sigma_p$. For $\mu>0$ let
+\begin{equation}\label{t-of-mu}
+t_p(\mu)=\max\left\{1,\ \sqrt{\frac{e_pa_p}{\mu\,\widetilde\sigma_p}}\right\},
+\qquad
+F_i(\mu)=\sum_{p\in I_i}\widetilde\sigma_p\,t_p(\mu).
+\end{equation}
+Then the equation $F_i(\mu)=c_i$ has exactly one solution $\mu_i>0$, and the
+only solution of~\eqref{kkt-frozen} below is this $\mu_i$ together with
+$t_p=t_p(\mu_i)$ and
+$\nu_p=\max\left\{0,\ \mu_i\widetilde\sigma_p-e_pa_p\right\}$ for $p\in I_i$:
+\begin{equation}\label{kkt-frozen}
+\begin{aligned}
+&\sum_{p\in I_i}\widetilde\sigma_pt_p=c_i,\qquad t_p\ge 1,\qquad \nu_p\ge 0,\qquad
+\nu_p\left(t_p-1\right)=0,\\
+&\mu_i=\frac{1}{\widetilde\sigma_p}\left(\nu_p+\frac{e_pa_p}{t_p^2}\right),
+\qquad p\in I_i .
+\end{aligned}
+\end{equation}
+\end{lemma}
+\begin{proof}
+Each $t_p(\mu)$ is continuous and non-increasing in $\mu$, and strictly
+decreasing where it exceeds $1$. Hence $F_i$ is continuous and
+non-increasing on $(0,\infty)$, and strictly decreasing on the set where
+$F_i(\mu)>\sum_{p\in I_i}\widetilde\sigma_p$, since there at least one $t_p(\mu)>1$.
+As $\mu\to 0^+$, $F_i(\mu)\ge\widetilde\sigma_p\sqrt{e_pa_p/(\mu\widetilde\sigma_p)}\to\infty$
+for any $p\in I_i$, and $F_i(\mu)=\sum_{p\in I_i}\widetilde\sigma_p<c_i$ for
+$\mu\ge\max_{p\in I_i}e_pa_p/\widetilde\sigma_p$. By the intermediate value
+theorem $F_i(\mu)=c_i$ has a solution $\mu_i>0$; it lies in the set where $F_i$ is
+strictly decreasing, so it is unique.
+
+Let $\left(t_p\right)_{p\in I_i}$, $\left(\nu_p\right)_{p\in I_i}$, $\mu_i$
+solve~\eqref{kkt-frozen}. The last equation gives
+$\mu_i\ge e_pa_p/(t_p^2\widetilde\sigma_p)>0$. If $t_p>1$, then $\nu_p=0$,
+so $t_p^2=e_pa_p/(\mu_i\widetilde\sigma_p)$, $t_p=t_p(\mu_i)$, and
+$\mu_i\widetilde\sigma_p-e_pa_p=\mu_i\widetilde\sigma_p\left(1-t_p^2\right)<0$,
+so $\nu_p=0=\max\left\{0,\mu_i\widetilde\sigma_p-e_pa_p\right\}$. If $t_p=1$, then
+$\nu_p=\mu_i\widetilde\sigma_p-e_pa_p\ge 0$, so
+$e_pa_p/(\mu_i\widetilde\sigma_p)\le 1$, $t_p=1=t_p(\mu_i)$ and
+$\nu_p=\max\left\{0,\mu_i\widetilde\sigma_p-e_pa_p\right\}$. The first
+equation is then $F_i(\mu_i)=c_i$, and $\mu_i$ is its unique solution.
+
+Conversely, for this $\mu_i$ the numbers $t_p=t_p(\mu_i)\ge 1$ and
+$\nu_p=\max\left\{0,\mu_i\widetilde\sigma_p-e_pa_p\right\}\ge 0$ satisfy
+the first equation of~\eqref{kkt-frozen} because $F_i(\mu_i)=c_i$. If
+$e_pa_p>\mu_i\widetilde\sigma_p$, then $t_p^2=e_pa_p/(\mu_i\widetilde\sigma_p)$
+and $\nu_p=0$; otherwise $t_p=1$ and $\nu_p=\mu_i\widetilde\sigma_p-e_pa_p$.
+In both cases $\nu_p\left(t_p-1\right)=0$ and
+$\nu_p+e_pa_p/t_p^2=\mu_i\widetilde\sigma_p$.
+\end{proof}
+
+The equation $F_i(\mu)=c_i$ is solved exactly. Let
+$\beta_p=e_pa_p/\widetilde\sigma_p$ for $p\in I_i$, ordered as
+$\beta_{(1)}\le\dots\le\beta_{(q)}$, $q=|I_i|$, with the same ordering of
+$e_p$, $a_p$ and $\widetilde\sigma_p$, and let $\beta_{(0)}=0$. Since $t_p(\mu)=1$ for
+$\mu\ge\beta_p$ and $t_p(\mu)=\sqrt{\beta_p/\mu}$ for $\mu<\beta_p$, on each
+interval $\left[\beta_{(j)},\beta_{(j+1)}\right]$, $j=0:q-1$,
+\begin{equation}\label{F-piece}
+F_i(\mu)=C_j+\frac{B_j}{\sqrt\mu},\qquad
+C_j=\sum_{l=1}^{j}\widetilde\sigma_{(l)},\qquad
+B_j=\sum_{l=j+1}^{q}\sqrt{e_{(l)}a_{(l)}\widetilde\sigma_{(l)}} .
+\end{equation}
+Let $j$ be the largest index in $0:q-1$ with $F_i\left(\beta_{(j)}\right)\ge c_i$,
+where $F_i\left(\beta_{(0)}\right)=+\infty$. Since
+$F_i\left(\beta_{(q)}\right)=\sum_{p\in I_i}\widetilde\sigma_p<c_i$, one has
+$F_i\left(\beta_{(j+1)}\right)<c_i$, and since $F_i$ is non-increasing and
+continuous, the solution $\mu_i$ of Lemma~\ref{frozen} lies in
+$\left[\beta_{(j)},\beta_{(j+1)}\right)$. There $c_i-C_j=B_j/\sqrt{\mu_i}>0$
+by~\eqref{F-piece}, so
+\begin{equation}\label{mu-exact}
+\mu_i=\left(\frac{B_j}{c_i-C_j}\right)^2 .
+\end{equation}
+The cost is that of sorting $q$ numbers.
+
+In the problem~\eqref{t-program} one has $\widetilde\sigma_p>0$ and
+$c_i-\sum_{p\in I_i}\widetilde\sigma_p=b_{1i}/\omega_v>0$, so
+Lemma~\ref{frozen} applies to every location. This gives
+Algorithm~\ref{alg-fixed-point}.
+
+\begin{algorithm}[ht]
+\caption{Fixed point iteration for~\eqref{kkt}}\label{alg-fixed-point}
+\begin{algorithmic}[1]
+\Require a start $\bm t^{(0)}\in\mathcal{K}$; a tolerance $\mathrm{tol}$ and a
+maximal number of iterations $n_{iter}$
+\For{$k=0,1,\ldots,n_{iter}-1$}
+  \State $\bm g\gets\bm g\left(\bm t^{(k)}\right)$
+  \State compute $\bm v>0$ and $\bm w>0$ such that
+  $A_1\operatorname{diag}(\bm g)\,\bm v=\rho^{(k)}\bm v$ and
+  $\operatorname{diag}(\bm g)A_1^T\bm w=\rho^{(k)}\bm w$
+  \State set $a_p=\dfrac{\left(A_1^T\bm w\right)_pv_p}{\langle\bm w,\bm v\rangle}$, $p=1:N$
+  \For{$i=1:m$}
+    \State compute $\mu_i^{(k)}$, the solution of $F_i(\mu)=c_i$, by~\eqref{mu-exact}
+    \State $t_p^{(k+1)}\gets t_p\left(\mu_i^{(k)}\right)$, $p\in I_i$
+  \EndFor
+  \If{$\max_p\left|t_p^{(k+1)}-t_p^{(k)}\right|/\max_pt_p^{(k)}<\mathrm{tol}$}
+    \State \textbf{break}
+  \EndIf
+\EndFor
+\State \Return $\bm t^{(k+1)}$, $\bm\mu^{(k)}$
+\end{algorithmic}
+\end{algorithm}
+
+Every iterate $\bm t^{(k+1)}$ lies in $\mathcal{K}$ and spends every budget
+exactly. If $\bm t^{(k+1)}=\bm t^{(k)}$, then by Lemma~\ref{frozen} the
+point $\bm t^{(k)}$ satisfies~\eqref{kkt} with the eigenvectors at
+$\bm t^{(k)}$, and by Proposition~\ref{kkt-sufficient} it is the minimizer
+$\widehat{\bm t}$. We do not prove that the iteration converges; its
+convergence on the data of~\cite{JZh} is reported in~\S\ref{sec-numerics}.
 
 \subsection{Numerical results}\label{sec-numerics}
 
@@ -492,16 +641,32 @@ The implementations below minimize $\log\Psi$, which has the same minimizer
 and, by~\eqref{psi-strict}, is convex as well; its gradient is~\eqref{grad}
 divided by $\rho$.
 No differences of eigenvalue computations are needed. The two eigenvectors are
-computed by Arnoldi. In $\bm t$ the coefficients $\sigma_{1,p}$
+computed by Arnoldi. In $\bm t$ the coefficients $\widetilde\sigma_p$
 of~\eqref{t-constraint} are of order $10^{7}$ against a $\bm t$ of order one,
 and a solver stalls; the computation is therefore done in the scaled variables
-$u_{1,p}=\omega_v\sigma_{1,p}\left(t_p-1\right)/b_{1i}$ of~\eqref{u-of-chihat},
+$u_{1,p}=\omega_v\widetilde\sigma_p\left(t_p-1\right)/b_{1i}$ of~\eqref{u-of-chihat},
 in which the constraints~\eqref{t-constraint} read $u_{1,p}\ge 0$ and
 $\sum_{p\in I_i}u_{1,p}\le 1$. The implementation uses the trust region interior point method
 of Byrd, Hribar and Nocedal~\cite{1999Byrd_Hribar_Nocedal}, with the
 gradient~\eqref{grad} and a quasi-Newton Hessian.
 After the stopping tolerance of the method is met, the Karush--Kuhn--Tucker
-conditions~\eqref{kkt}--\eqref{kkt-compl} are verified at the computed point.
+conditions~\eqref{kkt} are verified at the computed point.
+
+The fixed point iteration of~\S\ref{sec-fixed-point}, started from the
+uniform allocation $t_p=c_i/\sum_{q\in I_i}\widetilde\sigma_q$, $p\in I_i$, which
+spends every budget, stops after $45$ iterations, when
+$\max_p\left|t_p^{(k+1)}-t_p^{(k)}\right|/\max_pt_p^{(k)}<10^{-13}$. The
+spectral radius at the last iterate agrees with the minimum below to the ten
+digits given, the group $60+$ has $t_p=1$ in every location, and the
+relative change $\max_p\left|t_p^{(k+1)}-t_p^{(k)}\right|/\max_pt_p^{(k)}$
+decreases by a factor of about $0.54$ per iteration.
+
+In these computations the eigenvectors $\bm v$ and $\bm w$ in
+Algorithm~\ref{alg-fixed-point} are computed by Arnoldi. The power method
+can be used as well: for the data of~\cite{JZh} all entries of $A_1$ are
+positive, so the spectral radius of $A_1\operatorname{diag}(\bm g)$ is larger
+in modulus than its other eigenvalues and the power method converges to
+$\bm v$ and $\bm w$.
 
 The computation gives the minimum
 \begin{equation}
@@ -511,7 +676,7 @@ attained at the $\chi_1$ in Table~\ref{tab-chi1} and Figure~\ref{fig-chi1}. In
 every location the age group $60+$ receives no doses.
 
 Table~\ref{tab-chi1} also checks the conditions~\eqref{kkt} at the minimizer.
-Let $r_p$ be the left-hand side of~\eqref{kkt} divided by $\sigma_{1,p}$, and
+Let $r_p$ be the ratio~\eqref{ratio}, and
 $\mu_i$ the mean of $r_p$ over the groups $0$--$59$ of location $i$, which
 receive doses. The column ``spread'' is $\max\left|r_p/\mu_i-1\right|$ over
 these groups, zero at a minimizer; ``ratio at $60+$'' is $r_p/\mu_i$ for the
@@ -566,6 +731,7 @@ $\rho=2.9312317763$, as in Figure~\ref{fig-chi1}. In the single dose numerical t
 \texttt{gp\_single\_dose.py}) we solve the same problem by the trust region
 interior point method of~\cite{1999Byrd_Hribar_Nocedal}, minimizing
 $\log\Psi$, check~\eqref{kkt}, and obtain the same minimum and $\chi_1$.
+The fixed point iteration is in \texttt{fixed\_point\_single\_dose.py}.
 
 \section{Optimization for three doses}\label{sec-three}
 
@@ -601,177 +767,102 @@ $\omega=\omega_v=1/182.5$, the smallest value of
 $\chi_{2,p}^2\,\partial^2\log g_p/\partial \chi_{2,p}^2$ is $-0.154$, and $g_p$
 increases with $\chi_{2,p}$ at $24.0$ per cent of the points. The equality
 constraints therefore cannot be relaxed to inequalities as in
-Section~\ref{sec-single}. Section~\ref{sec-three-numerics} shows points
-satisfying the Karush--Kuhn--Tucker conditions with different values of the
-objective function; for a convex differentiable function on a convex set every
-such point is a global minimizer~\cite[Section 4.2.3]{2004Boyd_Vandenberghe},
-so these values also show that it is not convex.
+Section~\ref{sec-single}.
 
-In the rest of this section we assume $b_{k,i}>0$ for all $k=1:3$ and $i=1:m$,
-so that $\mathcal{S}=\left(\Delta_{n-1}\right)^{3m}$ has $3m$ factors and
-$\bm u\in\mathbb{R}^{3N}$, and that $A_1\ge 0$ is irreducible. We
-write
-\begin{equation}\label{t-F}
-\Theta(\bm u)
-=\log\rho\left(A_1\operatorname{diag}\left(\bm g\left(\bm\chi(\bm u)\right)\right)\right)
+In the rest of this section we assume $b_{k,i}>0$ for all $k=1:3$ and
+$i=1:m$, and that $A_1\ge 0$ is irreducible.
+
+\subsection{An alternating method}\label{sec-alternating}
+
+Each sweep updates $\bm\chi_1$, $\bm\chi_3$ and $\bm\chi_2$ in turn, the
+other two doses fixed at their current values; every iterate satisfies the
+constraints~\eqref{constraints}.
+
+\emph{The first dose.} With $\bm\chi_2=\bm\theta$ and $\bm\chi_3=\bm\zeta$
+fixed, the minimization of $\Psi(\bm\chi_1,\bm\theta,\bm\zeta)$ over $\bm\chi_1$
+is the problem of Section~\ref{sec-single}. Its minimizer is unique
+(Theorem~\ref{global}) and is computed by Algorithm~\ref{alg-fixed-point}.
+
+\emph{The third dose.} Let $\bm\chi_1$ and $\bm\chi_2$ be fixed with
+$\chi_{1,p}\chi_{2,p}>0$ for all $p$, and let $g^0_p>0$ be the value of
+$g_p$ at $\chi_{3,p}=0$. Multiplying the numerator and the denominator
+of~\eqref{g-def} by $\omega_v+\varepsilon_2\chi_{2,p}$ and using~\eqref{yz-def},
+the numerator does not depend on $\chi_{3,p}$ and the denominator is
+$Q^0_p+Q^1_p\chi_{3,p}$ with
+\begin{equation*}
+Q^0_p=\omega_v+\chi_{1,p}+\varepsilon_2\chi_{2,p}+\frac{2\varepsilon_2}{\omega}\chi_{1,p}\chi_{2,p},\qquad
+Q^1_p=\frac{\varepsilon_2\varepsilon_3}{\omega^2}\chi_{1,p}\chi_{2,p}.
+\end{equation*}
+With $t_p=1+Q^1_p\chi_{3,p}/Q^0_p$ one has $g_p=g^0_p/t_p$, so
+\begin{equation}\label{alt-third}
+A_1\operatorname{diag}(\bm g)=\left(A_1\operatorname{diag}\left(\bm g^0\right)\right)\operatorname{diag}(\bm t)^{-1}.
 \end{equation}
-for the objective function of~\eqref{three-program}, and minimize it by the
-adaptive method Yogi of~\cite{2018Zaheer_Yogi}, with each step projected onto
-$\mathcal{S}$ in the metric of its diagonal preconditioner. The method uses the
-gradient of $\Theta$ and no Hessian.
+This is~\eqref{t-def} with $e_p=1$ and $A_1$ replaced by the irreducible
+matrix $A_1\operatorname{diag}\left(\bm g^0\right)$, and the constraints
+of~\eqref{constraints} for $k=3$ become~\eqref{t-constraint} with
+$\widetilde\sigma_p=\sigma_{3,p}Q^0_p/\left(\omega_vQ^1_p\right)$ and
+$c_i=b_{3i}/\omega_v+\sum_{p\in I_i}\widetilde\sigma_p$. Hence the results of
+Section~\ref{sec-single} and Algorithm~\ref{alg-fixed-point} apply to the
+minimization over $\bm\chi_3$. If $\chi_{1,p}\chi_{2,p}=0$, then $Q^1_p=0$
+and $g_p$ does not depend on $\chi_{3,p}$.
 
-\subsection{Properties of the objective function}
+\emph{The second dose.} With $\bm\chi_1=\bm\theta$ and $\bm\chi_3=\bm\zeta$
+fixed, the same multiplication gives
+$g_p=\left(P^0_p+P^1_p\chi_{2,p}\right)/\left(Q^0_p+Q^1_p\chi_{2,p}\right)$
+with $P^0_p=\omega_v+(1-\varepsilon_1)\theta_p$,
+$Q^0_p=\omega_v+\theta_p$, $P^1_p=\varepsilon_2\left(1+\theta_p/\omega\right)$
+and
+$Q^1_p=\varepsilon_2\left(1+2\theta_p/\omega+\varepsilon_3\theta_p\zeta_p/\omega^2\right)$,
+so that
+$\partial g_p/\partial\chi_{2,p}=-D_p/\left(Q^0_p+Q^1_p\chi_{2,p}\right)^2$ with
+\begin{equation}\label{alt-D}
+D_p=P^0_pQ^1_p-P^1_pQ^0_p
+=\varepsilon_2\theta_p\left(\frac{\omega_v}{\omega}+\omega_vs_p-\varepsilon_1
++\theta_p\left(\frac{1-2\varepsilon_1}{\omega}+(1-\varepsilon_1)s_p\right)\right),\qquad
+s_p=\frac{\varepsilon_3\zeta_p}{\omega^2}.
+\end{equation}
+If $D_p<0$, then $g_p$ increases with $\chi_{2,p}$, and
+Section~\ref{sec-single} does not apply. With the parameters of the model,
+$\varepsilon_1=\varepsilon_2=\varepsilon_3=0.8$ and $\omega=\omega_v=1/182.5$,
+and with $\zeta_p=0$, this is the case whenever $\theta_p>\omega/3$. We minimize
+$\Psi(\bm\theta,\bm\chi_2,\bm\zeta)$ over $\bm\chi_2$ by projected Yogi,
+\S\ref{sec-yogi}.
 
-For $\bm u\in\mathcal{S}$ all $\chi_{k,p}\ge 0$, so
-$\pi_{1,p},\pi_{2,p}\ge 0$ and $\pi_{3,p}\ge 1$ in~\eqref{yz-def}; the
-numerator of $g_p$ in~\eqref{g-def} is at least $1$ and its denominator at least $1$, and $g_p$
-is a rational function of $\bm\chi$ with a positive denominator on a
-neighbourhood of $\mathcal{S}$. Hence $g_p>0$ there, and
-$A_1\operatorname{diag}(\bm g)\ge 0$ has the same zero entries as $A_1$ and is
-irreducible. By Theorem~\ref{pf} in~\S\ref{sec-facts} its spectral radius is a
-simple eigenvalue, hence a continuously differentiable function of the
-entries, and $\Theta$ is continuously differentiable on a neighbourhood of the
-compact set $\mathcal{S}$. In
-particular $\nabla\Theta$ is continuous and bounded on $\mathcal{S}$, and we
-put
-\begin{equation}\label{t-G}
-G=\max_{\bm u\in\mathcal{S}}\left\|\nabla\Theta\left(\bm u\right)\right\|_\infty<\infty .
+The steps for $\bm\chi_1$ and $\bm\chi_3$ return the minimum over their
+block, so they do not increase $\rho$; the step for $\bm\chi_2$ is a local
+method.
+
+\subsection{Projected Yogi for the second dose}\label{sec-yogi}
+
+In the variables $\bm u$ of~\eqref{u-of-chihat} for $k=2$, the feasible set
+of $\bm\chi_2$ is $\mathcal{S}_2=\left(\Delta_{n-1}\right)^m$, and we write
+\begin{equation}\label{t-F}
+\Theta(\bm u)=\log\Psi\left(\bm\theta,\bm\chi_2(\bm u),\bm\zeta\right),\qquad \bm u\in\mathcal{S}_2 .
 \end{equation}
 With the eigenvectors $\bm v,\bm w>0$ of~\eqref{perron}, the argument that
 gives~\eqref{grad} gives
 \begin{equation}\label{t-grad}
-\frac{\partial\Theta}{\partial u_{k,ij}}
+\frac{\partial\Theta}{\partial u_{2,ij}}
 =\frac{1}{\rho}\cdot\frac{\left(A_1^T\bm w\right)_pv_p}{\langle\bm w,\bm v\rangle}
-\cdot\frac{\partial g_p}{\partial \chi_{k,p}}\cdot\frac{b_{k,i}}{\sigma_{k,ij}},
-\qquad p=(i-1)n+j ,
+\cdot\frac{\partial g_p}{\partial \chi_{2,p}}\cdot\frac{b_{2,i}}{\sigma_{2,ij}},
+\qquad p=(i-1)n+j .
 \end{equation}
-so each evaluation of the gradient needs the two eigenvectors of~\eqref{perron}.
-
-\subsection{Projection in a diagonal metric}
-
-For a vector $\bm\theta\in\mathbb{R}^n$ with $\bm\theta>0$ and
-$\bm z\in\mathbb{R}^n$ let
-\begin{equation}\label{t-proj}
-\Pi^{\bm\theta}(\bm z)=\operatorname*{arg\,min}_{\bm y\in\Delta_{n-1}}\
-\frac12\sum_{j=1}^n \theta_j\left(y_j-z_j\right)^2 .
-\end{equation}
-For a diagonal matrix $D>0$ of order $3N$, $\Pi^D_{\mathcal{S}}$
-applies~\eqref{t-proj} to each factor $(k,i)$ of $\mathcal{S}$ with the
-diagonal entries of $D$ of that factor. With $D=I$ this is the Euclidean
-projection $\Pi_{\mathcal{S}}$.
-
-\begin{lemma}\label{t-proj-prop}
-Let $\bm\theta>0$ and $\bm z\in\mathbb{R}^n$.
-\begin{enumerate}
-\renewcommand{\labelenumi}{(\alph{enumi})}
-\item Problem~\eqref{t-proj} has a unique solution $\bm y$, and
-$\bm y\in\Delta_{n-1}$ is this solution if and only if
-\begin{equation}\label{t-vi}
-\sum_{j=1}^n \theta_j\left(z_j-y_j\right)\left(x_j-y_j\right)\le 0
-\quad\text{for all }\bm x\in\Delta_{n-1}.
-\end{equation}
-\item The solution is $y_j=\max\left(z_j-\lambda/\theta_j,0\right)$, where
-$\lambda$ is the unique root of
-\begin{equation*}
-\varphi(\lambda)=\sum_j\max\left(z_j-\lambda/\theta_j,0\right)=1 .
-\end{equation*}
-\item $\Pi^{\bm\theta}(\bm z)$ is a continuous function of $(\bm z,\bm\theta)$
-on $\mathbb{R}^n\times(0,\infty)^n$.
-\end{enumerate}
-\end{lemma}
-\begin{proof}
-(a) The objective function of~\eqref{t-proj} is continuous and strictly convex,
-and $\Delta_{n-1}$ is compact and convex, so the minimizer exists and is
-unique. For a convex differentiable function on a convex set, a point is a
-minimizer if and only if the directional derivative towards every point of the
-set is non-negative~\cite[Section 4.2.3]{2004Boyd_Vandenberghe}; here this
-derivative is $\sum_j \theta_j(y_j-z_j)(x_j-y_j)$, which is~\eqref{t-vi}.
-
-(b) The function $\varphi$ is continuous and non-increasing, it is
-$0$ for $\lambda\ge\max_j \theta_jz_j$, and $\varphi(\lambda)\to\infty$ as
-$\lambda\to-\infty$. Where $\varphi(\lambda)>0$ at least one term is positive,
-and that term is strictly decreasing in $\lambda$, so $\varphi$ is strictly
-decreasing on $\{\varphi>0\}$ and $\varphi(\lambda)=1$ has exactly one root.
-For this $\lambda$ the vector $\bm y$ lies in $\Delta_{n-1}$. For
-$\bm x\in\Delta_{n-1}$, $\theta_j(z_j-y_j)=\lambda$ if $y_j>0$, and
-$\theta_j(z_j-y_j)=\theta_jz_j\le\lambda$ if $y_j=0$; hence
-\begin{equation}
-\sum_j \theta_j(z_j-y_j)(x_j-y_j)
-=\lambda\sum_{y_j>0}(x_j-y_j)+\sum_{y_j=0}\theta_jz_jx_j
-\le\lambda\sum_{y_j>0}(x_j-y_j)+\lambda\sum_{y_j=0}x_j
-=\lambda\left(1-1\right)=0,
-\end{equation}
-using $x_j\ge 0$, $\sum_jx_j=1$ and $\sum_{y_j>0}y_j=1$. By (a), $\bm y$ is the
-solution.
-
-(c) The function $\varphi(\lambda;\bm z,\bm\theta)$ is jointly continuous. Let
-$(\bm z_\ell,\bm\theta_\ell)\to(\bm z,\bm\theta)$, with roots $\lambda_\ell$ and
-$\lambda$. For $\delta>0$,
-$\varphi(\lambda-\delta;\bm z,\bm\theta)>1>\varphi(\lambda+\delta;\bm z,\bm\theta)$
-by the strict decrease in (b), so for $\ell$ large the same inequalities hold
-with $(\bm z_\ell,\bm\theta_\ell)$, and $|\lambda_\ell-\lambda|<\delta$. Hence
-$\lambda_\ell\to\lambda$, and the formula in (b) is continuous in
-$(\lambda,\bm z,\bm\theta)$.
-\end{proof}
-
-The root in (b) is computed exactly: on each interval between consecutive
-values of $\theta_jz_j$, $\varphi$ is affine in $\lambda$.
-
-\begin{lemma}\label{t-fixed}
-Let $D>0$ be diagonal of order $3N$, $\eta>0$, and
-$\bm u\in\mathcal{S}$. The following are equivalent:
-\begin{enumerate}
-\renewcommand{\labelenumi}{(\alph{enumi})}
-\item $\bm u=\Pi^D_{\mathcal{S}}\left(\bm u-\eta D^{-1}\nabla\Theta\left(\bm u\right)\right)$;
-\item $\nabla\Theta\left(\bm u\right)^T\left(\bm x-\bm u\right)\ge 0$ for all $\bm x\in\mathcal{S}$;
-\item for each factor $(k,i)$ there is $\lambda_{k,i}$ with
-$\partial\Theta/\partial u_{k,ij}=\lambda_{k,i}$ where $u_{k,ij}>0$
-and $\partial\Theta/\partial u_{k,ij}\ge\lambda_{k,i}$ where $u_{k,ij}=0$,
-\end{enumerate}
-that is, $\bm u$ satisfies the Karush--Kuhn--Tucker conditions
-of~\eqref{three-program}. In particular the condition does not depend on $D$
-and $\eta$.
-\end{lemma}
-\begin{proof}
-(a)$\Leftrightarrow$(b). Apply Lemma~\ref{t-proj-prop}(a) to each factor
-with
-\begin{equation*}
-\bm y=\bm u_{k,i},\qquad
-\bm z=\bm u_{k,i}-\eta D_{k,i}^{-1}\nabla_{k,i}\Theta,
-\end{equation*}
-where the subscript $k,i$ denotes the entries of the factor. Then
-$\theta_j(z_j-y_j)=-\eta\,\partial\Theta/\partial u_{k,ij}$,
-and~\eqref{t-vi} holding in every factor is the statement that
-$\nabla_{k,i}\Theta^T(\bm x_{k,i}-\bm u_{k,i})\ge 0$ for all
-$\bm x_{k,i}\in\Delta_{n-1}$ and all $(k,i)$. Since $\mathcal{S}$ is the
-product of the factors, this is (b).
-
-(b)$\Leftrightarrow$(c). Condition (b) says that $\bm u_{k,i}$
-minimizes the linear function $\bm c^T\bm x$, $\bm c=\nabla_{k,i}\Theta$, over
-$\Delta_{n-1}$ in every factor. The minimum of $\bm c^T\bm x$ over
-$\Delta_{n-1}$ is $\min_jc_j$, and
-$\bm c^T\bm y-\min_jc_j=\sum_jy_j\left(c_j-\min_lc_l\right)$, which vanishes for
-$\bm y\in\Delta_{n-1}$ if and only if $y_j=0$ whenever $c_j>\min_lc_l$. This
-is (c) with $\lambda_{k,i}=\min_jc_j$. Conversely, under (c),
-$\lambda_{k,i}\le c_j$ for all $j$ with equality on the support of $\bm y$,
-which has at least one element, so $\lambda_{k,i}=\min_jc_j$.
-
-Finally, the Karush--Kuhn--Tucker conditions of~\eqref{three-program} in the
-variables $\bm u$, with the constraints $\sum_ju_{k,ij}=1$
-and $u_{k,ij}\ge 0$, are (c) with the multiplier $\lambda_{k,i}$ of
-the equality constraint of the factor.
-\end{proof}
-
-With $D=I$ and $\eta=1$ we use
+For a diagonal $D>0$ of order $N$ let
+$\Pi^D_{\mathcal{S}_2}(\bm z)=\operatorname*{arg\,min}_{\bm y\in\mathcal{S}_2}\frac12(\bm y-\bm z)^TD(\bm y-\bm z)$,
+and $\Pi_{\mathcal{S}_2}=\Pi^I_{\mathcal{S}_2}$. The problem decouples over the
+factors of $\mathcal{S}_2$; in a factor with entries $d_j$ of $D$ the solution
+is $y_j=\max\left(z_j-\lambda/d_j,0\right)$, with $\lambda$ the root of
+$\sum_j\max\left(z_j-\lambda/d_j,0\right)=1$, which is computed exactly since
+the left-hand side is piecewise affine and non-increasing in $\lambda$. As the
+measure of stationarity we use
 \begin{equation}\label{t-r}
-r\left(\bm u\right)=\left\|\bm u-\Pi_{\mathcal{S}}\left(\bm u-\nabla\Theta\left(\bm u\right)\right)\right\|_\infty
+r(\bm u)=\left\|\bm u-\Pi_{\mathcal{S}_2}\left(\bm u-\nabla\Theta(\bm u)\right)\right\|_\infty .
 \end{equation}
-as the measure of stationarity: $r\ge 0$ on $\mathcal{S}$, it is continuous,
-and by Lemma~\ref{t-fixed} it vanishes exactly at the points satisfying the
-Karush--Kuhn--Tucker conditions. It needs no threshold to decide which entries
-of $\bm u$ are positive.
-
-\subsection{Optimization via projected Yogi method}\label{sec-yogi}
+By the characterization of the projection onto a convex set,
+$r(\bm u)=0$ if and only if
+$\nabla\Theta(\bm u)^T(\bm x-\bm u)\ge 0$ for all $\bm x\in\mathcal{S}_2$, that
+is, $\bm u$ satisfies the Karush--Kuhn--Tucker conditions of the minimization
+of $\Theta$ on $\mathcal{S}_2$~\cite[Section 4.2.3]{2004Boyd_Vandenberghe}.
 
 Algorithm~\ref{t-alg-yogi} states the method. Squares, square roots, products,
 quotients and $\operatorname{sign}$ of vectors are taken entrywise. Compared
@@ -783,7 +874,7 @@ first moment $\bm\kappa$ by $1-\beta_1^t$.
 \begin{algorithm}[ht]
 \caption{Projected Yogi}\label{t-alg-yogi}
 \begin{algorithmic}[1]
-\Require a start $\bm u^{(0)}\in\mathcal{S}$; a step $\eta>0$;
+\Require a start $\bm u^{(0)}\in\mathcal{S}_2$; a step $\eta>0$;
 $\beta_1\in[0,1)$, $\beta_2\in(0,1)$, $\epsilon>0$; a tolerance $\mathrm{tol}$
 and a maximal number of iterations $t_{\max}$
 \State $\bm q\gets\nabla\Theta\left(\bm u^{(0)}\right)$, $\bm\kappa\gets\bm 0$, $\bm s\gets\bm q^2$
@@ -792,7 +883,7 @@ and a maximal number of iterations $t_{\max}$
   \State $\bm\kappa\gets\beta_1\bm\kappa+(1-\beta_1)\bm q$
   \State $\bm s\gets\bm s-(1-\beta_2)\operatorname{sign}\left(\bm s-\bm q^2\right)\bm q^2$
   \State $D\gets\operatorname{diag}\left(\sqrt{\bm s}+\epsilon\right)$
-  \State $\bm u^{(t)}\gets\Pi^D_{\mathcal{S}}\left(\bm u^{(t-1)}-\eta D^{-1}\bm\kappa/\left(1-\beta_1^t\right)\right)$
+  \State $\bm u^{(t)}\gets\Pi^D_{\mathcal{S}_2}\left(\bm u^{(t-1)}-\eta D^{-1}\bm\kappa/\left(1-\beta_1^t\right)\right)$
   \If{$r\left(\bm u^{(t)}\right)<\mathrm{tol}$}
     \State \textbf{break}
   \EndIf
@@ -801,83 +892,61 @@ and a maximal number of iterations $t_{\max}$
 \end{algorithmic}
 \end{algorithm}
 
-\begin{lemma}\label{t-yogi-limit}
-Let $\bm u^{(t)}$, $\bm\kappa$, $\bm s$ be the iterates of
-projected Yogi with $t_{\max}=\infty$ and $\mathrm{tol}=0$, and
-$G$ as in~\eqref{t-G}.
-\begin{enumerate}
-\renewcommand{\labelenumi}{(\alph{enumi})}
-\item Every iterate lies in $\mathcal{S}$, and
-$0\le s_l\le\overline{s}:=\max\left(\left\|\bm s^{(0)}\right\|_\infty,(2-\beta_2)G^2\right)$
-for every entry $l$ and every $t$. Hence
-$\epsilon I\le D\le\left(\sqrt{\overline{s}}+\epsilon\right)I$.
-\item If $\bm u^{(t)}\to\bm u^*$, then
-$\bm u^*$ satisfies the Karush--Kuhn--Tucker conditions
-of~\eqref{three-program}.
-\end{enumerate}
-\end{lemma}
-\begin{proof}
-(a) The iterates lie in $\mathcal{S}$ because they are values of
-$\Pi^D_{\mathcal{S}}$. Fix an entry $l$, write $s$ for $s_l$ before the update
-and $q^2\le G^2$ for $q_l^2$. If $s>q^2$, the update gives
-$s-(1-\beta_2)q^2$, which lies in $\left(\beta_2q^2,s\right)$ if $q\ne 0$ and
-equals $s$ if $q=0$. If $s<q^2$, it gives $s+(1-\beta_2)q^2\in\left[0,(2-\beta_2)q^2\right]$
-when $s\ge 0$. If $s=q^2$, $s$ is unchanged. By induction from
-$\bm s^{(0)}=\bm q^2\ge 0$, each entry stays non-negative, and it either does
-not increase or ends at most $(2-\beta_2)G^2$; hence it never exceeds $\overline{s}$.
-
-(b) By continuity of $\nabla\Theta$,
-$\bm q^{(t)}=\nabla\Theta\left(\bm u^{(t-1)}\right)\to\nabla\Theta\left(\bm u^*\right)$.
-The moment
-\begin{equation*}
-\bm\kappa^{(t)}=(1-\beta_1)\sum_{\tau=1}^t\beta_1^{t-\tau}\bm q^{(\tau)}
-\end{equation*}
-is a weighted mean with weights summing to $1-\beta_1^t$, so
-$\bm\kappa^{(t)}/\left(1-\beta_1^t\right)\to\nabla\Theta\left(\bm u^*\right)$.
-By (a) the matrices $D^{(t)}$ lie in a compact set of positive diagonal
-matrices, so a subsequence converges to some $D^*\ge\epsilon I$. Along this
-subsequence, the continuity of Lemma~\ref{t-proj-prop}(c) in the update
-of $\bm u^{(t)}$ gives
-\begin{equation*}
-\bm u^*=\Pi^{D^*}_{\mathcal{S}}\left(\bm u^*-\eta D^{*-1}\nabla\Theta\left(\bm u^*\right)\right),
-\end{equation*}
-and Lemma~\ref{t-fixed} applies.
-\end{proof}
-
-Lemma~\ref{t-yogi-limit} does not assert that the iterates converge, nor
-that $\Theta$ decreases along them; the analysis of~\cite{2018Zaheer_Yogi} is
-for unconstrained problems with stochastic gradients and does not cover the
-projection. The method is local, and on the non-convex
-problem~\eqref{three-program} its limit, when there is one, depends on the
-start.
+We do not prove that the iterates converge.
 
 \subsection{Numerical results}\label{sec-three-numerics}
 
-In all runs $\eta=10^{-2}$, $\beta_1=0.9$, $\beta_2=0.999$,
-$\epsilon=10^{-8}$, $\mathrm{tol}=10^{-10}$ and $t_{\max}=2\cdot 10^5$; no run
-reached $t_{\max}$. With $\eta=10^{-3}$ the run from the barycenter of the
-weekly instance below had $r=1.3\cdot 10^{-7}$ after $5000$ iterations,
-against convergence in $652$ iterations with $\eta=10^{-2}$.
+The computations start with the trust region interior point method
+of~\cite{1999Byrd_Hribar_Nocedal} in all $3N$ variables $\bm u$, with the
+gradient computed as in~\eqref{t-grad} for each $k$, for at most $500$
+iterations. If the method stops earlier by its own tolerances, its point is
+the result. Otherwise the alternating method of~\S\ref{sec-alternating} is
+started from its point and stopped when $r<10^{-10}$, where $r$ is defined
+as in~\eqref{t-r} with all $3N$ variables in place of those of
+$\bm\chi_2$; by the product structure of the constraints, a point at which
+no step of the alternating method changes the iterate satisfies the
+Karush--Kuhn--Tucker conditions in all $3N$ variables. In the steps for
+$\bm\chi_1$ and $\bm\chi_3$, Algorithm~\ref{alg-fixed-point} stops at the
+relative change $10^{-13}$; in the step for $\bm\chi_2$,
+Algorithm~\ref{t-alg-yogi} has $\eta=10^{-2}$, $\beta_1=0.9$,
+$\beta_2=0.999$, $\epsilon=10^{-8}$, $\mathrm{tol}=10^{-11}$ and
+$t_{\max}=2\cdot 10^4$.
 
-\paragraph{The weekly instance.} The budget $b_{1i}$ and $\sigma_{1,ij}$ are
-those of Section~\ref{sec-numerics}; no budget for the second and third doses
-is given with the data of~\cite{JZh}, and we take $b_{2i}=b_{3i}=b_{1i}/4$ and
-$\sigma_{2,ij}=\sigma_{3,ij}=P_{ij}$, the numbers of partially protected
-individuals. We run projected Yogi from $49$ starts: the
-barycenter $\overline{\bm u}$ of $\mathcal{S}$, $\overline u_{k,ij}=1/n$, and
-the $3mn=48$ points obtained from it by replacing one factor $(k,i)$ with
-$(1-\delta)\bm e_j+\delta\mathbbm{1}/n$, $\delta=10^{-3}$. In the start
-$(k,i,j)$ all doses of type $k$ in location $i$ go, up to $\delta$, to the age
-group $j$.
+\paragraph{Instances and starts.} In the weekly instance the budget $b_{1i}$
+and $\sigma_{1,ij}$ are those of Section~\ref{sec-numerics}; no budget for the
+second and third doses is given with the data of~\cite{JZh}, and we take
+$b_{2i}=b_{3i}=b_{1i}/4$ and $\sigma_{2,ij}=\sigma_{3,ij}=P_{ij}$, the numbers
+of partially protected individuals. The $36$ instances vary these data: the
+budget $b_{1i}$ weekly or daily ($b_{1i}/7$); the ratios
+\begin{equation*}
+\frac{(b_{2i},b_{3i})}{b_{1i}}\in\left\{\left(\tfrac1{16},\tfrac1{16}\right),\left(\tfrac14,\tfrac14\right),(1,1),(4,4),\left(\tfrac12,\tfrac18\right),\left(\tfrac18,\tfrac12\right)\right\};
+\end{equation*}
+and $\sigma_{2,ij}$, $\sigma_{3,ij}$ equal to $P_{ij}$, or to
+$P_{ij}e^{Z_{ij}/2}$ and $P_{ij}e^{Z'_{ij}/2}$ with independent standard normal
+$Z$, $Z'$, for two seeds. Seed $s\in\{1,2\}$ means that $Z$ and then $Z'$, each
+$m\times n$ with the entries in row order, are drawn by
+\texttt{numpy.random.default\_rng(s).standard\_normal}. Each instance is run
+from $49$ starts: the barycenter $\overline{\bm u}$ of $\mathcal{S}$,
+$\overline u_{k,ij}=1/n$, and the $3mn=48$ points obtained from it by
+replacing one factor $(k,i)$ with $(1-\delta)\bm e_j+\delta\mathbbm{1}/n$,
+$\delta=10^{-3}$; in the start $(k,i,j)$ all doses of type $k$ in location $i$
+go, up to $\delta$, to the age group $j$. For each instance $\rho_{\mathrm{ref}}$
+is the smallest value of $69$ runs of the trust region method to its own
+tolerances, from these $49$ starts and from $20$ random points of
+$\mathcal{S}$, and a run ends at $\rho_{\mathrm{ref}}$ if its value is at most
+$\left(1+10^{-7}\right)\rho_{\mathrm{ref}}$. In two weekly instances,
+$b_{2i}=b_{3i}=b_{1i}/4$ with $\sigma_2$, $\sigma_3$ of seed $2$, and
+$b_{2i}=b_{1i}/8$, $b_{3i}=b_{1i}/2$ with $\sigma_2=\sigma_3=P$,
+Algorithm~\ref{t-alg-yogi} applied in all $3N$ variables from the barycenter
+ends below $\rho_{\mathrm{ref}}$, by $0.13$ and $0.025$ per cent, so
+$\rho_{\mathrm{ref}}$ is not the minimum in every instance.
 
-From every start the method ends at $\rho=1.661826042009$, the values agreeing
-to $10^{-12}$, with $r<10^{-10}$. Table~\ref{t-tab-yogi} gives the iterations
-and the times, the latter totals over the starts of each column. The slow runs are the $11$ starts with dose $2$ at a vertex in
-locations $2$, $3$ and $4$, which took between $20546$ and $166447$
-iterations; with $t_{\max}=2\cdot 10^4$ eight of them stop at $r$ between
-$4\cdot 10^{-6}$ and $1.2\cdot 10^{-4}$, with $\rho$ at most
-$3.3\cdot 10^{-7}$ relative above the final value. This is the slow final
-phase of a first-order method, not a different limit.
+\paragraph{The weekly instance.} From all $49$ starts the method ends at
+$\rho=1.6618260420$, within $4.3\cdot 10^{-9}$ relative of
+$\rho_{\mathrm{ref}}$. Table~\ref{t-tab-tralt} gives the trust region
+iterations and the times. The trust region method stops by its own tolerances
+in $48$ runs; in the run from the start $(2,4,1)$ it reaches $500$ iterations
+and the alternating method ends after $8$ sweeps.
 
 \begin{table}[ht]
 \centering
@@ -887,240 +956,122 @@ phase of a first-order method, not a different limit.
 starts & barycenter & dose $1$ at a vertex & dose $2$ at a vertex & dose $3$ at a vertex\\
  & ($1$) & ($16$) & ($16$) & ($16$)\\
 \hline
-iterations & $652$ & $3159$--$15460$ & $12699$--$166447$ & $1118$--$3354$\\
-time & $0.5$ s & $90$ s & $822$ s & $27$ s\\
+trust region iterations & $130$ & $173$--$321$ & $174$--$500$ & $126$--$238$\\
+alternating method used & $0$ & $0$ & $1$ & $0$\\
+time & $0.5$ s & $14.1$ s & $18.8$ s & $10.8$ s\\
 \hline
 \end{tabular}
-\caption{Projected Yogi on the weekly instance from the $49$ starts.}\label{t-tab-yogi}
+\caption{The weekly instance from the $49$ starts; the times are totals over
+the starts of each column, with $12$ runs in parallel.}\label{t-tab-tralt}
 \end{table}
 
-Figure~\ref{t-fig-conv} shows the relative excess $(\rho-\widehat\rho)/\widehat\rho$ over
-$\widehat\rho=1.661826042009$ and the stationarity measure $r$ of~\eqref{t-r} per
-iteration along three runs, from the barycenter and from the starts
-$(k,i,j)=(3,1,4)$ and $(2,4,1)$. The iteration count is on a logarithmic
-scale and the start, iteration $0$, is not shown; excesses below $10^{-16}$,
-rounding, are shown at $10^{-16}$. The relative excess falls below $10^{-8}$ after $174$ iterations from the
-barycenter, after $340$ from the start $(3,1,4)$, and after $37290$ from the
-start $(2,4,1)$, the slowest of Table~\ref{t-tab-yogi}, along which $r$
-decreases slowly over most of the run.
+\paragraph{Thirty-six instances.} In every instance the smallest value of the
+$49$ runs is $\rho_{\mathrm{ref}}$; all $49$ runs take $40$ s per instance on
+average, and all $36\cdot 49=1764$ runs take $163$ s with $12$ runs in
+parallel, $1430$ s in total, median $0.56$ s per run. The run from the
+barycenter alone ends at $\rho_{\mathrm{ref}}$ in $33$ instances.
 
-\begin{figure}[ht]
+Of the $1764$ runs, $1572$ end at $\rho_{\mathrm{ref}}$. The trust region
+method reaches $500$ iterations in $110$ runs; in all of them the alternating
+method ends at $\rho_{\mathrm{ref}}$, after between $3$ and $29$ sweeps,
+median $6$. The $192$ runs that do not end at $\rho_{\mathrm{ref}}$ are runs in
+which the trust region method stops by its own tolerances, so that the
+alternating method is not used, between $68$ and $266$ iterations, above $\rho_{\mathrm{ref}}$
+by between $6.7\cdot 10^{-5}$ and $1.3\cdot 10^{-2}$ relative, with $r$ at most
+$1.8\cdot 10^{-7}$ and median $1.7\cdot 10^{-10}$. These are points satisfying
+the Karush--Kuhn--Tucker conditions to this accuracy with different values of
+the objective function; for a convex differentiable function on a convex set
+every such point is a global minimizer~\cite[Section 4.2.3]{2004Boyd_Vandenberghe},
+so the objective function is not convex on these instances, and the
+alternating method, started at such a point, does not change it. In $24$
+instances all $49$ runs end at $\rho_{\mathrm{ref}}$;
+Table~\ref{t-tab-tralt-miss} lists the other $12$.
+
+\begin{table}[ht]
 \centering
-\subfloat[relative excess]{\includegraphics[width=0.4\textwidth]{fig_yogi_conv_excess}}\hspace{0.1\textwidth}
-\subfloat[stationarity measure]{\includegraphics[width=0.4\textwidth]{fig_yogi_conv_r}}
-\caption{Projected Yogi on the weekly instance from three starts.}\label{t-fig-conv}
+\small
+\begin{tabular}{llccc}
+\hline
+budget & $(b_{2i},b_{3i})/b_{1i}$ & $\sigma_2,\sigma_3$ & runs at $\rho_{\mathrm{ref}}$ & largest relative excess\\
+\hline
+daily  & $(\tfrac18,\tfrac12)$       & $P$      & $1^*$  & $3.2\cdot 10^{-3}$\\
+weekly & $(\tfrac1{16},\tfrac1{16})$ & seed $2$ & $1^*$  & $5.4\cdot 10^{-3}$\\
+daily  & $(\tfrac1{16},\tfrac1{16})$ & $P$      & $10^*$ & $1.1\cdot 10^{-4}$\\
+daily  & $(\tfrac14,\tfrac14)$       & $P$      & $16$   & $2.0\cdot 10^{-3}$\\
+daily  & $(\tfrac14,\tfrac14)$       & seed $2$ & $38$   & $5.1\cdot 10^{-4}$\\
+daily  & $(\tfrac18,\tfrac12)$       & seed $2$ & $46$   & $1.3\cdot 10^{-2}$\\
+daily  & $(\tfrac12,\tfrac18)$       & seed $1$ & $46$   & $2.2\cdot 10^{-3}$\\
+weekly & $(\tfrac1{16},\tfrac1{16})$ & $P$      & $46$   & $1.2\cdot 10^{-2}$\\
+daily  & $(\tfrac1{16},\tfrac1{16})$ & seed $2$ & $48$   & $7.4\cdot 10^{-4}$\\
+daily  & $(\tfrac18,\tfrac12)$       & seed $1$ & $48$   & $8.4\cdot 10^{-3}$\\
+daily  & $(\tfrac14,\tfrac14)$       & seed $1$ & $48$   & $5.0\cdot 10^{-3}$\\
+daily  & $(1,1)$                     & seed $1$ & $48$   & $4.8\cdot 10^{-3}$\\
+\hline
+\end{tabular}
+\caption{The instances in which not all $49$ runs end at $\rho_{\mathrm{ref}}$:
+the number of runs that do, out of $49$, with $^*$ where the run from the
+barycenter does not, and the largest relative excess
+$(\rho-\rho_{\mathrm{ref}})/\rho_{\mathrm{ref}}$ over the $49$
+runs.}\label{t-tab-tralt-miss}
+\end{table}
+
+Figure~\ref{t-fig-tralt-conv} shows, for the weekly instance with
+$b_{2i}=b_{1i}/8$, $b_{3i}=b_{1i}/2$ and $\sigma_2=\sigma_3=P$, in which the
+trust region method reaches $500$ iterations from $41$ of the $49$ starts, the
+relative excess $(\rho-\rho_{\mathrm{ref}})/\rho_{\mathrm{ref}}$ per trust
+region iteration from the barycenter and from the starts $(1,1,4)$ and
+$(2,4,4)$, and the relative excess and $r$ per sweep of the alternating method
+started after $500$ iterations from the latter two. From the barycenter the
+trust region method stops after $121$ iterations. From $(1,1,4)$ and $(2,4,4)$,
+after $500$ iterations the excess is $1.6\cdot 10^{-8}$ and $2.3\cdot 10^{-7}$
+and $r$ is $6.2\cdot 10^{-6}$ and $1.4\cdot 10^{-5}$. The first sweep of the
+alternating method brings $\rho$ below $\rho_{\mathrm{ref}}$, each further
+sweep reduces $r$ by a factor between $5$ and $21$, and $r<10^{-10}$ after $6$
+and $7$ sweeps. Excesses below
+$10^{-16}$, including the negative excesses of the endpoints, which lie
+$1.1\cdot 10^{-10}$ relative below $\rho_{\mathrm{ref}}$, are shown at
+$10^{-16}$.
+
+\begin{figure}[!ht]
+\centering
+\subfloat[trust region iterations]{\includegraphics[width=0.34\textwidth]{fig_tralt_tr}}\hspace{0.1\textwidth}
+\subfloat[sweeps of the alternating method]{\includegraphics[width=0.34\textwidth]{fig_tralt_alt}}
+\caption{The weekly instance with $b_{2i}=b_{1i}/8$, $b_{3i}=b_{1i}/2$ and
+$\sigma_2=\sigma_3=P$ from three starts.}\label{t-fig-tralt-conv}
 \end{figure}
 
-% \paragraph{Thirty-six instances.} To test whether the barycenter is a reliable
-% start we varied the data in $36$ instances: the first-dose budget $b_{1i}$
-\paragraph{Thirty-six instances.} We ran projected Yogi from the barycenter
-on $36$ instances with varied data: the first-dose budget $b_{1i}$
-weekly or daily ($b_{1i}/7$); the ratios
-\begin{equation}
-\frac{(b_{2i},b_{3i})}{b_{1i}}\in\left\{\left(\tfrac1{16},\tfrac1{16}\right),\left(\tfrac14,\tfrac14\right),(1,1),(4,4),\left(\tfrac12,\tfrac18\right),\left(\tfrac18,\tfrac12\right)\right\};
-\end{equation}
-and $\sigma_{2,ij}$, $\sigma_{3,ij}$ equal to $P_{ij}$, or equal to
-$P_{ij}e^{Z_{ij}/2}$ and $P_{ij}e^{Z'_{ij}/2}$ with independent standard
-normal $Z$, $Z'$, for two seeds. Seed $s\in\{1,2\}$ means that $Z$ and then
-$Z'$, each $m\times n$ with the entries in row order, are drawn by
-\texttt{numpy.random.default\_rng(s).standard\_normal}.
-% For each instance $\rho_{\mathrm{best}}$ is
-% the smallest value known: that of $69$ runs of the trust region interior point
-% method of~\cite{1999Byrd_Hribar_Nocedal} in all $3N$ variables, from the $49$
-% starts above and $20$ random points of $\mathcal{S}$, or that of
-% projected Yogi from the barycenter if it is smaller. A run is
-% successful if its $\rho$ is at most $(1+10^{-7})\rho_{\mathrm{best}}$.
+Figure~\ref{t-fig-alloc-tralt} shows the allocations $\chi_{k,ij}$ at the
+endpoint from the barycenter, in units of $10^{-3}$ per day, one line per
+location, for the weekly instance, $\rho=1.6618$, and for the weekly instance
+with $b_{2i}=b_{1i}/8$, $b_{3i}=b_{1i}/2$ and $\sigma_2=\sigma_3=P$,
+$\rho=1.3088$. In the first the group $60+$ receives no doses of any type in
+the Northeast, the South and the West, and in the Midwest it receives first
+and second doses but no third doses. In the second every group receives first
+doses, and the group $60+$ of the Northeast and of the South receives no
+second or third doses. As for the single dose, where the group $60+$ receives
+no doses at the minimizer, doses go away from this group.
 
-From the barycenter, projected Yogi takes between $545$ and
-$10897$ iterations, $66$~s for all $36$ instances, and ends with $r<10^{-10}$
-in every instance.
-% It is successful in $31$ instances, $14$ of the $18$
-% weekly and $17$ of the $18$ daily. In two of them its value is smaller than
-% that of all $69$ interior point runs, by $0.13$ and $0.025$ per cent, and is
-% $\rho_{\mathrm{best}}$. Table~\ref{t-tab-yogi-inst} lists these two (top) and
-% the five instances in which it is not successful (bottom), with the best $\rho$
-% of the interior point runs, $\rho$ of projected Yogi, and its relative excess
-% $(\rho-\rho_{\mathrm{best}})/\rho_{\mathrm{best}}$. Four of the five are weekly,
-% two of them with the smallest budgets $b_{2i}=b_{3i}=b_{1i}/16$; the misses are
-% up to $1.2$ per cent. At these five endpoints $r<10^{-10}$, so they are points
-% satisfying the Karush--Kuhn--Tucker conditions to this accuracy with $\rho$
-% above $\rho_{\mathrm{best}}$, and $\Theta$ is not convex on these instances.
-
-\begin{remark}\label{t-rem-interior}
-For comparison, on each of the $36$ instances we also ran the trust region
-interior point method of~\cite{1999Byrd_Hribar_Nocedal} in all $3N$
-variables, $69$ times: from the $49$ starts above and from $20$ random points
-of $\mathcal{S}$. Let $\rho_{\mathrm{best}}$ be the smallest value given by
-these runs and by projected Yogi from the barycenter. In $31$ of the $36$
-instances projected Yogi from the barycenter gives $\rho$ at most
-$(1+10^{-7})\rho_{\mathrm{best}}$, and in two of these its value is smaller
-than that of all $69$ interior point runs, by $0.13$ and $0.025$ per cent. In
-the other five, four of them weekly, its $\rho$ exceeds $\rho_{\mathrm{best}}$
-by up to $1.2$ per cent, while $r<10^{-10}$ at its endpoint. These endpoints
-satisfy the Karush--Kuhn--Tucker conditions to this accuracy with $\rho$ above
-$\rho_{\mathrm{best}}$, so $\Theta$ is not convex on these instances, and a
-single start does not in general give the global minimum.
-\end{remark}
-%
-% \begin{table}[ht]
-% \centering
-% \small
-% \begin{tabular}{lllccc}
-% \hline
-% budget & $(b_{2i},b_{3i})/b_{1i}$ & $\sigma_2,\sigma_3$ & interior point &
-% projected Yogi & relative excess\\
-% \hline
-% weekly & $(\tfrac14,\tfrac14)$       & seed $2$ & $1.7118$ & $1.7095$ & $0$\\
-% weekly & $(\tfrac18,\tfrac12)$       & $P$      & $1.3088$ & $1.3085$ & $0$\\
-% \hline
-% weekly & $(\tfrac1{16},\tfrac1{16})$ & $P$      & $2.5032$ & $2.5335$ & $1.2\cdot 10^{-2}$\\
-% weekly & $(\tfrac1{16},\tfrac1{16})$ & seed $2$ & $2.4253$ & $2.4384$ & $5.4\cdot 10^{-3}$\\
-% weekly & $(\tfrac18,\tfrac12)$       & seed $1$ & $1.2363$ & $1.2376$ & $1.1\cdot 10^{-3}$\\
-% weekly & $(\tfrac18,\tfrac12)$       & seed $2$ & $1.3770$ & $1.3820$ & $3.6\cdot 10^{-3}$\\
-% daily  & $(\tfrac1{16},\tfrac1{16})$ & $P$      & $4.0391$ & $4.0403$ & $2.9\cdot 10^{-4}$\\
-% \hline
-% \end{tabular}
-% \caption{Projected Yogi from the barycenter: the instances in which it
-% improves on the interior point runs, and those in which it is not
-% successful.}\label{t-tab-yogi-inst}
-% \end{table}
-
-Figure~\ref{t-fig-alloc-yogi} shows, for two of the
-weekly instances, the allocations $\chi_{k,ij}$ at the endpoint of projected
-Yogi from the barycenter, in units of $10^{-3}$ per day, one line per
-location. The first instance has $b_{2i}=b_{3i}=b_{1i}/4$ and $\sigma_2$,
-$\sigma_3$ of seed $2$, and $\rho=1.7095$; the second $b_{2i}=b_{1i}/8$,
-$b_{3i}=b_{1i}/2$ and $\sigma_2=\sigma_3=P$, and $\rho=1.3085$. In the first
-instance the group $60+$ of the South receives no second or third doses, and
-their budget goes to the groups $0$--$59$ of the South; in the second the same
-holds for the group $60+$ of the West. As for the single dose, where the group
-$60+$ receives no doses at the minimizer, doses go away from this group.
-
-% Figures~\ref{t-fig-alloc-s2-k1}--\ref{t-fig-alloc-s2-k3}
-% and~\ref{t-fig-alloc-p-k1}--\ref{t-fig-alloc-p-k3} show, for the two
-% instances at the top of Table~\ref{t-tab-yogi-inst}, the allocations
-% $\chi_{k,ij}$ at the endpoint of projected Yogi and at that of the
-% interior point method from the barycenter, which gives the best of the $69$
-% interior point values: one figure per dose type, in units of $10^{-3}$ per
-% day, the interior point endpoint on the left and projected Yogi on the right,
-% one line per location and the same scale in both plots. The first instance has
-% $b_{2i}=b_{3i}=b_{1i}/4$ and $\sigma_2$, $\sigma_3$ of seed $2$; the second
-% $b_{2i}=b_{1i}/8$, $b_{3i}=b_{1i}/2$ and $\sigma_2=\sigma_3=P$. The two allocations differ mainly in one location. In
-% the first instance the interior point endpoint gives the group $60+$ of the
-% South $\chi_{2}=0.0162$ and $\chi_{3}=0.0211$ per day, and that of
-% projected Yogi gives this group no second or third doses and their
-% budget to the groups $0$--$59$ of the South. In the second instance the same
-% holds for the group $60+$ of the West, with $\chi_{2}=0.0098$ and
-% $\chi_{3}=0.0181$ per day at the interior point endpoint. In the other three
-% locations the entries above $10^{-3}$ per day agree to $2.2$ per cent; the
-% smaller ones, first doses to the group $60+$, differ by up to
-% $3\cdot 10^{-4}$ per day. As for the single dose, where the group $60+$
-% receives no doses at the minimizer, the smaller value moves doses away from
-% this group.
-
-\begin{figure}[htbp]
+\begin{figure}[!htbp]
 \centering
-\subfloat[$\chi_1$, first instance]{\includegraphics[width=0.32\textwidth]{fig_alloc_s2_yogi_k1}}\hfill
-\subfloat[$\chi_2$, first instance]{\includegraphics[width=0.32\textwidth]{fig_alloc_s2_yogi_k2}}\hfill
-\subfloat[$\chi_3$, first instance]{\includegraphics[width=0.32\textwidth]{fig_alloc_s2_yogi_k3}}\\
-\subfloat[$\chi_1$, second instance]{\includegraphics[width=0.32\textwidth]{fig_alloc_p_yogi_k1}}\hfill
-\subfloat[$\chi_2$, second instance]{\includegraphics[width=0.32\textwidth]{fig_alloc_p_yogi_k2}}\hfill
-\subfloat[$\chi_3$, second instance]{\includegraphics[width=0.32\textwidth]{fig_alloc_p_yogi_k3}}
-\caption{The allocations at the endpoint of projected Yogi for the weekly
-budget. Top row: $b_{2i}=b_{3i}=b_{1i}/4$, $\sigma_2$, $\sigma_3$ of seed $2$,
-$\rho=1.7095$. Bottom row: $b_{2i}=b_{1i}/8$, $b_{3i}=b_{1i}/2$,
-$\sigma_2=\sigma_3=P$, $\rho=1.3085$.}\label{t-fig-alloc-yogi}
+\subfloat[$\chi_1$, weekly instance]{\includegraphics[width=0.28\textwidth]{fig_alloc_tralt_q_k1}}\hfill
+\subfloat[$\chi_2$, weekly instance]{\includegraphics[width=0.28\textwidth]{fig_alloc_tralt_q_k2}}\hfill
+\subfloat[$\chi_3$, weekly instance]{\includegraphics[width=0.28\textwidth]{fig_alloc_tralt_q_k3}}\\
+\subfloat[$\chi_1$, second instance]{\includegraphics[width=0.28\textwidth]{fig_alloc_tralt_p_k1}}\hfill
+\subfloat[$\chi_2$, second instance]{\includegraphics[width=0.28\textwidth]{fig_alloc_tralt_p_k2}}\hfill
+\subfloat[$\chi_3$, second instance]{\includegraphics[width=0.28\textwidth]{fig_alloc_tralt_p_k3}}
+\caption{The allocations at the endpoint from the barycenter. Top row: the
+weekly instance, $b_{2i}=b_{3i}=b_{1i}/4$, $\sigma_2=\sigma_3=P$,
+$\rho=1.6618$. Bottom row: $b_{2i}=b_{1i}/8$, $b_{3i}=b_{1i}/2$,
+$\sigma_2=\sigma_3=P$, $\rho=1.3088$.}\label{t-fig-alloc-tralt}
 \end{figure}
-
-% \begin{figure}[htbp]
-% \centering
-% \subfloat[$\chi_1$]{\includegraphics[width=0.4\textwidth]{fig_alloc_s2_yogi_k1}}\hspace{0.1\textwidth}
-% \subfloat[$\chi_2$]{\includegraphics[width=0.4\textwidth]{fig_alloc_s2_yogi_k2}}\\
-% \subfloat[$\chi_3$]{\includegraphics[width=0.4\textwidth]{fig_alloc_s2_yogi_k3}}
-% \caption{The allocations at the endpoint of projected Yogi, $\rho=1.7095$,
-% for the weekly budget, $b_{2i}=b_{3i}=b_{1i}/4$, and $\sigma_2$, $\sigma_3$
-% of seed $2$.}\label{t-fig-alloc-s2}
-% \end{figure}
-%
-% \begin{figure}[htbp]
-% \centering
-% \subfloat[$\chi_1$]{\includegraphics[width=0.4\textwidth]{fig_alloc_p_yogi_k1}}\hspace{0.1\textwidth}
-% \subfloat[$\chi_2$]{\includegraphics[width=0.4\textwidth]{fig_alloc_p_yogi_k2}}\\
-% \subfloat[$\chi_3$]{\includegraphics[width=0.4\textwidth]{fig_alloc_p_yogi_k3}}
-% \caption{The allocations at the endpoint of projected Yogi, $\rho=1.3085$,
-% for the weekly budget, $b_{2i}=b_{1i}/8$, $b_{3i}=b_{1i}/2$, and
-% $\sigma_2=\sigma_3=P$.}\label{t-fig-alloc-p}
-% \end{figure}
-
-% \begin{figure}[htbp]
-% \centering
-% \subfloat[interior point method, $\rho=1.7118$]{\includegraphics[width=0.4\textwidth]{fig_alloc_s2_joint_k1}}\hspace{0.1\textwidth}
-% \subfloat[projected Yogi, $\rho=1.7095$]{\includegraphics[width=0.4\textwidth]{fig_alloc_s2_yogi_k1}}
-% \caption{The allocation $\chi_1$ for the weekly budget,
-% $b_{2i}=b_{3i}=b_{1i}/4$, and $\sigma_2$, $\sigma_3$ of seed $2$.}\label{t-fig-alloc-s2-k1}
-% \end{figure}
-%
-% \begin{figure}[htbp]
-% \centering
-% \subfloat[interior point method, $\rho=1.7118$]{\includegraphics[width=0.4\textwidth]{fig_alloc_s2_joint_k2}}\hspace{0.1\textwidth}
-% \subfloat[projected Yogi, $\rho=1.7095$]{\includegraphics[width=0.4\textwidth]{fig_alloc_s2_yogi_k2}}
-% \caption{The allocation $\chi_2$ for the weekly budget,
-% $b_{2i}=b_{3i}=b_{1i}/4$, and $\sigma_2$, $\sigma_3$ of seed $2$.}\label{t-fig-alloc-s2-k2}
-% \end{figure}
-%
-% \begin{figure}[htbp]
-% \centering
-% \subfloat[interior point method, $\rho=1.7118$]{\includegraphics[width=0.4\textwidth]{fig_alloc_s2_joint_k3}}\hspace{0.1\textwidth}
-% \subfloat[projected Yogi, $\rho=1.7095$]{\includegraphics[width=0.4\textwidth]{fig_alloc_s2_yogi_k3}}
-% \caption{The allocation $\chi_3$ for the weekly budget,
-% $b_{2i}=b_{3i}=b_{1i}/4$, and $\sigma_2$, $\sigma_3$ of seed $2$.}\label{t-fig-alloc-s2-k3}
-% \end{figure}
-%
-% \begin{figure}[htbp]
-% \centering
-% \subfloat[interior point method, $\rho=1.3088$]{\includegraphics[width=0.4\textwidth]{fig_alloc_p_joint_k1}}\hspace{0.1\textwidth}
-% \subfloat[projected Yogi, $\rho=1.3085$]{\includegraphics[width=0.4\textwidth]{fig_alloc_p_yogi_k1}}
-% \caption{The allocation $\chi_1$ for the weekly budget,
-% $b_{2i}=b_{1i}/8$, $b_{3i}=b_{1i}/2$, and $\sigma_2=\sigma_3=P$.}\label{t-fig-alloc-p-k1}
-% \end{figure}
-%
-% \begin{figure}[htbp]
-% \centering
-% \subfloat[interior point method, $\rho=1.3088$]{\includegraphics[width=0.4\textwidth]{fig_alloc_p_joint_k2}}\hspace{0.1\textwidth}
-% \subfloat[projected Yogi, $\rho=1.3085$]{\includegraphics[width=0.4\textwidth]{fig_alloc_p_yogi_k2}}
-% \caption{The allocation $\chi_2$ for the weekly budget,
-% $b_{2i}=b_{1i}/8$, $b_{3i}=b_{1i}/2$, and $\sigma_2=\sigma_3=P$.}\label{t-fig-alloc-p-k2}
-% \end{figure}
-%
-% \begin{figure}[htbp]
-% \centering
-% \subfloat[interior point method, $\rho=1.3088$]{\includegraphics[width=0.4\textwidth]{fig_alloc_p_joint_k3}}\hspace{0.1\textwidth}
-% \subfloat[projected Yogi, $\rho=1.3085$]{\includegraphics[width=0.4\textwidth]{fig_alloc_p_yogi_k3}}
-% \caption{The allocation $\chi_3$ for the weekly budget,
-% $b_{2i}=b_{1i}/8$, $b_{3i}=b_{1i}/2$, and $\sigma_2=\sigma_3=P$.}\label{t-fig-alloc-p-k3}
-% \end{figure}
-
-In practice the method should be run from several starts, the barycenter, the
-starts near the vertices and random points, and the smallest value kept; no
-single start is guaranteed to give the global minimum. These tests use second
-and third dose data chosen for lack of data, $\sigma_2$ and $\sigma_3$ built
-from the numbers of partially protected individuals.
 
 The computations are in the following python files:
 \begin{itemize}
-\item \texttt{check\_block2.py}: the sampling for the second dose above;
-\item \texttt{yogi\_three\_dose.py}: projected Yogi on the weekly
-instance from the $49$ starts, and Table~\ref{t-tab-yogi};
-% \item \texttt{yogi\_instances\_three\_dose.py}: the $36$ instances, and
-% Table~\ref{t-tab-yogi-inst};
-% \item \texttt{test\_barycenter\_three\_dose.py}: the $69$ interior point runs
-% per instance;
-\item \texttt{yogi\_instances\_three\_dose.py}: the $36$ instances;
-\item \texttt{test\_barycenter\_three\_dose.py}: the $69$ interior point runs
-per instance in Remark~\ref{t-rem-interior};
-\item \texttt{plot\_yogi\_three\_dose.py}: the data of
-Figures~\ref{t-fig-conv} and~\ref{t-fig-alloc-yogi}.
-% Figures~\ref{t-fig-conv} and~\ref{t-fig-alloc-s2-k1}--\ref{t-fig-alloc-p-k3}.
+\item \texttt{alt\_three\_dose.py}: the alternating method;
+\item \texttt{tr\_alt\_instances\_three\_dose.py}: the $36$ instances from the
+$49$ starts, and Tables~\ref{t-tab-tralt} and~\ref{t-tab-tralt-miss};
+\item \texttt{plot\_tr\_alt\_three\_dose.py}: the data of
+Figures~\ref{t-fig-tralt-conv} and~\ref{t-fig-alloc-tralt}.
 \end{itemize}
 
 \FloatBarrier
