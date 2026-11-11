@@ -853,6 +853,13 @@ start.
 
 \subsection{Numerical results}\label{sec-three-numerics}
 
+{\color{red} ZF: Thanks, Ludmil. The Theorems and proofs look very fancy, but it may take time for me to understand all the notation and changes of variables. I am now just commenting on the numerical results and assumptions on vaccine doses. 
+The results about a single dose ($\chi_1$) look great. For the second dose ($\chi_2$), I am not sure how you did it. For the applications in our model, notice that the numbers of vaccine doses in the constraints are weekly numbers, and the numbers of susceptibles (S) and vaccined with dose 1 (V) will change at the end of the week after applied the optimal allocations. So, we will need to calculate the new S and V first, and then based on the updated S and V to determine the optimal $\chi_1$ and $\chi_2$ for the following week.
+}
+
+
+
+
 In all runs $\eta=10^{-2}$, $\beta_1=0.9$, $\beta_2=0.999$,
 $\epsilon=10^{-8}$, $\mathrm{tol}=10^{-10}$ and $t_{\max}=2\cdot 10^5$; no run
 reached $t_{\max}$. With $\eta=10^{-3}$ the run from the barycenter of the
