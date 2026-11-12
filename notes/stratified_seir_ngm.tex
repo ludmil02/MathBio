@@ -33,11 +33,9 @@ $A_1=\operatorname{diag}(\bm d_c)\,C\operatorname{diag}(\bm\psi_I\odot\bm q_s)$
 independent of the vaccination rates and $g_p=y_p+r_pz_p$, $r_p=q_{m,p}/q_{s,p}$,
 and we derive the formulas needed to minimize it over the vaccination rates.
 
-{\color{red} We need \texttt{Wk1.csv}, \texttt{Wk2.csv}, \ldots, \texttt{Wk55.csv}
-(the weekly vaccinations by state, age and dose read by
-\texttt{Age \& Location Stratified SEIR 7 Actual Vax 3 with RE.nb}) to make
-pictures for the $51\times16$ model. We also need $b_2$ and $b_3$ to do the
-$4\times4$ example for 3 doses.}
+{\color{red} We need, for each week, the doses $b_{k,i}$ of type $k=1,2,3$
+available at location $i$: for the $51\times16$ model, $i=1:51$, and for the
+$4\times4$ example, $i=1:4$. No breakdown by age is needed.}
 \end{abstract}
 
 \section{Setting}\label{sec-setting}
