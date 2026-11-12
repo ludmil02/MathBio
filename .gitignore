@@ -12,8 +12,10 @@ old_files/**
 !old_files/solution_nb_Data/s1Matrix.csv
 !old_files/solution_nb_Data/p1Matrix.csv
 
-# files produced by runs (reduced_test.py, ref_h.wls, Yogi scripts)
-intermediate/
+# files produced by runs, except the 51 x 16 data exported by
+# Mathematica_Wolfram/export_seir7.wls, read by ngm_seir7.py
+**/intermediate/*
+!code/python/intermediate/seir7_t347/
 
 # python kept only locally: no computation of notes/min_spectral_radius_vaccination.tex
 code/python/check_gs_endpoints.py
