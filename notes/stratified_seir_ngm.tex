@@ -3,6 +3,9 @@
 \usepackage{amsmath,amssymb,amsfonts}
 \usepackage{amsthm,mathrsfs}
 \usepackage{bm,bbm}
+\usepackage{graphicx}
+\usepackage{placeins}
+\graphicspath{{figures/}}
 \usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
 
 \theoremstyle{plain}
@@ -104,9 +107,11 @@ V_p=\begin{pmatrix}
 all rates evaluated at age group $j$. The only non-zero rows of $F$ are those
 of $E_s$ and $E_p$:
 \begin{equation}\label{f-rows}
-F_{(p,E_s),(l,\cdot)}=d_{c,p}y_pc_{pl}\psi_{I,l}\,\widehat{\bm\eta}^T,\qquad
-F_{(p,E_p),(l,\cdot)}=d_{c,p}z_pc_{pl}\psi_{I,l}\,\widehat{\bm\eta}^T,\qquad
-\widehat{\bm\eta}=(0,0,\eta_a,\eta_{ps},1,\eta_h,\eta_{pm},\eta_m)^T .
+\begin{aligned}
+&F_{(p,E_s),(l,\cdot)}=d_{c,p}y_pc_{pl}\psi_{I,l}\,\widehat{\bm\eta}^T,\qquad
+F_{(p,E_p),(l,\cdot)}=d_{c,p}z_pc_{pl}\psi_{I,l}\,\widehat{\bm\eta}^T,\\
+&\widehat{\bm\eta}=(0,0,\eta_a,\eta_{ps},1,\eta_h,\eta_{pm},\eta_m)^T .
+\end{aligned}
 \end{equation}
 The matrix $FV^{-1}$ has order $8N$. Following~\cite{2010Diekmann_Heesterbeek_Roberts},
 with $R\in\mathbb{R}^{2N\times 8N}$ selecting the components $(p,E_s)$ and
@@ -227,7 +232,9 @@ Let $\bm\chi_2=\bm\theta$, $\bm\chi_3=\bm\zeta$ be fixed, and
 t_p=1+\frac{\alpha_p}{\omega_p}\chi_{1,p}\ge 1 .
 \end{equation}
 Multiplying numerator and denominator of~\eqref{g-new} by $\omega_p$ gives
-$g_p=\left(\omega_p+r_p\left(1-\varepsilon_1+\varepsilon_2\theta_p/\omega\right)\chi_{1,p}\right)/\left(\omega_p+\alpha_p\chi_{1,p}\right)$,
+\begin{equation*}
+g_p=\frac{\omega_p+r_p\left(1-\varepsilon_1+\varepsilon_2\theta_p/\omega\right)\chi_{1,p}}{\omega_p+\alpha_p\chi_{1,p}},
+\end{equation*}
 hence $g_p=(1-e_p)+e_p/t_p$ with
 \begin{equation}\label{e-new}
 e_p=1-\frac{r_p}{\alpha_p}\left(1-\varepsilon_1+\frac{\varepsilon_2\theta_p}{\omega}\right)
@@ -245,27 +252,47 @@ over this set, with $A_1\ge 0$ independent of $\bm t$ and $0<e_p\le 1$.
 
 \paragraph{Gradient.}
 If $A_1$ is irreducible, $\rho$ is a simple eigenvalue of
-$A_1\operatorname{diag}(\bm g)$ with positive right and left eigenvectors
-$\bm v$, $\bm w$, and
-$\partial\rho/\partial g_p=\bm w^TA_1\bm e_p\bm e_p^T\bm v/\bm w^T\bm v
-=\left(A_1^T\bm w\right)_pv_p/\bm w^T\bm v$. Hence
-$\partial\rho/\partial\chi_{k,p}=\left(A_1^T\bm w\right)_pv_p\,\partial g_p/\partial\chi_{k,p}/\bm w^T\bm v$, with
+$A_1\operatorname{diag}(\bm g)$, with positive right and left eigenvectors
+$\bm v$ and $\bm w$. The derivative of a simple eigenvalue with respect to a
+parameter is the derivative of the matrix multiplied by the left eigenvector
+on the left and by the right eigenvector on the right, divided by their
+inner product; and $g_p$ enters $A_1\operatorname{diag}(\bm g)$ only through
+its $p$-th column:
+\begin{equation}\label{perron}
+\begin{aligned}
+&A_1\operatorname{diag}(\bm g)\,\bm v=\rho\,\bm v,\qquad
+\bm w^TA_1\operatorname{diag}(\bm g)=\rho\,\bm w^T,\\
+&\frac{\partial\rho}{\partial g_p}=\frac{\bm w^T\left(\partial\left(A_1\operatorname{diag}(\bm g)\right)/\partial g_p\right)\bm v}{\bm w^T\bm v},\qquad
+\frac{\partial\left(A_1\operatorname{diag}(\bm g)\right)}{\partial g_p}=A_1\bm e_p\bm e_p^T .
+\end{aligned}
+\end{equation}
+Hence
+\begin{equation}\label{drho-dg}
+\frac{\partial\rho}{\partial g_p}=\frac{\bm w^TA_1\bm e_p\,\bm e_p^T\bm v}{\bm w^T\bm v}
+=\frac{\left(A_1^T\bm w\right)_pv_p}{\bm w^T\bm v},
+\qquad
+\frac{\partial\rho}{\partial\chi_{k,p}}=\frac{\left(A_1^T\bm w\right)_pv_p}{\bm w^T\bm v}\,
+\frac{\partial g_p}{\partial\chi_{k,p}},
+\end{equation}
+with
 \begin{equation}\label{dg}
 \begin{aligned}
 \frac{\partial g_p}{\partial\chi_{1,p}}&=-\frac{\alpha_pe_p}{\omega_p\mathcal{D}_p^2},\qquad
-\frac{\partial g_p}{\partial\chi_{3,p}}=-\frac{\varepsilon_3\pi_{1,p}\pi_{2,p}\mathcal{N}_p}{\omega\mathcal{D}_p^2},\qquad
-\frac{\partial g_p}{\partial\chi_{2,p}}=\frac{\mathcal{D}_p\,\partial_2\mathcal{N}_p-\mathcal{N}_p\,\partial_2\mathcal{D}_p}{\mathcal{D}_p^2},\\
-\partial_2\mathcal{N}_p&=r_p\left((1-\varepsilon_1+\pi_{2,p})\pi'_{1}+\pi_{1,p}\pi'_{2}\right),\qquad
-\partial_2\mathcal{D}_p=(1+\pi_{2,p}+\pi_{2,p}\pi_{3,p})\pi'_{1}+\pi_{1,p}(1+\pi_{3,p})\pi'_{2},
+\frac{\partial g_p}{\partial\chi_{3,p}}=-\frac{\varepsilon_3\pi_{1,p}\pi_{2,p}\mathcal{N}_p}{\omega\mathcal{D}_p^2},\\
+\frac{\partial g_p}{\partial\chi_{2,p}}&=\frac{1}{\mathcal{D}_p^2}\left(\mathcal{D}_p\frac{\partial\mathcal{N}_p}{\partial\chi_{2,p}}-\mathcal{N}_p\frac{\partial\mathcal{D}_p}{\partial\chi_{2,p}}\right),\quad\mbox{where}\\
+\frac{\partial\mathcal{N}_p}{\partial\chi_{2,p}}&=r_p\varepsilon_2\pi_{1,p}\left(\frac{1}{\omega}-\frac{1-\varepsilon_1+\pi_{2,p}}{\omega_p}\right),\qquad
+\frac{\partial\mathcal{D}_p}{\partial\chi_{2,p}}=\varepsilon_2\pi_{1,p}\left(\frac{1+\pi_{3,p}}{\omega}-\frac{\alpha_p}{\omega_p}\right),
 \end{aligned}
 \end{equation}
-where $\pi'_1=-\varepsilon_2\pi_{1,p}/\omega_p$, $\pi'_2=\varepsilon_2/\omega$,
 and $\omega_p$, $\alpha_p$, $e_p$ are~\eqref{t-def}, \eqref{e-new} with
-$\theta_p=\chi_{2,p}$, $\zeta_p=\chi_{3,p}$. The first formula follows from
+$\theta_p=\chi_{2,p}$, $\zeta_p=\chi_{3,p}$, so that
+$\alpha_p=1+\pi_{2,p}+\pi_{2,p}\pi_{3,p}$. The first formula follows from
 $\partial\pi_{1,p}/\partial\chi_{1,p}=1/\omega_p$ and
 $r_p(1-\varepsilon_1+\pi_{2,p})\mathcal{D}_p-\alpha_p\mathcal{N}_p
-=r_p(1-\varepsilon_1+\pi_{2,p})-\alpha_p=-\alpha_pe_p$, using
-$\alpha_p=1+\pi_{2,p}+\pi_{2,p}\pi_{3,p}$; the others are the quotient rule.
+=r_p(1-\varepsilon_1+\pi_{2,p})-\alpha_p=-\alpha_pe_p$; the third from
+$\partial\pi_{1,p}/\partial\chi_{2,p}=-\varepsilon_2\pi_{1,p}/\omega_p$,
+$\partial\pi_{2,p}/\partial\chi_{2,p}=\varepsilon_2/\omega$ and the quotient
+rule; the second from the quotient rule.
 
 \paragraph{Alternating over the doses.}
 The constraints of~\eqref{problem} are a product over $k$, so one can minimize
@@ -336,6 +363,47 @@ to $\rho(FV^{-1})$ by Proposition~\ref{fv}. The ratios $r_p$ lie in
 $[0.732,0.977]$ for $4\times4$ and in $[0.714,0.985]$ for $51\times16$.}\label{tab}
 \end{table}
 
+\paragraph{The 51 by 16 data before vaccination.}
+Figures~\ref{fig-weights}--\ref{fig-grad} use the $51\times16$ data at
+$t=347$ and $\bm\chi=0$, where $\rho(\operatorname{NGM})=1.3074$.
+Figure~\ref{fig-weights} shows the weights~\eqref{qs-qm} and their ratio by
+age. Figure~\ref{fig-left} shows the components of the dominant left
+eigenvector of $\operatorname{NGM}$ in the rows $2p-1$ (the susceptible
+rows), summed over the 51 locations; the largest, $0.18$ of the total, is
+at ages 15--19. Figure~\ref{fig-grad} shows $-\partial\rho/\partial\chi_{1,p}$,
+computed from the formula of Section~\ref{sec-min} with $\bm\chi=0$, for the
+ten states with the headquarters of the HHS regions; the states with the
+largest and the smallest maximum are in color. For every location the largest
+entry is at ages 15--19, as in~\cite[Fig.~3A]{2026Feng_Day_Glasser}, and all
+entries are negative: at $\bm\chi=0$ every first dose decreases
+$\rho(\operatorname{NGM})$.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\textwidth]{fig_weights.pdf}
+\caption{The weights $q_s$ and $q_m$ of~\eqref{qs-qm} by age (left) and their
+ratio $r=q_m/q_s$ (right), $51\times16$ data.}\label{fig-weights}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\textwidth]{fig_left_ev.pdf}
+\caption{The susceptible rows of the dominant left eigenvector of
+$\operatorname{NGM}$ at $\bm\chi=0$, summed over the 51 locations, by age: share
+of the total (left), and divided by the population of the age group, relative
+to the largest value (right).}\label{fig-left}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.75\textwidth]{fig_grad_hhs.pdf}
+\caption{$-\partial\rho(\operatorname{NGM})/\partial\chi_{1,p}$ at
+$\bm\chi=0$ by age, for the ten states with the headquarters of the HHS
+regions; Missouri (Kansas City) and Washington (Seattle) have the largest and
+the smallest maximum.}\label{fig-grad}
+\end{figure}
+
+\FloatBarrier
 \bibliographystyle{plain}
 \bibliography{bib_mb}
 \end{document}
