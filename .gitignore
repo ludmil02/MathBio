@@ -1,9 +1,11 @@
 *.dat
 
 # files produced by runs, except the 51 x 16 data exported by
-# Mathematica_Wolfram/export_seir7.wls, read by ngm_seir7.py
+# Mathematica_Wolfram/export_seir7.wls, read by ngm_seir7.py, and the
+# 4 x 4 susceptibles at t = 347, read by compare_allocations_4x4.py
 **/intermediate/*
 !code/python/intermediate/seir7_t347/
+!code/python/intermediate/zf_jg_t347/
 
 # TeX build files
 *.aux
