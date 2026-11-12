@@ -4,6 +4,7 @@
 \usepackage{amsthm,mathrsfs}
 \usepackage{bm,bbm}
 \usepackage{graphicx}
+\usepackage{color}
 \usepackage{placeins}
 \graphicspath{{figures/}}
 \usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
@@ -31,6 +32,9 @@ radius equals $\rho\left(A_1\operatorname{diag}(\bm g)\right)$, with
 $A_1=\operatorname{diag}(\bm d_c)\,C\operatorname{diag}(\bm\psi_I\odot\bm q_s)$
 independent of the vaccination rates and $g_p=y_p+r_pz_p$, $r_p=q_{m,p}/q_{s,p}$,
 and we derive the formulas needed to minimize it over the vaccination rates.
+
+{\color{red} We need \texttt{Wxxxx..csv} to make pictures for the $51\times16$
+model and $b_2$ and $b_3$ to do the $4\times4$ example for 3 doses.}
 \end{abstract}
 
 \section{Setting}\label{sec-setting}
@@ -537,7 +541,18 @@ $\rho(\operatorname{NGM})$ to $2\cdot10^{-10}$ (relative).
 Table~\ref{tab-compare} lists $\rho(\operatorname{NGM})$ for the four
 allocations; each uses all the doses at every location. The minimizer gives
 no first doses to the age group 60+; the actual allocation gives the fewest
-to 0--19 (Table~\ref{tab-chi}).
+to 0--19 (Table~\ref{tab-chi}). Figure~\ref{fig-doses} shows the doses
+$\chi_{1,p}S_p$ by age for three of the allocations; the allocation with
+rates in proportion to the left eigenvector differs from the one with doses
+in proportion to it by at most $0.05\%$ in $\rho(\operatorname{NGM})$ and is
+not shown.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\textwidth]{fig_doses_4x4.pdf}
+\caption{First doses $\chi_{1,p}S_p$ by age and location for three
+allocations of the same doses, $4\times4$ data at $t=347$.}\label{fig-doses}
+\end{figure}
 
 \begin{table}[ht]
 \centering
