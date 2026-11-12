@@ -8,7 +8,7 @@
   caption   the ranges of r_p = q_m / q_s;
   Sect. 5   at a random chi: the closed form (4.1) of g against y + r z, the two
             forms (4.3) of e_p and 0 < e_p <= 1, g_p = (1 - e_p) + e_p / t_p, and
-            the derivatives (4.4) against central differences.
+            the derivatives (4.6) against central differences.
 
 Each value is printed next to the one in the document; the script ends with
 PASS or FAIL.  All eigenvalues by Arnoldi; F V^-1 is applied matrix free with V
@@ -162,10 +162,9 @@ Nn = 1 + r * p1 * (1 - e1 + pi2)
 D = 1 + p1 * (1 + pi2 + pi2 * p3)
 d1 = -alpha * e / (omp * D**2)
 d3 = -Nn * p1 * pi2 * e3 / (om * D**2)
-dp1 = -p1 * e2 / omp
-dp2 = e2 / om
-dN = r * ((1 - e1 + pi2) * dp1 + p1 * dp2)
-dD = (1 + pi2 + pi2 * p3) * dp1 + p1 * (1 + p3) * dp2
+# the closed forms of (4.6)
+dN = r * e2 * p1 * (1 / om - (1 - e1 + pi2) / omp)
+dD = e2 * p1 * ((1 + p3) / om - alpha / omp)
 d2 = (dN * D - Nn * dD) / D**2
 h = 1e-7
 for kk, d in ((0, d1), (1, d2), (2, d3)):
@@ -174,7 +173,7 @@ for kk, d in ((0, d1), (1, d2), (2, d3)):
     cp[kk] += h
     cm[kk] -= h
     fd = (gclosed(*cp) - gclosed(*cm)) / (2 * h)
-    check_small("(4.4) dg/dchi%d vs central difference, max rel diff" % (kk + 1),
+    check_small("(4.6) dg/dchi%d vs central difference, max rel diff" % (kk + 1),
                 np.abs(fd - d).max() / np.abs(d).max(), 2e-9)
 
 say("PASS" if not FAILS else "FAIL: " + ", ".join(FAILS))

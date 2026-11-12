@@ -196,6 +196,28 @@ def full_fv(Y, Z, Cmat, psi_flat, n_age, prm, verbose=True):
     return float(np.real(lam[0]))
 
 
+def left_and_gradient(Y, Z, pref):
+    """At chi = 0: rho, the S part of the left eigenvector (shares, shape (m, n),
+    total 1), the right and left Perron vectors, and d rho / d chi1, shape (m, n).
+
+    d rho / d Omega_k = w_k (A v)_k / <w, v>, with A v = NGM v / Omega computed
+    without dividing; at chi = 0, dY/dchi1 = -pref / omega_v and
+    dZ/dchi1 = (1 - eps1) pref / omega_v.
+    """
+    H, _, Qd = h_operator(Y, Z, Qs, Qm)
+    rho, _, v = perron(H)
+    _, _, w = perron(H, transpose=True)
+    w = np.abs(w)
+    wS = w.reshape(m, n, 2)[:, :, 0]
+    wS = wS / wS.sum()
+    Av = C @ (Qd * v.reshape(m * n, 2)).sum(axis=1)
+    wr = w.reshape(m * n, 2)
+    dY = -pref.ravel() / omv
+    dZ = (1 - e1) * pref.ravel() / omv
+    grad = ((wr[:, 0] * dY + wr[:, 1] * dZ) * Av / float(w @ v)).reshape(m, n)
+    return rho, wS, v, w, grad
+
+
 def main():
     say("data from", DATA)
     say("m = %d locations, n = %d age groups, N = %.6e people" % (m, n, mN.sum()))
@@ -224,12 +246,9 @@ def main():
     rho_fv = full_fv(Y, Z, C, np.tile(psiI, m), n, AGE_PRM)
     say("rho(F V^-1) = %.12f   (rel. diff to rho(NGM): %.3e)" % (rho_fv, (rho_fv - rho) / rho))
 
-    say("Arnoldi for the left eigenvector (NGM^T) ...")
-    rho_l, _, w = perron(H, transpose=True)
-    say("rho(NGM^T) = %.12f, min component of w = %.3e" % (rho_l, w.min()))
-    w = np.abs(w)
-    wS = w.reshape(m, n, 2)[:, :, 0]
-    wS = wS / wS.sum()
+    say("Arnoldi for the left eigenvector (NGM^T) and the gradient ...")
+    _, wS, _, w, grad = left_and_gradient(Y, Z, pref)
+    say("min component of w = %.3e" % w.min())
     say("left eigenvector, S part, share by age (sum over 51 locations; total 1):")
     for a_, s_ in zip(AGES, wS.sum(axis=0)):
         print("    %-6s %.4f  %s" % (a_, s_, "#" * int(round(400 * s_))), flush=True)
@@ -244,14 +263,6 @@ def main():
     say("left eigenvector, S part, per capita by age (relative to max):")
     print("    " + "  ".join("%s:%.2f" % (a_, s_) for a_, s_ in zip(AGES, percap_age)), flush=True)
 
-    # d rho / d Omega_k = w_k (A v)_k / <w, v>, with A v = NGM v / Omega (computed without dividing)
-    Av = C @ (Qd * v.reshape(m * n, 2)).sum(axis=1)
-    wv = float(w @ v)
-    wr = w.reshape(m * n, 2)
-    # at chi = 0:  dY/dchi1 = -pref / omega_v,  dZ/dchi1 = (1 - eps1) pref / omega_v
-    dY = -pref.ravel() / omv
-    dZ = (1 - e1) * pref.ravel() / omv
-    grad = ((wr[:, 0] * dY + wr[:, 1] * dZ) * Av / wv).reshape(m, n)
     say("gradient d rho / d chi1 at chi = 0: all entries negative: %s, range [%.4e, %.4e]"
         % (bool((grad < 0).all()), grad.min(), grad.max()))
     i0, j0 = STATES.index("GA"), 3
