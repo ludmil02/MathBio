@@ -1,35 +1,9 @@
 *.dat
-# the data of the figures, read by code/python/make_figures.py
-!notes/figures/dat/fig_*.dat
-
-# old_files: only the notebooks, tex and python are tracked
-old_files/**
-!old_files/**/
-!old_files/**/*.nb
-!old_files/**/*.tex
-!old_files/**/*.py
-# the two csv files the code reads
-!old_files/solution_nb_Data/s1Matrix.csv
-!old_files/solution_nb_Data/p1Matrix.csv
 
 # files produced by runs, except the 51 x 16 data exported by
 # Mathematica_Wolfram/export_seir7.wls, read by ngm_seir7.py
 **/intermediate/*
 !code/python/intermediate/seir7_t347/
-
-# python kept only locally: no computation of notes/min_spectral_radius_vaccination.tex
-code/python/check_gs_endpoints.py
-code/python/reduced_test.py
-code/python/smoke_zf_jg.py
-
-# pdfs that a tex file in this repository regenerates
-min_spectral_radius_vaccination.pdf
-min_spectral_radius_vaccination_supplement.pdf
-math_bio_three_doses.pdf
-
-# superseded data, nothing is read from these
-nb_Data/
-solution*.tar.gz
 
 # TeX build files
 *.aux
