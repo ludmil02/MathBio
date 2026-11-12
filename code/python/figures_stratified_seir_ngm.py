@@ -28,7 +28,7 @@ T0 = time.time()
 OUT = os.path.join(os.path.dirname(S7.HERE), "..", "notes", "figures")
 OUT = os.path.normpath(OUT)
 
-BLUE, ORANGE = "#2a78d6", "#eb6834"
+BLUE, ORANGE, AQUA = "#2a78d6", "#eb6834", "#1baf7a"
 GRAY = "#b5b3ad"
 INK, INK2, MUTED, GRID = "#0b0b0b", "#52514e", "#898781", "#e4e3de"
 
@@ -122,6 +122,37 @@ def fig_grad_hhs(grad):
     save(fig, "fig_grad_hhs.pdf")
 
 
+def fig_doses_4x4():
+    """First doses chi1 S by age, per location, for three allocations of Section 6."""
+    import compare_allocations_4x4 as CA
+    allocs, _ = CA.allocations()
+    show = [("actual", "actual", BLUE),
+            ("left ev, doses", "left eigenvector, doses", ORANGE),
+            ("minimizer", "minimizer", AQUA)]
+    x = np.arange(CA.n)
+    wbar = 0.26
+    fig, axes = plt.subplots(2, 2, figsize=(6.5, 4.4), sharex=True, sharey=True,
+                             gridspec_kw=dict(hspace=0.35, wspace=0.12))
+    for i, ax in enumerate(axes.ravel()):
+        for k, (key, label, col) in enumerate(show):
+            doses = allocs[key][i] * CA.S[i] / 1e3
+            ax.bar(x + (k - 1) * wbar, doses, width=wbar, color=col, edgecolor="white",
+                   linewidth=0.8, label=label)
+        ax.set_title(CA.LOCS[i], fontsize=9, color=INK)
+        ax.set_xticks(x)
+        ax.set_xticklabels(CA.AGES)
+        ax.grid(axis="x", visible=False)
+    for ax in axes[:, 0]:
+        ax.set_ylabel("first doses (thousands)")
+    for ax in axes[1, :]:
+        ax.set_xlabel("age group (years)")
+    h, l = axes[0, 0].get_legend_handles_labels()
+    fig.legend(h, l, loc="lower center", bbox_to_anchor=(0.5, 0.97), ncol=3, frameon=False)
+    for key, _, _ in show:
+        say("%-15s doses by location: %s" % (key, np.array2string((allocs[key] * CA.S).sum(axis=1), precision=0)))
+    save(fig, "fig_doses_4x4.pdf")
+
+
 def main():
     os.makedirs(OUT, exist_ok=True)
     zero = np.zeros((S7.m, S7.n))
@@ -131,6 +162,7 @@ def main():
     fig_weights()
     fig_left_ev(wS)
     fig_grad_hhs(grad)
+    fig_doses_4x4()
     say("done")
 
 

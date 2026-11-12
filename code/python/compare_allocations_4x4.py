@@ -130,6 +130,21 @@ def chi_from_t(t):
     return (omv * (t - 1.0)).reshape(m, n)
 
 
+def allocations():
+    """The four allocations of Section 6, chi1 of shape (m, n) each, and the
+    fixed point data (t, mu, number of iterations)."""
+    allocs = {}
+    allocs["actual"] = C2 / S
+    _, l0 = Z.john_method(Z.ngm_factored(par=par), par)       # w_p, rows 2p-1, (m, n)
+    allocs["left ev, doses"] = (b1[:, None] * l0 / l0.sum(axis=1, keepdims=True)) / S
+    allocs["left ev, rates"] = b1[:, None] * l0 / (l0 * S).sum(axis=1, keepdims=True)
+    say("fixed point iteration from the uniform rates per location")
+    t0 = np.repeat(c / sig_t.reshape(m, n).sum(axis=1), n)
+    t_fp, mu, iters = fixed_point(t0)
+    allocs["minimizer"] = chi_from_t(t_fp)
+    return allocs, (t_fp, mu, iters)
+
+
 def main():
     say("4 x 4 data at t = 347: eps1 = %g, omega_v = %.6g" % (eps1, omv))
     say("b1 = %s" % np.array2string(b1, precision=0))
@@ -137,16 +152,7 @@ def main():
     rho0 = rho_ngm(zero)
     say("rho(NGM) at chi = 0: %.12f" % rho0)
 
-    allocs = {}
-    allocs["actual"] = C2 / S
-    _, l0 = Z.john_method(Z.ngm_factored(par=par), par)       # w_p, rows 2p-1, (m, n)
-    allocs["left ev, doses"] = (b1[:, None] * l0 / l0.sum(axis=1, keepdims=True)) / S
-    allocs["left ev, rates"] = b1[:, None] * l0 / (l0 * S).sum(axis=1, keepdims=True)
-
-    say("fixed point iteration from the uniform rates per location")
-    t0 = np.repeat(c / sig_t.reshape(m, n).sum(axis=1), n)
-    t_fp, mu, iters = fixed_point(t0)
-    allocs["minimizer"] = chi_from_t(t_fp)
+    allocs, (t_fp, mu, iters) = allocations()
     say("fixed point: %d iterations, mu = %s" % (iters, " ".join("%.4e" % x for x in mu)))
     for i, (spread, excess) in enumerate(kkt_report(t_fp)):
         say("  KKT %-9s spread over t_p > 1: %.1e   max excess at t_p = 1: %s"
