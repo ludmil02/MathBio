@@ -294,6 +294,97 @@ $\partial\pi_{1,p}/\partial\chi_{2,p}=-\varepsilon_2\pi_{1,p}/\omega_p$,
 $\partial\pi_{2,p}/\partial\chi_{2,p}=\varepsilon_2/\omega$ and the quotient
 rule; the second from the quotient rule.
 
+\paragraph{Optimality conditions for one dose.}
+Let $\Psi(\bm t)=\rho\left(A_1\operatorname{diag}(\bm g)\right)$ with
+$g_p=(1-e_p)+e_p/t_p$, and let $A_1\ge 0$ be irreducible. For $\bm t>0$ we
+have $\bm g>0$, and by~\eqref{drho-dg}
+\begin{equation}\label{a-p}
+\frac{\partial\Psi}{\partial t_p}=-\frac{e_pa_p}{t_p^2},\qquad
+a_p=\frac{\left(A_1^T\bm w\right)_pv_p}{\bm w^T\bm v}>0,
+\end{equation}
+with $\bm v$, $\bm w$ of~\eqref{perron}. The constraints
+$\sum_{p\in I_i}\widetilde\sigma_pt_p=c_i$, $t_p\ge 1$, are affine, so at a
+local minimizer the Karush--Kuhn--Tucker conditions hold~\cite[Section
+3.4]{1999Bertsekas}: there are $\mu_i$ and $\nu_p$ with, for $p\in I_i$,
+\begin{equation}\label{kkt}
+\sum_{p\in I_i}\widetilde\sigma_pt_p=c_i,\qquad t_p\ge 1,\qquad\nu_p\ge 0,\qquad
+\nu_p(t_p-1)=0,\qquad
+\mu_i\widetilde\sigma_p=\nu_p+\frac{e_pa_p}{t_p^2}.
+\end{equation}
+Since $e_pa_p>0$ and $\nu_p\ge 0$, every $\mu_i>0$. We do not prove here that
+a point satisfying~\eqref{kkt} is a global minimizer; in
+Section~\ref{sec-compare} this is checked numerically.
+
+\paragraph{A fixed point iteration.}
+With $\bm v$ and $\bm w$, hence $a_p$, held fixed, the conditions~\eqref{kkt}
+decouple over the locations and are solved by the following lemma.
+
+\begin{lemma}\label{frozen}
+Let $a_p>0$, $e_p>0$, $\widetilde\sigma_p>0$ for $p\in I_i$, and
+$c_i>\sum_{p\in I_i}\widetilde\sigma_p$. For $\mu>0$ let
+\begin{equation}\label{t-of-mu}
+t_p(\mu)=\max\left\{1,\ \sqrt{\frac{e_pa_p}{\mu\widetilde\sigma_p}}\right\},
+\qquad F_i(\mu)=\sum_{p\in I_i}\widetilde\sigma_pt_p(\mu).
+\end{equation}
+Then $F_i(\mu)=c_i$ has exactly one solution $\mu_i>0$, and the only
+solution of~\eqref{kkt} for the location $i$, with these $a_p$, is $\mu_i$,
+$t_p=t_p(\mu_i)$ and $\nu_p=\max\left\{0,\ \mu_i\widetilde\sigma_p-e_pa_p\right\}$.
+\end{lemma}
+\begin{proof}
+Each $t_p(\mu)$ is continuous and non-increasing in $\mu$, and strictly
+decreasing where it exceeds $1$. Hence $F_i$ is continuous and
+non-increasing, and strictly decreasing where
+$F_i(\mu)>\sum_{p\in I_i}\widetilde\sigma_p$. As $\mu\to 0^+$,
+$F_i(\mu)\ge\sqrt{e_pa_p\widetilde\sigma_p/\mu}\to\infty$ for any
+$p\in I_i$, and $F_i(\mu)=\sum_{p\in I_i}\widetilde\sigma_p<c_i$ for
+$\mu\ge\max_{p\in I_i}e_pa_p/\widetilde\sigma_p$. So $F_i(\mu)=c_i$ has a
+solution $\mu_i>0$, in the set where $F_i$ is strictly decreasing; it is
+unique.
+
+Let $t_p$, $\nu_p$, $\mu_i$ solve~\eqref{kkt}. If $t_p>1$, then $\nu_p=0$, so
+$t_p^2=e_pa_p/(\mu_i\widetilde\sigma_p)$, which gives $t_p=t_p(\mu_i)$ and
+$\mu_i\widetilde\sigma_p-e_pa_p=\mu_i\widetilde\sigma_p\left(1-t_p^2\right)<0$,
+so $\nu_p=\max\left\{0,\mu_i\widetilde\sigma_p-e_pa_p\right\}$. If $t_p=1$,
+then $\nu_p=\mu_i\widetilde\sigma_p-e_pa_p\ge 0$, so
+$e_pa_p/(\mu_i\widetilde\sigma_p)\le 1$, $t_p=1=t_p(\mu_i)$, and again
+$\nu_p=\max\left\{0,\mu_i\widetilde\sigma_p-e_pa_p\right\}$. The first
+equation of~\eqref{kkt} is then $F_i(\mu_i)=c_i$, whose solution is unique.
+Conversely, for this $\mu_i$, $t_p=t_p(\mu_i)\ge 1$ and
+$\nu_p=\max\left\{0,\mu_i\widetilde\sigma_p-e_pa_p\right\}\ge 0$ satisfy the
+first equation since $F_i(\mu_i)=c_i$; if $e_pa_p>\mu_i\widetilde\sigma_p$,
+then $t_p^2=e_pa_p/(\mu_i\widetilde\sigma_p)$ and $\nu_p=0$, and otherwise
+$t_p=1$ and $\nu_p=\mu_i\widetilde\sigma_p-e_pa_p$. In both cases
+$\nu_p(t_p-1)=0$ and $\nu_p+e_pa_p/t_p^2=\mu_i\widetilde\sigma_p$.
+\end{proof}
+
+The equation $F_i(\mu)=c_i$ is solved exactly. Let
+$\beta_p=e_pa_p/\widetilde\sigma_p$ for $p\in I_i$, sorted as
+$\beta_{(1)}\le\dots\le\beta_{(q)}$, $q=|I_i|$, with the same order for
+$e_p$, $a_p$, $\widetilde\sigma_p$, and $\beta_{(0)}=0$. Since
+$t_p(\mu)=1$ for $\mu\ge\beta_p$ and $t_p(\mu)=\sqrt{\beta_p/\mu}$ for
+$\mu<\beta_p$, on $\left[\beta_{(j)},\beta_{(j+1)}\right]$, $j=0:q-1$,
+\begin{equation}\label{F-piece}
+F_i(\mu)=C_j+\frac{B_j}{\sqrt\mu},\qquad
+C_j=\sum_{l=1}^{j}\widetilde\sigma_{(l)},\qquad
+B_j=\sum_{l=j+1}^{q}\sqrt{e_{(l)}a_{(l)}\widetilde\sigma_{(l)}}.
+\end{equation}
+With $j$ the largest index in $0:q-1$ such that $F_i\left(\beta_{(j)}\right)\ge c_i$
+(where $F_i\left(\beta_{(0)}\right)=+\infty$), $\mu_i$ lies in
+$\left[\beta_{(j)},\beta_{(j+1)}\right)$, since $F_i$ is continuous and
+non-increasing and $F_i\left(\beta_{(q)}\right)=\sum_{p\in I_i}\widetilde\sigma_p<c_i$; there
+$c_i-C_j=B_j/\sqrt{\mu_i}>0$, so
+\begin{equation}\label{mu-exact}
+\mu_i=\left(\frac{B_j}{c_i-C_j}\right)^2 .
+\end{equation}
+In the one dose problem $c_i-\sum_{p\in I_i}\widetilde\sigma_p=b_{1,i}>0$,
+so the lemma applies to every location with $b_{1,i}>0$. The fixed point
+iteration starts from $\bm t^{(0)}$ satisfying the constraints and repeats:
+compute $\bm v$, $\bm w$ of~\eqref{perron} at $\bm g\left(\bm t^{(k)}\right)$ and
+$a_p$ by~\eqref{a-p}; for each $i$ compute $\mu_i$ by~\eqref{mu-exact} and
+set $t^{(k+1)}_p=t_p(\mu_i)$, $p\in I_i$. Every iterate satisfies the
+constraints, and by Lemma~\ref{frozen} a fixed point satisfies~\eqref{kkt}.
+We do not prove that the iteration converges.
+
 \paragraph{Alternating over the doses.}
 The constraints of~\eqref{problem} are a product over $k$, so one can minimize
 over $\bm\chi_1$, $\bm\chi_3$, $\bm\chi_2$ in turn, the other two fixed. The
@@ -402,6 +493,86 @@ $\bm\chi=0$ by age, for the ten states with the headquarters of the HHS
 regions; Missouri (Kansas City) and Washington (Seattle) have the largest and
 the smallest maximum.}\label{fig-grad}
 \end{figure}
+
+\FloatBarrier
+\section{Comparison of allocations for one dose}\label{sec-compare}
+
+We compare $\rho(\operatorname{NGM})$ for four allocations of the same first
+doses, on the $4\times4$ data of~\cite{JZh} at $t=347$, the first week of
+vaccination, so that $\bm\chi_2=\bm\chi_3=0$ and, before the week,
+$\bm\chi_1=0$. The group sizes $\sigma_{1,p}=S_p$ are the susceptibles at
+$t=347$, and the doses at location $i$ are $b_{1,i}=\sum_{j}D_{ij}$, with
+$D_{ij}$ the first doses of the primary series given in age group $j$ at
+location $i$~\cite{JZh}. Each allocation satisfies the constraints
+of~\eqref{problem} for $k=1$:
+\begin{enumerate}
+\item \emph{actual}: $\chi_{1,p}=D_{ij}/S_p$, the doses given;
+\item \emph{left eigenvector, doses}: the doses at location $i$ divided over
+the age groups in proportion to the left eigenvector,
+$\chi_{1,p}S_p=b_{1,i}w_{p}/\sum_{l\in I_i}w_l$, the alternative strategy
+of~\cite{2026Feng_Day_Glasser}, where $w_p$ is the entry of the dominant
+left eigenvector of $\operatorname{NGM}$ in row $2p-1$ at $\bm\chi=0$;
+\item \emph{left eigenvector, rates}: the rates in proportion to it,
+$\chi_{1,p}=b_{1,i}w_p/\sum_{l\in I_i}w_lS_l$;
+\item \emph{minimizer}: the fixed point of the iteration of
+Section~\ref{sec-min}.
+\end{enumerate}
+At $\bm\chi=0$, $z_p=0$, so $w_p$ is also, up to a factor, the entry $p$ of
+the left eigenvector of $A_1\operatorname{diag}(\bm g)$, and the choice between
+the two eigenvectors does not arise.
+
+Here $\varepsilon_1=0.8$, so $e_p=1-r_p(1-\varepsilon_1)$ runs from $0.805$
+(ages 0--19) to $0.854$ (60+), and $\rho(\operatorname{NGM})=4.4407$ at
+$\bm\chi=0$. From the uniform rates in every location, the fixed point
+iteration reaches a relative change of $\bm t$ below $10^{-13}$ in 47
+iterations. At its limit, in every location, $e_pa_p/(t_p^2\widetilde\sigma_p)$ is
+the same for the groups with $t_p>1$ to $1.5\cdot10^{-13}$ (relative), and
+the only group with $t_p=1$ is 60+, where $e_pa_p/\widetilde\sigma_p$ is
+between $0.26$ and $0.43$ times $\mu_i$; so~\eqref{kkt} holds. The trust
+region interior point method of SciPy~\cite{1999Byrd_Hribar_Nocedal}
+applied to $\Psi$, from 8 random starts satisfying the constraints, ends at
+the same allocation to $10^{-8}$ (relative) and at the same
+$\rho(\operatorname{NGM})$ to $2\cdot10^{-10}$ (relative).
+
+Table~\ref{tab-compare} lists $\rho(\operatorname{NGM})$ for the four
+allocations; each uses all the doses at every location. The minimizer gives
+no first doses to the age group 60+; the actual allocation gives the fewest
+to 0--19 (Table~\ref{tab-chi}).
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{lccc}
+allocation & $\rho(\operatorname{NGM})$ & decrease from $\bm\chi=0$ & excess over the minimizer\\\hline
+actual & 3.4378 & 22.58\% & 19.10\%\\
+left eigenvector, doses & 2.9107 & 34.45\% & 0.84\%\\
+left eigenvector, rates & 2.9122 & 34.42\% & 0.89\%\\
+minimizer & 2.8864 & 35.00\% & 0
+\end{tabular}
+\caption{$\rho(\operatorname{NGM})$ for the four allocations of the first
+doses, $4\times4$ data at $t=347$; $\rho(\operatorname{NGM})=4.4407$ at
+$\bm\chi=0$.}\label{tab-compare}
+\end{table}
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{lcccc}
+allocation, location & 0--19 & 20--39 & 40--59 & 60+\\\hline
+actual, Northeast & 0.026 & 5.214 & 4.999 & 1.943\\
+actual, Midwest & 0.060 & 5.792 & 6.366 & 2.443\\
+actual, South & 0.044 & 3.937 & 4.785 & 2.101\\
+actual, West & 0.043 & 5.329 & 6.768 & 2.397\\\hline
+left eigenvector, doses, Northeast & 4.316 & 4.138 & 3.757 & 0.526\\
+left eigenvector, doses, Midwest & 4.721 & 4.773 & 4.652 & 0.640\\
+left eigenvector, doses, South & 3.520 & 3.525 & 3.386 & 0.489\\
+left eigenvector, doses, West & 4.986 & 4.667 & 4.433 & 0.437\\\hline
+minimizer, Northeast & 4.551 & 4.325 & 3.910 & 0\\
+minimizer, Midwest & 4.945 & 4.972 & 4.866 & 0\\
+minimizer, South & 3.693 & 3.675 & 3.530 & 0\\
+minimizer, West & 5.183 & 4.788 & 4.502 & 0
+\end{tabular}
+\caption{The first dose rates $\chi_{1,p}$, in units of $10^{-3}$ per day,
+$4\times4$ data at $t=347$.}\label{tab-chi}
+\end{table}
 
 \FloatBarrier
 \bibliographystyle{plain}
