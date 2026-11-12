@@ -16,7 +16,9 @@ the reduction to order `N` and the formulas for the minimization are in
 
 Two data sets are used:
 
-* `4 x 4`: four census regions, ages 0-19, 20-39, 40-59, 60+ (`zf_jg_params.py`);
+* `4 x 4`: four census regions, ages 0-19, 20-39, 40-59, 60+ (`zf_jg_params.py`;
+  the first doses `C2` in `zf_jg_doses.py` and the susceptibles at `t = 347` in
+  `code/python/intermediate/zf_jg_t347/s1Matrix.csv`);
 * `51 x 16`: the 50 states and D.C., ages 0-4, ..., 70-74, 75+, at `t = 347`,
   the day before vaccination began (`code/python/intermediate/seir7_t347/`).
 
@@ -25,7 +27,7 @@ Two data sets are used:
 | directory | |
 | --- | --- |
 | `notes/` | `stratified_seir_ngm.tex`, `bib_mb.bib`, and the figures in `notes/figures/` |
-| `code/python/` | the python; `intermediate/seir7_t347/` the 51 x 16 data; other files in `intermediate/` are run output, not tracked |
+| `code/python/` | the python; `intermediate/seir7_t347/` the 51 x 16 data and `intermediate/zf_jg_t347/` the 4 x 4 susceptibles at `t = 347`; other files in `intermediate/` are run output, not tracked |
 | `Mathematica_Wolfram/` | the notebooks and Wolfram scripts |
 | `archive/` | `single_weight_model.zip` and `old_files.zip`, see below |
 
@@ -35,8 +37,12 @@ Two data sets are used:
 `pdflatex` twice.  Section 1 the setting and the problem; Section 2 the NGM,
 the weights `q_s`, `q_m` (Lemma 2.1) and `NGM = diag(d) Ac` (Proposition 2.2);
 Section 3 the reduction `rho(NGM) = rho(A1 diag(g))` (Theorem 3.1); Section 4
-the formulas for the minimization (one dose, the gradient, alternating over the
-doses); Section 5 the numerical verification, Table 1 and Figures 1-3.
+the formulas for the minimization (one dose, the gradient, the optimality
+conditions, Lemma 4.1 and the fixed point iteration, alternating over the
+doses); Section 5 the numerical verification, Table 1 and Figures 1-3;
+Section 6 the comparison of four allocations of the same first doses on the
+4 x 4 data at `t = 347` (actual, doses or rates in proportion to the left
+eigenvector, the minimizer), Tables 2-3 and Figure 4.
 
 ### Python
 
@@ -51,7 +57,8 @@ factored by sparse LU.
 | `zf_jg.py` | the 4 x 4 model: `q_vectors` (`q_s`, `q_m`), `ac_matrix`, `ngm_factored` (`D(chi) Ac`), `ngm_blocks`, `ngm_reversed`, and the reduced form `a1_matrix`, `g_vector`, `ngm_reduced` (`A1 diag(g)`).  `weights="notebook"` gives the single weight of `eigenvalues_H_ZF_JG.nb` for both columns.  `python3 -u zf_jg.py` prints `rho = 4.440677536267` at `chi = 0` and checks the reduced form. |
 | `ngm_seir7.py` | the 51 x 16 model: the data of `intermediate/seir7_t347/`, the contact matrix `mc`, `Qs`, `Qm`, the NGM as an operator, `full_fv` (`rho(F V^-1)` of the 8-state system, for either data set), and `left_and_gradient` (the left eigenvector and `d rho / d chi1` at `chi = 0`).  Run, it prints `rho(NGM) = 1.307390501274`, `rho(F V^-1)`, the left eigenvector by age and state, and the gradient for the HHS region headquarter states. |
 | `verify_stratified_seir_ngm.py` | reproduces every number of Section 5 and Table 1 of the write-up and ends with PASS or FAIL. |
-| `figures_stratified_seir_ngm.py` | Figures 1-3 of the write-up, written to `notes/figures/`. |
+| `compare_allocations_4x4.py` | Section 6: one dose, 4 x 4 data at `t = 347`.  The four allocations of the same first doses (`allocations()`), the fixed point iteration of Section 4 for the minimizer, its KKT check, and SciPy's `trust-constr` from 8 random starts as an independent check.  Prints `rho(NGM)` for each allocation (`3.4378`, `2.9107`, `2.9122`, `2.8864`; `4.4407` at `chi = 0`) and the rates `chi1` of Table 3. |
+| `figures_stratified_seir_ngm.py` | Figures 1-4 of the write-up, written to `notes/figures/`; Figure 4, the first doses by age and location, from `compare_allocations_4x4.allocations()`. |
 
 ### Notebooks and Wolfram scripts
 
@@ -85,11 +92,16 @@ Not tracked: John's SEIR 7 notebook and `F_and_V_ZF_18Jan_orig.nb` (the
 From `code/python/`:
 
     python3 -u verify_stratified_seir_ngm.py | tee intermediate/verify_stratified_seir_ngm.log
+    python3 -u compare_allocations_4x4.py | tee intermediate/compare_allocations_4x4.log
     python3 -u figures_stratified_seir_ngm.py | tee intermediate/figures_stratified_seir_ngm.log
 
-Both take under a second.  Then build `notes/stratified_seir_ngm.tex`.  The
+Each takes about a second.  Then build `notes/stratified_seir_ngm.tex`.  The
 51 x 16 data are tracked; regenerating them needs `wolframscript` and John's
 notebook (`export_seir7.wls` above).
+
+Still missing: the weekly vaccinations `Wk1.csv`, ..., `Wk55.csv` read by
+John's SEIR 7 notebook, for the 51 x 16 comparison over time, and the second
+and booster doses `b2`, `b3` for the 4 x 4 comparison with three doses.
 
 ## Conventions
 
