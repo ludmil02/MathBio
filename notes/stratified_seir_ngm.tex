@@ -25,7 +25,7 @@
 \maketitle
 
 \begin{abstract}
-In the next generation matrix of the model of~\cite{2026Feng_Day_Glasser},
+In the next generation matrix of the model in~\cite{2026Feng_Day_Glasser},
 the columns of the immunologically naive and of the partially immune infected
 carry different weights, $q_{s,p}$ and $q_{m,p}$. We show that its spectral
 radius equals $\rho\left(A_1\operatorname{diag}(\bm g)\right)$, with
@@ -38,7 +38,7 @@ available at location $i$: for the $51\times16$ model, $i=1:51$, and for the
 $4\times4$ example, $i=1:4$. No breakdown by age is needed.}
 \end{abstract}
 
-\section{Setting}\label{sec-setting}
+\section{Formulation of the problem}\label{sec-formulation}
 
 There are $m$ locations and $n$ age groups, $N=mn$, and the pair
 $(i,j)$ is identified with $p=(i-1)n+j$; $I_i=\{(i-1)n+1,\ldots,in\}$. The
@@ -49,10 +49,11 @@ consider the problem
 \sum_{p\in I_i}\sigma_{k,p}\chi_{k,p}=b_{k,i},\quad \chi_{k,p}\ge 0,\quad k=1,2,3,\ i=1:m,
 \end{equation}
 where $b_{k,i}\ge 0$ are the available doses of type $k$ at location $i$ and
-$\sigma_{k,p}>0$ the sizes of the groups that receive them. At the disease
-free equilibrium of~\cite{2026Feng_Day_Glasser} the fractions of susceptible,
-vaccinated and partially immune people in group $p$ are $\widetilde s_p$,
-$\pi_{1,p}\widetilde s_p$ and $\pi_{2,p}\pi_{1,p}\widetilde s_p$, where
+$\sigma_{k,p}>0$ the sizes of the groups that receive them. All parameters
+are those in~\cite{2026Feng_Day_Glasser}. At the disease free
+equilibrium~\cite[Appendix~A]{2026Feng_Day_Glasser},
+$S_p/N_p=\widetilde s_p$, $V_p/N_p=\pi_{1,p}\widetilde s_p$ and
+$P_p/N_p=\pi_{2,p}\pi_{1,p}\widetilde s_p$, where
 \begin{equation}\label{pis}
 \begin{aligned}
 &\pi_{1,p}=\frac{\chi_{1,p}}{\omega_v+\varepsilon_2\chi_{2,p}},\qquad
@@ -61,138 +62,64 @@ $\pi_{1,p}\widetilde s_p$ and $\pi_{2,p}\pi_{1,p}\widetilde s_p$, where
 &\widetilde s_p=\left(1+\pi_{1,p}\left(1+\pi_{2,p}+\pi_{2,p}\pi_{3,p}\right)\right)^{-1}.
 \end{aligned}
 \end{equation}
-The susceptibles enter the infection terms with relative susceptibility
-$1$, the vaccinated with $1-\varepsilon_1$ and the partially immune with $1$, so we set
+Let $d_{c,p}=\psi_{S,p}a_p\beta_p>0$; $\psi_{I,p}>0$ and the contact matrix
+$C=(c_{pl})\ge 0$ are as in~\cite[Section~2.1]{2026Feng_Day_Glasser}. With
 \begin{equation}\label{yz}
 y_p=\widetilde s_p,\qquad z_p=\left(1-\varepsilon_1+\pi_{2,p}\right)\pi_{1,p}\widetilde s_p,
 \end{equation}
-and $\bm d\in\mathbb{R}^{2N}$, $d_{2p-1}=y_p$, $d_{2p}=z_p$. Let $d_{c,p}>0$
-collect the factors of the force of infection on group $p$ that do not depend
-on $\bm\chi$ (reduced susceptibility $\psi_{S,p}$, contact rate $a_p$,
-transmission probability $\beta_p$), let $\psi_{I,p}>0$ be the reduced
-infectiousness and $C=(c_{pl})\in\mathbb{R}^{N\times N}$, $c_{pl}\ge 0$, the
-proportions of the contacts of group $p$ with group $l$.
+$d_{c,p}y_p$ and $d_{c,p}z_p$ are $Y_p$ and $Z_p$
+in~\cite[Appendix~A]{2026Feng_Day_Glasser}; we set $\bm d\in\mathbb{R}^{2N}$,
+$d_{2p-1}=y_p$, $d_{2p}=z_p$. The weights $q_{s,p}>0$ and $q_{m,p}>0$ are
+$Q_{ps}$ and $Q_{pm}$ in~\cite[Appendix~A]{2026Feng_Day_Glasser}.
 
 Let $\mathscr{P}=\sum_{p=1}^N\left(\bm e_{2p-1}+\bm e_{2p}\right)\bm e_p^T\in\mathbb{R}^{2N\times N}$,
 so that $\mathscr{P}\bm a$ repeats each entry of $\bm a$ twice. A diagonal
 $X\in\mathbb{R}^{2N\times 2N}$ is the doubled matrix of $\bm a\in\mathbb{R}^N$ if
 $x_{2p-1}=x_{2p}=a_p$; then $X\mathscr{P}=\mathscr{P}\operatorname{diag}(\bm a)$
 and $\mathscr{P}^TX=\operatorname{diag}(\bm a)\mathscr{P}^T$. $D_0$ and
-$\Psi_I$ are the doubled matrices of $\bm d_c$ and $\bm\psi_I$. For any
-diagonal $X\in\mathbb{R}^{2N\times 2N}$,
+$\Psi_I$ are the doubled matrices of $\bm d_c$ and $\bm\psi_I$, and
+$Q=\operatorname{diag}\left(q_{s,1},q_{m,1},\ldots,q_{s,N},q_{m,N}\right)$.
+The next generation matrix, the matrix $\mathbf H$
+in~\cite[Appendix~A]{2026Feng_Day_Glasser}, is
+\begin{equation}\label{ngm}
+\operatorname{NGM}=\operatorname{diag}(\bm d)A_c,\qquad
+A_c=D_0\,\mathscr{P}C\mathscr{P}^T\,\Psi_IQ\in\mathbb{R}^{2N\times 2N},
+\end{equation}
+with $A_c$ independent of $\bm\chi$; $\rho(\operatorname{NGM})=\rho(FV^{-1})$,
+where $F-V$ is the linearization at the disease free
+equilibrium~\cite{2002vdDriessche_Watmough,2026Feng_Day_Glasser}.
+
+\section{An equivalent reduced problem on a product of simplices}\label{sec-reduced}
+
+The feasible set of~\eqref{problem} is the product, over $k=1,2,3$ and
+$i=1:m$, of the simplices
+\begin{equation*}
+\mathfrak{s}_{k,i}=\left\{(\chi_{k,p})_{p\in I_i}:\ \sum_{p\in I_i}\sigma_{k,p}\chi_{k,p}=b_{k,i},\
+\chi_{k,p}\ge 0\right\}.
+\end{equation*}
+We show that on it $\rho(\operatorname{NGM})$ is the spectral radius of a
+matrix of order $N$.
+
+For any diagonal $X\in\mathbb{R}^{2N\times 2N}$,
 \begin{equation}\label{ptxp}
 \mathscr{P}^TX\mathscr{P}=\operatorname{diag}\left(x_{2p-1}+x_{2p}\right)_{p=1}^N,
 \end{equation}
 since column $p$ of $\mathscr{P}$ is $\bm e_{2p-1}+\bm e_{2p}$. We also use
-that for $B_1\in\mathbb{R}^{k\times l}$, $B_2\in\mathbb{R}^{l\times k}$ the
-products $B_1B_2$ and $B_2B_1$ have the same non-zero eigenvalues: if
-$B_1B_2\bm x=\lambda\bm x$, $\lambda\ne 0$, $\bm x\ne 0$, then
-$B_2B_1(B_2\bm x)=\lambda B_2\bm x$ and $B_2\bm x\ne 0$, since
-$B_1B_2\bm x\ne 0$; the converse is the same argument.
-
-We write $\delta_s$, $\delta_m$ for the rates of hospitalization, the products
-$\delta_s\gamma_{s\to h}$, $\delta_m\gamma_{m\to h}$ of~\cite{2026Feng_Day_Glasser}.
-
-\section{The next generation matrix}\label{sec-ngm}
-
-For group $p$, with age group $j$, the infected states are
-$(E_s,E_p,I_a,I_{ps},I_s,I_h,I_{pm},I_m)$. Linearizing the system
-of~\cite{2026Feng_Day_Glasser} at the disease free equilibrium and splitting as
-in~\cite{2002vdDriessche_Watmough} gives $F-V$ with $V=\operatorname{blockdiag}(V_p)$,
-\begin{equation}\label{vp}
-V_p=\begin{pmatrix}
-\kappa&0&0&0&0&0&0&0\\
-0&\kappa&0&0&0&0&0&0\\
--\kappa p_j&-\kappa q_j&\gamma_a&0&0&0&0&0\\
--\kappa(1-p_j)&0&0&\xi&0&0&0&0\\
-0&0&0&-\xi&\gamma_s+\delta_s&0&0&0\\
-0&0&0&0&-\delta_s&\gamma_h&0&-\delta_m\\
-0&-\kappa(1-q_j)&0&0&0&0&\xi&0\\
-0&0&0&0&0&0&-\xi&\gamma_m+\delta_m
-\end{pmatrix},
-\end{equation}
-all rates evaluated at age group $j$. The only non-zero rows of $F$ are those
-of $E_s$ and $E_p$:
-\begin{equation}\label{f-rows}
-\begin{aligned}
-&F_{(p,E_s),(l,\cdot)}=d_{c,p}y_pc_{pl}\psi_{I,l}\,\widehat{\bm\eta}^T,\qquad
-F_{(p,E_p),(l,\cdot)}=d_{c,p}z_pc_{pl}\psi_{I,l}\,\widehat{\bm\eta}^T,\\
-&\widehat{\bm\eta}=(0,0,\eta_a,\eta_{ps},1,\eta_h,\eta_{pm},\eta_m)^T .
-\end{aligned}
-\end{equation}
-The matrix $FV^{-1}$ has order $8N$. Following~\cite{2010Diekmann_Heesterbeek_Roberts},
-with $R\in\mathbb{R}^{2N\times 8N}$ selecting the components $(p,E_s)$ and
-$(p,E_p)$, in the order $2p-1$, $2p$, we take
-\begin{equation}\label{ngm-def}
-\operatorname{NGM}=R\,FV^{-1}R^T\in\mathbb{R}^{2N\times 2N},
-\end{equation}
-the next generation matrix on the states at infection. It is not $FV^{-1}$,
-but, as shown below, it has the same non-zero eigenvalues. Let
-\begin{equation}\label{q-def}
-q_{s,p}=\widehat{\bm\eta}^TV_p^{-1}\bm e_1,\qquad
-q_{m,p}=\widehat{\bm\eta}^TV_p^{-1}\bm e_2 .
-\end{equation}
-
-\begin{lemma}\label{q-formula}
-With $\phi_s=\delta_s/(\gamma_s+\delta_s)$ and $\phi_m=\delta_m/(\gamma_m+\delta_m)$,
-\begin{equation}\label{qs-qm}
-\begin{aligned}
-q_{s,p}&=\frac{\eta_ap_j}{\gamma_a}+\frac{\eta_{ps}(1-p_j)}{\xi}+\frac{1-p_j}{\gamma_s+\delta_s}
-+\frac{\eta_h(1-p_j)\phi_s}{\gamma_h},\\
-q_{m,p}&=\frac{\eta_aq_j}{\gamma_a}+\frac{\eta_{pm}(1-q_j)}{\xi}+\frac{\eta_m(1-q_j)}{\gamma_m+\delta_m}
-+\frac{\eta_h(1-q_j)\phi_m}{\gamma_h}.
-\end{aligned}
-\end{equation}
-\end{lemma}
-\begin{proof}
-Ordering the unknowns as $(E_s,E_p,I_a,I_{ps},I_s,I_{pm},I_m,I_h)$ makes
-$V_p$ lower triangular with positive diagonal, so $V_p$ is non-singular and
-$V_p\bm x=\bm e_1$ is solved in this order: $x_1=1/\kappa$, $x_2=0$;
-$\gamma_ax_3=\kappa p_jx_1$ gives $x_3=p_j/\gamma_a$;
-$\xi x_4=\kappa(1-p_j)x_1$ gives $x_4=(1-p_j)/\xi$;
-$(\gamma_s+\delta_s)x_5=\xi x_4$ gives $x_5=(1-p_j)/(\gamma_s+\delta_s)$;
-$\xi x_7=\kappa(1-q_j)x_2=0$, so $x_7=0$ and then $x_8=0$;
-$\gamma_hx_6=\delta_sx_5+\delta_mx_8$ gives $x_6=(1-p_j)\phi_s/\gamma_h$.
-Then $q_{s,p}=\widehat{\bm\eta}^T\bm x$ is the first line of~\eqref{qs-qm}.
-For $V_p\bm x=\bm e_2$: $x_1=0$, $x_2=1/\kappa$, $x_3=q_j/\gamma_a$,
-$x_4=x_5=0$, $x_7=(1-q_j)/\xi$, $x_8=(1-q_j)/(\gamma_m+\delta_m)$,
-$x_6=\delta_mx_8/\gamma_h=(1-q_j)\phi_m/\gamma_h$, and
-$\widehat{\bm\eta}^T\bm x$ is the second line.
-\end{proof}
-
-\begin{proposition}\label{fv}
-Let $Q=\operatorname{diag}\left(q_{s,1},q_{m,1},\ldots,q_{s,N},q_{m,N}\right)$ and
-\begin{equation}\label{ac}
-A_c=D_0\,\mathscr{P}C\mathscr{P}^T\,\Psi_IQ .
-\end{equation}
-Then $\operatorname{NGM}=\operatorname{diag}(\bm d)A_c$, and $FV^{-1}$ and
-$\operatorname{NGM}$ have the same non-zero eigenvalues; in particular
-$\rho\left(FV^{-1}\right)=\rho\left(\operatorname{NGM}\right)$.
-\end{proposition}
-\begin{proof}
-Let $H=\operatorname{blockdiag}(\widehat{\bm\eta}^T)\in\mathbb{R}^{N\times 8N}$.
-By~\eqref{f-rows}, $F=R^T\widehat F$ with
-$\widehat F=D_0\operatorname{diag}(\bm d)\mathscr{P}C\operatorname{diag}(\bm\psi_I)H$.
-Since $RR^T=I_{2N}$, $\operatorname{NGM}=RR^T\widehat FV^{-1}R^T=\widehat FV^{-1}R^T$.
-The matrix $V^{-1}$ is block diagonal, so $HV^{-1}R^T\in\mathbb{R}^{N\times 2N}$
-has in row $p$ only the entries $q_{s,p}$ in column $2p-1$ and $q_{m,p}$ in
-column $2p$, i.e.\ $HV^{-1}R^T=\mathscr{P}^TQ$. With
-$\operatorname{diag}(\bm\psi_I)\mathscr{P}^T=\mathscr{P}^T\Psi_I$ and the
-fact that diagonal matrices commute,
-$\operatorname{NGM}=D_0\operatorname{diag}(\bm d)\mathscr{P}C\mathscr{P}^T\Psi_IQ
-=\operatorname{diag}(\bm d)A_c$.
-Finally $FV^{-1}=R^T\left(\widehat FV^{-1}\right)$ has the same non-zero
-eigenvalues as $\widehat FV^{-1}R^T=\operatorname{NGM}$.
-\end{proof}
+that for $X_1\in\mathbb{R}^{k\times l}$, $X_2\in\mathbb{R}^{l\times k}$ the
+products $X_1X_2$ and $X_2X_1$ have the same non-zero eigenvalues: if
+$X_1X_2\bm x=\lambda\bm x$, $\lambda\ne 0$, $\bm x\ne 0$, then
+$X_2X_1(X_2\bm x)=\lambda X_2\bm x$ and $X_2\bm x\ne 0$, since
+$X_1X_2\bm x\ne 0$; the converse is the same argument.
 
 % The rows of $A_c$ are doubled, $A_c=\mathscr{P}\operatorname{diag}(\bm d_c)C\mathscr{P}^T\Psi_IQ$,
 % but its columns are doubled only if $q_{s,p}=q_{m,p}$ for all $p$; the rows
 % of $\operatorname{NGM}$ are not doubled, since they are scaled by $y_p$ and $z_p$.
 
-\section{The reduction}\label{sec-reduction}
+Let $r_p=q_{m,p}/q_{s,p}>0$. We assume $r_p\le 1$, which holds for both data
+sets of Table~\ref{tab}; it gives $e_p>0$ in~\eqref{e-new}.
 
 \begin{theorem}\label{reduction}
-Let $q_{s,p}>0$, $r_p=q_{m,p}/q_{s,p}$, and
+Let
 \begin{equation}\label{a1-g}
 A_1=\operatorname{diag}(\bm d_c)\,C\operatorname{diag}\left(\bm\psi_I\odot\bm q_s\right),
 \qquad g_p=y_p+r_pz_p,\quad p=1:N .
@@ -202,14 +129,22 @@ the same non-zero eigenvalues, and
 $\rho\left(\operatorname{NGM}\right)=\rho\left(A_1\operatorname{diag}(\bm g)\right)$.
 \end{theorem}
 \begin{proof}
-By Proposition~\ref{fv} and $D_0\mathscr{P}=\mathscr{P}\operatorname{diag}(\bm d_c)$,
-$\operatorname{NGM}=B_1B_2$ with $B_1=\operatorname{diag}(\bm d)\mathscr{P}$
-and $B_2=\operatorname{diag}(\bm d_c)C\mathscr{P}^T\Psi_IQ$, and $B_1B_2$ and
-$B_2B_1=\operatorname{diag}(\bm d_c)C\,\mathscr{P}^T\Psi_IQ\operatorname{diag}(\bm d)\mathscr{P}$
+By~\eqref{ngm} and $D_0\mathscr{P}=\mathscr{P}\operatorname{diag}(\bm d_c)$,
+$\operatorname{NGM}=X_1X_2$ with
+\begin{equation*}
+X_1=\operatorname{diag}(\bm d)\mathscr{P},\qquad
+X_2=\operatorname{diag}(\bm d_c)C\mathscr{P}^T\Psi_IQ,
+\end{equation*}
+and $X_1X_2$ and
+\begin{equation*}
+X_2X_1=\operatorname{diag}(\bm d_c)C\,\mathscr{P}^T\Psi_IQ\operatorname{diag}(\bm d)\mathscr{P}
+\end{equation*}
 have the same non-zero eigenvalues. By~\eqref{ptxp} with
 $X=\Psi_IQ\operatorname{diag}(\bm d)$,
-$x_{2p-1}+x_{2p}=\psi_{I,p}\left(q_{s,p}y_p+q_{m,p}z_p\right)=\psi_{I,p}q_{s,p}g_p$,
-so $B_2B_1=A_1\operatorname{diag}(\bm g)$.
+\begin{equation*}
+x_{2p-1}+x_{2p}=\psi_{I,p}\left(q_{s,p}y_p+q_{m,p}z_p\right)=\psi_{I,p}q_{s,p}g_p,
+\end{equation*}
+so $X_2X_1=A_1\operatorname{diag}(\bm g)$.
 \end{proof}
 
 % \begin{remark}
@@ -220,18 +155,74 @@ so $B_2B_1=A_1\operatorname{diag}(\bm g)$.
 % (Table~\ref{tab}).
 % \end{remark}
 
-\section{Formulas for the minimization}\label{sec-min}
-
-By~\eqref{yz} and~\eqref{a1-g},
+So~\eqref{problem} is equivalent to the minimization of
+$\rho\left(A_1\operatorname{diag}(\bm g(\bm\chi))\right)$ over the same
+product of the simplices $\mathfrak{s}_{k,i}$, with $A_1\ge 0$ independent of $\bm\chi$. By~\eqref{yz}
+and~\eqref{a1-g},
 \begin{equation}\label{g-new}
 g_p=\frac{\mathcal{N}_p}{\mathcal{D}_p},\qquad
 \mathcal{N}_p=1+r_p\pi_{1,p}\left(1-\varepsilon_1+\pi_{2,p}\right),\qquad
 \mathcal{D}_p=1+\pi_{1,p}\left(1+\pi_{2,p}+\pi_{2,p}\pi_{3,p}\right).
 \end{equation}
-We assume $0<r_p\le 1$, which holds for both data sets of
-Section~\ref{sec-numerics}. Then $\mathcal{N}_p\le\mathcal{D}_p$ and $0<g_p\le 1$.
+Since $r_p\le 1$, $\mathcal{N}_p\le\mathcal{D}_p$ and $0<g_p\le 1$.
 
-\paragraph{One dose.}
+\paragraph{Numerical check.}
+Table~\ref{tab} lists spectral radii computed by Arnoldi for the $4\times 4$
+data from~\cite{JZh} and for the $51\times 16$ data (51 locations, 16 age
+groups) from the model code accompanying~\cite{2026Feng_Day_Glasser} at $t=347$, the day
+before vaccination began. $FV^{-1}$, of order $8N$, is applied matrix free,
+with $V$ factored by sparse LU.
+% The single weight
+% $q_{0,p}=\eta_ap_j/\gamma_a+\eta_{ps}(1-p_j)/\xi+(1-p_j)/(\gamma_s+\delta_s)$,
+% used for both columns in the model code, omits the last term of $q_{s,p}$ and
+% replaces $q_{m,p}$.
+
+% \begin{table}[ht]
+% \centering
+% \begin{tabular}{lllll}
+% data, $\bm\chi$ & $\rho(FV^{-1})$ & \eqref{a1-g} & single weight $q_0$ & $\frac14\mathscr{P}^TA_c\mathscr{P}$, $\bm y+\bm z$\\\hline
+% $4\times4$, $\bm\chi=0$ & 4.440677536267 & 4.440677536267 & 4.423068109191 & \\
+% $4\times4$, $\bm\chi\ne 0$ & 1.570568657459 & 1.570568657459 & 1.695384975896 & \\
+% $51\times16$, $\bm\chi=0$ & 1.307390501274 & 1.307390501274 & 1.303036594051 & \\
+% $51\times16$, random $\bm\chi$ & 0.492928980848$^*$ & 0.492928980848 & & 0.495754640362
+% \end{tabular}
+% \caption{Spectral radii. ${}^*$computed as $\rho(\operatorname{NGM})$, equal
+% to $\rho(FV^{-1})$ by Proposition~\ref{fv}. The ratios $r_p$ lie in
+% $[0.732,0.977]$ for $4\times4$ and in $[0.714,0.985]$ for $51\times16$.}\label{tab}
+% \end{table}
+
+% \begin{table}[ht]
+% \centering
+% \begin{tabular}{llll}
+% data, $\bm\chi$ & $\rho(FV^{-1})$ & \eqref{a1-g} & single weight $q_0$\\\hline
+% $4\times4$, $\bm\chi=0$ & 4.440677536267 & 4.440677536267 & 4.423068109191\\
+% $4\times4$, $\bm\chi\ne 0$ & 1.570568657459 & 1.570568657459 & 1.695384975896\\
+% $51\times16$, $\bm\chi=0$ & 1.307390501274 & 1.307390501274 & 1.303036594051\\
+% $51\times16$, random $\bm\chi$ & 0.492928980848$^*$ & 0.492928980848 &
+% \end{tabular}
+% \caption{Spectral radii. ${}^*$computed as $\rho(\operatorname{NGM})$, equal
+% to $\rho(FV^{-1})$ by Proposition~\ref{fv}. The ratios $r_p$ lie in
+% $[0.732,0.977]$ for $4\times4$ and in $[0.714,0.985]$ for $51\times16$.}\label{tab}
+% \end{table}
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{|l|l|l|l|}\hline
+data, $\bm\chi$ & $\rho(FV^{-1})$ & computed via~\eqref{a1-g} & difference\\\hline
+$4\times4$, $\bm\chi=0$ & 4.440677536267 & 4.440677536267 & $8.9\cdot10^{-15}$\\\hline
+$4\times4$, $\bm\chi\ne 0$ & 1.570568657459 & 1.570568657459 & $1.6\cdot10^{-15}$\\\hline
+$51\times16$, $\bm\chi=0$ & 1.307390501274 & 1.307390501274 & $4.4\cdot10^{-16}$\\\hline
+$51\times16$, random $\bm\chi$ & 0.492928980848$^*$ & 0.492928980848 & $7.8\cdot10^{-16}$\\\hline
+\end{tabular}
+\caption{Numerical verification that
+$\rho(FV^{-1})=\rho\left(A_1\operatorname{diag}(\bm g)\right)$.
+${}^*$computed as $\rho(\operatorname{NGM})$, equal
+to $\rho(FV^{-1})$ by~\cite[Appendix~A]{2026Feng_Day_Glasser}. The ratios $r_p$ lie in
+$[0.732,0.977]$ for $4\times4$ and in $[0.714,0.985]$ for $51\times16$.}\label{tab}
+\end{table}
+
+\section{Optimization for a single dose}\label{sec-single}
+
 Let $\bm\chi_2=\bm\theta$, $\bm\chi_3=\bm\zeta$ be fixed, and
 \begin{equation}\label{t-def}
 \omega_p=\omega_v+\varepsilon_2\theta_p,\qquad
@@ -257,23 +248,36 @@ $c_i=b_{1,i}+\sum_{p\in I_i}\widetilde\sigma_p$. So the one dose problem is
 the minimization of $\rho\left(A_1\operatorname{diag}\left((\mathbbm 1-\bm e)+\bm e/\bm t\right)\right)$
 over this set, with $A_1\ge 0$ independent of $\bm t$ and $0<e_p\le 1$.
 
-\paragraph{Gradient.}
-If $A_1$ is irreducible, $\rho$ is a simple eigenvalue of
-$A_1\operatorname{diag}(\bm g)$, with positive right and left eigenvectors
-$\bm v$ and $\bm w$. The derivative of a simple eigenvalue with respect to a
-parameter is the derivative of the matrix multiplied by the left eigenvector
-on the left and by the right eigenvector on the right, divided by their
-inner product; and $g_p$ enters $A_1\operatorname{diag}(\bm g)$ only through
-its $p$-th column:
+\subsection{Computing the gradient}\label{sec-gradient}
+Let $A_1$ be irreducible and $G=A_1\operatorname{diag}(\bm g)$. Since $\bm g>0$,
+$G\ge 0$ is irreducible, and by the Perron--Frobenius
+theorem~\cite[Theorem~8.4.4]{1985Horn_Johnson} $\rho$ is a simple eigenvalue of $G$ and
 \begin{equation}\label{perron}
-\begin{aligned}
-&A_1\operatorname{diag}(\bm g)\,\bm v=\rho\,\bm v,\qquad
-\bm w^TA_1\operatorname{diag}(\bm g)=\rho\,\bm w^T,\\
-&\frac{\partial\rho}{\partial g_p}=\frac{\bm w^T\left(\partial\left(A_1\operatorname{diag}(\bm g)\right)/\partial g_p\right)\bm v}{\bm w^T\bm v},\qquad
-\frac{\partial\left(A_1\operatorname{diag}(\bm g)\right)}{\partial g_p}=A_1\bm e_p\bm e_p^T .
-\end{aligned}
+G\bm v=\rho\,\bm v,\qquad \bm w^TG=\rho\,\bm w^T,\qquad \bm v>0,\quad\bm w>0 .
 \end{equation}
-Hence
+
+\begin{lemma}\label{simple-derivative}
+$\rho$ is a differentiable function of $\bm g>0$ and
+$\dfrac{\partial\rho}{\partial g_p}=\dfrac{\bm w^T\left(\partial G/\partial g_p\right)\bm v}{\bm w^T\bm v}$.
+\end{lemma}
+\begin{proof}
+Let $c(\lambda,\bm g)=\det(\lambda I-G)$, a polynomial in $\lambda$ and $\bm g$.
+Since $\rho$ is a simple root, $\partial_\lambda c(\rho,\bm g)\ne 0$, and by the
+implicit function theorem $\rho$ is a differentiable function of $\bm g$.
+Since $\operatorname{rank}(\rho I-G)=N-1$, $\operatorname{adj}(\rho I-G)\ne 0$
+and, by $(\rho I-G)\operatorname{adj}(\rho I-G)=c(\rho,\bm g)I=0$, each of its
+non-zero columns is an eigenvector for $\rho$; it is a polynomial in $\rho$ and
+$\bm g$, so locally $\bm v=\bm v(\bm g)$ is differentiable. Differentiating
+$G\bm v=\rho\bm v$ with respect to $g_p$,
+\begin{equation*}
+\frac{\partial G}{\partial g_p}\bm v+G\frac{\partial\bm v}{\partial g_p}
+=\frac{\partial\rho}{\partial g_p}\bm v+\rho\frac{\partial\bm v}{\partial g_p},
+\end{equation*}
+and multiplying by $\bm w^T$ on the left, the terms with $\partial\bm v/\partial g_p$
+cancel by $\bm w^TG=\rho\bm w^T$. Since $\bm w^T\bm v>0$, the formula follows.
+\end{proof}
+
+Since $\partial G/\partial g_p=A_1\bm e_p\bm e_p^T$,
 \begin{equation}\label{drho-dg}
 \frac{\partial\rho}{\partial g_p}=\frac{\bm w^TA_1\bm e_p\,\bm e_p^T\bm v}{\bm w^T\bm v}
 =\frac{\left(A_1^T\bm w\right)_pv_p}{\bm w^T\bm v},
@@ -301,7 +305,8 @@ $\partial\pi_{1,p}/\partial\chi_{2,p}=-\varepsilon_2\pi_{1,p}/\omega_p$,
 $\partial\pi_{2,p}/\partial\chi_{2,p}=\varepsilon_2/\omega$ and the quotient
 rule; the second from the quotient rule.
 
-\paragraph{Optimality conditions for one dose.}
+\subsection{Optimality conditions}\label{sec-algorithm}
+
 Let $\Psi(\bm t)=\rho\left(A_1\operatorname{diag}(\bm g)\right)$ with
 $g_p=(1-e_p)+e_p/t_p$, and let $A_1\ge 0$ be irreducible. For $\bm t>0$ we
 have $\bm g>0$, and by~\eqref{drho-dg}
@@ -320,9 +325,10 @@ local minimizer the Karush--Kuhn--Tucker conditions hold~\cite[Section
 \end{equation}
 Since $e_pa_p>0$ and $\nu_p\ge 0$, every $\mu_i>0$. We do not prove here that
 a point satisfying~\eqref{kkt} is a global minimizer; in
-Section~\ref{sec-compare} this is checked numerically.
+Section~\ref{sec-numerics} this is checked numerically.
 
-\paragraph{A fixed point iteration.}
+\subsection{A fixed point iteration}\label{sec-fixed-point}
+
 With $\bm v$ and $\bm w$, hence $a_p$, held fixed, the conditions~\eqref{kkt}
 decouple over the locations and are solved by the following lemma.
 
@@ -392,96 +398,25 @@ set $t^{(k+1)}_p=t_p(\mu_i)$, $p\in I_i$. Every iterate satisfies the
 constraints, and by Lemma~\ref{frozen} a fixed point satisfies~\eqref{kkt}.
 We do not prove that the iteration converges.
 
-\paragraph{Alternating over the doses.}
-The constraints of~\eqref{problem} are a product over $k$, so one can minimize
-over $\bm\chi_1$, $\bm\chi_3$, $\bm\chi_2$ in turn, the other two fixed. The
-$\bm\chi_1$ step is the one dose problem above. In the $\bm\chi_3$ step,
-$\mathcal{N}_p$ does not depend on $\chi_{3,p}$ and $\mathcal{D}_p$ is affine
-in it with slope $\varepsilon_3\pi_{1,p}\pi_{2,p}/\omega\ge 0$, so
-$g_p=g_p^0/t_p$, with $g_p^0$ the value at $\chi_{3,p}=0$ and $t_p\ge 1$ affine
-in $\chi_{3,p}$: the one dose form with $e_p=1$ and $A_1$ replaced by
-$A_1\operatorname{diag}(\bm g^0)$. In the $\bm\chi_2$ step $g_p$ need not be
-monotone in $\chi_{2,p}$, and a projected gradient method with~\eqref{dg},
-e.g.\ projected Yogi~\cite{2018Zaheer_Yogi}, is used.
+\subsection{Numerical results}\label{sec-numerics}
 
-\section{Numerical verification}\label{sec-numerics}
-
-Table~\ref{tab} lists spectral radii computed by Arnoldi for the $4\times 4$
-data of~\cite{JZh} and for the $51\times 16$ data (51 locations, 16 age
-groups) of the model code of~\cite{2026Feng_Day_Glasser} at $t=347$, the day
-before vaccination began. $FV^{-1}$, of order $8N$, is applied matrix free,
-with $V$ factored by sparse LU.
-% The single weight
-% $q_{0,p}=\eta_ap_j/\gamma_a+\eta_{ps}(1-p_j)/\xi+(1-p_j)/(\gamma_s+\delta_s)$,
-% used for both columns in the model code, omits the last term of $q_{s,p}$ and
-% replaces $q_{m,p}$.
 At random $\bm\chi$, \eqref{g-new}, \eqref{e-new} and
 $g_p=(1-e_p)+e_p/t_p$ hold to $4\cdot 10^{-16}$, and~\eqref{dg} agrees with
 central differences to $2\cdot 10^{-9}$ (relative).
 
-% \begin{table}[ht]
-% \centering
-% \begin{tabular}{lllll}
-% data, $\bm\chi$ & $\rho(FV^{-1})$ & \eqref{a1-g} & single weight $q_0$ & $\frac14\mathscr{P}^TA_c\mathscr{P}$, $\bm y+\bm z$\\\hline
-% $4\times4$, $\bm\chi=0$ & 4.440677536267 & 4.440677536267 & 4.423068109191 & \\
-% $4\times4$, $\bm\chi\ne 0$ & 1.570568657459 & 1.570568657459 & 1.695384975896 & \\
-% $51\times16$, $\bm\chi=0$ & 1.307390501274 & 1.307390501274 & 1.303036594051 & \\
-% $51\times16$, random $\bm\chi$ & 0.492928980848$^*$ & 0.492928980848 & & 0.495754640362
-% \end{tabular}
-% \caption{Spectral radii. ${}^*$computed as $\rho(\operatorname{NGM})$, equal
-% to $\rho(FV^{-1})$ by Proposition~\ref{fv}. The ratios $r_p$ lie in
-% $[0.732,0.977]$ for $4\times4$ and in $[0.714,0.985]$ for $51\times16$.}\label{tab}
-% \end{table}
-
-% \begin{table}[ht]
-% \centering
-% \begin{tabular}{llll}
-% data, $\bm\chi$ & $\rho(FV^{-1})$ & \eqref{a1-g} & single weight $q_0$\\\hline
-% $4\times4$, $\bm\chi=0$ & 4.440677536267 & 4.440677536267 & 4.423068109191\\
-% $4\times4$, $\bm\chi\ne 0$ & 1.570568657459 & 1.570568657459 & 1.695384975896\\
-% $51\times16$, $\bm\chi=0$ & 1.307390501274 & 1.307390501274 & 1.303036594051\\
-% $51\times16$, random $\bm\chi$ & 0.492928980848$^*$ & 0.492928980848 &
-% \end{tabular}
-% \caption{Spectral radii. ${}^*$computed as $\rho(\operatorname{NGM})$, equal
-% to $\rho(FV^{-1})$ by Proposition~\ref{fv}. The ratios $r_p$ lie in
-% $[0.732,0.977]$ for $4\times4$ and in $[0.714,0.985]$ for $51\times16$.}\label{tab}
-% \end{table}
-
-\begin{table}[ht]
-\centering
-\begin{tabular}{lll}
-data, $\bm\chi$ & $\rho(FV^{-1})$ & \eqref{a1-g}\\\hline
-$4\times4$, $\bm\chi=0$ & 4.440677536267 & 4.440677536267\\
-$4\times4$, $\bm\chi\ne 0$ & 1.570568657459 & 1.570568657459\\
-$51\times16$, $\bm\chi=0$ & 1.307390501274 & 1.307390501274\\
-$51\times16$, random $\bm\chi$ & 0.492928980848$^*$ & 0.492928980848
-\end{tabular}
-\caption{Spectral radii. ${}^*$computed as $\rho(\operatorname{NGM})$, equal
-to $\rho(FV^{-1})$ by Proposition~\ref{fv}. The ratios $r_p$ lie in
-$[0.732,0.977]$ for $4\times4$ and in $[0.714,0.985]$ for $51\times16$.}\label{tab}
-\end{table}
-
 \paragraph{The 51 by 16 data before vaccination.}
-Figures~\ref{fig-weights}--\ref{fig-grad} use the $51\times16$ data at
+Figures~\ref{fig-left} and~\ref{fig-grad} use the $51\times16$ data at
 $t=347$ and $\bm\chi=0$, where $\rho(\operatorname{NGM})=1.3074$.
-Figure~\ref{fig-weights} shows the weights~\eqref{qs-qm} and their ratio by
-age. Figure~\ref{fig-left} shows the components of the dominant left
+Figure~\ref{fig-left} shows the components of the dominant left
 eigenvector of $\operatorname{NGM}$ in the rows $2p-1$ (the susceptible
 rows), summed over the 51 locations; the largest, $0.18$ of the total, is
 at ages 15--19. Figure~\ref{fig-grad} shows $-\partial\rho/\partial\chi_{1,p}$,
-computed from the formula of Section~\ref{sec-min} with $\bm\chi=0$, for the
+computed from~\eqref{drho-dg} and~\eqref{dg} with $\bm\chi=0$, for the
 ten states with the headquarters of the HHS regions; the states with the
 largest and the smallest maximum are in color. For every location the largest
 entry is at ages 15--19, as in~\cite[Fig.~3A]{2026Feng_Day_Glasser}, and all
 entries are negative: at $\bm\chi=0$ every first dose decreases
 $\rho(\operatorname{NGM})$.
-
-\begin{figure}[ht]
-\centering
-\includegraphics[width=\textwidth]{fig_weights.pdf}
-\caption{The weights $q_s$ and $q_m$ of~\eqref{qs-qm} by age (left) and their
-ratio $r=q_m/q_s$ (right), $51\times16$ data.}\label{fig-weights}
-\end{figure}
 
 \begin{figure}[ht]
 \centering
@@ -502,10 +437,9 @@ the smallest maximum.}\label{fig-grad}
 \end{figure}
 
 \FloatBarrier
-\section{Comparison of allocations for one dose}\label{sec-compare}
-
+\paragraph{Comparison of allocations.}
 We compare $\rho(\operatorname{NGM})$ for four allocations of the same first
-doses, on the $4\times4$ data of~\cite{JZh} at $t=347$, the first week of
+doses, on the $4\times4$ data from~\cite{JZh} at $t=347$, the first week of
 vaccination, so that $\bm\chi_2=\bm\chi_3=0$ and, before the week,
 $\bm\chi_1=0$. The group sizes $\sigma_{1,p}=S_p$ are the susceptibles at
 $t=347$, and the doses at location $i$ are $b_{1,i}=\sum_{j}D_{ij}$, with
@@ -517,12 +451,12 @@ of~\eqref{problem} for $k=1$:
 \item \emph{left eigenvector, doses}: the doses at location $i$ divided over
 the age groups in proportion to the left eigenvector,
 $\chi_{1,p}S_p=b_{1,i}w_{p}/\sum_{l\in I_i}w_l$, the alternative strategy
-of~\cite{2026Feng_Day_Glasser}, where $w_p$ is the entry of the dominant
+proposed in~\cite{2026Feng_Day_Glasser}, where $w_p$ is the entry of the dominant
 left eigenvector of $\operatorname{NGM}$ in row $2p-1$ at $\bm\chi=0$;
 \item \emph{left eigenvector, rates}: the rates in proportion to it,
 $\chi_{1,p}=b_{1,i}w_p/\sum_{l\in I_i}w_lS_l$;
 \item \emph{minimizer}: the fixed point of the iteration of
-Section~\ref{sec-min}.
+Section~\ref{sec-fixed-point}.
 \end{enumerate}
 At $\bm\chi=0$, $z_p=0$, so $w_p$ is also, up to a factor, the entry $p$ of
 the left eigenvector of $A_1\operatorname{diag}(\bm g)$, and the choice between
@@ -591,6 +525,56 @@ minimizer, West & 5.183 & 4.788 & 4.502 & 0
 \caption{The first dose rates $\chi_{1,p}$, in units of $10^{-3}$ per day,
 $4\times4$ data at $t=347$.}\label{tab-chi}
 \end{table}
+
+\FloatBarrier
+\section{Optimization for three doses}\label{sec-three}
+
+The constraints of~\eqref{problem} are a product over $k$, so one can minimize
+over $\bm\chi_1$, $\bm\chi_3$, $\bm\chi_2$ in turn, the other two fixed. The
+$\bm\chi_1$ step is the one dose problem of Section~\ref{sec-single}. In the
+$\bm\chi_3$ step, $\mathcal{N}_p$ does not depend on $\chi_{3,p}$ and
+$\mathcal{D}_p$ is affine in it with slope
+$\varepsilon_3\pi_{1,p}\pi_{2,p}/\omega\ge 0$, so $g_p=g_p^0/t_p$, with
+$g_p^0$ the value at $\chi_{3,p}=0$ and $t_p\ge 1$ affine in $\chi_{3,p}$: the
+one dose form with $e_p=1$ and $A_1$ replaced by
+$A_1\operatorname{diag}(\bm g^0)$. In the $\bm\chi_2$ step $g_p$ need not be
+monotone in $\chi_{2,p}$, and a projected gradient method with~\eqref{dg},
+e.g.\ projected Yogi~\cite{2018Zaheer_Yogi}, is used.
+
+\section{Conclusions}\label{sec-conclusions}
+
+For the model in~\cite{2026Feng_Day_Glasser}:
+\begin{enumerate}
+\item The next generation matrix on the states at infection, of order $2N$,
+has the same spectral radius as $FV^{-1}$, of order
+$8N$~\cite[Appendix~A]{2026Feng_Day_Glasser}. The eight infected states of a group enter only
+through the two weights $q_{s,p}$ and $q_{m,p}$,
+one for the immunologically naive and one for the partially immune infected.
+\item Its spectral radius equals that of $A_1\operatorname{diag}(\bm g)$, of
+order $N$ (Theorem~\ref{reduction}). The matrix $A_1\ge 0$ does not depend on
+the vaccination rates, which enter only through $\bm g$, $0<g_p\le 1$.
+\item With the second and third doses fixed, $g_p=(1-e_p)+e_p/t_p$ with
+$0<e_p\le 1$ and $t_p\ge 1$ affine in $\chi_{1,p}$; with the first and second
+doses fixed, $g_p=g_p^0/t_p$ with $t_p\ge 1$ affine in $\chi_{3,p}$. In both
+cases the constraints are affine in $\bm t$. The gradient of $\rho$ requires
+one right and one left Perron vector of $A_1\operatorname{diag}(\bm g)$, and
+with these vectors held fixed the Karush--Kuhn--Tucker conditions are solved
+in closed form, location by location (Lemma~\ref{frozen}
+and~\eqref{mu-exact}). This gives a fixed point iteration whose iterates
+satisfy the constraints. In $\chi_{2,p}$, $g_p$ need not be monotone, and
+that step is done by a projected gradient method.
+\item On both data sets $\rho(FV^{-1})$ and
+$\rho\left(A_1\operatorname{diag}(\bm g)\right)$ agree to twelve digits
+(Table~\ref{tab}). On the $51\times16$ data at $t=347$ every first dose
+decreases $\rho(\operatorname{NGM})$, and in every location the largest
+decrease is at ages 15--19.
+\item On the $4\times4$ data, for the first doses of the first week of
+vaccination, the minimizer gives $\rho(\operatorname{NGM})=2.8864$, against
+$3.4378$ for the doses given and $2.9107$ for the allocation in proportion to
+the left eigenvector (Table~\ref{tab-compare}).
+\end{enumerate}
+That a point satisfying~\eqref{kkt} is a global minimizer, and that the fixed
+point iteration converges, is checked numerically here, not proved.
 
 \FloatBarrier
 \bibliographystyle{plain}

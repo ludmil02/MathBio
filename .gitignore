@@ -8,6 +8,8 @@
 !code/python/intermediate/zf_jg_t347/
 
 # TeX build files
+notes/stratified_seir_ngm.pdf
+notes/suplemental/stratified_seir_ngm_supplement.pdf
 *.aux
 *.bbl
 *.blg
