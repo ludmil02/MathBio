@@ -93,8 +93,10 @@ def a_vector(t):
 
 
 def fixed_point(t, tol=1e-13, kmax=1000):
+    hist = []
     for k in range(kmax):
         rho, a = a_vector(t)
+        hist.append(rho)
         tn = np.empty_like(t)
         mu = np.empty(m)
         for i in range(m):
@@ -107,6 +109,10 @@ def fixed_point(t, tol=1e-13, kmax=1000):
         t = tn
         if d < tol:
             break
+    hist.append(a_vector(t)[0])
+    inc = np.diff(hist) / np.array(hist[1:])
+    say("  iterations that increase rho by more than 1e-12 (relative): %d of %d (largest relative increase %.1e)"
+        % (int((inc > 1e-12).sum()), inc.size, max(inc.max(), 0.0)))
     return t, mu, k + 1
 
 
