@@ -24,13 +24,9 @@
 \maketitle
 
 \begin{abstract}
-In the next generation matrix of the model in~\cite{2026Feng_Day_Glasser},
-the columns of the immunologically naive and of the partially immune infected
-carry different weights, $q_{s,p}$ and $q_{m,p}$. We show that its spectral
-radius equals $\rho\left(A_1\operatorname{diag}(\bm g)\right)$, with
-$A_1=\operatorname{diag}(\bm d_c)\,C\operatorname{diag}(\bm\psi_I\odot\bm q_s)$
-independent of the vaccination rates and $g_p=y_p+r_pz_p$, $r_p=q_{m,p}/q_{s,p}$,
-and we derive the formulas needed to minimize it over the vaccination rates.
+We consider the next generation matrix (NGM) of the model in~\cite{2026Feng_Day_Glasser},
+and we propose an algorithm for the minimization of its spectral radius 
+in order to obtain optimal vaccination rates.
 
 {\color{red} We need, for each week, the doses $b_{k,i}$ of type $k=1,2,3$
 available at location $i$: for the $51\times16$ model, $i=1:51$, and for the
@@ -39,17 +35,15 @@ $4\times4$ example, $i=1:4$. No breakdown by age is needed.}
 
 \section{Formulation of the problem}\label{sec-formulation}
 
-There are $m$ locations and $n$ age groups, $N=mn$, and the pair
-$(i,j)$ is identified with $p=(i-1)n+j$; $I_i=\{(i-1)n+1,\ldots,in\}$. The
-vaccination rates of the three doses are $\chi_{k,p}\ge 0$, $k=1,2,3$. We
-consider the problem
+We consider the case with $m$ geographic locations and  $n$ age groups. We set  
+$N=mn$, and identify $p=(i-1)n+j$; $I_i=\{(i-1)n+1,\ldots,in\}$ with the pair (i,j). The minimization problem aims to find optimal vaccination rates $\chi_{k,p}\ge 0$, $k=1,2,3$ as a solution of the following minimization problem:
 \begin{equation}\label{problem}
 \min\ \rho\left(\operatorname{NGM}(\bm\chi)\right)\quad\mbox{subject to}\quad
-\sum_{p\in I_i}\sigma_{k,p}\chi_{k,p}=b_{k,i},\quad \chi_{k,p}\ge 0,\quad k=1,2,3,\ i=1:m,
+\sum_{p\in I_i}\sigma_{k,p}\chi_{k,p}=b_{k,i},\quad \chi_{k,p}\ge 0,\quad k=1,2,3,\ i=1:m.
 \end{equation}
-where $b_{k,i}\ge 0$ are the available doses of type $k$ at location $i$ and
-$\sigma_{k,p}>0$ the sizes of the groups that receive them. All parameters
-are those in~\cite{2026Feng_Day_Glasser}. At the disease free
+Here, $b_{k,i}\ge 0$ are the available doses of type $k$ at location $i$ and
+$\sigma_{k,p}>0$ the sizes of the groups that receive them.  The parameters are 
+as the ones given in~\cite{2026Feng_Day_Glasser}. At the disease free
 equilibrium~\cite[Appendix~A]{2026Feng_Day_Glasser},
 $S_p/N_p=\widetilde s_p$, $V_p/N_p=\pi_{1,p}\widetilde s_p$ and
 $P_p/N_p=\pi_{2,p}\pi_{1,p}\widetilde s_p$, where
@@ -84,9 +78,10 @@ in~\cite[Appendix~A]{2026Feng_Day_Glasser}, is
 \operatorname{NGM}=\operatorname{diag}(\bm d)A_c,\qquad
 A_c=D_0\,\mathscr{P}C\mathscr{P}^T\,\Psi_IQ\in\mathbb{R}^{2N\times 2N},
 \end{equation}
-with $A_c$ independent of $\bm\chi$; $\rho(\operatorname{NGM})=\rho(FV^{-1})$,
-where $F-V$ is the linearization at the disease free
-equilibrium~\cite{2002vdDriessche_Watmough,2026Feng_Day_Glasser}.
+with $A_c$ independent of $\bm\chi$. 
+% $\rho(\operatorname{NGM})=\rho(FV^{-1})$,
+% where $F-V$ is the linearization at the disease free
+% equilibrium~\cite{2002vdDriessche_Watmough,2026Feng_Day_Glasser}.
 
 \section{An equivalent reduced problem on a product of simplices}\label{sec-reduced}
 
@@ -114,18 +109,17 @@ $X_1X_2\bm x\ne 0$; the converse is the same argument.
 % but its columns are doubled only if $q_{s,p}=q_{m,p}$ for all $p$; the rows
 % of $\operatorname{NGM}$ are not doubled, since they are scaled by $y_p$ and $z_p$.
 
-Let $r_p=q_{m,p}/q_{s,p}>0$. We assume $r_p\le 1$, which holds for both data
+Following~\cite{2026Feng_Day_Glasser} we set $r_p=q_{m,p}/q_{s,p}>0$. We assume $r_p\le 1$, which holds for both data
 sets of Table~\ref{tab}; it gives $e_p>0$ in~\eqref{e-new}.
 
 \begin{theorem}\label{reduction}
-Let
+If the matrix $A_1$ is defined as
 \begin{equation}\label{a1-g}
 A_1=\operatorname{diag}(\bm d_c)\,C\operatorname{diag}\left(\bm\psi_I\odot\bm q_s\right),
-\qquad g_p=y_p+r_pz_p,\quad p=1:N .
+\qquad g_p=y_p+r_pz_p,\quad p=1:N,
 \end{equation}
-Then $\operatorname{NGM}$ and $A_1\operatorname{diag}(\bm g)$ have
-the same non-zero eigenvalues, and
-$\rho\left(\operatorname{NGM}\right)=\rho\left(A_1\operatorname{diag}(\bm g)\right)$.
+then $\operatorname{NGM}$ and $A_1\operatorname{diag}(\bm g)$ have
+the same non-zero eigenvalues. In particular $\rho\left(\operatorname{NGM}\right)=\rho\left(A_1\operatorname{diag}(\bm g)\right)$.
 \end{theorem}
 \begin{proof}
 By~\eqref{ngm} and $D_0\mathscr{P}=\mathscr{P}\operatorname{diag}(\bm d_c)$,
@@ -145,8 +139,7 @@ x_{2p-1}+x_{2p}=\psi_{I,p}\left(q_{s,p}y_p+q_{m,p}z_p\right)=\psi_{I,p}q_{s,p}g_
 \end{equation*}
 so $X_2X_1=A_1\operatorname{diag}(\bm g)$.
 \end{proof}
-Table~\ref{tab} in Section~\ref{sec-numerics} verifies Theorem~\ref{reduction}
-numerically.
+As an illustration in,  in Section~\ref{sec-numerics} (see Table~\ref{tab}), we  verify numerically the result in Theorem~\ref{reduction}.
 
 % \begin{remark}
 % If $q_{s,p}=q_{m,p}$ for all $p$, then $A_c=\mathscr{P}A_1\mathscr{P}^T$,
