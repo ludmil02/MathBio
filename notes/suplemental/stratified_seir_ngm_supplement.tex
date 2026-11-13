@@ -1,0 +1,132 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{amsthm,mathrsfs}
+\usepackage{bm,bbm}
+\usepackage{color}
+\usepackage{xr-hyper}
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
+% labels of the main document, prefixed M-: build it first, so that its .aux exists
+\externaldocument[M-]{../stratified_seir_ngm}
+
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\numberwithin{equation}{section}
+\renewcommand{\thesection}{S\arabic{section}}
+
+\title{Supplement: derivation of the next generation matrix\thanks{Parts of this manuscript were edited with the assistance of an AI tool (Claude Opus 5.5, Anthropic). The authors are solely responsible for all proofs and statements.}}
+\author{Zhilan \and John \and Yuliya \and Ludmil}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Supplement to ``The next generation matrix of the age- and location-stratified
+SEIR model''. Equation, theorem and section numbers without a prefix S refer
+to that document, whose notation is used throughout.
+\end{abstract}
+
+\section{The next generation matrix}\label{s-ngm}
+
+For group $p$, with age group $j$, the infected states are
+$(E_s,E_p,I_a,I_{ps},I_s,I_h,I_{pm},I_m)$. Linearizing the system
+in~\cite{2026Feng_Day_Glasser} at the disease free equilibrium and splitting as
+in~\cite{2002vdDriessche_Watmough} gives $F-V$ with $V=\operatorname{blockdiag}(V_p)$,
+\begin{equation}\label{vp}
+V_p=\begin{pmatrix}
+\kappa&0&0&0&0&0&0&0\\
+0&\kappa&0&0&0&0&0&0\\
+-\kappa p_j&-\kappa q_j&\gamma_a&0&0&0&0&0\\
+-\kappa(1-p_j)&0&0&\xi&0&0&0&0\\
+0&0&0&-\xi&\gamma_s+\delta_s&0&0&0\\
+0&0&0&0&-\delta_s&\gamma_h&0&-\delta_m\\
+0&-\kappa(1-q_j)&0&0&0&0&\xi&0\\
+0&0&0&0&0&0&-\xi&\gamma_m+\delta_m
+\end{pmatrix},
+\end{equation}
+all rates evaluated at age group $j$. By the force of infection~\cite[Section~2.1]{2026Feng_Day_Glasser}
+and~\eqref{M-yz}, the
+only non-zero rows of $F$ are those of $E_s$ and $E_p$:
+\begin{equation}\label{f-rows}
+\begin{aligned}
+&F_{(p,E_s),(l,\cdot)}=d_{c,p}y_pc_{pl}\psi_{I,l}\,\widehat{\bm\eta}^T,\qquad
+F_{(p,E_p),(l,\cdot)}=d_{c,p}z_pc_{pl}\psi_{I,l}\,\widehat{\bm\eta}^T,\\
+&\widehat{\bm\eta}=(0,0,\eta_a,\eta_{ps},1,\eta_h,\eta_{pm},\eta_m)^T .
+\end{aligned}
+\end{equation}
+The matrix $FV^{-1}$ has order $8N$. Following~\cite{2010Diekmann_Heesterbeek_Roberts},
+with $R\in\mathbb{R}^{2N\times 8N}$ selecting the components $(p,E_s)$ and
+$(p,E_p)$, in the order $2p-1$, $2p$, we take
+\begin{equation}\label{ngm-def}
+\operatorname{NGM}=R\,FV^{-1}R^T\in\mathbb{R}^{2N\times 2N},
+\end{equation}
+the next generation matrix on the states at infection. It is not $FV^{-1}$,
+but, as shown below, it has the same non-zero eigenvalues.
+
+Here $\delta_s$, $\delta_m$ are the rates of hospitalization, the products
+$\delta_s\gamma_{s\to h}$, $\delta_m\gamma_{m\to h}$ in~\cite{2026Feng_Day_Glasser}.
+With $\phi_s=\delta_s/(\gamma_s+\delta_s)$ and $\phi_m=\delta_m/(\gamma_m+\delta_m)$, let
+\begin{equation}\label{qs-qm}
+\begin{aligned}
+q_{s,p}&=\frac{\eta_ap_j}{\gamma_a}+\frac{\eta_{ps}(1-p_j)}{\xi}+\frac{1-p_j}{\gamma_s+\delta_s}
++\frac{\eta_h(1-p_j)\phi_s}{\gamma_h},\\
+q_{m,p}&=\frac{\eta_aq_j}{\gamma_a}+\frac{\eta_{pm}(1-q_j)}{\xi}+\frac{\eta_m(1-q_j)}{\gamma_m+\delta_m}
++\frac{\eta_h(1-q_j)\phi_m}{\gamma_h},
+\end{aligned}
+\end{equation}
+all rates evaluated at age group $j$; these are the quantities $Q_{ps}$ and
+$Q_{pm}$ in~\cite[Appendix~A]{2026Feng_Day_Glasser}.
+
+\begin{lemma}\label{q-formula}
+The weights~\eqref{qs-qm} are
+\begin{equation}\label{q-def}
+q_{s,p}=\widehat{\bm\eta}^TV_p^{-1}\bm e_1,\qquad
+q_{m,p}=\widehat{\bm\eta}^TV_p^{-1}\bm e_2 .
+\end{equation}
+\end{lemma}
+\begin{proof}
+Ordering the unknowns as $(E_s,E_p,I_a,I_{ps},I_s,I_{pm},I_m,I_h)$ makes
+$V_p$ lower triangular with positive diagonal, so $V_p$ is non-singular and
+$V_p\bm x=\bm e_1$ is solved in this order: $x_1=1/\kappa$, $x_2=0$;
+$\gamma_ax_3=\kappa p_jx_1$ gives $x_3=p_j/\gamma_a$;
+$\xi x_4=\kappa(1-p_j)x_1$ gives $x_4=(1-p_j)/\xi$;
+$(\gamma_s+\delta_s)x_5=\xi x_4$ gives $x_5=(1-p_j)/(\gamma_s+\delta_s)$;
+$\xi x_7=\kappa(1-q_j)x_2=0$, so $x_7=0$ and then $x_8=0$;
+$\gamma_hx_6=\delta_sx_5+\delta_mx_8$ gives $x_6=(1-p_j)\phi_s/\gamma_h$.
+Then $\widehat{\bm\eta}^T\bm x$ is the first line of~\eqref{qs-qm}.
+For $V_p\bm x=\bm e_2$: $x_1=0$, $x_2=1/\kappa$, $x_3=q_j/\gamma_a$,
+$x_4=x_5=0$, $x_7=(1-q_j)/\xi$, $x_8=(1-q_j)/(\gamma_m+\delta_m)$,
+$x_6=\delta_mx_8/\gamma_h=(1-q_j)\phi_m/\gamma_h$, and
+$\widehat{\bm\eta}^T\bm x$ is the second line.
+\end{proof}
+
+\begin{proposition}\label{fv}
+The matrix~\eqref{ngm-def} is $\operatorname{diag}(\bm d)A_c$
+of~\eqref{M-ngm}, and $FV^{-1}$ and $\operatorname{NGM}$ have the same
+non-zero eigenvalues; in particular
+$\rho\left(FV^{-1}\right)=\rho\left(\operatorname{NGM}\right)$.
+\end{proposition}
+\begin{proof}
+Let $H=\operatorname{blockdiag}(\widehat{\bm\eta}^T)\in\mathbb{R}^{N\times 8N}$.
+By~\eqref{f-rows}, $F=R^T\widehat F$ with
+$\widehat F=D_0\operatorname{diag}(\bm d)\mathscr{P}C\operatorname{diag}(\bm\psi_I)H$.
+Since $RR^T=I_{2N}$, $\operatorname{NGM}=RR^T\widehat FV^{-1}R^T=\widehat FV^{-1}R^T$.
+The matrix $V^{-1}$ is block diagonal, so by Lemma~\ref{q-formula}
+$HV^{-1}R^T\in\mathbb{R}^{N\times 2N}$
+has in row $p$ only the entries $q_{s,p}$ in column $2p-1$ and $q_{m,p}$ in
+column $2p$, i.e.\ $HV^{-1}R^T=\mathscr{P}^TQ$. With
+$\operatorname{diag}(\bm\psi_I)\mathscr{P}^T=\mathscr{P}^T\Psi_I$ and the
+fact that diagonal matrices commute,
+$\operatorname{NGM}=D_0\operatorname{diag}(\bm d)\mathscr{P}C\mathscr{P}^T\Psi_IQ
+=\operatorname{diag}(\bm d)A_c$.
+Finally $FV^{-1}=R^T\left(\widehat FV^{-1}\right)$ has the same non-zero
+eigenvalues as $\widehat FV^{-1}R^T=\operatorname{NGM}$, since $X_1X_2$ and
+$X_2X_1$ have the same non-zero eigenvalues (Section~\ref{M-sec-reduced}).
+\end{proof}
+
+\bibliographystyle{plain}
+\bibliography{../bib_mb}
+\end{document}
