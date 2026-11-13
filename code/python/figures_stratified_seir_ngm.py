@@ -5,7 +5,12 @@
                      share of the total (left), per person relative to the
                      largest age group (right);
   fig_grad_hhs.pdf   -d rho(NGM) / d chi_1 by age for the ten HHS region
-                     headquarter states.
+                     headquarter states;
+  fig_mock_alloc.pdf doses per day by age, US total, mock doses of
+                     three_doses_51x16_mock.py: one dose and three doses;
+  fig_mock_conv.pdf  rho per fixed point iteration (one dose) and per step of
+                     the alternating method (three doses, five starts).
+The last two read intermediate/three_doses_51x16_mock_spg.npz.
 
 Colors: slots 1 and 2 of the reference categorical palette (blue, orange),
 neutral gray for context lines; ink and grid in text and muted tones.
@@ -153,8 +158,68 @@ def fig_doses_4x4():
     save(fig, "fig_doses_4x4.pdf")
 
 
+MOCK = os.path.join(S7.HERE, "intermediate", "three_doses_51x16_mock_spg.npz")
+
+
+def fig_mock_alloc(D):
+    """Doses per day by age, US total, mock instance: one dose (first doses) and
+    three doses (doses 1, 2, 3), for the uniform, left eigenvector and alternating
+    method allocations."""
+    sig, ref, lev, cmin, c1 = D["sig"], D["ref"], D["lev"], D["chi_min"], D["chi1_one"]
+    m, n = S7.m, S7.n
+    tot = lambda s, c: (s * c).reshape(m, n).sum(axis=0) / 1e3
+    panels = [("one dose: first doses", [tot(sig[0], ref[0]), tot(sig[0], lev[0]), tot(sig[0], c1)])]
+    for k, name in enumerate(("first", "second", "third")):
+        panels.append(("three doses: %s doses" % name,
+                       [tot(sig[k], ref[k]), tot(sig[k], lev[k]), tot(sig[k], cmin[k])]))
+    labels = ("uniform", "left eigenvector", "alternating method")
+    cols = (GRAY, ORANGE, BLUE)
+    x = np.arange(n)
+    wbar = 0.28
+    fig, axes = plt.subplots(2, 2, figsize=(6.5, 4.8), sharex=True,
+                             gridspec_kw=dict(hspace=0.3, wspace=0.22))
+    for ax, (title, vals) in zip(axes.ravel(), panels):
+        for k in range(3):
+            ax.bar(x + (k - 1) * wbar, vals[k], width=wbar, color=cols[k], edgecolor="white",
+                   linewidth=0.4, label=labels[k])
+        ax.set_title(title, fontsize=9, color=INK)
+        ax.grid(axis="x", visible=False)
+    for ax in axes[1, :]:
+        age_axis(ax)
+    for ax in axes[:, 0]:
+        ax.set_ylabel("doses per day (thousands)")
+    h, l = axes[0, 0].get_legend_handles_labels()
+    fig.legend(h, l, loc="lower center", bbox_to_anchor=(0.5, 0.97), ncol=3, frameon=False)
+    save(fig, "fig_mock_alloc.pdf")
+
+
+def fig_mock_conv(D):
+    """rho per step: the fixed point iteration for one dose (left) and the
+    alternating method for three doses from the five starts (right)."""
+    starts = [("uniform", BLUE), ("left_ev", ORANGE), ("random_0", AQUA),
+              ("random_1", INK2), ("random_2", MUTED)]
+    fig, axes = plt.subplots(1, 2, figsize=(6.5, 2.6), gridspec_kw=dict(wspace=0.3))
+    h1 = D["hist_one"]
+    axes[0].plot(np.arange(h1.size), h1, color=BLUE, marker="o", markersize=2)
+    axes[0].set_xlabel("fixed point iteration")
+    axes[0].set_ylabel(r"$\rho$")
+    axes[0].set_title("one dose", fontsize=9, color=INK)
+    for name, col in starts:
+        h = D["hist_" + name]
+        axes[1].plot(np.arange(h.size) / 3.0, h, color=col, marker="o", markersize=2,
+                     label=name.replace("_", " ").replace("left ev", "left eigenvector"))
+    axes[1].set_xlabel("sweep (three steps each)")
+    axes[1].set_title("three doses, alternating method", fontsize=9, color=INK)
+    axes[1].legend(frameon=False, fontsize=7)
+    save(fig, "fig_mock_conv.pdf")
+
+
 def main():
     os.makedirs(OUT, exist_ok=True)
+    if os.path.exists(MOCK):
+        D = np.load(MOCK)
+        fig_mock_alloc(D)
+        fig_mock_conv(D)
     zero = np.zeros((S7.m, S7.n))
     Y, Z, pref = S7.yz(zero, zero, zero)
     rho, wS, _, _, grad = S7.left_and_gradient(Y, Z, pref)
