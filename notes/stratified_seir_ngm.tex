@@ -411,6 +411,14 @@ set $t^{(k+1)}_p=t_p(\mu_i)$, $p\in I_i$. Every iterate satisfies the
 constraints, and by Lemma~\ref{frozen} a fixed point satisfies~\eqref{kkt}.
 We do not prove that the iteration converges.
 
+In the computations the iteration is damped:
+$\bm t^{(k+1)}=\bm t^{(k)}+\theta\left(\bm t(\bm\mu)-\bm t^{(k)}\right)$ with
+$\theta=1/2$, where $\bm t(\bm\mu)$ is the point given by the lemma. The
+constraints are linear and both points satisfy them and $t_p\ge 1$, so every
+iterate does; the fixed points are those of the undamped iteration. On mock
+data the undamped iteration ($\theta=1$) ended in a cycle of two points,
+while the damped one converged.
+
 \subsection{Numerical results}\label{sec-numerics}
 
 At random $\bm\chi$, \eqref{g-new}, \eqref{e-new} and
@@ -622,16 +630,40 @@ L_2(\bm\chi_2,\bm\mu_2,\bm\nu_2)=\rho
 \frac{\partial L_2}{\partial\chi_{2,p}}=\frac{\partial\rho}{\partial\chi_{2,p}}
 +\mu_{2,i}\sigma_{2,p}-\nu_{2,p},
 \end{equation*}
-and its Karush--Kuhn--Tucker conditions are~\eqref{kkt3} for $k=2$. Here
-$g_p$ need not be monotone in $\chi_{2,p}$, and the one dose form does not
-apply. In the variables
-$u_p=\sigma_{2,p}\chi_{2,p}/b_{2,i}$ the constraints are a simplex for each
-location, and we use the spectral projected gradient method
-of~\cite{2000Birgin_Martinez_Raydan}, with the gradient from~\eqref{drho-dg}
-and~\eqref{dg} and the Euclidean projection onto the simplices. Its
-stationary points are the points satisfying~\eqref{kkt3} for $k=2$. The step
-returns the point with the smallest $\rho$ among its iterates, so it does not
-increase $\rho$.
+and its Karush--Kuhn--Tucker conditions are~\eqref{kkt3} for $k=2$.
+Multiplying the numerator and the denominator of~\eqref{g-new} by
+$\omega_p=\omega_v+\varepsilon_2\chi_{2,p}$ shows that $g_p$ is a ratio of affine
+functions of $\chi_{2,p}$:
+\begin{equation*}
+g_p=\frac{\kappa_p+\kappa_p'\chi_{2,p}}{\lambda_p+\lambda_p'\chi_{2,p}},\qquad
+\begin{aligned}
+\kappa_p&=\omega_v+r_p(1-\varepsilon_1)\chi_{1,p}, &
+\kappa_p'&=\varepsilon_2\left(1+r_p\chi_{1,p}/\omega\right),\\
+\lambda_p&=\omega_v+\chi_{1,p}, &
+\lambda_p'&=\varepsilon_2\left(1+(2+\varepsilon_3\chi_{3,p}/\omega)\chi_{1,p}/\omega\right),
+\end{aligned}
+\end{equation*}
+so $\partial g_p/\partial\chi_{2,p}=-\Delta_p/(\lambda_p+\lambda_p'\chi_{2,p})^2$
+with $\Delta_p=\kappa_p\lambda_p'-\kappa_p'\lambda_p$, which does not depend on
+$\chi_{2,p}$: $g_p$ is strictly decreasing, constant or strictly increasing
+in $\chi_{2,p}$ as $\Delta_p>0$, $=0$ or $<0$. We assume that every location
+contains a group with $\Delta_p>0$; for $\omega=\omega_v$ this holds for
+instance for a group with a small positive $\chi_{1,p}$, and it holds in all our
+computations. Then the groups with $\Delta_p\le 0$ receive no second doses:
+moving the second doses of such a group to a group of the same location with
+$\Delta_q>0$ does not increase $g_p$ and decreases $g_q$, so it decreases
+$\rho$, since $\partial\rho/\partial g_l>0$ by~\eqref{drho-dg}. On the groups
+with $\Delta_p>0$, with $t_p=1+\lambda_p'\chi_{2,p}/\lambda_p$,
+\begin{equation*}
+g_p=g_p^0\left((1-e_p)+\frac{e_p}{t_p}\right),\qquad g_p^0=\frac{\kappa_p}{\lambda_p},\qquad
+e_p=\frac{\Delta_p}{\kappa_p\lambda_p'}\in(0,1),
+\end{equation*}
+which is the one dose form with $A_1$ replaced by $A_1\operatorname{diag}(\bm\gamma)$,
+$\gamma_p=g_p^0$ on these groups and $\gamma_p=g_p$ on the others,
+$\widetilde\sigma_p=\sigma_{2,p}\lambda_p/\lambda_p'$ and
+$c_i=b_{2,i}+\sum\widetilde\sigma_p$, the sum over these groups of the location.
+So this step, like the other two, is done by the damped fixed point iteration
+of Section~\ref{sec-fixed-point}.
 
 \subsection{Convergence}\label{sec-alt-convergence}
 We do not prove that the $\bm\chi_1$ and $\bm\chi_3$ steps decrease $\rho$, nor
@@ -659,9 +691,8 @@ $\chi_{k,p}\sigma_{k,p}=b_{k,i}w_p/\sum_{l\in I_i}w_l$, with $w_p$ the entry
 in row $2p-1$ of the dominant left eigenvector of $\operatorname{NGM}$, here
 at $\bm\chi^{\mathrm{ref}}$.
 
-The fixed point iterations of the $\bm\chi_1$ and $\bm\chi_3$ steps stop at a
-relative change of $\bm t$ below $10^{-12}$, the $\bm\chi_2$ step stops after
-at most $500$ iterations, and the method stops when $\rho$ changes by less
+The damped fixed point iterations of the three steps stop at a relative
+change of $\bm t$ below $10^{-12}$, and the method stops when $\rho$ changes by less
 than $10^{-11}$ (relative) in a sweep. $\rho$ is computed by Arnoldi from
 $A_1\operatorname{diag}(\bm g)$, of order $N=816$; at the final points it agrees
 with $\rho(\operatorname{NGM})$, of order $2N$, to the digits shown. The
@@ -673,9 +704,9 @@ $h_{k,p}/\mu_{k,i}$ over the groups that receive no doses, at most $1$.
 
 \paragraph{One dose.}
 With $\bm\chi_2=\bm\chi_3=0$ and the same $\sigma_{1,p}$, $b_{1,i}$, the
-fixed point iteration from the uniform allocation stops after $142$
+damped fixed point iteration from the uniform allocation stops after $43$
 iterations at $\rho=0.79347$; no iteration increases $\rho$ by more than
-$10^{-12}$ (relative). The spread is $3.4\cdot10^{-13}$ and the ratio is
+$10^{-12}$ (relative). The spread is $2.1\cdot10^{-13}$ and the ratio is
 $0.9998$; the groups with no first doses are the four age groups from 60 on in
 every location, 0--4 in 18 locations and 55--59 in 2. Table~\ref{tab-mock} compares
 the allocations.
@@ -699,11 +730,11 @@ doses by age.
 \centering
 \begin{tabular}{|l|c|c|c|c|c|}\hline
 start & sweeps & $\rho$ & spread, $k=1$ & spread, $k=2$ & spread, $k=3$\\\hline
-uniform & 8 & 0.765041 & $4.2\cdot10^{-5}$ & $7.5\cdot10^{-5}$ & $2.1\cdot10^{-7}$\\\hline
-left eigenvector & 10 & 0.764866 & $2.2\cdot10^{-5}$ & $3.6\cdot10^{-5}$ & $1.0\cdot10^{-7}$\\\hline
-random 1 & 25 & 0.765101 & $2.2\cdot10^{-5}$ & $9.8\cdot10^{-5}$ & $5.2\cdot10^{-5}$\\\hline
-random 2 & 11 & 0.765253 & $6.7\cdot10^{-6}$ & $3.7\cdot10^{-5}$ & $4.9\cdot10^{-5}$\\\hline
-random 3 & 9 & 0.765070 & $1.3\cdot10^{-5}$ & $8.8\cdot10^{-5}$ & $2.2\cdot10^{-5}$\\\hline
+uniform & 8 & 0.765041 & $4.2\cdot10^{-5}$ & $7.4\cdot10^{-11}$ & $2.1\cdot10^{-7}$\\\hline
+left eigenvector & 10 & 0.764866 & $2.3\cdot10^{-5}$ & $7.9\cdot10^{-11}$ & $1.0\cdot10^{-7}$\\\hline
+random 1 & 25 & 0.765101 & $2.2\cdot10^{-5}$ & $1.1\cdot10^{-11}$ & $5.2\cdot10^{-5}$\\\hline
+random 2 & 11 & 0.765253 & $6.7\cdot10^{-6}$ & $1.3\cdot10^{-11}$ & $4.9\cdot10^{-5}$\\\hline
+random 3 & 9 & 0.765070 & $1.3\cdot10^{-5}$ & $1.5\cdot10^{-11}$ & $2.2\cdot10^{-5}$\\\hline
 \end{tabular}
 \caption{The alternating method from five starts, mock instance; the
 spread of~\eqref{kkt3} at the end point for each dose.}\label{tab-mock-starts}
@@ -760,8 +791,10 @@ one right and one left Perron vector of $A_1\operatorname{diag}(\bm g)$, and
 with these vectors held fixed the Karush--Kuhn--Tucker conditions are solved
 in closed form, location by location (Lemma~\ref{frozen}
 and~\eqref{mu-exact}). This gives a fixed point iteration whose iterates
-satisfy the constraints. In $\chi_{2,p}$, $g_p$ need not be monotone, and
-that step is done by a projected gradient method.
+satisfy the constraints. In $\chi_{2,p}$, $g_p$ is monotone; if every location
+has a group where it decreases, the groups where it does not decrease receive
+no second doses, and on the others $g_p$ has the one dose form, so the same
+iteration applies.
 \item On both data sets $\rho(FV^{-1})$ and
 $\rho\left(A_1\operatorname{diag}(\bm g)\right)$ agree to twelve digits
 (Table~\ref{tab}). On the $51\times16$ data at $t=347$ every first dose

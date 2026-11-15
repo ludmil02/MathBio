@@ -145,21 +145,23 @@ def random_alloc(b, sig, rng, ks):
 
 
 # ----------------------------------------------------------------------------- one week
-def solve_week(b, sig, mode, nrand, seed):
-    """Returns a dict with the allocations, rho, the histories and the KKT check."""
+def solve_week(b, sig, mode, nrand, seed, newton=False):
+    """Returns a dict with the allocations, rho, the histories and the KKT check.
+    newton: three doses, the Newton method of Appendix C after the alternating method."""
     ks = (0,) if mode == 1 else (0, 1, 2)
     uni = uniform(b, sig, ks)
     lev = left_ev(b, sig, uni, ks)
     res = dict(uniform=uni, left_ev=lev, hist={})
     if mode == 1:
         h = []
-        c1, it = T.t_block(uni, 0, b, sig, tol=1e-13, kmax=1000, hist=h)
+        c1, it, how = T.fp_step(uni, 0, b, sig, tol=1e-13, kmax=1000, hist=h, label="[uniform]")
         h.append(T.rho_of(c1))
         h = np.array(h)
         inc = np.diff(h) / h[1:]
-        say("fixed point iteration from the uniform allocation: %d iterations, rho = %.12f; "
-            "iterations that increase rho by more than 1e-12 (relative): %d of %d"
-            % (it, h[-1], int((inc > 1e-12).sum()), inc.size))
+        say("%s from the uniform allocation: %d iterations, rho = %.12f; "
+            "iterations of the fixed point iteration that increase rho by more than 1e-12 (relative): %d of %d"
+            % ("damped fixed point iteration" if how == "fp" else "spg (after the fixed point iteration)",
+               it, h[-1], int((inc > 1e-12).sum()), inc.size))
         res.update(minimizer=c1, best_start="uniform", steps=it, increases=int((inc > 1e-12).sum()))
         res["hist"]["uniform"] = h
     else:
@@ -169,6 +171,12 @@ def solve_week(b, sig, mode, nrand, seed):
         ends = []
         for name, ch in starts:
             cm, rm, h = T.alternate([c.copy() for c in ch], b, sig, label="[%s]" % name)
+            if newton:
+                ra = rm
+                cm, rm, info = T.newton(cm, b, sig, label="[%s]" % name)
+                say("[%s] alternating method rho %.15f, after Newton %.15f (relative change %.1e)"
+                    % (name, ra, rm, (rm - ra) / ra))
+                res.setdefault("newton", {})[name] = info
             inc = np.diff(h) / h[1:]
             ends.append((rm, name, cm, (h.size - 1) // 3, int((inc > 1e-12).sum())))
             res["hist"][name] = h
@@ -196,11 +204,21 @@ def main():
     ap.add_argument("--weeks", default="1", help="'all', 'w', 'w1-w2' or 'w1,w2,...' (default 1)")
     ap.add_argument("--file", default=T.DOSES_XLSX, help="the doses file (default %(default)s)")
     ap.add_argument("--random-starts", type=int, default=3, help="three doses: random starts (default 3)")
-    ap.add_argument("--chi2", choices=("spg", "tc", "pg"), default="spg",
-                    help="three doses: method of the chi_2 step (default spg)")
+    ap.add_argument("--chi2", choices=("fp", "spg", "tc", "pg"), default="fp",
+                    help="three doses: method of the chi_2 step: fp, the damped fixed point iteration "
+                         "of Section 6.3 of the notes (default), or spg, tc, pg")
     ap.add_argument("--out", default=None, help="output prefix (default intermediate/optimize_doses_mode<M>)")
+    ap.add_argument("--theta", type=float, default=0.5,
+                    help="damping of the fixed point iteration, 0 < theta <= 1 (default 0.5; 1 = undamped)")
+    ap.add_argument("--step13", choices=("fp", "spg", "newton"), default="fp",
+                    help="three doses: chi1 and chi3 steps by the fixed point iteration (fp, default), "
+                         "spectral projected gradient (spg) or Newton's method (Appendix C.3 of the notes)")
+    ap.add_argument("--newton", action="store_true",
+                    help="three doses: after the alternating method, the Newton method of Appendix C of the notes")
     a = ap.parse_args()
     T.CHI2 = a.chi2
+    T.STEP13 = a.step13
+    T.THETA = a.theta
     out = a.out or os.path.join(S7.HERE, "intermediate", "optimize_doses_mode%d" % a.mode)
 
     if not os.path.exists(a.file) and a.file == T.DOSES_XLSX:
@@ -219,7 +237,7 @@ def main():
         if sig is None:
             sig = mock_sigma()
         say("doses per week, US total: %s" % ", ".join("b%d %.4e" % (k, 7 * b[k - 1].sum()) for k in ks))
-        res = solve_week(b, sig, a.mode, a.random_starts, seed=w)
+        res = solve_week(b, sig, a.mode, a.random_starts, seed=w, newton=a.newton)
 
         rmin = res["rho"]["minimizer"]
         row = dict(week=w, mode=a.mode,

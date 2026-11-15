@@ -10,7 +10,7 @@
                      three_doses_51x16_mock.py: one dose and three doses;
   fig_mock_conv.pdf  rho per fixed point iteration (one dose) and per step of
                      the alternating method (three doses, five starts).
-The last two read intermediate/three_doses_51x16_mock_spg.npz.
+The last two read intermediate/three_doses_51x16_mock_fp.npz.
 
 Colors: slots 1 and 2 of the reference categorical palette (blue, orange),
 neutral gray for context lines; ink and grid in text and muted tones.
@@ -158,7 +158,7 @@ def fig_doses_4x4():
     save(fig, "fig_doses_4x4.pdf")
 
 
-MOCK = os.path.join(S7.HERE, "intermediate", "three_doses_51x16_mock_spg.npz")
+MOCK = os.path.join(S7.HERE, "intermediate", "three_doses_51x16_mock_fp.npz")
 
 
 def fig_mock_alloc(D):

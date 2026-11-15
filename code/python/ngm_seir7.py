@@ -95,6 +95,12 @@ _K = lr[None, None, :, None] * usc[None, :, None, :] * _expo[:, None, :, :]
 mc = _K / _K.sum(axis=(2, 3), keepdims=True)
 del _K, _expo
 C = mc.reshape(m * n, m * n)       # row (i,j), column (p,q)
+C_DROP = 1e-16                     # entries of C below this are set to 0 (0.3% of them; C stays irreducible)
+C = np.where(C >= C_DROP, C, 0.0)  # a new array: mc is unchanged
+# irreducibility of C (and of A_1, which has the same pattern): one strongly connected component;
+# the fixed point steps of three_doses_51x16_mock.py use spg if it fails
+from scipy.sparse.csgraph import connected_components as _scc
+IRREDUCIBLE = _scc(sps.csr_matrix(C), directed=True, connection="strong")[0] == 1
 
 om, omv = sc["omega"], sc["omega_v"]
 e1, e2, e3 = sc["eps1"], sc["eps2"], sc["eps3"]

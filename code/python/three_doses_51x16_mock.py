@@ -65,7 +65,11 @@ import ngm_seir7 as S7
 
 T0 = time.time()
 # chi2 step: "spg" spectral projected gradient, "tc" trust-constr, "pg" projected gradient
-CHI2 = sys.argv[1] if len(sys.argv) > 1 else "spg"
+CHI2 = sys.argv[1] if len(sys.argv) > 1 else "fp"
+THETA = 0.5          # damping of the fixed point iteration (Section 5.2); 1 = undamped
+# chi1 and chi3 steps: "fp" the fixed point iteration (Section 5.2), "spg" spectral projected
+# gradient (as the chi2 step), "newton" Appendix C.3
+STEP13 = "fp"
 DOSES_XLSX = os.path.join(S7.HERE, "data", "doses_51x16_mock.xlsx")
 DOSES = sys.argv[2] if len(sys.argv) > 2 else DOSES_XLSX
 CHI_REF = (3.0e-3, 1.0 / 28.0, 1.0e-3)
@@ -136,28 +140,76 @@ def rho_ngm(chi):
 
 
 # ----------------------------------------------------------------------------- one block, t form
-def solve_mu(h, sg, ci):
-    """(4.11): the solution of sum_p sg_p max(1, sqrt(h_p / (mu sg_p))) = c_i."""
+def solve_mu(h, sg, bi):
+    """(4.11): the solution of sum_p sg_p max(1, sqrt(h_p / (mu sg_p))) = c_i with
+    c_i = bi + sum_p sg_p.  Written with bi and the tail sums
+    c_i - C_j = bi + sum_{l > j} sg_(l), so that groups with very large sg_p (very small
+    slope s_p in the chi3 step) do not cause cancellation."""
     beta = h / sg
     o = np.argsort(beta)
     beta, s, rr = beta[o], sg[o], np.sqrt(h * sg)[o]
     q = len(beta)
-    Cc = np.concatenate([[0.0], np.cumsum(s)])
+    tail = np.concatenate([np.cumsum(s[::-1])[::-1], [0.0]])   # tail[j] = sum_{l >= j} s_l
     B = np.concatenate([np.cumsum(rr[::-1])[::-1], [0.0]])
     j = 0
     for jj in range(1, q):
-        if Cc[jj] + B[jj] / np.sqrt(beta[jj - 1]) >= ci:
+        # F(beta_(jj-1)) >= c_i  <=>  B_jj / sqrt(beta_(jj-1)) - tail_jj >= bi
+        if B[jj] / np.sqrt(beta[jj - 1]) - tail[jj] >= bi:
             j = jj
-    return (B[j] / (ci - Cc[j])) ** 2
+    return (B[j] / (bi + tail[j])) ** 2
 
 
-def t_block(chi, k, b, sig, tol=1e-12, kmax=300, hist=None):
-    """Minimize over chi_k (k = 0: first dose, k = 2: third dose), the others fixed,
-    by the fixed point iteration of Lemma 4.1.  Returns the new chi and the
-    number of iterations.  If hist is a list, rho at each iterate is appended."""
+def chi2_form(chi):
+    """Section 6.3 of the notes: g_p = (kappa + kappa' chi2) / (lambda + lambda' chi2),
+    Delta_p = kappa lambda' - kappa' lambda; on the groups with Delta_p > 0,
+    g_p = g0_p ((1 - e_p) + e_p / t_p), t_p = 1 + (lambda' / lambda) chi2.
+    Returns Delta, g0, e, slope = lambda' / lambda."""
+    c1, _, c3 = chi
+    ka = omv + r * (1.0 - e1) * c1
+    kp = e2 * (1.0 + r * c1 / om)
+    la = omv + c1
+    lp = e2 * (1.0 + (2.0 + e3 * c3 / om) * c1 / om)
+    Delta = ka * lp - kp * la
+    return Delta, ka / la, Delta / (ka * lp), lp / la
+
+
+def fp_step(chi, k, b, sig, tol=1e-12, kmax=300, hist=None, label=""):
+    """The step for dose k by the damped fixed point iteration (t_block), falling back to
+    spg (block_spg) if an assumption of the notes fails: C not irreducible, or (k = 1) a
+    location without a group with Delta_p > 0, or the iteration does not converge in kmax
+    iterations.  Returns the new chi, the number of iterations and the method used."""
+    reason = None
+    if not S7.IRREDUCIBLE:
+        reason = "C is not irreducible"
+    elif k == 1 and not (chi2_form(chi)[0] > 0).reshape(m, n).any(axis=1).all():
+        reason = "a location has no group with Delta_p > 0"
+    if reason is None:
+        out = {}
+        new, it = t_block(chi, k, b, sig, tol=tol, kmax=kmax, hist=hist, out=out)
+        if out["converged"]:
+            return new, it, "fp"
+        reason = "the fixed point iteration did not converge in %d iterations" % kmax
+    say("%s dose %d step: %s; spg instead" % (label, k + 1, reason))
+    new, it = block_spg(chi, k, b, sig)
+    return new, it, "spg"
+
+
+def t_block(chi, k, b, sig, tol=1e-12, kmax=300, hist=None, theta=None, out=None):
+    """Minimize over chi_k (k = 0, 1, 2: first, second, third dose), the others fixed,
+    by the damped fixed point iteration of Section 5.2 of the notes:
+    t <- t + theta (t(mu) - t), theta = THETA (1/2) unless given; theta = 1 is the
+    undamped iteration.  Stops when |t(mu) - t| / |t| < tol.  Returns the new chi and
+    the number of iterations.  If hist is a list, rho at each iterate is appended.
+    k = 1 (Section 6.3): the groups with Delta_p <= 0 get no second doses, and the
+    iteration runs over the groups with Delta_p > 0; every location must have one."""
+    theta = THETA if theta is None else theta
     chi = [c.copy() for c in chi]
     c1, c2, c3 = chi
-    if k == 0:
+    if k == 1:
+        Delta, g0, e, slope = chi2_form(chi)
+        slope = np.where(Delta > 0, slope, 0.0)               # the iteration runs where slope > 0
+        coef = lambda gd: g0 * e * gd                         # h_p = g0_p e_p (dr/dg)_p
+    elif k == 0:
         p2 = e2 * c2 / om
         omp = omv + e2 * c2
         alpha = 1.0 + 2.0 * e2 * c2 / om + e2 * e3 * c2 * c3 / om**2
@@ -183,13 +235,15 @@ def t_block(chi, k, b, sig, tol=1e-12, kmax=300, hist=None):
             if b[k][i] <= 0 or I.size == 0:
                 continue
             st = sig[k][I] / slope[I]
-            mu = solve_mu(h[I], st, b[k][i] + st.sum())
+            mu = solve_mu(h[I], st, b[k][i])
             tn[I] = np.maximum(1.0, np.sqrt(h[I] / (mu * st)))
         d = np.abs(tn - tval).max() / tval.max()
-        tval = tn
+        tval = tval + theta * (tn - tval)
         chi[k] = np.where(act, (tval - 1.0) / np.where(act, slope, 1.0), 0.0)
         if d < tol:
             break
+    if out is not None:
+        out["converged"] = bool(d < tol)
     return chi, it + 1
 
 
@@ -315,6 +369,25 @@ def chi2_block_spg(chi, b, sig, maxiter=500):
     return to_chi(u), it
 
 
+def block_spg(chi, k, b, sig, maxiter=500):
+    """The step for dose k (0, 1, 2 for chi1, chi2, chi3) by spg in
+    u_p = sigma_{k,p} chi_{k,p} / b_{k,i}, the other doses fixed."""
+    bk = np.repeat(b[k], n)
+
+    def to_chi(u):
+        ch = list(chi)
+        ch[k] = u * bk / sig[k]
+        return ch
+
+    def fg(u):
+        ch = to_chi(u)
+        rho, gd = drho_dg(g_of(*ch)[0])
+        return rho, gd * dg_all(ch)[k] * bk / sig[k]
+
+    u, _, it, _ = spg(fg, lambda u: rho_of(to_chi(u)), sig[k] * chi[k] / bk, proj, maxiter=maxiter)
+    return to_chi(u), it
+
+
 def joint_spg(chi, b, sig, maxiter=3000):
     """All three doses at once by spg in u_{k,p} = sigma_{k,p} chi_{k,p} / b_{k,i}."""
     bb = [np.repeat(b[k], n) for k in range(3)]
@@ -380,11 +453,25 @@ def alternate(chi, b, sig, sweeps=200, tol=1e-11, label=""):
     hist = [rho]
     say("%s start: rho = %.12f" % (label, rho))
     for sw in range(sweeps):
-        chi, it1 = t_block(chi, 0, b, sig)
+        if STEP13 == "newton":                         # Appendix C.3
+            chi, _, inf1 = newton(chi, b, sig, doses=(0,), second_order=False, verbose=False)
+            it1 = inf1["steps"]
+        elif STEP13 == "spg":
+            chi, it1 = block_spg(chi, 0, b, sig)
+        else:
+            chi, it1, _ = fp_step(chi, 0, b, sig, label="%s sweep %d" % (label, sw))
         r1 = rho_of(chi)
-        chi, it3 = t_block(chi, 2, b, sig)
+        if STEP13 == "newton":
+            chi, _, inf3 = newton(chi, b, sig, doses=(2,), second_order=False, verbose=False)
+            it3 = inf3["steps"]
+        elif STEP13 == "spg":
+            chi, it3 = block_spg(chi, 2, b, sig)
+        else:
+            chi, it3, _ = fp_step(chi, 2, b, sig, label="%s sweep %d" % (label, sw))
         r3 = rho_of(chi)
-        if CHI2 == "spg":
+        if CHI2 == "fp":                               # Section 6.3
+            chi, it2, _ = fp_step(chi, 1, b, sig, label="%s sweep %d" % (label, sw))
+        elif CHI2 == "spg":
             chi, it2 = chi2_block_spg(chi, b, sig)
         elif CHI2 == "tc":
             chi, it2 = chi2_block_tc(chi, b, sig)
@@ -430,6 +517,264 @@ def kkt_table(chi, b, sig, doses=(0, 1, 2), thr=1e-9):
         say("  KKT dose %d: spread %.1e, ratio where no doses %s (%d groups), dose residual %.1e"
             % (k + 1, sp, "%.3f" % ra if np.isfinite(ra) else "-", nz, dr))
     return out
+
+
+# ----------------------------------------------------------------------------- Newton, Appendix C
+def g_derivs(chi):
+    """g, its gradient, shape (3, N), and Hessian, shape (3, 3, N), in (chi1, chi2, chi3),
+    group by group.  g = Nt / Dt with (numerator and denominator of (2.5) times omega_p)
+      Nt = omv + e2 c2 + r a c1 + (r e2 / om) c1 c2,
+      Dt = omv + e2 c2 + c1 + (2 e2 / om) c1 c2 + (e2 e3 / om^2) c1 c2 c3,   a = 1 - eps1."""
+    c1, c2, c3 = chi
+    a = 1.0 - e1
+    q = e2 * e3 / om**2
+    Nt = omv + e2 * c2 + r * a * c1 + r * e2 / om * c1 * c2
+    Dt = omv + e2 * c2 + c1 + 2.0 * e2 / om * c1 * c2 + q * c1 * c2 * c3
+    z = np.zeros(N)
+    dN = np.array([r * a + r * e2 / om * c2, e2 + r * e2 / om * c1, z])
+    dD = np.array([1.0 + 2.0 * e2 / om * c2 + q * c2 * c3, e2 + 2.0 * e2 / om * c1 + q * c1 * c3, q * c1 * c2])
+    HN = np.zeros((3, 3, N))
+    HN[0, 1] = HN[1, 0] = r * e2 / om
+    HD = np.zeros((3, 3, N))
+    HD[0, 1] = HD[1, 0] = 2.0 * e2 / om + q * c3
+    HD[0, 2] = HD[2, 0] = q * c2
+    HD[1, 2] = HD[2, 1] = q * c1
+    g = Nt / Dt
+    dg = (dN - g * dD) / Dt
+    Hg = (HN - g * HD - dg[:, None] * dD[None, :] - dD[:, None] * dg[None, :]) / Dt
+    return g, dg, Hg
+
+
+A1 = lambda x: dc * (C @ (psq * x))
+A1T = lambda y: psq * (C.T @ (dc * y))
+
+
+class Second:
+    """rho, its gradient and Hessian-vector products in x = (chi1, chi2, chi3), shape (3, N),
+    by Lemmas C.2-C.3 and (C.3).  Products with S and S^T are solves with the bordered
+    matrices B, B' of Lemma C.2 by GMRES; nothing of order N is formed."""
+
+    def __init__(self, chi, gtol=1e-12):
+        self.chi = np.array(chi, dtype=float)
+        self.g, self.dg, self.Hgx = g_derivs(self.chi)
+        rho, v, w = perron(self.g)
+        w = w / (w @ v)
+        self.rho, self.v, self.w = rho, v, w
+        self.a = A1T(w)
+        self.grad_g = self.a * v                          # (3.3) with w^T v = 1
+        self.grad = self.dg * self.grad_g                 # (3, N)
+        self.gtol = gtol
+        g = self.g
+        self.B = spsl.LinearOperator((N + 1, N + 1), dtype=float,
+                                     matvec=lambda z: np.append(rho * z[:N] - A1(g * z[:N]) + v * z[N], w @ z[:N]))
+        self.Bt = spsl.LinearOperator((N + 1, N + 1), dtype=float,
+                                      matvec=lambda z: np.append(rho * z[:N] - g * A1T(z[:N]) + w * z[N], v @ z[:N]))
+        self.solves = 0
+
+    def _solve(self, op, rhs):
+        sol, info = spsl.gmres(op, np.append(rhs, 0.0), tol=self.gtol, atol=0.0, restart=200, maxiter=50)
+        if info != 0:
+            raise RuntimeError("GMRES for the bordered system did not converge (info %d)" % info)
+        self.solves += 1
+        return sol[:N]
+
+    def S(self, x):
+        return self._solve(self.B, x - self.v * (self.w @ x))
+
+    def ST(self, x):
+        return self._solve(self.Bt, x - self.w * (self.v @ x))
+
+    def hess_g(self, y):
+        """Lemma C.3: D_a S A1 D_v y + D_v A1^T S^T D_a y."""
+        return self.a * self.S(A1(self.v * y)) + self.v * A1T(self.ST(self.a * y))
+
+    def hess(self, z):
+        """(C.3): J^T H_g J z + sum_p (d rho / d g_p) Hess g_p z, z of shape (3, N)."""
+        u = self.hess_g((self.dg * z).sum(axis=0))
+        return self.dg * u + self.grad_g * np.einsum("kln,ln->kn", self.Hgx, z)
+
+
+def _blocks(x):
+    return x.reshape(3, m, n)
+
+
+def proj_free(z, mask, sig):
+    """P_F of Appendix C.2: z zero outside the free set, minus its sigma weighted mean,
+    location by location (rows of E_F have disjoint supports)."""
+    z = np.where(mask, z, 0.0)
+    e = np.where(mask, np.array(sig), 0.0)
+    eb, zb = _blocks(e), _blocks(z)
+    den = (eb * eb).sum(axis=2)                       # 0 for a dose with no free variable (fixed dose)
+    coef = np.divide((eb * zb).sum(axis=2), den, out=np.zeros_like(den), where=den > 0)
+    return z - (eb * coef[:, :, None]).reshape(3, N)
+
+
+ONES = np.ones((3, N))
+
+
+def pcg(hess, mask, rhs, tol, maxit=2000):
+    """Projected CG for P H P d = rhs on the range of P_F, in the variables u (the
+    constraints are sum_p u = 1 per location, so P_F removes the mean over the free
+    groups).  Stops at relative residual tol.  Returns (d, "newton", iterations) or, if a
+    direction of negative curvature is met, (direction, "negative curvature", iterations)."""
+    d = np.zeros((3, N))
+    res = proj_free(rhs, mask, ONES)
+    p = res.copy()
+    rr = (res * res).sum()
+    r0 = np.sqrt(rr)
+    for it in range(maxit):
+        Hp = proj_free(hess(p), mask, ONES)
+        pHp = (p * Hp).sum()
+        if pHp <= 0.0:
+            return (p if it == 0 else d), "negative curvature", it + 1
+        alpha = rr / pHp
+        d += alpha * p
+        res -= alpha * Hp
+        rr_new = (res * res).sum()
+        if np.sqrt(rr_new) <= tol * r0:
+            return d, "newton", it + 1
+        p = res + (rr_new / rr) * p
+        rr = rr_new
+    return d, "newton (CG limit)", maxit
+
+
+def multipliers(grad_u, mask):
+    """In the variables u: mu = -(mean of grad_u over the free groups of each location),
+    shape (3, m), and nu = grad_u + mu, which has the sign of nu of (4.1) (nu_u = (b / sigma) nu)."""
+    gb = _blocks(np.where(mask, grad_u, 0.0))
+    cnt = _blocks(mask.astype(float)).sum(axis=2)
+    mu = -np.divide(gb.sum(axis=2), cnt, out=np.zeros_like(cnt), where=cnt > 0)
+    nu = grad_u + np.repeat(mu, n, axis=1)
+    return mu, nu
+
+
+def smallest_reduced_eig(hess, mask, tol=1e-6, maxiter=5000):
+    """Smallest eigenvalue and eigenvector of P_F H P_F on the range of P_F, by Lanczos,
+    with the complement of the range shifted to the largest eigenvalue.  Returns
+    (lambda, vector, converged); if Lanczos does not converge, the best partial result."""
+    def pHp(z):
+        pz = proj_free(z.reshape(3, N), mask, ONES)
+        return proj_free(hess(pz), mask, ONES)
+    op = spsl.LinearOperator((3 * N, 3 * N), matvec=lambda z: pHp(z).ravel(), dtype=float)
+    lmax = spsl.eigsh(op, k=1, which="LA", tol=1e-3, maxiter=500, return_eigenvectors=False)[0]
+
+    def mv(z):
+        z = z.reshape(3, N)
+        pz = proj_free(z, mask, ONES)
+        return (pHp(pz) + lmax * (z - pz)).ravel()
+    op = spsl.LinearOperator((3 * N, 3 * N), matvec=mv, dtype=float)
+    try:
+        lam, vec = spsl.eigsh(op, k=1, which="SA", tol=tol, maxiter=maxiter)
+        conv = True
+    except spsl.ArpackNoConvergence as err:
+        if len(err.eigenvalues) == 0:
+            return np.nan, np.zeros((3, N)), False, lmax
+        lam, vec = err.eigenvalues, err.eigenvectors
+        conv = False
+    return float(lam[0]), proj_free(vec[:, 0].reshape(3, N), mask, ONES), conv, float(lmax)
+
+
+def newton(chi, b, sig, thr=1e-12, maxit=30, gtol=1e-11, second_order=True, doses=(0, 1, 2),
+           verbose=True, label=""):
+    """Steps 2-4 of Appendix C.2 from the end point chi of the alternating method, in the
+    variables u_{k,p} = sigma_{k,p} chi_{k,p} / b_{k,i} (chi = D u, D = b / sigma; the
+    constraints are sum_{p in I_i} u_{k,p} = 1, the gradient is D grad_chi and the Hessian
+    D H D).  CG stops at relative residual min(1e-2, |P grad| / |grad|).
+    doses: the doses (0, 1, 2 for chi1, chi2, chi3) that are free; the others stay fixed.
+    For doses = (0,) or (2,) this is the step of Appendix C.3; for (2,) the groups with
+    s_p = 0 (chi1 = 0 or chi2 = 0) are fixed at 0 (Proposition B.1).
+    Returns chi, rho, and a dict with the history, the number of Newton steps and the
+    second order test."""
+    say_ = say if verbose else (lambda *a: None)
+    sg = np.array(sig)
+    D = np.array([np.repeat(b[k], n) for k in range(3)]) / sg
+    u = np.array(chi, dtype=float) / D
+    act = np.zeros((3, N), dtype=bool)
+    act[list(doses)] = True
+    mask = (u > thr) & act
+    if tuple(doses) == (2,):
+        mask[2] &= (np.asarray(chi[0]) > 0) & (np.asarray(chi[1]) > 0)
+    if not _blocks(mask)[list(doses)].any(axis=2).all():
+        raise ValueError("a location has no free variable for one of the doses %s" % (doses,))
+    u = np.where(mask | ~act, u, 0.0)
+    ub = _blocks(u)
+    for k in doses:                                   # restore sum u = 1 after zeroing
+        ub[k] = ub[k] / ub[k].sum(axis=1)[:, None]
+    u = ub.reshape(3, N)
+    hist, info = [], {}
+    steps = 0
+    for outer in range(10):
+        for it in range(maxit):
+            sec = Second(list(D * u))
+            hist.append(sec.rho)
+            grad = D * sec.grad
+            hess = lambda z: D * sec.hess(D * z)
+            gP = proj_free(grad, mask, ONES)
+            gn = np.sqrt((gP * gP).sum()) / np.sqrt((np.where(mask, grad, 0.0) ** 2).sum())
+            if gn < gtol:
+                break
+            d, kind, cgit = pcg(hess, mask, -grad, tol=min(1e-2, gn))
+            slope = (grad * d).sum()
+            if slope > 0:
+                d, slope = -d, -slope
+            # largest step keeping the free variables non-negative, and the variable that blocks it
+            neg = np.flatnonzero((mask & (d < 0)).ravel())
+            ratios = -u.ravel()[neg] / d.ravel()[neg]
+            tmax = ratios.min() if neg.size else np.inf
+            if kind.startswith("newton"):
+                tau = min(1.0, tmax)
+            else:                                      # negative curvature: start at a step of the size of u
+                tau = min(tmax, np.abs(u[mask]).max() / np.abs(d).max())
+            for _ in range(40):
+                ut = np.where(mask, u + tau * d, u)
+                rnew = rho_of(list(D * ut))
+                if rnew <= sec.rho + 1e-4 * tau * slope:
+                    break
+                tau *= 0.5
+            if rnew > sec.rho:
+                say_("%s newton %d: |P grad| / |grad| = %.1e; no decrease along the %s direction; stop"
+                     % (label, it, gn, kind))
+                break
+            steps += 1
+            u = np.maximum(ut, 0.0)
+            left = ""
+            if tau == tmax:                            # the blocking variable reaches 0 and leaves the free set
+                j = neg[np.argmin(ratios)]
+                u.ravel()[j] = 0.0
+                mask.ravel()[j] = False
+                left = ", one variable leaves the free set"
+            say_("%s newton %d (%s, %d CG iterations): rho = %.15f, |P grad| / |grad| = %.1e, step %.2e%s"
+                 % (label, it, kind, cgit, rnew, gn, tau, left))
+        sec = Second(list(D * u))
+        grad = D * sec.grad
+        hess = lambda z: D * sec.hess(D * z)
+        mu, nu = multipliers(grad, mask)
+        scale = np.abs(grad[mask]).max()
+        cand = ~mask & act
+        if tuple(doses) == (2,):                      # groups with s_p = 0 stay out (Proposition B.1)
+            cand[2] &= (np.asarray(chi[0]) > 0) & (np.asarray(chi[1]) > 0)
+        add = cand & (nu < -1e-8 * scale)
+        if add.any():
+            say_("%s %d variables with nu < 0 return to the free set" % (label, int(add.sum())))
+            mask = mask | add
+            continue
+        break
+    gP = proj_free(grad, mask, ONES)
+    gn = np.sqrt((gP * gP).sum()) / np.sqrt((np.where(mask, grad, 0.0) ** 2).sum())
+    nuo = nu[~mask & act]
+    info.update(rho=sec.rho, hist=np.array(hist), free=int(mask.sum()), grad_rel=gn, steps=steps,
+                nu_min=float(nuo.min() / scale) if nuo.size else np.inf)
+    say_("%s newton end: rho = %.15f, |P grad| / |grad| = %.1e, free variables %d of %d, "
+         "smallest nu / |grad| over the others %.1e"
+         % (label, sec.rho, gn, mask.sum(), int(act.sum()), info["nu_min"]))
+    if second_order:
+        lam, z, conv, lmax = smallest_reduced_eig(hess, mask)
+        info.update(lam_min=lam, lam_max=lmax, lanczos_converged=conv, direction=z,
+                    strict_local_min=bool(conv and lam > 0 and info["nu_min"] > 0))
+        say("%s second order test: eigenvalues of P H P in u from %.3e to %.3e (Lanczos %s): %s"
+            % (label, lam, lmax, "converged" if conv else "NOT converged, partial result",
+               "strict local minimizer" if info["strict_local_min"] else "not shown"))
+    return list(D * u), sec.rho, info
 
 
 # ----------------------------------------------------------------------------- doses file
@@ -539,7 +884,8 @@ def main():
             rs.append(x)
         starts.append(("random %d" % s, rs))
 
-    say("chi2 step: %s" % {"spg": "spectral projected gradient", "tc": "trust-constr",
+    say("chi2 step: %s" % {"fp": "damped fixed point iteration (Section 6.3)",
+                            "spg": "spectral projected gradient", "tc": "trust-constr",
                             "pg": "projected gradient"}[CHI2])
     # ------------------------------------------------------------------ one dose
     say("ONE DOSE: sigma_1, b_1 as above, chi_2 = chi_3 = 0")

@@ -13,6 +13,8 @@
 \newtheorem{theorem}{Theorem}[section]
 \newtheorem{lemma}[theorem]{Lemma}
 \newtheorem{proposition}[theorem]{Proposition}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
 \numberwithin{equation}{section}
 \renewcommand{\thesection}{S\arabic{section}}
 
@@ -26,7 +28,10 @@
 \begin{abstract}
 Supplement to ``The next generation matrix of the age- and location-stratified
 SEIR model''. Equation, theorem and section numbers without a prefix S refer
-to that document, whose notation is used throughout.
+to that document, whose notation is used throughout. Sections~S2--S4 give
+proofs and further results for the minimization: the uniqueness of the
+minimizer for a single dose, results for the steps and the limit points of
+the alternating method, and a Newton method.
 \end{abstract}
 
 \section{The next generation matrix}\label{s-ngm}
@@ -126,6 +131,8 @@ Finally $FV^{-1}=R^T\left(\widehat FV^{-1}\right)$ has the same non-zero
 eigenvalues as $\widehat FV^{-1}R^T=\operatorname{NGM}$, since $X_1X_2$ and
 $X_2X_1$ have the same non-zero eigenvalues (Section~\ref{M-sec-reduced}).
 \end{proof}
+
+\input{supplement_results}
 
 \bibliographystyle{plain}
 \bibliography{../bib_mb}
