@@ -1,0 +1,709 @@
+% Results moved from the main notes on 2026-11-15 (backup: archive/notes_2026-11-15/).
+% Included by stratified_seir_ngm_supplement.tex.  References with the prefix M- are to
+% the main notes.  Here Delta-hat_p is the Delta_p of the backup; Section 6.3 of the main
+% notes uses Delta_p = (eps2 chi_{1,p} / omega) Delta-hat_p, of the same sign when chi_{1,p} > 0.
+\section{Uniqueness of the minimizer for a single dose}\label{app-unique}
+
+We use the notation of Section~\ref{M-sec-single}: $\bm\chi_2=\bm\theta$ and
+$\bm\chi_3=\bm\zeta$ are fixed, $\Psi(\bm t)=\rho\left(A_1\operatorname{diag}(\bm g)\right)$
+with $g_p=(1-e_p)+e_p/t_p$, $0<e_p\le 1$, and the feasible set is
+\begin{equation*}
+\mathcal{T}=\left\{\bm t\in\mathbb{R}^N:\ \sum_{p\in I_i}\widetilde\sigma_pt_p=c_i,\ i=1:m,\quad t_p\ge 1,\ p=1:N\right\}.
+\end{equation*}
+
+\begin{lemma}\label{kingman}
+Let $B\ge 0$ be irreducible. Then $F(\bm x)=\log\rho\left(B\operatorname{diag}(e^{\bm x})\right)$,
+with $e^{\bm x}=(e^{x_1},\ldots,e^{x_N})^T$, is convex on $\mathbb{R}^N$.
+\end{lemma}
+\begin{proof}
+For $\bm x,\bm x'\in\mathbb{R}^N$ and $s\in[0,1]$, the $(p,l)$ entry of
+$B\operatorname{diag}\left(e^{(1-s)\bm x+s\bm x'}\right)$ is either $0$ or
+$b_{pl}\exp\left((1-s)x_l+sx'_l\right)$, whose logarithm is affine in $s$. By
+Kingman's theorem~\cite{1961Kingman-aa}, the spectral radius of a non-negative
+matrix whose entries are each either identically zero or log-convex in $s$ is
+log-convex in $s$. So $F$ is convex on every segment, hence convex. Since $B$
+is irreducible and $e^{\bm x}>0$, $\rho>0$ and $F$ is finite.
+\end{proof}
+
+\begin{lemma}\label{log-g}
+Let $0<e\le 1$ and $\varphi(t)=\log\left((1-e)+e/t\right)$ for $t>0$. Then
+$\varphi$ is strictly decreasing and strictly convex.
+\end{lemma}
+\begin{proof}
+Let $\gamma(t)=(1-e)+e/t>0$. Then $\gamma'=-e/t^2$, $\gamma''=2e/t^3$, so
+$\varphi'=\gamma'/\gamma<0$ and
+\begin{equation*}
+\varphi''=\frac{\gamma''\gamma-\left(\gamma'\right)^2}{\gamma^2}
+=\frac{1}{\gamma^2}\left(\frac{2e(1-e)}{t^3}+\frac{2e^2}{t^4}-\frac{e^2}{t^4}\right)
+=\frac{e\left(2(1-e)t+e\right)}{t^4\gamma^2}>0,
+\end{equation*}
+since $e>0$, $1-e\ge 0$ and $t>0$.
+\end{proof}
+
+\begin{theorem}\label{thm-unique}
+Let $A_1$ be irreducible and $0<e_p\le 1$, $p=1:N$. Then $\log\Psi$ is strictly
+convex on $\{\bm t>0\}$, $\Psi$ has exactly one minimizer on $\mathcal{T}$, and
+$\bm t\in\mathcal{T}$ is this minimizer if and only if it
+satisfies~\eqref{M-kkt} for some $\bm\mu$, $\bm\nu$.
+\end{theorem}
+\begin{proof}
+Let $F$ be as in Lemma~\ref{kingman} with $B=A_1$, and
+$\bm\ell(\bm t)=\left(\varphi_p(t_p)\right)_{p=1}^N$ with
+$\varphi_p(t)=\log\left((1-e_p)+e_p/t\right)$, so that
+$\Phi=\log\Psi=F\circ\bm\ell$. By Lemma~\ref{M-simple-derivative} with
+$\bm g=e^{\bm x}$ and by~\eqref{M-drho-dg},
+\begin{equation*}
+\frac{\partial F}{\partial x_p}=\frac{g_p}{\rho}\,\frac{\partial\rho}{\partial g_p}
+=\frac{g_p\left(A_1^T\bm w\right)_pv_p}{\rho\,\bm w^T\bm v}>0,
+\end{equation*}
+since $\bm v,\bm w>0$ and, $A_1$ being irreducible, no column of $A_1$ is zero.
+
+Let $\bm t\ne\bm t'$ with $\bm t,\bm t'>0$, $s\in(0,1)$ and
+$\bm t_s=(1-s)\bm t+s\bm t'$. By Lemma~\ref{log-g},
+$\bm\ell(\bm t_s)\le\bm y:=(1-s)\bm\ell(\bm t)+s\bm\ell(\bm t')$ componentwise,
+with strict inequality for every $p$ with $t_p\ne t'_p$. By the mean value
+theorem there is $\bm\xi$ on the segment from $\bm\ell(\bm t_s)$ to $\bm y$ with
+$F(\bm y)-F\left(\bm\ell(\bm t_s)\right)=\nabla F(\bm\xi)^T\left(\bm y-\bm\ell(\bm t_s)\right)>0$,
+since $\nabla F>0$ and $\bm y-\bm\ell(\bm t_s)\ge 0$ is non-zero. With
+Lemma~\ref{kingman},
+\begin{equation*}
+\Phi(\bm t_s)=F\left(\bm\ell(\bm t_s)\right)<F(\bm y)\le(1-s)F\left(\bm\ell(\bm t)\right)+sF\left(\bm\ell(\bm t')\right)
+=(1-s)\Phi(\bm t)+s\Phi(\bm t'),
+\end{equation*}
+so $\Phi$ is strictly convex on $\{\bm t>0\}$.
+
+The set $\mathcal{T}$ is convex and closed; it is bounded, since
+$\widetilde\sigma_p>0$ gives $t_p\le c_i/\widetilde\sigma_p$ for $p\in I_i$; and
+it is not empty, since $b_{1,i}\ge 0$ gives $c_i\ge\sum_{p\in I_i}\widetilde\sigma_p$,
+so $t_p=c_i/\sum_{l\in I_i}\widetilde\sigma_l\ge 1$, $p\in I_i$, lies in
+$\mathcal{T}$. The function $\Psi$ is continuous, so it has a minimizer on
+$\mathcal{T}$. If $\bm t\ne\bm t'$ were two minimizers, then
+$\Phi\left((\bm t+\bm t')/2\right)<\Phi(\bm t)$ by strict convexity, and since
+$\Psi=e^\Phi$, the point $(\bm t+\bm t')/2\in\mathcal{T}$ would give a smaller
+value of $\Psi$. So the minimizer is unique.
+
+Since $\nabla\Psi=\Psi\nabla\Phi$ and $\Psi>0$, $\bm t$ satisfies~\eqref{M-kkt}
+with $\bm\mu$, $\bm\nu$ if and only if it satisfies the Karush--Kuhn--Tucker
+conditions for the minimization of $\Phi$ on $\mathcal{T}$ with $\bm\mu/\Psi(\bm t)$,
+$\bm\nu/\Psi(\bm t)$. The function $\Phi$ is convex and differentiable and the
+constraints are affine, so these conditions are sufficient for a global
+minimizer of $\Phi$~\cite[Section~5.5.3]{2004Boyd_Vandenberghe}, which is also
+the minimizer of $\Psi$, since $\Psi=e^\Phi$. They are necessary by
+Section~\ref{M-sec-algorithm}.
+\end{proof}
+
+\begin{remark}
+For $\bm\theta=\bm\zeta=0$, $t_p=1+\chi_{1,p}/\omega_v$ and
+$e_p=1-r_p(1-\varepsilon_1)$. Since $\bm t$ is affine in $\bm\chi_1$,
+$\log\rho\left(A_1\operatorname{diag}(\bm g)\right)$ is also strictly convex in
+$\bm\chi_1$, and the one dose problem~\eqref{M-problem} has exactly one
+minimizer. The hypotheses hold when $0<r_p\le 1$, which gives $0<e_p\le 1$ by
+Section~\ref{M-sec-single}, and when $C$ is irreducible, since
+$A_1=\operatorname{diag}(\bm d_c)C\operatorname{diag}(\bm\psi_I\odot\bm q_s)$ with
+positive diagonal factors. For the $51\times16$ data every entry of $C$ is
+positive; in the computations the entries below $10^{-16}$ ($0.3\%$ of
+them) are set to $0$, which leaves $C$ irreducible and changes $\rho$ by a
+relative $3.4\cdot10^{-16}$ at $\bm\chi=0$. The theorem concerns the minimization problem; it does not show
+that the fixed point iteration of Section~\ref{M-sec-fixed-point} converges.
+\end{remark}
+
+\section{Results for the alternating method}\label{app-alt}
+
+\subsection{The step for the third dose}\label{app-third}
+
+The step for the third dose of Section~\ref{M-sec-step3} has the one dose form
+with $e_p=1$, $A_1$ replaced by $A_1\operatorname{diag}(\bm g^0)$, and
+$t_p=1+s_p\chi_{3,p}$, over the groups with $s_p>0$, that is, with
+$\chi_{1,p}>0$ and $\chi_{2,p}>0$.
+
+\begin{proposition}\label{third-unique}
+Let $A_1$ be irreducible, $\bm\chi_1$ and $\bm\chi_2$ fixed, and let every
+location contain a group $q$ with $\chi_{1,q}>0$ and $\chi_{2,q}>0$. Then the
+step for the third dose has exactly one minimizer; it has $\chi_{3,p}=0$ for
+every $p$ with $s_p=0$, and it is the only point satisfying~\eqref{M-kkt3} for
+$k=3$.
+\end{proposition}
+\begin{proof}
+Since $g_p^0>0$, $A_1\operatorname{diag}(\bm g^0)$ is irreducible, and
+$\partial\rho/\partial g_l>0$ for every $l$ by Section~\ref{M-sec-gradient}. Let
+$s_q>0$ and $p\in I_i$, $q\in I_i$, with $s_p=0$ and $\chi_{3,p}>0$. Replacing
+$\chi_{3,p}$ by $\chi_{3,p}-\delta$ and $\chi_{3,q}$ by
+$\chi_{3,q}+\delta\sigma_{3,p}/\sigma_{3,q}$, $0<\delta\le\chi_{3,p}$, keeps the
+constraint, leaves $g_p$ unchanged, since $g_p$ does not depend on
+$\chi_{3,p}$, and decreases $g_q=g_q^0/(1+s_q\chi_{3,q})$ strictly. So $\rho$
+decreases strictly, as in the proof of Proposition~\ref{no-second}, and such a
+point is not a minimizer. A point satisfying~\eqref{M-kkt3} for $k=3$ also has
+$\chi_{3,p}=0$ for $s_p=0$: there $h_{3,p}=0$, while $h_{3,q}>0$ for $s_q>0$,
+so $\mu_{3,i}\ge h_{3,q}>0$, and $\chi_{3,p}>0$ would give
+$\mu_{3,i}=h_{3,p}=0$. On the set where $\chi_{3,p}=0$ for $s_p=0$, the proof
+of Theorem~\ref{thm-unique}, with $e_p=1$ and $\bm t$ restricted to the groups
+with $s_p>0$, shows that $\log\rho$ is strictly convex in these variables, and
+that a point satisfying the Karush--Kuhn--Tucker conditions there is its
+unique minimizer. Since every minimizer and every point
+satisfying~\eqref{M-kkt3} for $k=3$ lie in this set, the statement follows.
+\end{proof}
+
+\subsection{The step for the second dose}\label{app-second}
+
+Here $\bm\chi_1$ and $\bm\chi_3$ are fixed, as in Section~\ref{M-sec-step2}, and
+we consider $g_p$ as a function of $\chi_{2,p}\ge 0$. Let
+\begin{equation}\label{beta-delta}
+\beta_p=2+\frac{\varepsilon_3\chi_{3,p}}{\omega},\qquad
+\widehat\Delta_p=\omega_v\left(\beta_p-r_p\right)-\omega\left(1-r_p(1-\varepsilon_1)\right)
+-r_p\left(1-(1-\varepsilon_1)\beta_p\right)\chi_{1,p}.
+\end{equation}
+The number $\widehat\Delta_p$ does not depend on $\chi_{2,p}$.
+
+\begin{lemma}\label{g-chi2}
+Let $\chi_{1,p}>0$. If $\widehat\Delta_p>0$, then $g_p$ is strictly decreasing and
+$\log g_p$ is strictly convex in $\chi_{2,p}\ge 0$. If $\widehat\Delta_p<0$, then $g_p$ is
+strictly increasing and $\log g_p$ is strictly concave. If $\widehat\Delta_p=0$, or if
+$\chi_{1,p}=0$, then $g_p$ does not depend on $\chi_{2,p}$.
+\end{lemma}
+\begin{proof}
+If $\chi_{1,p}=0$, then $\pi_{1,p}=0$ and $g_p=1$. Let $\chi_{1,p}>0$, $u=\chi_{2,p}$
+and $a=1-\varepsilon_1$. Since $1+\pi_{2,p}+\pi_{2,p}\pi_{3,p}=1+\beta_p\pi_{2,p}$,
+multiplying the numerator and the denominator of~\eqref{M-g-new} by
+$\omega_p=\omega_v+\varepsilon_2u$ gives
+\begin{equation*}
+g_p=\frac{n_0+n_1u}{d_0+d_1u},\qquad
+\begin{aligned}
+n_0&=\omega_v+r_pa\chi_{1,p}, & n_1&=\varepsilon_2\left(1+r_p\chi_{1,p}/\omega\right),\\
+d_0&=\omega_v+\chi_{1,p}, & d_1&=\varepsilon_2\left(1+\beta_p\chi_{1,p}/\omega\right),
+\end{aligned}
+\end{equation*}
+with $n_0,n_1,d_0,d_1>0$. Expanding,
+\begin{equation*}
+n_0d_1-n_1d_0=\frac{\varepsilon_2\chi_{1,p}}{\omega}\left(\omega_v\beta_p+r_pa\omega-\omega-r_p\omega_v
+-r_p\left(1-a\beta_p\right)\chi_{1,p}\right)=\frac{\varepsilon_2\chi_{1,p}}{\omega}\,\widehat\Delta_p .
+\end{equation*}
+Then
+\begin{equation*}
+\begin{aligned}
+\frac{dg_p}{du}&=\frac{n_1d_0-n_0d_1}{(d_0+d_1u)^2},\\
+\frac{d^2\log g_p}{du^2}&=\frac{d_1^2}{(d_0+d_1u)^2}-\frac{n_1^2}{(n_0+n_1u)^2}\\
+&=\frac{\left(n_0d_1-n_1d_0\right)\left(d_1(n_0+n_1u)+n_1(d_0+d_1u)\right)}{(d_0+d_1u)^2(n_0+n_1u)^2},
+\end{aligned}
+\end{equation*}
+and the second factor of the last numerator is positive. So both derivatives
+have the sign of $-\widehat\Delta_p$ and $\widehat\Delta_p$, respectively, for every $u\ge 0$.
+If $\widehat\Delta_p=0$, $g_p=n_0/d_0$.
+\end{proof}
+
+\begin{proposition}\label{g-nonincreasing}
+With $\bm\chi_1$ and $\bm\chi_3$ fixed, $g_q$ is non-increasing in
+$\chi_{2,q}\ge 0$ if and only if $\chi_{1,q}=0$ or $\widehat\Delta_q\ge 0$.
+\end{proposition}
+\begin{proof}
+By Lemma~\ref{g-chi2}: if $\chi_{1,q}=0$ or $\widehat\Delta_q=0$, $g_q$ does not depend
+on $\chi_{2,q}$; if $\chi_{1,q}>0$ and $\widehat\Delta_q>0$, it is strictly decreasing;
+if $\chi_{1,q}>0$ and $\widehat\Delta_q<0$, it is strictly increasing, hence not
+non-increasing.
+\end{proof}
+
+\begin{proposition}\label{no-second}
+Let $A_1$ be irreducible, and let the location $i$ contain a group $q$ such
+that $g_q$ is non-increasing in $\chi_{2,q}$. Then at every local minimizer of
+$\rho$ over
+$\left\{\sum_{p\in I_i}\sigma_{2,p}\chi_{2,p}=b_{2,i},\ \chi_{2,p}\ge 0\right\}$,
+with the other locations fixed, $\chi_{2,p}=0$ for every $p\in I_i$ such that
+$g_p$ is not non-increasing in $\chi_{2,p}$, that is, by
+Proposition~\ref{g-nonincreasing}, with $\chi_{1,p}>0$ and $\widehat\Delta_p<0$.
+\end{proposition}
+\begin{proof}
+By Section~\ref{M-sec-gradient}, $\partial\rho/\partial g_l=\left(A_1^T\bm w\right)_lv_l/\bm w^T\bm v>0$
+for every $l$ and every $\bm g>0$. So if $\bm g'\le\bm g$ and $\bm g'\ne\bm g$, the
+mean value theorem gives
+$\rho(\bm g)-\rho(\bm g')=\nabla\rho(\bm\xi)^T(\bm g-\bm g')>0$.
+
+Let $\chi_{2,p}>0$ with $\chi_{1,p}>0$ and $\widehat\Delta_p<0$; by
+Lemma~\ref{g-chi2}, $g_p$ is strictly increasing in $\chi_{2,p}$. For
+$0<\delta\le\chi_{2,p}$, replace $\chi_{2,p}$ by $\chi_{2,p}-\delta$ and $\chi_{2,q}$
+by $\chi_{2,q}+\delta\sigma_{2,p}/\sigma_{2,q}$. The constraint still holds,
+$g_p$ decreases strictly and $g_q$ does not increase, so
+$\rho$ decreases strictly, for every $\delta$ however small. So the point is
+not a local minimizer.
+\end{proof}
+
+At a point satisfying~\eqref{M-kkt3} for $k=2$ the same holds: there
+$h_{2,p}<0$ for $\chi_{1,p}>0$, $\widehat\Delta_p<0$, and $h_{2,q}\ge 0$, so
+$\chi_{2,p}>0$ would give $\mu_{2,i}=h_{2,p}<0\le h_{2,q}$, against
+$h_{2,q}\le\mu_{2,i}$.
+
+\begin{theorem}\label{thm-second}
+Let $A_1$ be irreducible, and let every location contain a group $q$ such
+that $g_q$ is non-increasing in $\chi_{2,q}$ (Proposition~\ref{g-nonincreasing}).
+Then every point satisfying~\eqref{M-kkt3} for $k=2$ is a global minimizer of
+$\rho$ over $\bm\chi_2$. If moreover every location contains a group $q$ such
+that $g_q$ is strictly decreasing in $\chi_{2,q}$, that is, by
+Lemma~\ref{g-chi2}, with $\chi_{1,q}>0$ and $\widehat\Delta_q>0$, the minimizer is
+unique, and it has $\chi_{2,p}=0$ for every $p$ such that $g_p$ is not
+strictly decreasing in $\chi_{2,p}$, that is, with $\chi_{1,p}=0$ or
+$\widehat\Delta_p\le 0$.
+\end{theorem}
+\begin{proof}
+By Proposition~\ref{no-second} and the remark after it, the minimizers and the
+points satisfying~\eqref{M-kkt3} have $\chi_{2,p}=0$ on the set $J$ of groups
+with $\chi_{1,p}>0$ and $\widehat\Delta_p<0$. On the remaining groups, by
+Lemma~\ref{g-chi2}, $\log g_p$ is convex in $\chi_{2,p}$, strictly if
+$\chi_{1,p}>0$ and $\widehat\Delta_p>0$. The proof of Theorem~\ref{thm-unique}, with
+$\bm t$ replaced by $\left(\chi_{2,p}\right)_{p\notin J}$, shows that $\log\rho$ is
+convex on the set where $\chi_{2,p}=0$ for $p\in J$, and strictly convex if
+$J$ is empty and all $\log g_p$ are strictly convex. A point
+satisfying~\eqref{M-kkt3} for $k=2$ satisfies the Karush--Kuhn--Tucker conditions
+of this convex problem, so it minimizes $\rho$ on that set~\cite[Section~5.5.3]{2004Boyd_Vandenberghe},
+which contains every minimizer.
+
+For the uniqueness, let $K$ be the set of groups with $\chi_{1,p}=0$ or
+$\widehat\Delta_p=0$, where $g_p$ does not depend on $\chi_{2,p}$ by
+Lemma~\ref{g-chi2}. Let $p\in K\cap I_i$ with $\chi_{2,p}>0$, and $q\in I_i$
+with $\chi_{1,q}>0$, $\widehat\Delta_q>0$. Replacing $\chi_{2,p}$ by
+$\chi_{2,p}-\delta$ and $\chi_{2,q}$ by $\chi_{2,q}+\delta\sigma_{2,p}/\sigma_{2,q}$,
+$0<\delta\le\chi_{2,p}$, keeps the constraint, leaves $g_p$ unchanged and
+decreases $g_q$ strictly, so $\rho$ decreases strictly, as in the proof of
+Proposition~\ref{no-second}. So every minimizer has $\chi_{2,p}=0$ on
+$J\cup K$. On the set where $\chi_{2,p}=0$ for $p\in J\cup K$, every remaining
+group has $\chi_{1,p}>0$ and $\widehat\Delta_p>0$, so $\log g_p$ is strictly convex in
+$\chi_{2,p}$, and by the proof of Theorem~\ref{thm-unique} $\log\rho$ is
+strictly convex in these variables. Two different minimizers would give a
+smaller value of $\rho$ at their midpoint, which lies in this set.
+\end{proof}
+
+\begin{remark}
+We describe when $\widehat\Delta_p<0$, that is, when the second dose increases $g_p$.
+Write $\widehat\Delta_p=K_p-r_p\left(1-(1-\varepsilon_1)\beta_p\right)\chi_{1,p}$ with
+$K_p=\omega_v(\beta_p-r_p)-\omega\left(1-r_p(1-\varepsilon_1)\right)$. For
+$\omega_v=\omega$, as in our data,
+$K_p=\omega\left(\beta_p-1-r_p\varepsilon_1\right)\ge\omega\left(1-r_p\varepsilon_1\right)>0$,
+since $\beta_p\ge 2$, $r_p\le 1$ and $\varepsilon_1<1$. Then $\widehat\Delta_p<0$ if and
+only if
+\begin{equation*}
+1-(1-\varepsilon_1)\beta_p>0\quad\mbox{and}\quad
+\chi_{1,p}>\chi_{1,p}^*=\frac{\omega\left(\beta_p-1-r_p\varepsilon_1\right)}{r_p\left(1-(1-\varepsilon_1)\beta_p\right)}.
+\end{equation*}
+The first condition is
+$\varepsilon_3\chi_{3,p}/\omega<(2\varepsilon_1-1)/(1-\varepsilon_1)$; it requires
+$\varepsilon_1>1/2$, and for $\chi_{3,p}=0$ it is $\varepsilon_1>1/2$. For
+$\chi_{3,p}=0$,
+$\chi_{1,p}^*=\omega\left(1-r_p\varepsilon_1\right)/\left(r_p(2\varepsilon_1-1)\right)$.
+So $\widehat\Delta_p<0$ for all $p$ if and only if $\varepsilon_1>1/2$, the third doses
+satisfy the first condition in every group, and every group receives first
+doses at a rate above $\chi_{1,p}^*$. Since
+$\sum_{p\in I_i}\sigma_{1,p}\chi_{1,p}=b_{1,i}$, a first dose allocation with
+$\widehat\Delta_p<0$ for all $p\in I_i$ exists if and only if the first condition holds
+for all $p\in I_i$ and
+$b_{1,i}>\sum_{p\in I_i}\sigma_{1,p}\chi_{1,p}^*$. Then the second doses
+increase $\rho$ in every group of the location, Proposition~\ref{no-second}
+does not apply there, and the doses $b_{2,i}$ must be placed where they
+increase $\rho$ least. For $\varepsilon_1=0.9$, $\omega=\omega_v=1/182.5$,
+$\chi_{3,p}=0$ and $r_p\in[0.714,0.985]$ as in the $51\times16$ data,
+$\chi_{1,p}^*$ lies between $7.9\cdot10^{-4}$ (for $r_p=0.985$) and
+$3.4\cdot10^{-3}$ (for $r_p=0.714$) per day.
+
+The reason is the following. At the disease free equilibrium $y_p=S_p/N_p$ and
+$z_p=(1-\varepsilon_1)V_p/N_p+P_p/N_p$, by~\eqref{M-yz}. The second doses move
+people from $V$ to $R$ at the rate $\varepsilon_2\chi_{2,p}$, and they return
+from $R$ to $P$ at the rate $\omega$. In $V$ the force of infection is reduced
+by the factor $1-\varepsilon_1$, in $P$ it is not. When the first dose is
+effective ($\varepsilon_1>1/2$) and given fast ($\chi_{1,p}>\chi_{1,p}^*$),
+much of the group is in $V$, where it is well protected, and moving it through
+$R$ to $P$ increases $z_p$. In random samples of $r_p\in[0.714,0.985]$,
+$\chi_{1,p}$, $\chi_{2,p}$ and $\chi_{3,p}$ with $\widehat\Delta_p<0$ and the parameters
+above, an increase of $\chi_{2,p}$ decreased $S_p/N_p$ and $V_p/N_p$, increased
+$R_p/N_p$ and $P_p/N_p$, and increased $r_pz_p$ by more than it decreased
+$y_p$, so that $g_p=y_p+r_pz_p$ increased.
+\end{remark}
+
+\subsection{Joint convexity for three doses}\label{app-joint}
+
+By Theorems~\ref{thm-unique} and~\ref{thm-second}, each step of the
+alternating method of Section~\ref{M-sec-three} is, under their hypotheses, a
+convex problem in its own variables. Here we consider $\log\rho$ as a function
+of $(\bm\chi_1,\bm\chi_2,\bm\chi_3)$ together.
+
+If, for every $p$, $\log g_p$ is convex as a function of
+$(\chi_{1,p},\chi_{2,p},\chi_{3,p})$ on the feasible set, then $\log\rho$ is
+jointly convex: in the proof of Theorem~\ref{thm-unique},
+$\log\rho=F\circ\bm\ell$ with $F$ convex and non-decreasing in each argument
+(Lemma~\ref{kingman}), and $\ell_p=\log g_p$ depends only on the rates of the
+group $p$. Then every point satisfying~\eqref{M-kkt3} would be a global
+minimizer~\cite[Section~5.5.3]{2004Boyd_Vandenberghe}. The following shows that
+this sufficient condition fails for our model.
+
+\begin{proposition}\label{not-joint}
+Let $\beta_p$ be as in~\eqref{beta-delta}, $\omega_p=\omega_v+\varepsilon_2\chi_{2,p}$ and
+\begin{equation*}
+K_p=\omega_v\left(\beta_p-r_p\right)-\omega\left(1-r_p(1-\varepsilon_1)\right),
+\end{equation*}
+the value of $\widehat\Delta_p$ at $\chi_{1,p}=0$. At $\chi_{1,p}=0$,
+\begin{equation*}
+\frac{\partial^2\log g_p}{\partial\chi_{2,p}^2}=0,\qquad
+\frac{\partial^2\log g_p}{\partial\chi_{1,p}\partial\chi_{2,p}}=-\frac{\varepsilon_2K_p}{\omega\,\omega_p^2}.
+\end{equation*}
+So if $K_p\ne 0$, $\log g_p$ is not convex on any set of the form
+$\{\chi_{1,p}\ge 0\}\cap U$ with $U$ an open neighbourhood of a point with
+$\chi_{1,p}=0$. For $\omega_v=\omega$, $K_p=\omega\left(\beta_p-1-r_p\varepsilon_1\right)\ge\omega\left(1-r_p\varepsilon_1\right)>0$
+for all rates.
+\end{proposition}
+\begin{proof}
+Write $u=\chi_{1,p}$, $v=\chi_{2,p}$, $a=1-\varepsilon_1$ and
+$\pi_2=\varepsilon_2v/\omega$. As in the proof of Lemma~\ref{g-chi2},
+\begin{equation*}
+\log g_p=\log\left(\omega_p+r_pu\left(a+\pi_2\right)\right)-\log\left(\omega_p+u\left(1+\beta_p\pi_2\right)\right),
+\end{equation*}
+a smooth function of $(u,v,\chi_{3,p})$ near $u=0$. At $u=0$ both arguments of
+the logarithms equal $\omega_p$, so $\log g_p=0$ for all $v$, and its second
+derivative in $v$ is $0$. Also, at $u=0$,
+\begin{equation*}
+\frac{\partial\log g_p}{\partial u}=\frac{f(v)}{\omega_p},\qquad
+f(v)=r_pa-1+\left(r_p-\beta_p\right)\frac{\varepsilon_2v}{\omega},
+\end{equation*}
+and
+\begin{equation*}
+\frac{\partial}{\partial v}\frac{f(v)}{\omega_p}
+=\frac{\varepsilon_2}{\omega\,\omega_p^2}\left(\left(r_p-\beta_p\right)\omega_p-\omega f(v)\right)
+=\frac{\varepsilon_2}{\omega\,\omega_p^2}\left(\left(r_p-\beta_p\right)\omega_v+\omega\left(1-r_pa\right)\right)
+=-\frac{\varepsilon_2K_p}{\omega\,\omega_p^2}.
+\end{equation*}
+If $\log g_p$ were convex on $\{u\ge 0\}\cap U$, a set with non-empty
+interior, its Hessian would be positive semidefinite in the interior and, by
+continuity, at the points with $u=0$. A positive semidefinite matrix with a
+zero diagonal entry has zeros in that row, so the mixed derivative would be
+$0$, that is, $K_p=0$. Finally, for $\omega_v=\omega$,
+$K_p=\omega(\beta_p-r_p-1+r_p-r_p\varepsilon_1)=\omega(\beta_p-1-r_p\varepsilon_1)$,
+and $\beta_p\ge 2$, $r_p\le 1$, $\varepsilon_1<1$.
+\end{proof}
+
+The face $\chi_{1,p}=0$ belongs to the feasible set. Away from this face the
+condition fails as well: for random $r_p\in[0.714,0.985]$,
+$\chi_{1,p}\in[10^{-4},10^{-2}]$, $\chi_{2,p}\in[10^{-4},10^{-1}]$ and
+$\chi_{3,p}\in[10^{-5},10^{-2}]$ with $\widehat\Delta_p>0$, and
+$\varepsilon_1=\varepsilon_2=\varepsilon_3=0.9$, $\omega=\omega_v=1/182.5$, the Hessian of $\log g_p$ was indefinite in $3640$
+of $3698$ samples. The formulas of Proposition~\ref{not-joint} agree with a
+$50$-digit finite difference computation to a relative error below
+$10^{-48}$.
+
+The failure of the sufficient condition does not by itself show that
+$\log\rho$ is not jointly convex. The numerical results do: the five end
+points of Table~\ref{M-tab-mock-starts} satisfy~\eqref{M-kkt3} to the accuracy
+listed there and give different values of $\rho$, between $0.764866$ and
+$0.765253$, which is impossible for a convex function. So the alternating
+method finds, under the hypotheses of Theorems~\ref{thm-unique}
+and~\ref{thm-second}, the global minimizer of each step, but a limit point of
+the method is a point satisfying~\eqref{M-kkt3}, not necessarily a global
+minimizer of~\eqref{M-problem}; this is why the method is run from several
+starts.
+
+\subsection{Limit points of the alternating method}\label{app-alt-limit}
+
+The following describes the limit points of the alternating method when each
+step is solved exactly. Let $\bm x^{(s)}=(\bm\chi_1,\bm\chi_2,\bm\chi_3)$ be the
+point at the start of sweep $s$, let $\bm z^{(s)}$ be obtained from it by
+replacing $\bm\chi_1$ by a minimizer of $\rho$ over $\bm\chi_1$ (the other doses
+fixed), $\bm y^{(s)}$ from $\bm z^{(s)}$ by replacing $\bm\chi_3$ by a
+minimizer over $\bm\chi_3$, and $\bm x^{(s+1)}$ from $\bm y^{(s)}$ by replacing
+$\bm\chi_2$ by a minimizer over $\bm\chi_2$. The minimizers exist, since the
+feasible set of each step is compact and $\rho$ is continuous.
+
+\begin{theorem}\label{alt-limit}
+Let $A_1$ be irreducible and $0<r_p\le 1$ for all $p$. Then
+$\rho(\bm x^{(s)})\ge\rho(\bm z^{(s)})\ge\rho(\bm y^{(s)})\ge\rho(\bm x^{(s+1)})$,
+the values $\rho(\bm x^{(s)})$ converge, and the sequence $\bm x^{(s)}$ has
+limit points. Let $\bar{\bm x}=(\bar{\bm\chi}_1,\bar{\bm\chi}_2,\bar{\bm\chi}_3)$
+be one of them, and let every location contain a group $q$ with
+$\bar\chi_{1,q}>0$ and $\bar\chi_{2,q}>0$. Then each $\bar{\bm\chi}_k$ minimizes
+$\rho$ over $\bm\chi_k$ with the other two doses equal to those of $\bar{\bm x}$,
+and $\bar{\bm x}$ satisfies~\eqref{M-kkt3} for $k=1,2,3$.
+\end{theorem}
+\begin{proof}
+Each step replaces the variables of one dose by a minimizer, so it does not
+increase $\rho$. The values are bounded below by $0$, so they converge to some
+$\bar\rho$, and the feasible set is compact, so limit points exist. Let
+$\bm x^{(s)}\to\bar{\bm x}$ along a subsequence $s\in\mathcal S$; then
+$\rho(\bar{\bm x})=\bar\rho$, and also $\rho(\bm z^{(s)})$,
+$\rho(\bm y^{(s)})$, $\rho(\bm x^{(s+1)})\to\bar\rho$.
+
+\emph{The first dose.} Passing to a further subsequence,
+$\bm z^{(s)}\to\bar{\bm z}$, which differs from $\bar{\bm x}$ only in
+$\bm\chi_1$. For every feasible $\bm\chi_1$,
+$\rho(\bm z^{(s)})\le\rho(\bm\chi_1,\bm\chi_2^{(s)},\bm\chi_3^{(s)})$, and by
+continuity $\rho(\bar{\bm z})\le\rho(\bm\chi_1,\bar{\bm\chi}_2,\bar{\bm\chi}_3)$.
+So $\bar{\bm z}_1$ minimizes $\rho$ over $\bm\chi_1$ at $\bar{\bm x}$, and since
+$\rho(\bar{\bm x})=\bar\rho=\rho(\bar{\bm z})$, so does $\bar{\bm\chi}_1$. By
+Theorem~\ref{thm-unique} (with $\bm\theta=\bar{\bm\chi}_2$,
+$\bm\zeta=\bar{\bm\chi}_3$; $0<e_p\le 1$ by Section~\ref{M-sec-single}) this
+minimizer is unique, so $\bar{\bm z}=\bar{\bm x}$. This holds for every
+convergent subsequence of $\bm z^{(s)}$, $s\in\mathcal S$, so
+$\bm z^{(s)}\to\bar{\bm x}$ along $\mathcal S$.
+
+\emph{The third dose.} The same argument, with $\bm z^{(s)}\to\bar{\bm x}$ in
+place of $\bm x^{(s)}\to\bar{\bm x}$, shows that $\bar{\bm\chi}_3$ minimizes
+$\rho$ over $\bm\chi_3$ at $\bar{\bm x}$. By Proposition~\ref{third-unique},
+whose hypothesis is that of the theorem, this minimizer is unique, so
+$\bm y^{(s)}\to\bar{\bm x}$ along $\mathcal S$.
+
+\emph{The second dose.} The same argument, with $\bm y^{(s)}\to\bar{\bm x}$,
+shows that $\bar{\bm\chi}_2$ minimizes $\rho$ over $\bm\chi_2$ at
+$\bar{\bm x}$; uniqueness is not needed for the last step of the sweep.
+
+Each $\bar{\bm\chi}_k$ is a minimizer of a differentiable function under
+affine constraints, so~\eqref{M-kkt3} holds for this $k$ with some
+$\bm\mu_k$, $\bm\nu_k$~\cite[Section~3.4]{1999Bertsekas}. The constraints of
+different doses are separate and the multipliers of~\eqref{M-kkt3} are given
+dose by dose, so the three systems together are~\eqref{M-kkt3} for
+$k=1,2,3$.
+\end{proof}
+
+\begin{remark}
+\begin{enumerate}
+\item The theorem needs the uniqueness of the minimizers of the first two
+steps of a sweep, $\bm\chi_1$ and $\bm\chi_3$, at the limit point; the first
+holds always, the second under the hypothesis on $\bar{\bm\chi}_1$,
+$\bar{\bm\chi}_2$. Without uniqueness, exact minimization over blocks of
+variables in turn can have limit points that are not stationary, already
+for three blocks~\cite{1973Powell}.
+\item It concerns exact steps. In the method of Section~\ref{M-sec-three}, the
+steps for $\bm\chi_1$ and $\bm\chi_3$ use the fixed point iteration, whose
+convergence is not proved, and the step for $\bm\chi_2$ uses the spectral
+projected gradient method, which finds a point satisfying~\eqref{M-kkt3} for
+$k=2$; under the hypotheses of Theorem~\ref{thm-second} this point is a
+minimizer over $\bm\chi_2$.
+\item A point satisfying~\eqref{M-kkt3} for $k=1,2,3$ need not be a global
+minimizer of~\eqref{M-problem}, as shown in Appendix~\ref{app-joint}, and the theorem does not show
+that the whole sequence $\bm x^{(s)}$ converges.
+\end{enumerate}
+\end{remark}
+
+\section{A Newton method after the alternating method}\label{app-newton-method}
+
+\subsection{Second derivatives of the spectral radius}\label{app-hessian}
+
+Let $A_1\ge 0$ be irreducible, $\bm g>0$, $G=A_1\operatorname{diag}(\bm g)$, and
+let $\rho$, $\bm v$, $\bm w$ be as in~\eqref{M-perron}, scaled so that
+$\bm w^T\bm v=1$. Let $M=\rho I-G$ and $\bm a=A_1^T\bm w$.
+
+\begin{lemma}\label{bordered}
+The matrix
+\begin{equation*}
+B=\begin{pmatrix}M&\bm v\\ \bm w^T&0\end{pmatrix}\in\mathbb{R}^{(N+1)\times(N+1)}
+\end{equation*}
+is non-singular. For $\bm x\in\mathbb{R}^N$ let $S\bm x$ be the first $N$
+components of $B^{-1}\left((I-\bm v\bm w^T)\bm x,0\right)^T$. Then
+\begin{equation*}
+MS=SM=I-\bm v\bm w^T,\qquad S\bm v=0,\qquad \bm w^TS=0,
+\end{equation*}
+and $S^T\bm x$ is the first $N$ components of
+$\left(B'\right)^{-1}\left((I-\bm w\bm v^T)\bm x,0\right)^T$, where $B'$ is $B$ with
+$M$ replaced by $M^T$ and $\bm v$, $\bm w$ interchanged.
+\end{lemma}
+\begin{proof}
+Since $\rho$ is a simple eigenvalue, the null spaces of $M$ and $M^T$ are
+spanned by $\bm v$ and $\bm w$. If $M\bm y+\bm v\eta=0$ and $\bm w^T\bm y=0$,
+then multiplying the first equation by $\bm w^T$ gives $\eta=0$, so
+$M\bm y=0$, $\bm y=c\bm v$, and $c=\bm w^T\bm y=0$. So $B$ is non-singular.
+Let $(\bm y,\eta)=B^{-1}\left((I-\bm v\bm w^T)\bm x,0\right)$. Multiplying
+$M\bm y+\bm v\eta=(I-\bm v\bm w^T)\bm x$ by $\bm w^T$ gives $\eta=0$, so
+$MS\bm x=(I-\bm v\bm w^T)\bm x$ and $\bm w^TS\bm x=0$; also $S\bm v=0$,
+since $(I-\bm v\bm w^T)\bm v=0$. Let $\bm z=SM\bm x$. Then
+$M\bm z=(I-\bm v\bm w^T)M\bm x=M\bm x$, since $\bm w^TM=0$, so
+$\bm z-\bm x=c\bm v$, and $\bm w^T\bm z=0$ gives $c=-\bm w^T\bm x$, that is,
+$SM=I-\bm v\bm w^T$. Transposing, $S^T\bm w=0$, $\bm v^TS^T=0$ and
+$M^TS^T=I-\bm w\bm v^T$, and the first part of the proof, with $M^T$ and
+$\bm v$, $\bm w$ interchanged, shows that these equations determine $S^T\bm x$
+as stated.
+\end{proof}
+
+\begin{lemma}\label{hessian-g}
+$\rho$ is twice differentiable in $\bm g>0$, and
+\begin{equation*}
+\frac{\partial^2\rho}{\partial g_p\partial g_q}=a_p\left(SA_1\right)_{pq}v_q+a_q\left(SA_1\right)_{qp}v_p,
+\qquad\mbox{that is,}\qquad
+\nabla^2_{\bm g}\rho=D_aSA_1D_v+\left(D_aSA_1D_v\right)^T,
+\end{equation*}
+with $D_a=\operatorname{diag}(\bm a)$ and $D_v=\operatorname{diag}(\bm v)$.
+\end{lemma}
+\begin{proof}
+By the proof of Lemma~\ref{M-simple-derivative}, $\rho$ is a root of a
+polynomial in $\lambda$ and $\bm g$ with non-zero derivative in $\lambda$, so
+by the implicit function theorem it is infinitely differentiable, and a right
+eigenvector, a column of $\operatorname{adj}(\rho I-G)$, is a polynomial in
+$\rho$ and $\bm g$. Fix $\bm g$ and its $\bm w$. Near $\bm g$, scale the right
+eigenvector $\bm v(\cdot)$ so that $\bm w^T\bm v(\cdot)=1$, with $\bm w$ held
+fixed; this is possible since $\bm w^T\bm v>0$. From
+$G(\cdot)\bm v(\cdot)=\rho(\cdot)\bm v(\cdot)$ and $\bm w^T\bm v(\cdot)=1$,
+$\rho(\cdot)=\bm w^TG(\cdot)\bm v(\cdot)$. Write $\partial_q=\partial/\partial g_q$
+and $G_q=\partial_qG=A_1\bm e_q\bm e_q^T$; $G$ is linear in $\bm g$, so
+$\partial_p\partial_qG=0$, and $\bm w^T\partial_q\bm v=\bm w^T\partial_p\partial_q\bm v=0$.
+Then
+\begin{equation*}
+\partial_q\rho=\bm w^TG_q\bm v+\bm w^TG\,\partial_q\bm v,\qquad
+\partial_p\partial_q\rho=\bm w^TG_q\,\partial_p\bm v+\bm w^TG_p\,\partial_q\bm v+\bm w^TG\,\partial_p\partial_q\bm v .
+\end{equation*}
+At $\bm g$, $\bm w^TG=\rho\bm w^T$, so the last terms vanish, and
+$\partial_q\rho=\bm w^TG_q\bm v=a_qv_q$, as in~\eqref{M-drho-dg}. Differentiating
+$G\bm v=\rho\bm v$ gives $M\partial_q\bm v=(G_q-\partial_q\rho\, I)\bm v$, and with
+$\bm w^T\partial_q\bm v=0$ and Lemma~\ref{bordered},
+$\partial_q\bm v=S(G_q-\partial_q\rho\,I)\bm v=SG_q\bm v=v_q\,SA_1\bm e_q$, using $S\bm v=0$.
+So $\bm w^TG_p\,\partial_q\bm v=a_p\bm e_p^T\partial_q\bm v=a_p\left(SA_1\right)_{pq}v_q$,
+and the term with $p$ and $q$ interchanged gives the rest.
+\end{proof}
+
+A product $\nabla^2_{\bm g}\rho\,\bm x=\bm a\odot SA_1(\bm v\odot\bm x)+\bm v\odot A_1^TS^T(\bm a\odot\bm x)$
+costs one solve with $B$ and one with $B'$, and products with $C$; the matrix
+$\nabla^2_{\bm g}\rho$ is not formed. A test with a positive $30\times30$ matrix
+$A_1$ gave agreement with finite differences of~\eqref{M-drho-dg} to a relative
+error of $2.5\cdot10^{-9}$.
+
+Let $\bm x=(\bm\chi_1,\bm\chi_2,\bm\chi_3)\in\mathbb{R}^{3N}$ and
+$J=\left(J_1,J_2,J_3\right)$, $J_k=\operatorname{diag}\left(\partial g_p/\partial\chi_{k,p}\right)$,
+from~\eqref{M-dg}. Since $g_p$ depends only on $\chi_{1,p}$, $\chi_{2,p}$,
+$\chi_{3,p}$, the rule for second derivatives of compositions gives
+\begin{equation}\label{hessian-chi}
+\nabla^2_{\bm x}\rho=J^T\left(\nabla^2_{\bm g}\rho\right)J+\sum_{p=1}^N\frac{\partial\rho}{\partial g_p}\nabla^2_{\bm x}g_p,
+\end{equation}
+where $\nabla^2_{\bm x}g_p$ has non-zero entries only in the $3\times3$ block
+of $\chi_{1,p}$, $\chi_{2,p}$, $\chi_{3,p}$, the second derivatives of the
+rational function~\eqref{M-g-new}.
+
+\subsection{The Newton step and a second order test}\label{app-newton}
+
+Let $\mathcal{F}$ be a set of pairs $(k,p)$, the free variables, and
+$E_{\mathcal F}$ the matrix of the constraints of~\eqref{M-problem} restricted
+to them: its row $(k,i)$ has the entries $\sigma_{k,p}$ in the columns
+$(k,p)\in\mathcal F$ with $p\in I_i$. Different rows have disjoint supports,
+so $E_{\mathcal F}E_{\mathcal F}^T$ is diagonal, and it is non-singular if every
+pair $(k,i)$ has a free variable, which holds when $b_{k,i}>0$. Let
+$P_{\mathcal F}=I-E_{\mathcal F}^T\left(E_{\mathcal F}E_{\mathcal F}^T\right)^{-1}E_{\mathcal F}$,
+the orthogonal projection onto the null space of $E_{\mathcal F}$, and
+$H_{\mathcal F}$, $\nabla_{\mathcal F}\rho$ the rows and columns of~\eqref{hessian-chi}
+and of the gradient in $\mathcal F$. With the variables not in $\mathcal F$
+equal to zero, \eqref{M-kkt3} is: $E_{\mathcal F}\bm x_{\mathcal F}=\bm b$,
+$\bm x_{\mathcal F}\ge 0$,
+$\nabla_{\mathcal F}\rho+E_{\mathcal F}^T\bm\mu=0$, and
+$\nu_{k,p}=\partial\rho/\partial\chi_{k,p}+\mu_{k,i}\sigma_{k,p}\ge 0$ for
+$(k,p)\notin\mathcal F$. At a feasible point, Newton's method for the
+equations in $\mathcal F$ gives the step $\bm d$ with
+\begin{equation}\label{newton-step}
+\begin{pmatrix}H_{\mathcal F}&E_{\mathcal F}^T\\ E_{\mathcal F}&0\end{pmatrix}
+\begin{pmatrix}\bm d\\ \bm\mu\end{pmatrix}
+=\begin{pmatrix}-\nabla_{\mathcal F}\rho\\ 0\end{pmatrix},
+\qquad\mbox{equivalently}\qquad
+P_{\mathcal F}H_{\mathcal F}P_{\mathcal F}\bm d=-P_{\mathcal F}\nabla_{\mathcal F}\rho,\quad
+\bm d=P_{\mathcal F}\bm d,
+\end{equation}
+which is solved by the conjugate gradient method on the range of
+$P_{\mathcal F}$, with products by $H_{\mathcal F}$ as above.
+
+\begin{lemma}\label{kkt-matrix}
+Let $E_{\mathcal F}$ have full row rank and $\bm z^TH_{\mathcal F}\bm z>0$ for every
+$\bm z\ne 0$ with $E_{\mathcal F}\bm z=0$. Then the matrix of~\eqref{newton-step}
+is non-singular.
+\end{lemma}
+\begin{proof}
+If $H_{\mathcal F}\bm d+E_{\mathcal F}^T\bm\mu=0$ and $E_{\mathcal F}\bm d=0$, then
+$\bm d^TH_{\mathcal F}\bm d=-\bm d^TE_{\mathcal F}^T\bm\mu=0$, so $\bm d=0$; then
+$E_{\mathcal F}^T\bm\mu=0$ and $\bm\mu=0$ by the rank.
+\end{proof}
+
+\begin{proposition}\label{second-order}
+Let $\bm x$ satisfy~\eqref{M-kkt3} with $\mathcal F=\{(k,p):\ \chi_{k,p}>0\}$.
+\begin{enumerate}
+\item If $\nu_{k,p}>0$ for $(k,p)\notin\mathcal F$ and $\bm z^TH_{\mathcal F}\bm z>0$ for
+every $\bm z\ne 0$ with $E_{\mathcal F}\bm z=0$, then $\bm x$ is a strict local
+minimizer of~\eqref{M-problem}~\cite{1968Fiacco_McCormick}.
+\item If $\bm z^TH_{\mathcal F}\bm z<0$ for some $\bm z$ with $E_{\mathcal F}\bm z=0$, then
+$\bm x$ is not a local minimizer: with $\bm d$ equal to $\bm z$ in
+$\mathcal F$ and $0$ elsewhere, $\bm x+\tau\bm d$ is feasible and
+$\rho(\bm x+\tau\bm d)<\rho(\bm x)$ for all small $\tau\ne 0$.
+\end{enumerate}
+\end{proposition}
+\begin{proof}
+For the second part: $E_{\mathcal F}\bm z=0$ and $\bm x_{\mathcal F}>0$, so
+$\bm x+\tau\bm d$ is feasible for $|\tau|$ small. By~\eqref{M-kkt3},
+$\nabla_{\mathcal F}\rho=-E_{\mathcal F}^T\bm\mu$, so
+$\nabla\rho^T\bm d=-\bm\mu^TE_{\mathcal F}\bm z=0$, and by Taylor's theorem,
+$\rho$ being twice continuously differentiable,
+$\rho(\bm x+\tau\bm d)=\rho(\bm x)+\frac{\tau^2}{2}\bm z^TH_{\mathcal F}\bm z+o(\tau^2)<\rho(\bm x)$
+for small $\tau\ne 0$.
+\end{proof}
+
+The conditions of the first part are checked by the smallest eigenvalue of
+$P_{\mathcal F}H_{\mathcal F}P_{\mathcal F}$ on the range of $P_{\mathcal F}$,
+computed by the Lanczos method with products as above; its eigenvector gives
+$\bm z$ in the second part. Under the conditions of the first part, the
+variables in $\mathcal F$ stay positive near $\bm x$, and~\eqref{newton-step}
+is Newton's method for the equations $E_{\mathcal F}\bm x_{\mathcal F}=\bm b$,
+$\nabla_{\mathcal F}\rho+E_{\mathcal F}^T\bm\mu=0$, whose Jacobian at
+$(\bm x,\bm\mu)$ is the matrix of~\eqref{newton-step}, non-singular by
+Lemma~\ref{kkt-matrix}. So it converges quadratically from points close
+enough to $\bm x$.
+
+The method after the alternating method of Section~\ref{M-sec-three} is then:
+\begin{enumerate}
+\item Run the alternating method until the relative decrease of $\rho$ in a
+sweep is small; let $\bm x$ be its end point and $\mathcal F$ its free set.
+\item Repeat: solve~\eqref{newton-step} by the conjugate gradient method; if it
+meets a direction of negative curvature, take that direction as $\bm d$. Take
+$\bm x+\tau\bm d$ with the largest $\tau\in\{1,\frac12,\frac14,\ldots\}$,
+limited by $\bm x_{\mathcal F}+\tau\bm d\ge 0$, that decreases $\rho$; if a
+variable reaches $0$, remove it from $\mathcal F$. Stop when
+$\left\|P_{\mathcal F}\nabla_{\mathcal F}\rho\right\|$ is small.
+\item Compute $\bm\mu=-\left(E_{\mathcal F}E_{\mathcal F}^T\right)^{-1}E_{\mathcal F}\nabla_{\mathcal F}\rho$
+and $\nu_{k,p}$ for $(k,p)\notin\mathcal F$. If some $\nu_{k,p}<0$, add
+$(k,p)$ to $\mathcal F$ and return to step~2.
+\item Compute the smallest eigenvalue of $P_{\mathcal F}H_{\mathcal F}P_{\mathcal F}$.
+If it is negative, move along its eigenvector as in
+Proposition~\ref{second-order}, with a line search on $\rho$, and return to
+step~1; otherwise $\bm x$ is a strict local minimizer if also
+$\nu_{k,p}>0$ for $(k,p)\notin\mathcal F$.
+\end{enumerate}
+Every step decreases $\rho$. The method finds a point satisfying~\eqref{M-kkt3}
+that passes the second order test, with the accuracy of Newton's method; it
+does not move from one local minimizer to another, so the starts of
+Table~\ref{M-tab-mock-starts} are still needed.
+
+In the computations the variables are scaled to
+$u_{k,p}=\sigma_{k,p}\chi_{k,p}/b_{k,i}$, $p\in I_i$, that is, $\bm x=D\bm u$ with
+$D$ diagonal. Then the constraints are $\sum_{p\in I_i}u_{k,p}=1$, the gradient
+is $D\nabla\rho$ and the Hessian $DHD$, and $P_{\mathcal F}$ subtracts the mean
+over the free groups of each location. The method is the same; the scaling
+reduces the spread of the eigenvalues of $P_{\mathcal F}H_{\mathcal F}P_{\mathcal F}$
+(for the data of Table~\ref{M-tab-mock-starts}, by a factor of about $300$).
+
+\subsection{Newton's method for the steps of the first and third dose}\label{app-newton-step13}
+
+The steps for $\bm\chi_1$ and $\bm\chi_3$ of Section~\ref{M-sec-three} use the
+fixed point iteration of Section~\ref{M-sec-fixed-point}, whose convergence is
+not proved. They can be done instead by the method of Section~\ref{app-newton},
+steps~2 and~3, with only the variables of one dose free and the other two doses
+fixed.
+
+\begin{proposition}\label{block-newton}
+Let $A_1$ be irreducible and $0<r_p\le 1$.
+\begin{enumerate}
+\item With $\bm\chi_2$, $\bm\chi_3$ fixed, $\rho$ is strictly convex in
+$\bm\chi_1$ on the feasible set of the step.
+\item With $\bm\chi_1$, $\bm\chi_2$ fixed, let every location contain a group
+with $s_p>0$. Then $\rho$ is strictly convex in $(\chi_{3,p})_{s_p>0}$, and the
+minimizer of the step has $\chi_{3,p}=0$ for $s_p=0$.
+\end{enumerate}
+\end{proposition}
+\begin{proof}
+By Theorem~\ref{thm-unique}, and Proposition~\ref{third-unique} for the
+second part, $\log\rho$ is strictly convex in these variables, since $\bm t$ is
+affine in them. The function $\exp$ is convex and strictly increasing, so
+$\rho=\exp(\log\rho)$ is strictly convex: for $\bm x\ne\bm x'$ and
+$s\in(0,1)$, $\rho\left((1-s)\bm x+s\bm x'\right)<\exp\left((1-s)\log\rho(\bm x)+s\log\rho(\bm x')\right)\le(1-s)\rho(\bm x)+s\rho(\bm x')$.
+\end{proof}
+
+So in each of these two steps $\bm z^TH_{\mathcal F}\bm z\ge 0$ for
+$E_{\mathcal F}\bm z=0$, the conjugate gradient method for~\eqref{newton-step}
+does not meet negative curvature, and a point satisfying~\eqref{M-kkt3} for this
+$k$ is the minimizer of the step. For $k=3$ the groups with $s_p=0$ are
+removed from $\mathcal F$ at the start, since $g_p$ does not depend on
+$\chi_{3,p}$ there and $H_{\mathcal F}$ would be singular. Every iterate is
+feasible and $\rho$ does not increase. If at the minimizer the variables not in
+$\mathcal F$ have $\nu_{k,p}>0$ and $\bm z^TH_{\mathcal F}\bm z>0$ for
+$E_{\mathcal F}\bm z=0$, $\bm z\ne 0$, the iteration converges quadratically
+once it is close to the minimizer, by Section~\ref{app-newton}. We do not prove
+convergence from every start.
