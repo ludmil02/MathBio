@@ -19,11 +19,11 @@ read from data/model/C_816x816.csv.gz; the system is integrated by DOP853, inter
 between the variant days (and the weeks of vaccination).
 
 Usage:
-    python3 -u seir7_ode.py verify   | tee intermediate/seir7_ode_verify.log
+    python3 -u seir7_ode.py verify   | tee intermediate/seir7_ode_verify.output
         tolerances, group sums, signs, spectral radius on [251, 349]
-    python3 -u seir7_ode.py solve    | tee intermediate/seir7_ode_solve.log
+    python3 -u seir7_ode.py solve    | tee intermediate/seir7_ode_solve.output
         state at t = 349 (start of vaccination) -> data/state_t349_51x16.csv
-    python3 -u seir7_ode.py simulate [actual|optimal] [nrand] [resume] | tee -a intermediate/seir7_ode_simulate_<strategy>.log
+    python3 -u seir7_ode.py simulate [actual|optimal] [nrand] [resume] | tee -a intermediate/seir7_ode_simulate_<strategy>.output
         (after each week the state is saved to intermediate/simulate_<strategy>_checkpoint.npz;
         "resume" continues an interrupted run from the last completed week)
         from t = 251 through the weeks of the dose file. actual: the rates (6.1) of ODE.tex from

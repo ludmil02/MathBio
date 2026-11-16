@@ -15,7 +15,7 @@ PASS or FAIL.  All eigenvalues by Arnoldi; F V^-1 is applied matrix free with V
 factored by sparse LU.
 
 Usage:
-    python3 -u verify_stratified_seir_ngm.py | tee intermediate/verify_stratified_seir_ngm.log
+    python3 -u verify_stratified_seir_ngm.py | tee intermediate/verify_stratified_seir_ngm.output
 """
 
 import sys

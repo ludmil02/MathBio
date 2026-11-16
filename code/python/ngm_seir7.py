@@ -22,7 +22,7 @@ Importing the module loads the data and defines the functions; running it prints
      states of Fig. 3A of the paper, with a finite difference check.
 
 Usage:
-    python3 -u ngm_seir7.py | tee intermediate/ngm_seir7.log
+    python3 -u ngm_seir7.py | tee intermediate/ngm_seir7.output
 """
 
 import os

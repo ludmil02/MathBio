@@ -6,25 +6,31 @@ row = age group of the individual, column = age group of the contact, 0-4, ..., 
 Balanced as in Glasser et al. 2023 (J. Theor. Biol. 556, 111296), p. 5: each entry
 replaced by the geometric mean of it and its transposed entry, U = sqrt(M * M^T).
 
-Usage:  python3 -u prem_U_16x16.py      (expects MathBio/data/Downloaded_from_source/prem2017/
-        MUestimates_all_locations_2.xlsx, from pcbi.1005697.s002.zip)  ->  data/prem2017/U_16x16.csv
+Usage:  python3 -u prem_U_16x16.py      (reads MUestimates_all_locations_2.xlsx inside
+        MathBio/data/Downloaded_from_source/prem2017/pcbi.1005697.s002.zip, without unpacking)
+        ->  data/prem2017/U_16x16.csv
 """
+import io
 import os
+import zipfile
 
 import numpy as np
 import pandas as pd
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 DIR = os.path.join(HERE, "data", "prem2017")
-XLSX = os.path.normpath(os.path.join(HERE, "..", "..", "data", "Downloaded_from_source", "prem2017",
-                                     "MUestimates_all_locations_2.xlsx"))
+ZIP = os.path.normpath(os.path.join(HERE, "..", "..", "data", "Downloaded_from_source", "prem2017",
+                                    "pcbi.1005697.s002.zip"))
+MEMBER = "contact_matrices_152_countries/MUestimates_all_locations_2.xlsx"
+XLSX = f"{ZIP}:{MEMBER}"                    # for the messages
 SHEET = "United States of America"
 OUT = os.path.join(DIR, "U_16x16.csv")
 AGES = [f"{5 * k}-{5 * k + 4}" for k in range(15)] + ["75+"]
 
 
 def build():
-    M = pd.read_excel(XLSX, sheet_name=SHEET, header=None).to_numpy(float)
+    with zipfile.ZipFile(ZIP) as z:
+        M = pd.read_excel(io.BytesIO(z.read(MEMBER)), sheet_name=SHEET, header=None).to_numpy(float)
     if M.shape != (16, 16) or not np.all(M > 0):
         raise ValueError(f"unexpected matrix in {XLSX}, sheet {SHEET}: shape {M.shape}")
     U = np.sqrt(M * M.T)

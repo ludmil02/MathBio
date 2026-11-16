@@ -27,7 +27,7 @@ whether it is the solution, with the KKT spreads at the solution.
 
 Usage, from code/python:
     python3 -u mock_doses_51x16.py                       # once: the mock Excel file
-    python3 -u optimize_doses_51x16.py --weeks all | tee intermediate/optimize_doses.log
+    python3 -u optimize_doses_51x16.py --weeks all | tee intermediate/optimize_doses.output
 """
 
 import argparse

@@ -56,7 +56,7 @@ Allocations compared (all satisfy the constraints):
   minimizer the alternating method, from several starts.
 
 Usage:
-    python3 -u three_doses_51x16_mock.py fp [doses.xlsx] | tee intermediate/three_doses_51x16_mock_fp.log
+    python3 -u three_doses_51x16_mock.py fp [doses.xlsx] | tee intermediate/three_doses_51x16_mock_fp.output
 """
 
 import os

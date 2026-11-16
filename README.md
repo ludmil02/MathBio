@@ -56,7 +56,14 @@ Order: `census_N_51x16.py`, `prem_U_16x16.py`, `geo_51.py`, `build_C_51x16.py`,
 `glasser2023_inputs.py`, `oxcgrt_s_51.py`, `cdc_variants.py`, `sero_initial_51x16.py`,
 `mock_doses_51x16x16.py`, then
 
-    python3 -u seir7_ode.py simulate optimal | tee intermediate/seir7_ode_simulate_optimal.log
+    python3 -u seir7_ode.py simulate optimal 2>&1 | tee intermediate/seir7_ode_simulate_optimal.output
+
+After each week the state is saved to `intermediate/simulate_optimal_checkpoint.npz`; after an
+interruption (Ctrl-C), `simulate optimal resume` continues from the last completed week:
+
+    python3 -u seir7_ode.py simulate optimal resume 2>&1 | tee -a intermediate/seir7_ode_simulate_optimal.output
+
+Logs are written as `*.output`, not `*.log`, so that they are not removed with the TeX logs.
 
 ### The results of the main document and the supplement
 

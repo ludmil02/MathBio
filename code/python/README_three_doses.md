@@ -51,7 +51,7 @@ The weeks are independent: the model is not advanced from one week to the next.
 
 From `code/python/`:
 
-    python3 -u optimize_doses_51x16.py --weeks all | tee intermediate/optimize_doses.log
+    python3 -u optimize_doses_51x16.py --weeks all | tee intermediate/optimize_doses.output
 
 | option | |
 | --- | --- |

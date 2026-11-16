@@ -14,7 +14,7 @@ point iteration works with A1 diag(g) of order N (zf_jg.a1_matrix), with
 g = (1 - e) + e / t, e = 1 - r (1 - eps1), t = 1 + chi1 / omega_v.
 
 Usage:
-    python3 -u compare_allocations_4x4.py | tee intermediate/compare_allocations_4x4.log
+    python3 -u compare_allocations_4x4.py | tee intermediate/compare_allocations_4x4.output
 """
 
 import os

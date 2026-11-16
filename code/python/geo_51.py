@@ -40,15 +40,11 @@ def fetch():
         if not os.path.exists(p):
             print(f"downloading {u}")
             fetch_gz(u, p)
-    gz = os.path.join(RAW, "2024_Gaz_counties_national.txt.gz")
-    if not os.path.exists(gz):                 # the text file of the Gazetteer zip, gzipped
-        import gzip
-        zp = os.path.join(RAW, "2024_Gaz_counties_national.zip")
-        if not os.path.exists(zp):
-            os.makedirs(RAW, exist_ok=True)
-            urllib.request.urlretrieve(GAZ_ZIP, zp)
-        with zipfile.ZipFile(zp) as z, gzip.open(gz, "wb", compresslevel=9) as fo:
-            fo.write(z.read("2024_Gaz_counties_national.txt"))
+    zp = os.path.join(RAW, "2024_Gaz_counties_national.zip")    # read as is, not unpacked
+    if not os.path.exists(zp):
+        os.makedirs(RAW, exist_ok=True)
+        print(f"downloading {GAZ_ZIP}")
+        urllib.request.urlretrieve(GAZ_ZIP, zp)
 
 
 def vincenty_miles(lat1, lon1, lat2, lon2):
@@ -101,7 +97,9 @@ def activity():
     co = pd.read_csv(os.path.join(RAW, "co-est2024-alldata.csv.gz"), encoding="latin-1")
     co = co[co.SUMLEV == 50]
     co["GEOID"] = co.STATE * 1000 + co.COUNTY
-    gz = pd.read_csv(os.path.join(RAW, "2024_Gaz_counties_national.txt.gz"), sep="\t")
+    with zipfile.ZipFile(os.path.join(RAW, "2024_Gaz_counties_national.zip")) as z:
+        with z.open("2024_Gaz_counties_national.txt") as f:
+            gz = pd.read_csv(f, sep="\t")
     gz.columns = [c.strip() for c in gz.columns]
     x = co.merge(gz[["GEOID", "ALAND_SQMI"]], on="GEOID", how="left")
     if x.ALAND_SQMI.isna().any():
