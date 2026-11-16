@@ -23,7 +23,9 @@ Usage:
         tolerances, group sums, signs, spectral radius on [251, 349]
     python3 -u seir7_ode.py solve    | tee intermediate/seir7_ode_solve.log
         state at t = 349 (start of vaccination) -> data/state_t349_51x16.csv
-    python3 -u seir7_ode.py simulate [actual|optimal] [nrand] | tee intermediate/seir7_ode_simulate_<strategy>.log
+    python3 -u seir7_ode.py simulate [actual|optimal] [nrand] [resume] | tee -a intermediate/seir7_ode_simulate_<strategy>.log
+        (after each week the state is saved to intermediate/simulate_<strategy>_checkpoint.npz;
+        "resume" continues an interrupted run from the last completed week)
         from t = 251 through the weeks of the dose file. actual: the rates (6.1) of ODE.tex from
         the doses by location and age; optimal: each week, the doses of each location (all ages)
         allocated among its age groups by the alternating method (alternating.py, notes/
@@ -389,10 +391,16 @@ def optimal_rates(mod, A, tau, X, Dw, nrand):
                  start=name, sweeps=sw))
 
 
-def do_simulate(mod, strategy="actual", nrand=0):
-    """Weekly vaccination from T_VACC. strategy "actual": the rates (6.1) of ODE.tex from the
-    doses of the file by location and age; "optimal": the doses of each location (all ages)
-    allocated among its age groups by the optimization of notes/stratified_seir_ngm.tex."""
+def checkpoint_path(strategy):
+    return os.path.join(HERE, "intermediate", f"simulate_{strategy}_checkpoint.npz")
+
+
+def do_simulate(mod, strategy="actual", nrand=0, resume=False):
+    """Weekly vaccination from T_VACC. strategy "actual" (not run): the rates of DATA.tex, Remark
+    2.1, from the doses of the file by location and age; "optimal": the doses of each location
+    (all ages) allocated among its age groups by the optimization of notes/stratified_seir_ngm.tex.
+    After every week the state, the week and the results so far are saved to
+    intermediate/simulate_<strategy>_checkpoint.npz; with resume=True the run continues from it."""
     if strategy not in ("actual", "optimal"):
         raise ValueError(f"strategy {strategy!r}")
     A = None
@@ -404,9 +412,19 @@ def do_simulate(mod, strategy="actual", nrand=0):
     Dk = np.stack([sheets[f"Dose{k}"].iloc[:, 2:].to_numpy(float).reshape(mod.m, mod.n, -1)
                    for k in (1, 2, 3)])                                      # 3 x m x n x weeks
     tic = time.time()
-    (x,), _ = mod.solve(T_START, T_VACC, mod.x251)
-    rows, opt = [], []
-    for w, tau in enumerate(weeks):
+    ckpt = checkpoint_path(strategy)
+    if resume and os.path.exists(ckpt):
+        z = np.load(ckpt, allow_pickle=True)
+        w0, x = int(z["next_week"]), z["x"].copy()
+        rows, opt = list(z["rows"]), list(z["opt"])
+        if not np.isclose(float(z["t"]), weeks[w0]):
+            raise ValueError(f"{ckpt}: t = {float(z['t'])} is not the start of week {w0 + 1}")
+        print(f"resuming from {ckpt}: week {w0 + 1} (t = {weeks[w0]:g})", flush=True)
+    else:
+        (x,), _ = mod.solve(T_START, T_VACC, mod.x251)
+        w0, rows, opt = 0, [], []
+    for w in range(w0, len(weeks)):
+        tau = weeks[w]
         X = x.reshape(13, mod.m, mod.n)
         rows.append({"t": tau, **{nm: X[c].sum() for c, nm in enumerate(NAMES)}})
         Dw = Dk[:, :, :, w]
@@ -421,6 +439,11 @@ def do_simulate(mod, strategy="actual", nrand=0):
                   f"{info['rho_capped']:.6f} (max chi before cap {info['chi_max_before_cap']:.3g});"
                   f" {time.time() - tic:.0f} s", flush=True)
         (x,), _ = mod.solve(tau, tau + 7.0, x)
+        if w + 1 < len(weeks):                 # the state at the start of the next week
+            tmp = ckpt + ".tmp.npz"
+            np.savez(tmp, next_week=w + 1, t=weeks[w + 1], x=x,
+                     rows=np.array(rows, dtype=object), opt=np.array(opt, dtype=object))
+            os.replace(tmp, ckpt)
     mod.chi[:] = 0.0
     X = x.reshape(13, mod.m, mod.n)
     rows.append({"t": weeks[-1] + 7.0, **{nm: X[c].sum() for c, nm in enumerate(NAMES)}})
@@ -442,8 +465,10 @@ if __name__ == "__main__":
     print(f"N total {mod.N.sum():,.0f}; variant days " +
           ", ".join(f"{t:g}" for t in mod.breaks))
     if mode == "simulate":
-        strategy = sys.argv[2] if len(sys.argv) > 2 else "optimal"   # actual: reference only, not run
-        nrand = int(sys.argv[3]) if len(sys.argv) > 3 else 0
-        do_simulate(mod, strategy, nrand)
+        args = [a for a in sys.argv[2:] if a != "resume"]
+        resume = "resume" in sys.argv[2:]
+        strategy = args[0] if args else "optimal"   # actual: reference only, not run
+        nrand = int(args[1]) if len(args) > 1 else 0
+        do_simulate(mod, strategy, nrand, resume)
     else:
         {"verify": do_verify, "solve": do_solve}[mode](mod)
