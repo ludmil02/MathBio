@@ -1,3 +1,6 @@
+Mathematica_Wolfram/
+code/python/mock_contact_51x16.py
+data/real/
 *.dat
 
 # Mathematica notebooks: never tracked (removed from the history on 2026-11-16);
