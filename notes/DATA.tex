@@ -282,7 +282,19 @@ by~\fref{f-prog}.
 totals of the 13 compartments at the start of each week.
 \item\label{f-out-rho} \src{data/simulate_weekly_51x16_optimal_rho.csv}: the
 spectral radius of each week, at the uniform allocation and at the solution.
+\item\label{f-ckpt} \src{intermediate/simulate_optimal_checkpoint.npz}: after every
+week, the state, the week and the results so far; with the argument
+\texttt{resume} the computation continues from the last completed week.
 \end{enumerate}
+From \src{MathBio/code/python/}, the computation is run, and after an interruption
+resumed, by
+\begin{center}
+\small
+\texttt{python3 -u seir7\_ode.py simulate optimal 2>\&1 | tee intermediate/seir7\_ode\_simulate\_optimal.output}\\
+\texttt{python3 -u seir7\_ode.py simulate optimal resume 2>\&1 | tee -a intermediate/seir7\_ode\_simulate\_optimal.output}
+\end{center}
+The inputs \fref{f-N}--\fref{f-doses} are rebuilt from the downloads by the scripts
+named in Section~\ref{sec-built}.
 
 \subsection{The model}\label{sec-model}
 
@@ -337,9 +349,12 @@ $S$, $V$, $P$ the state at $\tau$ and $D_{k,ij}$ the doses of the week~\fref{f-d
 day of the week; they change only from one week to the next): minimize the
 spectral radius of the next generation matrix over $\chi$, subject to
 $\sum_j\sigma_{k,ij}\chi_{k,ij}=\frac17\sum_jD_{k,ij}$ for every location $i$ and
-dose $k$ (the doses of the location, all ages), with $\sigma_1=S$, $\sigma_2=V$,
-$\sigma_3=P$ and $0\le\chi_{k,ij}\le-\frac17\ln(0.01)$
-(\src{stratified_seir_ngm.tex}, problem (1.1) and Section~9);
+dose $k$ (the doses of the location, all ages, at most $0.99\sum_j\sigma_{k,ij}/7$),
+with $\sigma_1=S$, $\sigma_2=V$, $\sigma_3=P$, only the groups with
+$\sigma_{k,ij}\ge1$ (at least one eligible person) receiving dose $k$, and the bound
+$0\le\chi_{k,ij}\le\chi_{\max}=-\frac17\ln(0.01)\approx0.658$ per day (at most $99\%$
+of a group in a week) as a constraint of the minimization
+(\src{stratified_seir_ngm.tex}, problem (1.1), Section~9 and its Section~9.1);
 \item solve~\eqref{ode} on $[\tau,\tau+7]$ with these rates, which gives the state
 at $\tau+7$;
 \item advance to the next week, $\tau\leftarrow\tau+7$.

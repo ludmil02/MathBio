@@ -923,7 +923,12 @@ the bound; we have not checked that it holds with it.
 the compartments at the start of each week are written to
 \path{data/simulate_weekly_51x16_optimal.csv}, and $\rho$ at the uniform
 allocation and at the solution, for each week, to
-\path{data/simulate_weekly_51x16_optimal_rho.csv} (DATA.tex, Section~2).\par}
+\path{data/simulate_weekly_51x16_optimal_rho.csv} (DATA.tex, Section~2). After
+every week the state is saved to \path{intermediate/simulate_optimal_checkpoint.npz},
+and \texttt{simulate optimal resume} continues an interrupted computation from the
+last completed week; the bound, the eligible groups and the capped projections are in
+\path{alternating.py} (\path{set_cap}, \path{set_eligible}, \path{solve_mu_capped},
+\path{proj_capped_simplex}).\par}
 
 \section{Conclusions}\label{sec-conclusions}
 
