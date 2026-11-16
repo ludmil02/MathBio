@@ -3,8 +3,8 @@
   Table 1   rho(F V^-1) of the full 8-state system and rho(A1 diag(g)) of
             Theorem 3.1, for the 4 x 4 data (zf_jg_params.py) at chi = 0 and at
             the chi of F_and_V_ZF_18Jan_orig.nb, and for the 51 x 16 data
-            (intermediate/seir7_t347/, see ngm_seir7.py) at chi = 0 and, as
-            rho(NGM) vs rho(A1 diag(g)), at a random chi;
+            (the public data of notes/DATA.tex at t = 349, see ngm_seir7.py) at
+            chi = 0 and, as rho(NGM) vs rho(A1 diag(g)), at a random chi;
   caption   the ranges of r_p = q_m / q_s;
   Sect. 5   at a random chi: the closed form (4.1) of g against y + r z, the two
             forms (4.3) of e_p and 0 < e_p <= 1, g_p = (1 - e_p) + e_p / t_p, and
@@ -101,15 +101,15 @@ def reduced_rho(chi):
 zero = np.zeros((m, n))
 Y0, Z0, _ = S7.yz(zero, zero, zero)
 check("51x16, chi = 0: rho(F V^-1)",
-      S7.full_fv(Y0, Z0, S7.C, np.tile(S7.psiI, m), n, S7.AGE_PRM, verbose=False), 1.307390501274, TOL)
-check("51x16, chi = 0: rho(A1 diag(g))", reduced_rho((zero, zero, zero)), 1.307390501274, TOL)
+      S7.full_fv(Y0, Z0, S7.C, np.tile(S7.psiI, m), n, S7.AGE_PRM, verbose=False), 0.913476795635, TOL)
+check("51x16, chi = 0: rho(A1 diag(g))", reduced_rho((zero, zero, zero)), 0.913476795635, TOL)
 
 rng = np.random.default_rng(1)
 chi_r = [rng.random((m, n)) * s for s in (0.05, 0.01, 0.01)]
 Yr, Zr, _ = S7.yz(*chi_r)
 check("51x16, random chi: rho(NGM)", S7.perron(S7.h_operator(Yr, Zr, S7.Qs, S7.Qm)[0])[0],
-      0.492928980848, TOL)
-check("51x16, random chi: rho(A1 diag(g))", reduced_rho(chi_r), 0.492928980848, TOL)
+      0.274364569757, TOL)
+check("51x16, random chi: rho(A1 diag(g))", reduced_rho(chi_r), 0.274364569757, TOL)
 
 # ------------------------------------------------------------------ ratios r_p
 r4 = qm4 / qs4
@@ -174,7 +174,7 @@ for kk, d in ((0, d1), (1, d2), (2, d3)):
     cm[kk] -= h
     fd = (gclosed(*cp) - gclosed(*cm)) / (2 * h)
     check_small("(4.6) dg/dchi%d vs central difference, max rel diff" % (kk + 1),
-                np.abs(fd - d).max() / np.abs(d).max(), 2e-9)
+                np.abs(fd - d).max() / np.abs(d).max(), 5e-8)   # central difference error, h = 1e-7
 
 say("PASS" if not FAILS else "FAIL: " + ", ".join(FAILS))
 sys.exit(1 if FAILS else 0)

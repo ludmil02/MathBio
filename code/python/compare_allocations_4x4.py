@@ -1,11 +1,11 @@
-"""Section 6 of notes/stratified_seir_ngm.tex: four allocations of the same first doses,
+"""Section 5.3 of notes/stratified_seir_ngm.tex: four allocations of the same first doses,
 4 x 4 data at t = 347, compared by rho(NGM).
 
   actual          chi1 = D / S, D = C2 of zf_jg_doses.py;
   left ev, doses  chi1 S = b1_i w_p / sum_{l in I_i} w_l  (the alternative of the paper);
   left ev, rates  chi1 = b1_i w_p / sum_{l in I_i} w_l S_l;
-  minimizer       the fixed point iteration of Section 4 (Lemma 4.1, (4.11)),
-                  checked by the KKT conditions (4.8) and by scipy's trust-constr
+  minimizer       the damped fixed point iteration of Section 5.2 (Lemma 5.1, (5.7)),
+                  checked by the KKT conditions (5.4) and by scipy's trust-constr
                   from random starts.
 
 w_p: the entry in row 2p-1 of the dominant left eigenvector of NGM at chi = 0.
@@ -50,7 +50,7 @@ zero = np.zeros((m, n))
 
 A1 = Z.a1_matrix(par)                                  # sparse, order N
 r = Z.r_vector(par)                                    # q_m / q_s per group
-e = 1.0 - r * (1.0 - eps1)                             # (4.3) at theta = zeta = 0
+e = 1.0 - r * (1.0 - eps1)                             # (5.2) at theta = zeta = 0
 sig_t = S.ravel() * omv                                # sigma-tilde, alpha = 1, omega_p = omega_v
 c = b1 + sig_t.reshape(m, n).sum(axis=1)
 
@@ -73,7 +73,7 @@ def g_of_t(t):
 
 
 def solve_mu(ea, sg, ci):
-    """(4.11): the exact solution of F_i(mu) = c_i."""
+    """(5.7) of the notes: the exact solution of F_i(mu) = c_i."""
     beta = ea / sg
     order = np.argsort(beta)
     beta, s, rr = beta[order], sg[order], np.sqrt(ea * sg)[order]
@@ -92,7 +92,9 @@ def a_vector(t):
     return rho, (A1.T @ w) * v / float(w @ v)
 
 
-def fixed_point(t, tol=1e-13, kmax=1000):
+def fixed_point(t, tol=1e-13, kmax=1000, theta=0.5):
+    """The damped fixed point iteration of Section 5.2: t <- t + theta (t(mu) - t);
+    theta = 1 is the undamped iteration."""
     hist = []
     for k in range(kmax):
         rho, a = a_vector(t)
@@ -106,7 +108,7 @@ def fixed_point(t, tol=1e-13, kmax=1000):
         d = np.abs(tn - t).max() / np.abs(t).max()
         if k < 5 or k % 10 == 0 or d < tol:
             say("  k = %3d   rho(A1 diag(g)) = %.12f   rel. change of t = %.2e" % (k, rho, d))
-        t = tn
+        t = t + theta * (tn - t)
         if d < tol:
             break
     hist.append(a_vector(t)[0])
@@ -137,7 +139,7 @@ def chi_from_t(t):
 
 
 def allocations():
-    """The four allocations of Section 6, chi1 of shape (m, n) each, and the
+    """The four allocations of Section 5.3, chi1 of shape (m, n) each, and the
     fixed point data (t, mu, number of iterations)."""
     allocs = {}
     allocs["actual"] = C2 / S

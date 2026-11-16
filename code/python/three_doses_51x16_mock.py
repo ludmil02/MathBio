@@ -21,24 +21,32 @@ available:
       equilibrium with chi = chi_ref and population N_p (mN).
 
 Problem (1.1) of notes/stratified_seir_ngm.tex with these sigma and b is solved
-by alternating over chi1, chi3, chi2 (Section 4):
-  chi1: fixed point iteration of Lemma 4.1, g = (1 - e) + e / t;
-  chi3: the same, g = g0 / t (e = 1, A1 replaced by A1 diag(g0));
-  chi2: in u_p = sigma_{2,p} chi_{2,p} / b_{2,i} (a simplex per location), gradient from
-        (4.6)-(4.7), by the spectral projected gradient method of Birgin, Martinez and
-        Raydan (argument "spg", the default), scipy's trust-constr ("tc"; an interior
-        point method, it moves away from chi_{2,p} = 0 and does worse), or projected
-        gradient with Armijo backtracking ("pg").
+by the alternating method of Section 6, over chi1, chi3, chi2 in turn, each step by
+the damped fixed point iteration of Section 5.2 (Lemma 5.1, (5.7); damping THETA = 1/2):
+  chi1 (Section 6.1): g = (1 - e) + e / t;
+  chi3 (Section 6.2): g = g0 / t (e = 1, A1 replaced by A1 diag(g0)), over the groups
+        with chi1 > 0 and chi2 > 0; the other groups get no third doses;
+  chi2 (Section 6.3): g = (kappa + kappa' chi2) / (lambda + lambda' chi2); the groups
+        with Delta_p <= 0 get no second doses, and on the others
+        g = g0 ((1 - e) + e / t), the one dose form (chi2_form).
+fp_step falls back to spectral projected gradient (block_spg; Birgin, Martinez and
+Raydan) if C is not irreducible, if (chi2) a location has no group with Delta_p > 0,
+or if the iteration does not converge.  The first argument chooses the chi2 step:
+"fp" (the default, as above), "spg", scipy's trust-constr ("tc"), or projected
+gradient with Armijo backtracking ("pg").
 rho is logged after every step of every sweep, and every increase is counted.
-The end points are checked by the KKT conditions (5.1) of the note (kkt_table):
+The end points are checked by the KKT conditions (4.1) of the notes (kkt_table):
 with h_{k,p} = -(d rho / d chi_{k,p}) / sigma_{k,p} and, for each (k, i), mu_{k,i}
-the mean of h over the groups that receive doses, (5.1) holds when h_{k,p} = mu_{k,i}
+the mean of h over the groups that receive doses, (4.1) holds when h_{k,p} = mu_{k,i}
 where chi_{k,p} > 0 and h_{k,p} <= mu_{k,i} where chi_{k,p} = 0.
 rho is computed from A1 diag(g) (order N = 816) by Arnoldi; the final points are
 checked against rho(NGM) of order 2N.
 
-One dose: the same sigma_1, b_1 with chi_2 = chi_3 = 0, solved by the fixed point
-iteration alone (the chi1 step), from the uniform allocation.
+One dose: the same sigma_1, b_1 with chi_2 = chi_3 = 0, solved by the damped fixed
+point iteration alone (the chi1 step), from the uniform allocation.
+
+The Newton method of Section S4 of the supplement (newton, Second, ...) and other
+methods for the steps (STEP13 = "spg" or "newton") are kept as options.
 
 Allocations compared (all satisfy the constraints):
   uniform   chi_{k,p} = b_{k,i} / sum_{l in I_i} sigma_{k,l}, the same rate for all
@@ -48,7 +56,7 @@ Allocations compared (all satisfy the constraints):
   minimizer the alternating method, from several starts.
 
 Usage:
-    python3 -u three_doses_51x16_mock.py spg [doses.xlsx] | tee intermediate/three_doses_51x16_mock_spg.log
+    python3 -u three_doses_51x16_mock.py fp [doses.xlsx] | tee intermediate/three_doses_51x16_mock_fp.log
 """
 
 import os
@@ -64,11 +72,12 @@ from scipy.optimize import minimize, LinearConstraint, Bounds
 import ngm_seir7 as S7
 
 T0 = time.time()
-# chi2 step: "spg" spectral projected gradient, "tc" trust-constr, "pg" projected gradient
+# chi2 step: "fp" damped fixed point (Section 6.3), "spg" spectral projected gradient,
+# "tc" trust-constr, "pg" projected gradient
 CHI2 = sys.argv[1] if len(sys.argv) > 1 else "fp"
 THETA = 0.5          # damping of the fixed point iteration (Section 5.2); 1 = undamped
-# chi1 and chi3 steps: "fp" the fixed point iteration (Section 5.2), "spg" spectral projected
-# gradient (as the chi2 step), "newton" Appendix C.3
+# chi1 and chi3 steps: "fp" the damped fixed point iteration (Section 5.2), "spg" spectral
+# projected gradient, "newton" Section S4.3 of the supplement
 STEP13 = "fp"
 DOSES_XLSX = os.path.join(S7.HERE, "data", "doses_51x16_mock.xlsx")
 DOSES = sys.argv[2] if len(sys.argv) > 2 else DOSES_XLSX
@@ -123,7 +132,7 @@ def drho_dg(g):
 
 
 def dg_dchi2(chi1, chi2, chi3):
-    """(4.7) of the note."""
+    """d g_p / d chi_{2,p}, (3.4) of the notes."""
     p1, p2, p3 = pis(chi1, chi2, chi3)
     _, num, den = g_of(chi1, chi2, chi3)
     omp = omv + e2 * chi2
@@ -141,7 +150,7 @@ def rho_ngm(chi):
 
 # ----------------------------------------------------------------------------- one block, t form
 def solve_mu(h, sg, bi):
-    """(4.11): the solution of sum_p sg_p max(1, sqrt(h_p / (mu sg_p))) = c_i with
+    """(5.7) of the notes: the solution of sum_p sg_p max(1, sqrt(h_p / (mu sg_p))) = c_i with
     c_i = bi + sum_p sg_p.  Written with bi and the tail sums
     c_i - C_j = bi + sum_{l > j} sg_(l), so that groups with very large sg_p (very small
     slope s_p in the chi3 step) do not cause cancellation."""
@@ -293,7 +302,7 @@ def con_matrix(nblocks):
 
 
 def dg_all(chi):
-    """dg_p / dchi_{k,p}, k = 1, 2, 3, by (4.6)-(4.7)."""
+    """dg_p / dchi_{k,p}, k = 1, 2, 3, by (3.4) of the notes."""
     p1, p2, p3 = pis(*chi)
     _, num, den = g_of(*chi)
     omp = omv + e2 * chi[1]
@@ -453,7 +462,7 @@ def alternate(chi, b, sig, sweeps=200, tol=1e-11, label=""):
     hist = [rho]
     say("%s start: rho = %.12f" % (label, rho))
     for sw in range(sweeps):
-        if STEP13 == "newton":                         # Appendix C.3
+        if STEP13 == "newton":                         # Section S4.3 of the supplement
             chi, _, inf1 = newton(chi, b, sig, doses=(0,), second_order=False, verbose=False)
             it1 = inf1["steps"]
         elif STEP13 == "spg":
@@ -493,7 +502,7 @@ def alternate(chi, b, sig, sweeps=200, tol=1e-11, label=""):
 
 
 def kkt_table(chi, b, sig, doses=(0, 1, 2), thr=1e-9):
-    """The KKT conditions (5.1): for each dose k and location i, h_p = -(drho/dchi_{k,p}) / sigma_{k,p},
+    """The KKT conditions (4.1) of the notes: for each dose k and location i, h_p = -(drho/dchi_{k,p}) / sigma_{k,p},
     mu = mean of h over the groups with u_p = sigma_{k,p} chi_{k,p} / b_{k,i} > thr.
     Returns, per dose, the largest over i of: spread max |h_p / mu - 1| over those groups,
     ratio max h_p / mu over the other groups (-inf if none), and |sum_p u_p - 1|;
@@ -519,7 +528,7 @@ def kkt_table(chi, b, sig, doses=(0, 1, 2), thr=1e-9):
     return out
 
 
-# ----------------------------------------------------------------------------- Newton, Appendix C
+# ----------------------------------------------------------------------------- Newton, supplement S4
 def g_derivs(chi):
     """g, its gradient, shape (3, N), and Hessian, shape (3, 3, N), in (chi1, chi2, chi3),
     group by group.  g = Nt / Dt with (numerator and denominator of (2.5) times omega_p)
@@ -551,8 +560,8 @@ A1T = lambda y: psq * (C.T @ (dc * y))
 
 class Second:
     """rho, its gradient and Hessian-vector products in x = (chi1, chi2, chi3), shape (3, N),
-    by Lemmas C.2-C.3 and (C.3).  Products with S and S^T are solves with the bordered
-    matrices B, B' of Lemma C.2 by GMRES; nothing of order N is formed."""
+    by Lemmas S4.1-S4.2 and (S4.1) of the supplement.  Products with S and S^T are solves
+    with the bordered matrices B, B' of Lemma S4.1 by GMRES; nothing of order N is formed."""
 
     def __init__(self, chi, gtol=1e-12):
         self.chi = np.array(chi, dtype=float)
@@ -585,11 +594,11 @@ class Second:
         return self._solve(self.Bt, x - self.w * (self.v @ x))
 
     def hess_g(self, y):
-        """Lemma C.3: D_a S A1 D_v y + D_v A1^T S^T D_a y."""
+        """Lemma S4.2: D_a S A1 D_v y + D_v A1^T S^T D_a y."""
         return self.a * self.S(A1(self.v * y)) + self.v * A1T(self.ST(self.a * y))
 
     def hess(self, z):
-        """(C.3): J^T H_g J z + sum_p (d rho / d g_p) Hess g_p z, z of shape (3, N)."""
+        """(S4.1): J^T H_g J z + sum_p (d rho / d g_p) Hess g_p z, z of shape (3, N)."""
         u = self.hess_g((self.dg * z).sum(axis=0))
         return self.dg * u + self.grad_g * np.einsum("kln,ln->kn", self.Hgx, z)
 
@@ -599,7 +608,7 @@ def _blocks(x):
 
 
 def proj_free(z, mask, sig):
-    """P_F of Appendix C.2: z zero outside the free set, minus its sigma weighted mean,
+    """P_F of Section S4.2: z zero outside the free set, minus its sigma weighted mean,
     location by location (rows of E_F have disjoint supports)."""
     z = np.where(mask, z, 0.0)
     e = np.where(mask, np.array(sig), 0.0)
@@ -676,13 +685,13 @@ def smallest_reduced_eig(hess, mask, tol=1e-6, maxiter=5000):
 
 def newton(chi, b, sig, thr=1e-12, maxit=30, gtol=1e-11, second_order=True, doses=(0, 1, 2),
            verbose=True, label=""):
-    """Steps 2-4 of Appendix C.2 from the end point chi of the alternating method, in the
+    """Steps 2-4 of Section S4.2 of the supplement from the end point chi of the alternating method, in the
     variables u_{k,p} = sigma_{k,p} chi_{k,p} / b_{k,i} (chi = D u, D = b / sigma; the
     constraints are sum_{p in I_i} u_{k,p} = 1, the gradient is D grad_chi and the Hessian
     D H D).  CG stops at relative residual min(1e-2, |P grad| / |grad|).
     doses: the doses (0, 1, 2 for chi1, chi2, chi3) that are free; the others stay fixed.
-    For doses = (0,) or (2,) this is the step of Appendix C.3; for (2,) the groups with
-    s_p = 0 (chi1 = 0 or chi2 = 0) are fixed at 0 (Proposition B.1).
+    For doses = (0,) or (2,) this is the step of Section S4.3; for (2,) the groups with
+    s_p = 0 (chi1 = 0 or chi2 = 0) are fixed at 0 (Section 6.2, Proposition S3.1).
     Returns chi, rho, and a dict with the history, the number of Newton steps and the
     second order test."""
     say_ = say if verbose else (lambda *a: None)
@@ -848,7 +857,7 @@ def main():
         % (*(bb.sum() for bb in b), *(1e3 * bb.sum() / Ntot for bb in b)))
     say("r_p in [%.3f, %.3f]" % (r.min(), r.max()))
 
-    # checks of g and of (4.7)
+    # checks of g and of (3.4) of the notes
     rng = np.random.default_rng(1)
     chi_r = [x * rng.random(N) * 2 for x in CHI_REF]
     Y, Z, _ = S7.yz(*(c.reshape(m, n) for c in chi_r))
@@ -856,7 +865,7 @@ def main():
     say("check g vs ngm_seir7.yz: max diff %.1e" % np.abs(gchk - g_of(*chi_r)[0]).max())
     hh = 1e-20
     cs = (g_of(chi_r[0] + 0j, chi_r[1] + 1j * hh, chi_r[2] + 0j)[0].imag) / hh
-    say("check (4.7) vs complex step: max rel diff %.1e"
+    say("check d g / d chi2 of (3.4) vs complex step: max rel diff %.1e"
         % (np.abs(cs - dg_dchi2(*chi_r)).max() / np.abs(cs).max()))
 
     rho0 = rho_ngm([np.zeros(N)] * 3)

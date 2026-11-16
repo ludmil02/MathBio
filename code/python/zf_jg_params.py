@@ -182,6 +182,6 @@ _DATA = {
 
 
 def default_params():
-    """Fresh copy of the notebook parameters (arrays are copied)."""
+    """Fresh copy of the 4 x 4 parameters (arrays are copied)."""
     return {k: (v.copy() if isinstance(v, np.ndarray) else v)
             for k, v in _DATA.items()}

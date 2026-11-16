@@ -1,0 +1,366 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{bm}
+\usepackage{amsthm}
+\theoremstyle{remark}
+\newtheorem{remark}{Remark}[section]
+\usepackage{enumitem}
+\usepackage{xurl}
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
+
+% file and column names: typewriter, breakable at any character (xurl)
+\newcommand{\src}[1]{\path{#1}}
+% a file of Section 1, by its label: F<number>
+\newcommand{\fref}[1]{\ref{#1}}
+
+\title{The age- and location-stratified SEIR model: the data\thanks{Parts of this
+manuscript were edited with the assistance of an AI tool (Claude Opus 5.5, Anthropic).
+The authors are solely responsible for all proofs and statements.}}
+\author{Zhilan \and John \and Yuliya \and Ludmil}
+\date{}
+
+\begin{document}
+\maketitle
+
+The model of~\cite{2026Feng_Day_Glasser} (Section~\ref{sec-model}), its data,
+each with its published or public source, and the computation
+(Section~\ref{sec-comp}). There are $m=51$ locations (the 50 states and D.C., in the order of their
+FIPS codes) and $n=16$ age groups ($0$--$4$, \dots, $70$--$74$, $75+$). All
+data are published or public, except two inputs, which are mock data
+(Section~\ref{sec-mock}).
+
+\section{Data}\label{sec-data}
+
+\subsection{Files}\label{sec-files}
+
+\subsubsection{Downloaded}\label{sec-downloaded}
+Kept as downloaded, in
+\src{MathBio/data/Downloaded_from_source/}; paths relative to this directory.
+\begin{enumerate}[label=F1-\arabic*, ref=F1-\arabic*, series=files, leftmargin=*]
+\item\label{f-jtb} \src{papers/2026FengDayGlasser.pdf}: the model paper~\cite{2026Feng_Day_Glasser}.
+\item\label{f-jtbs} \src{papers/2026FengDayGlasserSupplement.pdf}: its supplement (Tables S1--S4).
+Sections~\ref{sec-age}, \ref{sec-const}, \ref{sec-var}.
+\item\label{f-g23} \src{papers/2023GlasserFengVoJonesClarke.pdf}:~\cite{2023Glasser_Feng}; its
+Fig.~4 is digitized for $\beta^0$. Sections~\ref{sec-time}--\ref{sec-mock}.
+\item\label{f-f17} \src{papers/2017FengHillCurnsGlasser.pdf}:~\cite{2017Feng_Hill_Curns_Glasser}.
+Section~\ref{sec-loc}.
+\item\label{f-prem} \src{papers/2017PremCookJit.pdf}:~\cite{2017Prem_Cook_Jit}, and its
+supporting text S1 \src{papers/2017PremCookJitSupplementS1.pdf}. Section~\ref{sec-contacts}.
+\item\label{f-baj}
+\src{papers/2021BajemaWiegandCuffePatelIachanLimLeeMoyseHaversHardingFryHallMartinBielDengMeyerMathurKyleGundlapalliThornburgPetersenEdens.pdf}:~\cite{2021Bajema_Wiegand}.
+Section~\ref{sec-mock}.
+\item\label{f-kingman} \src{papers/1961Kingman.pdf}:~\cite{1961Kingman-aa}, the
+log-convexity of the spectral radius used in \src{stratified_seir_ngm.tex}
+(Lemma~5.1); not a data source.
+\item\label{f-sc} \src{census/sc-est2024-alldata6.csv.gz}: state population estimates by age,
+Vintage 2024~\cite{2024Census_scest2024}. Section~\ref{sec-pop}.
+\item\label{f-co} \src{census/co-est2024-alldata.csv.gz}: county population estimates,
+Vintage 2024~\cite{2024Census_coest2024}. Section~\ref{sec-loc}.
+\item\label{f-gaz} \src{census/2024_Gaz_counties_national.txt.gz}: county land areas,
+2024 Gazetteer~\cite{2024Census_gazetteer} (the text file of the downloaded
+\src{.zip}, which is kept but not tracked). Section~\ref{sec-loc}.
+\item\label{f-cenpop} \src{census/CenPop2010_Mean_ST.txt.gz}: 2010 centers of population of
+the states~\cite{2010Census_cenpop}. Section~\ref{sec-loc}.
+\item\label{f-premx} \src{prem2017/MUestimates_all_locations_2.xlsx} (and \src{_1.xlsx}):
+the contact matrices of supporting file S2 of~\cite{2017Prem_Cook_Jit}, extracted
+from \src{pcbi.1005697.s002.zip} (kept but not tracked). Section~\ref{sec-contacts}.
+\item\label{f-ox} \src{oxcgrt/OxCGRT_compact_subnational_v1.csv.gz}: the final OxCGRT data
+set~\cite{2021Hale_OxCGRT,2023OxCGRT_data}. Section~\ref{sec-loc}.
+\item\label{f-sero} \src{cdc/seroprevalence.csv.gz}: the CDC Nationwide Commercial Laboratory
+Seroprevalence Survey~\cite{2023CDC_sero}. Section~\ref{sec-mock}.
+\item\label{f-var} \src{cdc/variants_usa.csv.gz}: CDC SARS-CoV-2 Variant
+Proportions, USA, weighted estimates~\cite{2023CDC_variants}. Section~\ref{sec-var}.
+\end{enumerate}
+The data files are kept as downloaded, gzipped (\src{.gz}); the scripts read them
+without unpacking.
+
+\subsubsection{Built}\label{sec-built}
+The inputs of the model, in \src{MathBio/code/python/data/},
+each written by the script named, from the files listed.
+\begin{enumerate}[label=F1-\arabic*, ref=F1-\arabic*, resume=files, leftmargin=*]
+\item\label{f-N} \src{census/N_51x16.csv}: $N_{ij}$; \src{census_N_51x16.py}
+from~\fref{f-sc}. Section~\ref{sec-pop}.
+\item\label{f-U} \src{prem2017/U_16x16.csv}: $U$; \src{prem_U_16x16.py}
+from~\fref{f-premx}. Section~\ref{sec-contacts}.
+\item\label{f-d} \src{census/d_51x51.csv}: $d_{ip}$; \src{geo_51.py}
+from~\fref{f-cenpop}. Section~\ref{sec-loc}.
+\item\label{f-L} \src{census/L_51.csv}: $\rho_i$ and $L_i$; \src{geo_51.py}
+from~\fref{f-co} and~\fref{f-gaz}. Section~\ref{sec-loc}.
+\item\label{f-C} \src{model/C_816x816.csv.gz}: the contact matrix $C$ (gzipped CSV; rows
+$(i,j)$ and columns $(p,q)$ labelled by state and age group); \src{build_C_51x16.py}
+from~\fref{f-U}, \fref{f-d}, \fref{f-L}. Section~\ref{sec-loc}.
+\item\label{f-s} \src{oxcgrt/s_51_daily.csv}: $s_i(t)$, daily; \src{oxcgrt_s_51.py}
+from~\fref{f-ox}. Section~\ref{sec-loc}.
+\item\label{f-t2} \src{glasser2023/table2.csv}: $p_j$, $d_j$, $\mathrm{IFR}_j$, $c_j^0$, typed
+from Table~2 of~\fref{f-g23}; \src{glasser2023_inputs.py}. Section~\ref{sec-age}.
+\item\label{f-beta} \src{glasser2023/beta0.csv}: $\beta_j^0$, digitized from Fig.~4
+of~\fref{f-g23}; \src{glasser2023_inputs.py}. Section~\ref{sec-age}.
+\item\label{f-vd} \src{cdc/variant_days.csv}: the days of the variants;
+\src{cdc_variants.py} from~\fref{f-var}. Section~\ref{sec-var}.
+\item\label{f-x0} \src{cdc/state_t251_mock.csv}: the initial state (mock);
+\src{sero_initial_51x16.py} from~\fref{f-sero}, \fref{f-N}, \fref{f-t2}.
+Section~\ref{sec-mock}.
+\item\label{f-doses} \src{mock/doses_51x16x16_mock.xlsx}: the weekly doses (mock);
+\src{mock_doses_51x16x16.py} from~\fref{f-N}. Section~\ref{sec-mock}.
+\end{enumerate}
+
+\subsection{Time}\label{sec-time}
+
+The time $t$ is the number of days from 31 December 2019, and the model is
+started at $t=251$, 7 September 2020~\cite[Section~3]{2023Glasser_Feng}.
+Vaccination began on 14 December 2020~\cite[Section~2.2]{2026Feng_Day_Glasser},
+$t=349$.
+
+\subsection{Population}\label{sec-pop}
+
+$N_{ij}$ is the resident population of location $i$ and age group $j$ on July 1,
+2020, of the Vintage 2024 estimates~\cite{2024Census_scest2024}
+(\fref{f-sc}): column \src{POPESTIMATE2020}, both sexes, all races and origins,
+summed over single years of age (85+ into 75+). Total: $331\,577\,720$.
+(\fref{f-N})
+
+\subsection{Contacts}\label{sec-contacts}
+
+$U$ is the projected contact matrix of~\cite{2017Prem_Cook_Jit} for the United
+States, all locations (\fref{f-premx}, \src{MUestimates_all_locations_2.xlsx},
+sheet ``United States of America''), balanced as
+in~\cite[Section~2.4]{2023Glasser_Feng} by $U_{jq}=\sqrt{M_{jq}M_{qj}}$. Row sums:
+$2.2$--$22.1$ contacts per day. (\fref{f-U})
+
+\subsection{Locations}\label{sec-loc}
+
+\subsubsection{Distances}\label{sec-dist}
+$d_{ip}$ is the distance in miles between the 2010
+centers of population~\cite{2010Census_cenpop} (\fref{f-cenpop}) of locations $i$
+and $p$, as in~\cite[Fig.~6]{2023Glasser_Feng}: the geodesic distance on the
+WGS84 ellipsoid~\cite{1975Vincenty}. (\fref{f-d})
+
+\subsubsection{Activity factors}\label{sec-L}
+$L_i=\ln\rho_i/\ln\rho$~\cite[Section~2.4]{2023Glasser_Feng},
+densities in persons per square mile of land. As
+in~\cite[Supplement, Section~1a]{2026Feng_Day_Glasser}, $\rho_i$ is the
+population-weighted average of the densities of the counties of location $i$,
+and $\rho$ the population-weighted average of the $\rho_i$; county populations
+on July 1, 2020 (\fref{f-co}), land areas (\fref{f-gaz}). Then $\rho=2253$ and
+$L_i\in[0.33,1.27]$. The supplement can also be read with $\rho$ the
+population-weighted average of the state densities population$/$area, which
+gives larger $L_i$. (\fref{f-L})
+
+\subsubsection{Decay with distance}\label{sec-b}
+$b_q$ solves
+$\sum_lU_{ql}=\frac1m\sum_{r,k}e^{-b_qd_{rk}}$~\cite[Section~2.2.2.2]{2017Feng_Hill_Curns_Glasser};
+computed from $U$ and $d$, $b_q\in[0.0009,0.0087]$ per mile.
+
+\subsubsection{Contact matrix}\label{sec-C}
+$C=(c_{ij,pq})$, the mixing
+of~\cite[Section~2.4]{2023Glasser_Feng},
+\begin{equation}\label{contacts}
+c_{ij,pq}=\frac{L_pU_{jq}e^{-b_qd_{ip}}}{\sum_{p',q'}L_{p'}U_{jq'}e^{-b_{q'}d_{ip'}}},
+\end{equation}
+of order $mn=816$, is formed from $U$, $L$, $d$ and $b$, and from nothing else
+(\fref{f-C}); the model reads it from this file. Its entries are in $[1.5\cdot10^{-23},\,0.34]$, every row adds up
+to $1$ (to $3\cdot10^{-15}$), and $C\bm x$ agrees with its computation without
+forming $C$ (appendix of \src{stratified_seir_ngm.tex}) to $2\cdot10^{-15}$. The
+contact rates are
+$a_{ij}=L_i\sum_lU_{lj}$.
+
+\subsubsection{Stringency}\label{sec-s}
+$s_i(t)=1-\mathrm{SI}_i(t)/100$, the complement of the
+Oxford stringency index of location $i$~\cite[Section~4.1]{2023Glasser_Feng}:
+the daily \src{StringencyIndex_Average} of the US states (\src{STATE_TOTAL})
+in~\fref{f-ox}, 1 January 2020 -- 31 December 2022, linear between days and
+constant after the last. At $t=251$, $s_i\in[0.20,0.62]$. (\fref{f-s})
+
+\subsection{Age-specific values}\label{sec-age}
+
+From Table~S2 of~\cite{2026Feng_Day_Glasser}, which is Table~2
+of~\cite{2023Glasser_Feng}: the proportion with mild if any symptoms $p_j$ and
+the proportion hospitalized if infected $d_j$~\cite{2020Clark_Jit}, the infection
+fatality ratio $\mathrm{IFR}_j$~\cite{2020Levin_Hanage}, and the compliance $c_j^0$,
+estimated in~\cite[Section~4.1]{2023Glasser_Feng} from~\cite{2020Jones_YouGov}
+(\fref{f-t2}). From these, $q_j=1-(1-p_j)/2$ \cite[Table~2]{2026Feng_Day_Glasser};
+$\delta_{s,j}=\gamma_{s\to h}d_j$ and $\delta_{m,j}=\delta_{s,j}/2$ (Table~S1);
+$\mathrm{SFR}_j=\mathrm{IFR}_j(1-p_j)$ (Supplement, Section~2); and
+$\theta_{h,j}=1-0.7\,\mathrm{SFR}_j$, $\theta_{s,j}=1-0.3\,\mathrm{SFR}_j$, from the
+$70\%$ of deaths among inpatients in~\cite[Section~3]{2023Glasser_Feng}.
+
+The probabilities of infection on contact $\beta_j^0$ are those of 26 November
+2020 in~\cite[Fig.~4]{2023Glasser_Feng}, used there for transmission
+modeling~\cite[Section~2.3]{2023Glasser_Feng}. The figure gives no table; we
+digitized the curve at the 16 age groups (axis calibrated on the tick marks,
+values read at the centers of the markers; resolution $5.7\cdot10^{-4}$, accuracy
+about $\pm0.003$) (\fref{f-beta}):
+\begin{center}
+\small
+\begin{tabular}{l*{8}{c}}
+age & 0--4 & 5--9 & 10--14 & 15--19 & 20--24 & 25--29 & 30--34 & 35--39\\
+$\beta_j^0$ & 0.121 & 0.078 & 0.064 & 0.054 & 0.080 & 0.071 & 0.073 & 0.067\\\hline
+age & 40--44 & 45--49 & 50--54 & 55--59 & 60--64 & 65--69 & 70--74 & 75+\\
+$\beta_j^0$ & 0.067 & 0.078 & 0.078 & 0.095 & 0.142 & 0.170 & 0.187 & 0.333
+\end{tabular}
+\end{center}
+
+\subsection{Constants}\label{sec-const}
+
+From the supplement of~\cite{2026Feng_Day_Glasser}, per day:
+$\xi=\gamma_{s\to h}=1/2$, $\gamma_a=1/7$, $\gamma_s=\gamma_m=1/5$, $\gamma_h=1/10$,
+$\omega=\omega_v=1/365$, $b_S=b_I=0.31$ (Table~S1);
+$\eta_a,\eta_{ps},\eta_{pm},\eta_s,\eta_m,\eta_h=0.5,1.25,1,1,0.75,0.1$ (Section~2).
+
+\subsection{Variants}\label{sec-var}
+
+The values that change with the dominant variant are those of Table~S4
+of~\cite{2026Feng_Day_Glasser} (a blank there keeps the previous value; $k$ for
+Wuhan from Table~S4, where Table~S1 gives $1/4$):
+\begin{center}
+\small
+\begin{tabular}{lccccc}
+ & Wuhan & Alpha & Delta & BA.1 & BA.5\\\hline
+factor of $\beta_j^0$ & 1 & 1.25 & 1.5 & 2 & 1\\
+$\varepsilon_1=\varepsilon_2=\varepsilon_3$ & 0.9 & 0.8 & 0.7 & 0.6 & 0.5\\
+factor of $c_j^0$ & 1 & 0.8 & 0.6 & 0.4 & 0.2\\
+$1/k$ (days) & 5 & 5 & 4 & 4 & 3\\
+factor of $d_j$ and $1-\theta_{w,j}$ & 1 & 1 & 1 & 0.67 & 0.67\\\hline
+from (date) & & 3 Apr 2021 & 3 Jul 2021 & 25 Dec 2021 & 2 Jul 2022\\
+from ($t$) & & 459 & 550 & 725 & 914
+\end{tabular}
+\end{center}
+A variant is taken to apply from the end of the first week in which its share of
+the US sequences exceeds $1/2$, in the weighted estimates of~\fref{f-var} (for
+each week the estimates of the latest creation date; lineages grouped as Alpha:
+B.1.1.7, Q; Delta: B.1.617.2, AY; BA.1: B.1.1.529, BA.1; BA.5: BA.5, BQ, BF, BE).
+The threshold $1/2$ is our choice. (\fref{f-vd})
+
+\subsection{Mock data}\label{sec-mock}
+
+\subsubsection{Initial state (mock)}\label{sec-x0}
+The state at $t=251$. The data: the seroprevalence of the
+CDC Nationwide Commercial Laboratory Seroprevalence
+Survey~\cite{2021Bajema_Wiegand,2023CDC_sero} (\fref{f-sero}), rounds 3
+(26 August -- 9 September 2020) and 4 (9 -- 18 September 2020), by location and
+the 4 age groups 0--17, 18--49, 50--64, 65+. The mock rules, in place of the
+procedure of~\cite[Section~3]{2023Glasser_Feng}: (1) from 4 to 16 age groups,
+each 5-year group takes the value of the survey group that contains it, and
+15--19 takes $3/5$ of 0--17 and $2/5$ of 18--49; a missing or suppressed value is
+replaced by the national one of the same round and age group; (2) the
+seropositive fraction $r_{ij}$ is that of round 3, and
+$\lambda_{ij}=\max\left\{-\ln\left((1-r^{(4)}_{ij})/(1-r^{(3)}_{ij})\right)/11.5,\ 10^{-4}\right\}$
+per day; (3) $R=rN$, and $E_s=\lambda S/k$, $I_a=kpE_s/\gamma_a$,
+$I_{ps}=k(1-p)E_s/\xi$, $I_s=\xi I_{ps}/(\gamma_s+\delta_s)$ (the quasi-steady
+form of the 12-day sums of~\cite[Section~3]{2023Glasser_Feng}), with $S$ such
+that the 13 compartments add up to $N_{ij}$, and the other compartments $0$.
+This gives $6.6\%$ seropositive. (\fref{f-x0})
+
+\subsubsection{Weekly doses (mock)}\label{sec-doses}
+Made up, by location, age group and dose, for
+the 126 weeks from $t=349$ through the end of the Public Health Emergency,
+11 May 2023~\cite[Section~2.2]{2026Feng_Day_Glasser} (\fref{f-doses}): age group
+$j$ receives $\mathrm{cov}_jN_{ij}$ first doses evenly over 12 weeks from its
+start week ($\mathrm{cov}=0.9$ from week 1 for 65+; $0.8$ from week 9 for 50--64;
+$0.7$ from week 15 for 20--49; $0.55$, $0.45$, $0.3$, $0.1$ from weeks 17, 22, 47,
+79 for 15--19, 10--14, 5--9, 0--4), and after these 12 weeks $0.002\,N_{ij}$ first
+doses per week until the end, so that every location has first doses in every
+week; second doses $0.9$ times the first doses four
+weeks earlier; third doses half of all second doses of the group, evenly over 20
+weeks from week 40 (65+) or 48 (20--64); each location, dose and week multiplied
+by $e^{0.1z}$, $z$ standard normal. To be replaced by the doses reported to the
+CDC~\cite[Section~2.2]{2026Feng_Day_Glasser}.
+
+\section{The model and the computation}\label{sec-model-comp}
+
+The program and its files, in \src{MathBio/code/python/}. The program reads the
+built files \fref{f-N}--\fref{f-doses} of Section~\ref{sec-built}.
+\begin{enumerate}[label=F2-\arabic*, ref=F2-\arabic*, leftmargin=*]
+\item\label{f-prog} \src{seir7_ode.py}: the program, run with the arguments
+\texttt{simulate optimal} (Section~\ref{sec-comp}).
+\item\label{f-alt} \src{alternating.py}: the optimization of each week, called
+by~\fref{f-prog}.
+\item\label{f-out-o} \src{data/simulate_weekly_51x16_optimal.csv}: the national
+totals of the 13 compartments at the start of each week.
+\item\label{f-out-rho} \src{data/simulate_weekly_51x16_optimal_rho.csv}: the
+spectral radius of each week, at the uniform allocation and at the solution.
+\end{enumerate}
+
+\subsection{The model}\label{sec-model}
+
+The system of~\cite[Section~2.1 and Fig.~1]{2026Feng_Day_Glasser}, with the
+location $i$ and the age group $j$ written separately. Each group $(i,j)$ has
+13 compartments: susceptible $S$; vaccinated once $V$; partially immune $P$;
+exposed $E_s$ (naive) and $E_p$ (partially immune); mild $I_a$; pre-severe and
+severe $I_{ps}$, $I_s$; pre-moderate and moderate $I_{pm}$, $I_m$; hospitalized
+$I_h$; recovered $R$; dead $M$. The force of infection on group $(i,j)$ is
+\begin{equation}\label{lambda}
+\lambda_{ij}=\psi_{S,j}\,s_i\,a_{ij}\,\beta_j\sum_{p,q}c_{ij,pq}\,\psi_{I,q}\,
+\frac{\sum_x\eta_xI_{x,pq}}{N_{pq}},\qquad x\in\{a,ps,pm,s,m,h\},
+\end{equation}
+with $a_{ij}$ and $C=(c_{ij,pq})$ of Section~\ref{sec-loc}, $s_i(t)$ of
+Section~\ref{sec-loc}, and $\psi_{S,j}=1-c_jb_S$, $\psi_{I,j}=1-c_jb_I$,
+$c_j=c_j^0$ and $\beta_j=\beta_j^0$ times the factors of the variant at $t$
+(Sections~\ref{sec-age} and~\ref{sec-var}). For every group (indices $i,j$
+omitted; $\lambda=\lambda_{ij}(t)$, $\varepsilon=\varepsilon(t)$ of the variant,
+$\chi_k=\chi_{k,ij}$ the vaccination rates of dose $k$),
+\begin{equation}\label{ode}
+\begin{aligned}
+S'&=\omega P+\omega_vV-(\lambda+\chi_1)S, &
+V'&=\chi_1S-\left((1-\varepsilon)\lambda+\omega_v+\varepsilon\chi_2\right)V,\\
+P'&=\omega R-(\omega+\varepsilon\chi_3+\lambda)P, &
+E_s'&=\lambda S-kE_s,\\
+E_p'&=(1-\varepsilon)\lambda V+\lambda P-kE_p, &
+I_a'&=kp_jE_s+kq_jE_p-\gamma_aI_a,\\
+I_{ps}'&=k(1-p_j)E_s-\xi I_{ps}, &
+I_{pm}'&=k(1-q_j)E_p-\xi I_{pm},\\
+I_s'&=\xi I_{ps}-(\gamma_s+\delta_{s,j})I_s, &
+I_m'&=\xi I_{pm}-(\gamma_m+\delta_{m,j})I_m,\\
+I_h'&=\delta_{s,j}I_s+\delta_{m,j}I_m-\gamma_hI_h, &
+M'&=(1-\theta_{s,j})\gamma_sI_s+(1-\theta_{h,j})\gamma_hI_h,
+\end{aligned}
+\end{equation}
+\begin{equation*}
+R'=\gamma_aI_a+\theta_{s,j}\gamma_sI_s+\gamma_mI_m+\theta_{h,j}\gamma_hI_h
++\varepsilon\chi_2V+\varepsilon\chi_3P-\omega R,
+\end{equation*}
+$13mn=10\,608$ unknowns, coupled only through $\lambda$. The 13 right hand sides
+of a group add up to $0$, so each group keeps its size $N_{ij}$.
+
+\subsection{The computation}\label{sec-comp}
+
+\begin{enumerate}[leftmargin=*]
+\item Solve~\eqref{ode} from $t=251$, with the initial state~\fref{f-x0}, to
+$t=349$, the start of vaccination, with $\chi=0$.
+\item For each week $[\tau,\tau+7]$, $\tau=349,356,\dots$ (126 weeks), with
+$S$, $V$, $P$ the state at $\tau$ and $D_{k,ij}$ the doses of the week~\fref{f-doses}:
+\begin{enumerate}[label=(\alph*)]
+\item compute the vaccination rates $\chi_{k,ij}$ for the week (the same on every
+day of the week; they change only from one week to the next): minimize the
+spectral radius of the next generation matrix over $\chi$, subject to
+$\sum_j\sigma_{k,ij}\chi_{k,ij}=\frac17\sum_jD_{k,ij}$ for every location $i$ and
+dose $k$ (the doses of the location, all ages), with $\sigma_1=S$, $\sigma_2=V$,
+$\sigma_3=P$ and $0\le\chi_{k,ij}\le-\frac17\ln(0.01)$
+(\src{stratified_seir_ngm.tex}, problem (1.1) and Section~9);
+\item solve~\eqref{ode} on $[\tau,\tau+7]$ with these rates, which gives the state
+at $\tau+7$;
+\item advance to the next week, $\tau\leftarrow\tau+7$.
+\end{enumerate}
+\end{enumerate}
+The system is solved by the Runge--Kutta method of order 8 of Dormand and
+Prince~\cite{1980Dormand_Prince} (\texttt{DOP853} of
+\texttt{scipy.integrate.solve\_ivp}~\cite{2020Virtanen_scipy}), restarted at the
+days at which the variant changes.
+
+\begin{remark}[The actual strategy]
+In~\cite{2026Feng_Day_Glasser} the optimal allocation is compared with the
+actual one, the doses reported to the CDC by location, age group and dose. In
+the actual strategy no optimization is done: in each week, the fraction
+$P_{k,ij}=\min\{D_{k,ij}/X_{k,ij}(\tau),0.99\}$ of the eligible people
+$X_1=S$, $X_2=V$, $X_3=P$ of group $(i,j)$ is vaccinated, that is,
+$\chi_{k,ij}=-\frac17\ln\left(1-P_{k,ij}\right)$, and the system~\eqref{ode} is
+solved with these rates. With the doses by age group
+of~\cite[Section~2.2]{2026Feng_Day_Glasser}, it gives the reference against which
+the optimal allocation is measured (illnesses, hospitalizations and deaths
+averted). It is not computed here; only the optimal strategy is run.
+\end{remark}
+
+\bibliographystyle{plain}
+\bibliography{bib_mb}
+\end{document}

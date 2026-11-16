@@ -5,8 +5,8 @@ The columns of Ac carry the two weights of that note, q_s (naive infected,
 column a = 0) and q_m (partially immune infected, column a = 1),
 
     weights="paper"     (default)  q_s, q_m of Lemma 2.1,  rho(NGM) = 4.440677536267 at chi = 0;
-    weights="notebook"             the single weight q0 of eigenvalues_H_ZF_JG.nb for both,
-                                   which reproduces the notebook, rho(NGM) = 4.423068109190629.
+    weights="single"               the single weight q0 of the first Mathematica code for both,
+                                   which reproduces that code, rho(NGM) = 4.423068109190629.
 
 The reduced form of Theorem 3.1 of the note,
 
@@ -14,7 +14,7 @@ The reduced form of Theorem 3.1 of the note,
 
 is given by a1_matrix, g_vector and ngm_reduced.
 
-Index conventions, kept as in the notebook:
+Index conventions, kept as in the Mathematica code:
 
   i, p = 0 : m-1   locations
   j, q = 0 : n-1   age groups
@@ -60,7 +60,7 @@ def dfe_fractions(chi1, chi2, chi3, par):
 
 
 def compute_yz(chi1, chi2, chi3, par):
-    """Y and Z of the notebook, shape (m, n) each.
+    """Y and Z of the Mathematica code, shape (m, n) each.
 
     Y_ij = psi_S[j] s[i] a_ij beta[j] sdfe_ij / N_ij
     Z_ij = psi_S[j] s[i] a_ij beta[j] ((1 - eps1) vdfe_ij + pdfe_ij) / N_ij
@@ -109,10 +109,10 @@ def column_weights(par, weights="paper"):
     """The two column weights per age group, (q_s, q_m) or (q0, q0)."""
     if weights == "paper":
         return q_vectors(par)
-    if weights == "notebook":
+    if weights == "single":
         q0 = q0_vector(par)
         return q0, q0
-    raise ValueError("weights must be 'paper' or 'notebook'")
+    raise ValueError("weights must be 'paper' or 'single'")
 
 
 def q_matrix(par, weights="paper"):
@@ -124,7 +124,7 @@ def q_matrix(par, weights="paper"):
 def psi_i_matrix(p, par):
     """Psi_I of location p, size 2n: diag(NPII[p,0], NPII[p,0], NPII[p,1], ...).
 
-    The notebook concatenates NPII[p] with itself instead; both are the
+    The Mathematica code concatenates NPII[p] with itself instead; both are the
     identity for the baseline NPII = 1.
     """
     return sps.diags(np.repeat(par["NPII"][p], 2))
@@ -161,12 +161,12 @@ def _chi_or_zero(chi1, chi2, chi3, par):
 
 
 def ngm_blocks(chi1=None, chi2=None, chi3=None, par=None, weights="paper"):
-    """NGM assembled block by block, the way the notebook does it:
+    """NGM assembled block by block, the way the Mathematica code does it:
 
         mH[i, p] = Omega[i] . ccMat[i, p] . Psi_I[p] . Q
 
     with Omega[i] = diag(Y_i0, Z_i0, Y_i1, Z_i1, ...) of size 2n.  Omitted chi
-    default to zero, which is the state of the notebook.
+    default to zero, which is the state of the Mathematica code.
     """
     if par is None:
         par = default_params()
@@ -190,7 +190,7 @@ def ngm_factored(chi1=None, chi2=None, chi3=None, par=None, weights="paper"):
     """NGM as the product D(chi) . Ac of the diagonal and the chi free factor.
 
     The same matrix as ngm_blocks: D(chi) is diagonal, so the left product only
-    scales row k of Ac by d_k, which is the block product of the notebook.
+    scales row k of Ac by d_k, which is the block product of the Mathematica code.
     """
     if par is None:
         par = default_params()
@@ -277,7 +277,7 @@ def dominant(a, transpose=False, tol=0.0):
     """Dominant eigenvalue and eigenvector by Arnoldi.
 
     Returns (rho, v) with v scaled to unit Euclidean norm and made non-negative,
-    matching Abs[Eigenvectors[..., 1]] of the notebook.
+    matching Abs[Eigenvectors[..., 1]] of the Mathematica code.
     """
     mat = a.T.tocsr() if transpose else a
     lam, vec = spsl.eigs(mat, k=1, which="LM", tol=tol)
@@ -291,7 +291,7 @@ def john_method(ngm, par):
 
     Returns (rho, l0) where l0 has shape (m, n): the susceptible components of
     the dominant left eigenvector, per location and age group.  These are the
-    four curves of the figure in the notebook.
+    four curves of the figure in the Mathematica code.
     """
     rho, _ = dominant(ngm)
     _, w = dominant(ngm, transpose=True)
@@ -319,7 +319,7 @@ if __name__ == "__main__":
     print("l0                    =")
     print(l0)
 
-    # reduced form, and the notebook's single weight, at chi = 0 and at a random chi
+    # reduced form, and the single weight q0, at chi = 0 and at a random chi
     rng = np.random.default_rng(0)
     shape = (par["m"], par["n"])
     chis = [(None, None, None),
@@ -327,7 +327,7 @@ if __name__ == "__main__":
     for label, chi in zip(("chi = 0", "random chi"), chis):
         r_ngm = dominant(ngm_factored(*chi, par=par))[0]
         r_red = dominant(ngm_reduced(*chi, par=par))[0]
-        r_nb = dominant(ngm_factored(*chi, par=par, weights="notebook"))[0]
+        r_nb = dominant(ngm_factored(*chi, par=par, weights="single"))[0]
         print("%-10s  rho(NGM) = %.12f   rho(A1 diag(g)) = %.12f   (rel. diff %.1e)"
               "   single weight q0: %.12f"
               % (label, r_ngm, r_red, abs(r_red - r_ngm) / r_ngm, r_nb))

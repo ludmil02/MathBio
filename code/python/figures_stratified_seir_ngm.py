@@ -1,11 +1,11 @@
-"""Figures of notes/stratified_seir_ngm.tex, 51 x 16 data at t = 347 (chi = 0).
+"""Figures of notes/stratified_seir_ngm.tex and of its supplement, 51 x 16 data at t = 347.
 
   fig_weights.pdf    q_s, q_m by age (left) and r = q_m / q_s (right);
-  fig_left_ev.pdf    S part of the dominant left eigenvector of the NGM by age:
-                     share of the total (left), per person relative to the
-                     largest age group (right);
-  fig_grad_hhs.pdf   -d rho(NGM) / d chi_1 by age for the ten HHS region
-                     headquarter states;
+  fig_left_ev.pdf    S part of the dominant left eigenvector of the NGM by age at
+                     chi = 0: share of the total (left), per person relative to the
+                     largest age group (right); supplement, Section S5;
+  fig_grad_hhs.pdf   -d rho(NGM) / d chi_1 by age at chi = 0 for the ten HHS region
+                     headquarter states; supplement, Section S5;
   fig_mock_alloc.pdf doses per day by age, US total, mock doses of
                      three_doses_51x16_mock.py: one dose and three doses;
   fig_mock_conv.pdf  rho per fixed point iteration (one dose) and per step of
@@ -128,7 +128,7 @@ def fig_grad_hhs(grad):
 
 
 def fig_doses_4x4():
-    """First doses chi1 S by age, per location, for three allocations of Section 6."""
+    """First doses chi1 S by age, per location, for three allocations of Section 5.3."""
     import compare_allocations_4x4 as CA
     allocs, _ = CA.allocations()
     show = [("actual", "actual", BLUE),

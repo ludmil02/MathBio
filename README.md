@@ -1,116 +1,79 @@
 # MathBio
 
-Next generation matrix (NGM) of the age- and location-stratified SEIR model of
-Feng, Day, Glasser (J. Theor. Biol. 633 (2026) 112531), and the minimization of
-its spectral radius over the vaccination rates `chi1, chi2, chi3`.
-
-The NGM has order `2N`, `N = mn` groups (`m` locations, `n` age groups):
+The age- and location-stratified SEIR model of Feng, Day, Glasser (J. Theor. Biol. 633 (2026)
+112531): its next generation matrix (NGM), the minimization of the spectral radius of the NGM
+over the vaccination rates `chi1, chi2, chi3` (first, second, third dose), and the weekly
+simulation of the model with the optimal rates.  All data are published or public, except two
+inputs, which are mock data.
 
     NGM = diag(d(chi)) Ac,    rho(NGM) = rho(A1 diag(g)),
 
-with `Ac` and `A1 = diag(d_c) C diag(psi_I q_s)` independent of `chi`, and
-`g = y + r z`, `r = q_m / q_s`.  The two column weights `q_s` (naive infected)
-and `q_m` (partially immune infected) are those of the paper.  The derivation,
-the reduction to order `N` and the formulas for the minimization are in
-`notes/stratified_seir_ngm.tex`.
+with `Ac` and `A1 = diag(d_c) C diag(psi_I q_s)` independent of `chi`, `g = y + r z`,
+`r = q_m / q_s`.
 
-Two data sets are used:
-
-* `4 x 4`: four census regions, ages 0-19, 20-39, 40-59, 60+ (`zf_jg_params.py`;
-  the first doses `C2` in `zf_jg_doses.py` and the susceptibles at `t = 347` in
-  `code/python/intermediate/zf_jg_t347/s1Matrix.csv`);
-* `51 x 16`: the 50 states and D.C., ages 0-4, ..., 70-74, 75+, at `t = 347`,
-  the day before vaccination began (`code/python/intermediate/seir7_t347/`).
-
-## Contents
-
-| directory | |
-| --- | --- |
-| `notes/` | `stratified_seir_ngm.tex`, `bib_mb.bib`, and the figures in `notes/figures/` |
-| `code/python/` | the python; `intermediate/seir7_t347/` the 51 x 16 data and `intermediate/zf_jg_t347/` the 4 x 4 susceptibles at `t = 347`; other files in `intermediate/` are run output, not tracked |
-| `Mathematica_Wolfram/` | the notebooks and Wolfram scripts |
-| `archive/` | `single_weight_model.zip` and `old_files.zip`, see below |
-
-### Write-up
-
-`notes/stratified_seir_ngm.tex`, built in `notes/` with `pdflatex`, `bibtex`,
-`pdflatex` twice.  Section 1 the setting and the problem; Section 2 the NGM,
-the weights `q_s`, `q_m` (Lemma 2.1) and `NGM = diag(d) Ac` (Proposition 2.2);
-Section 3 the reduction `rho(NGM) = rho(A1 diag(g))` (Theorem 3.1); Section 4
-the formulas for the minimization (one dose, the gradient, the optimality
-conditions, Lemma 4.1 and the fixed point iteration, alternating over the
-doses); Section 5 the numerical verification, Table 1 and Figures 1-3;
-Section 6 the comparison of four allocations of the same first doses on the
-4 x 4 data at `t = 347` (actual, doses or rates in proportion to the left
-eigenvector, the minimizer), Tables 2-3 and Figure 4.
-
-### Python
-
-In `code/python/`; run the scripts from there.  Eigenvalues by Arnoldi
-(`scipy.sparse.linalg.eigs`); `F V^-1` is applied matrix free, with `V`
-factored by sparse LU.
+## Documents (`notes/`)
 
 | file | |
 | --- | --- |
-| `zf_jg_params.py` | the 4 x 4 parameters, exported through a Wolfram kernel.  `default_params()`. |
-| `zf_jg_doses.py` | the doses `b1` from `C2`, and `b2 = b3 = 0`. |
-| `zf_jg.py` | the 4 x 4 model: `q_vectors` (`q_s`, `q_m`), `ac_matrix`, `ngm_factored` (`D(chi) Ac`), `ngm_blocks`, `ngm_reversed`, and the reduced form `a1_matrix`, `g_vector`, `ngm_reduced` (`A1 diag(g)`).  `weights="notebook"` gives the single weight of `eigenvalues_H_ZF_JG.nb` for both columns.  `python3 -u zf_jg.py` prints `rho = 4.440677536267` at `chi = 0` and checks the reduced form. |
-| `ngm_seir7.py` | the 51 x 16 model: the data of `intermediate/seir7_t347/`, the contact matrix `mc`, `Qs`, `Qm`, the NGM as an operator, `full_fv` (`rho(F V^-1)` of the 8-state system, for either data set), and `left_and_gradient` (the left eigenvector and `d rho / d chi1` at `chi = 0`).  Run, it prints `rho(NGM) = 1.307390501274`, `rho(F V^-1)`, the left eigenvector by age and state, and the gradient for the HHS region headquarter states. |
-| `verify_stratified_seir_ngm.py` | reproduces every number of Section 5 and Table 1 of the write-up and ends with PASS or FAIL. |
-| `compare_allocations_4x4.py` | Section 6: one dose, 4 x 4 data at `t = 347`.  The four allocations of the same first doses (`allocations()`), the fixed point iteration of Section 4 for the minimizer, its KKT check, and SciPy's `trust-constr` from 8 random starts as an independent check.  Prints `rho(NGM)` for each allocation (`3.4378`, `2.9107`, `2.9122`, `2.8864`; `4.4407` at `chi = 0`) and the rates `chi1` of Table 3. |
-| `optimize_doses_51x16.py` | one dose (`--mode 1`) or three doses (`--mode 3`), 51 x 16 data, for one or several weeks (`--weeks`), the doses `b_{k,i}` read from an Excel file with a sheet per week (`data/doses_51x16_mock.xlsx`, mock); writes the optimal rates and doses by state and age to Excel.  How to run it and read its output: `code/python/README_three_doses.md`. |
-| `three_doses_51x16_mock.py` | the functions used by `optimize_doses_51x16.py`, and the run of Section 6.5 of the notes (sheet `week1`: one dose, three doses from five starts, the KKT check). |
-| `figures_stratified_seir_ngm.py` | Figures 1-4 of the write-up, written to `notes/figures/`; Figure 4, the first doses by age and location, from `compare_allocations_4x4.allocations()`. |
+| `stratified_seir_ngm.tex` | the main document: the NGM, the reduction to order `N = m n`, the optimality conditions, the fixed point iteration, the alternating method for three doses, the numerical results (Section 6.5), the simulation with the weekly optimization and the bound on the rates (Section 9), and the products with the contact matrix (appendix) |
+| `suplemental/stratified_seir_ngm_supplement.tex` | the supplement (more results for the alternating method, a Newton method, the 51 x 16 data before vaccination) |
+| `DATA.tex` | the data, each with its source, and the list of files (Section 1: F1-1 to F1-25); the model and the computation (Section 2: the program and its files F2-1 to F2-4) |
+| `bib_mb.bib` | the bibliography |
 
-### Notebooks and Wolfram scripts
+Build each with `pdflatex`, `bibtex`, `pdflatex` twice.
 
-In `Mathematica_Wolfram/`.
+## Data
+
+* `data/Downloaded_from_source/`: the downloads, as downloaded (DATA.tex, Section 1.1.1):
+  `papers/` (named `YYYYAuthor1...AuthorN.pdf`), `census/`, `prem2017/`, `oxcgrt/`, `cdc/`.
+  The data files (kept gzipped, `.csv.gz`, read by pandas without unpacking) and the papers
+  are tracked; the zip archives are not.
+* `code/python/data/`: the inputs of the model, built from the downloads by the scripts below
+  (DATA.tex, Section 1.1.2, F1-15 to F1-25).
+
+## Python (`code/python/`)
+
+Run the scripts from `code/python/`.  Eigenvalues by Arnoldi (`scipy.sparse.linalg.eigs`).
+
+### The 51 x 16 model: data and simulation
 
 | file | |
 | --- | --- |
-| `export_seir7.wls` | runs the setup cells of John's notebook `Age & Location Stratified SEIR 7 Actual Vax 3 with RE_orig.nb` (not tracked, 10 MB) and exports the 51 x 16 data at a given `t` to CSV: `wolframscript -file export_seir7.wls NOTEBOOK OUTDIR 347`.  Its log is `intermediate/seir7_t347/export_seir7.log`. |
-| `eigenvalues_H_ZF_JG.nb`, `settings_zf_jg.wl` | the 4 x 4 NGM as first built, with the single weight; `zf_jg_params.py` holds its data. |
-| `min_rho_single_dose_H_ZF_JG.nb`, `ref_h.wls` | the single dose minimization and the reference script of the single weight model. |
-| `16_Group_Model_Results_t=347_ZF.nb` | the 4 x 4 model solution at `t = 347`, with `C2`. |
-| `*_orig.nb` | the notebooks as received. |
-| `run_notebook.wls` | evaluates the input cells of a notebook without a front end: `wolframscript -file run_notebook.wls NOTEBOOK.nb > LOG`. |
+| `census_N_51x16.py` | populations `N` (Census Bureau, Vintage 2024, July 1, 2020) |
+| `prem_U_16x16.py` | contact matrix `U` (Prem et al. 2017, US) |
+| `geo_51.py` | distances `d` (2010 centers of population) and activity factors `L` (county data) |
+| `build_C_51x16.py` | the 816 x 816 contact matrix `C` from `U`, `L`, `d`, saved to `data/model/C_816x816.csv.gz` |
+| `glasser2023_inputs.py` | Table 2 of Glasser et al. 2023 and `beta0` digitized from its Fig. 4 |
+| `oxcgrt_s_51.py` | stringency factors `s_i(t) = 1 - SI_i(t)/100` (OxCGRT) |
+| `cdc_variants.py` | the days of the variants (CDC variant proportions) |
+| `sero_initial_51x16.py` | the initial state at `t = 251` (MOCK, from the CDC serosurvey) |
+| `mock_doses_51x16x16.py` | the weekly doses by location, age and dose (MOCK) |
+| `seir7_ode.py` | the model and its solution: `simulate optimal` (the weekly optimization of Section 9 of the main document), `solve`, `verify` |
+| `alternating.py` | the alternating method of Section 6, with the bound on the rates of Section 9.1 |
+| `ngm_seir7.py` | the 51 x 16 NGM at `t = 349` (start of vaccination) from the same data: `rho(NGM)`, `rho(F V^-1)`, the left eigenvector, the gradient |
 
-Not tracked: John's SEIR 7 notebook and `F_and_V_ZF_18Jan_orig.nb` (the
-4 x 4 `F` and `V`), and `JTB26.pdf`, the paper.
+Order: `census_N_51x16.py`, `prem_U_16x16.py`, `geo_51.py`, `build_C_51x16.py`,
+`glasser2023_inputs.py`, `oxcgrt_s_51.py`, `cdc_variants.py`, `sero_initial_51x16.py`,
+`mock_doses_51x16x16.py`, then
 
-### `archive/`
+    python3 -u seir7_ode.py simulate optimal | tee intermediate/seir7_ode_simulate_optimal.log
 
-* `single_weight_model.zip`, unzips to `single_weight_model/`: the earlier
-  notes `min_spectral_radius_vaccination.tex`, their figures and supplemental
-  documents, and the scripts and results of the single dose, joint (trust
-  region), Gauss-Seidel, alternating and projected Yogi methods.  That model
-  uses one weight for both column types of the NGM; its `README.md` explains
-  the difference.
-* `old_files.zip`, unzips to `old_files/`: the earlier notebooks, notes,
-  python drivers and csv exports.
+### The results of the main document and the supplement
 
-## Reproducing the write-up
+| file | |
+| --- | --- |
+| `verify_stratified_seir_ngm.py` | checks the formulas and the reduction on the 4 x 4 and 51 x 16 data; ends with PASS or FAIL |
+| `optimize_doses_51x16.py`, `three_doses_51x16_mock.py`, `mock_doses_51x16.py` | the three doses, week by week, with mock doses and mock group sizes: Section 6.5 and Table 2 of the main document; see `code/python/README_three_doses.md` |
+| `figures_stratified_seir_ngm.py` | the figures, written to `notes/figures/` |
+| `zf_jg.py`, `zf_jg_params.py`, `zf_jg_doses.py`, `compare_allocations_4x4.py` | the 4 x 4 model (four census regions, four age groups) |
 
-From `code/python/`:
+## Other directories
 
-    python3 -u verify_stratified_seir_ngm.py | tee intermediate/verify_stratified_seir_ngm.log
-    python3 -u compare_allocations_4x4.py | tee intermediate/compare_allocations_4x4.log
-    python3 -u figures_stratified_seir_ngm.py | tee intermediate/figures_stratified_seir_ngm.log
-
-Each takes about a second.  Then build `notes/stratified_seir_ngm.tex`.  The
-51 x 16 data are tracked; regenerating them needs `wolframscript` and John's
-notebook (`export_seir7.wls` above).
-
-Still missing: the weekly vaccinations `Wk1.csv`, ..., `Wk55.csv` read by
-John's SEIR 7 notebook, for the 51 x 16 comparison over time, and the second
-and booster doses `b2`, `b3` for the 4 x 4 comparison with three doses.
+* `archive/`: earlier versions, left as they are.
 
 ## Conventions
 
-Groups are ordered `p = i n + j` (location `i`, age group `j`, from 0).  In the
-NGM the rows and columns of group `p` are `2p` (susceptible rows `Y`, columns
-`q_s`) and `2p + 1` (vaccinated or partially immune rows `Z`, columns `q_m`).
-
-The infected states of a group are `(E_s, E_p, I_a, I_ps, I_s, I_h, I_pm, I_m)`,
-and `eta = (eta_a, eta_ps, eta_s, eta_h, eta_pm, eta_m) = (0.5, 1.25, 1, 0.1, 1, 0.75)`
-follows the infectious ones.
+Groups are ordered `p = i n + j` (location `i` in the order of the FIPS codes, age group `j`,
+from 0).  In the NGM the rows and columns of group `p` are `2p` (susceptible rows `Y`, columns
+`q_s`) and `2p + 1` (vaccinated or partially immune rows `Z`, columns `q_m`).  Time `t` is in
+days from 31 December 2019.

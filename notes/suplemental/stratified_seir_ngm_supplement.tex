@@ -4,6 +4,8 @@
 \usepackage{amsthm,mathrsfs}
 \usepackage{bm,bbm}
 \usepackage{color}
+\usepackage{graphicx}
+\graphicspath{{../figures/}}
 \usepackage{xr-hyper}
 \usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
 % labels of the main document, prefixed M-: build it first, so that its .aux exists
@@ -28,10 +30,11 @@
 \begin{abstract}
 Supplement to ``The next generation matrix of the age- and location-stratified
 SEIR model''. Equation, theorem and section numbers without a prefix S refer
-to that document, whose notation is used throughout. Sections~S2--S4 give
-proofs and further results for the minimization: the uniqueness of the
-minimizer for a single dose, results for the steps and the limit points of
-the alternating method, and a Newton method.
+to that document, whose notation is used throughout. Section~S2 gives
+further results for the steps of the alternating method and shows that the
+problem for three doses is not jointly convex, Section~S3 a Newton method
+with a second order test, and Section~S4 the left eigenvector and the
+gradient of $\rho$ for the $51\times16$ data before vaccination.
 \end{abstract}
 
 \section{The next generation matrix}\label{s-ngm}
@@ -133,6 +136,40 @@ $X_2X_1$ have the same non-zero eigenvalues (Section~\ref{M-sec-reduced}).
 \end{proof}
 
 \input{supplement_results}
+
+\section{The 51 by 16 data before vaccination}\label{s-before}
+
+Figures~\ref{fig-left} and~\ref{fig-grad} use the public $51\times16$ data of
+DATA.tex, Section~1, with the parameters at $t=349$ (14 December 2020, the start
+of vaccination) and $\bm\chi=0$, where $\rho(\operatorname{NGM})=0.9135$.
+Figure~\ref{fig-left} shows the components of the dominant left
+eigenvector of $\operatorname{NGM}$ in the rows $2p-1$ (the susceptible
+rows), summed over the 51 locations; the largest, $0.19$ of the total, is
+at ages 15--19. Figure~\ref{fig-grad} shows $-\partial\rho/\partial\chi_{1,p}$,
+computed from~\eqref{M-drho-dg} and~\eqref{M-dg} with $\bm\chi=0$, for the
+ten states with the headquarters of the HHS regions; the states with the
+largest and the smallest maximum are in color. For every location the largest
+entry is at ages 15--19, as in~\cite[Fig.~3A]{2026Feng_Day_Glasser}, and all
+entries are positive: at $\bm\chi=0$ every first dose decreases
+$\rho(\operatorname{NGM})$.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.85\textwidth]{fig_left_ev.pdf}
+\caption{The susceptible rows of the dominant left eigenvector of
+$\operatorname{NGM}$ at $\bm\chi=0$, summed over the 51 locations, by age: share
+of the total (left), and divided by the population of the age group, relative
+to the largest value (right).}\label{fig-left}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.65\textwidth]{fig_grad_hhs.pdf}
+\caption{$-\partial\rho(\operatorname{NGM})/\partial\chi_{1,p}$ at
+$\bm\chi=0$ by age, for the ten states with the headquarters of the HHS
+regions; New York (New York) and Washington (Seattle) have the largest and
+the smallest maximum.}\label{fig-grad}
+\end{figure}
 
 \bibliographystyle{plain}
 \bibliography{../bib_mb}

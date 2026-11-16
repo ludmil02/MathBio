@@ -6,6 +6,7 @@
 \usepackage{graphicx}
 \usepackage{color}
 \graphicspath{{figures/}}
+\usepackage{xurl}
 \usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
 
 \theoremstyle{plain}
@@ -109,8 +110,8 @@ $X_1X_2\bm x\ne 0$; the converse is the same argument.
 % but its columns are doubled only if $q_{s,p}=q_{m,p}$ for all $p$; the rows
 % of $\operatorname{NGM}$ are not doubled, since they are scaled by $y_p$ and $z_p$.
 
-Following~\cite{2026Feng_Day_Glasser} we set $r_p=q_{m,p}/q_{s,p}>0$. We assume $r_p\le 1$, which holds for both data
-sets of Table~\ref{tab}; it gives $e_p>0$ in~\eqref{e-new}.
+Following~\cite{2026Feng_Day_Glasser} we set $r_p=q_{m,p}/q_{s,p}>0$. We assume $r_p\le 1$, which holds for the data
+of Section~\ref{sec-three-numerics} ($r_p\in[0.714,0.985]$); it gives $e_p>0$ in~\eqref{e-new}.
 
 \begin{theorem}\label{reduction}
 If the matrix $A_1$ is defined as
@@ -139,7 +140,6 @@ x_{2p-1}+x_{2p}=\psi_{I,p}\left(q_{s,p}y_p+q_{m,p}z_p\right)=\psi_{I,p}q_{s,p}g_
 \end{equation*}
 so $X_2X_1=A_1\operatorname{diag}(\bm g)$.
 \end{proof}
-As an illustration in,  in Section~\ref{sec-numerics} (see Table~\ref{tab}), we  verify numerically the result in Theorem~\ref{reduction}.
 
 % \begin{remark}
 % If $q_{s,p}=q_{m,p}$ for all $p$, then $A_c=\mathscr{P}A_1\mathscr{P}^T$,
@@ -336,9 +336,77 @@ $\nu_p(t_p-1)=0$, that is, for $p\in I_i$,
 \nu_p(t_p-1)=0,\qquad
 \mu_i\widetilde\sigma_p=\nu_p+\frac{e_pa_p}{t_p^2}.
 \end{equation}
-Since $e_pa_p>0$ and $\nu_p\ge 0$, every $\mu_i>0$. We do not prove here that
-a point satisfying~\eqref{kkt} is a global minimizer; in
-Section~\ref{sec-numerics} this is checked numerically.
+Since $e_pa_p>0$ and $\nu_p\ge 0$, every $\mu_i>0$.
+
+\subsection{Uniqueness of the minimizer}\label{sec-unique}
+
+Let $\mathcal{T}=\left\{\bm t:\ \sum_{p\in I_i}\widetilde\sigma_pt_p=c_i,\ i=1:m,\ t_p\ge 1\right\}$
+be the feasible set of the one dose problem.
+
+\begin{lemma}\label{kingman}
+Let $B\ge 0$ be irreducible. Then $F(\bm x)=\log\rho\left(B\operatorname{diag}(e^{\bm x})\right)$,
+with $e^{\bm x}=(e^{x_1},\ldots,e^{x_N})^T$, is convex on $\mathbb{R}^N$.
+\end{lemma}
+\begin{proof}
+For $\bm x,\bm x'\in\mathbb{R}^N$, the $(p,l)$ entry of
+\begin{equation*}
+B\operatorname{diag}\left(e^{(1-s)\bm x+s\bm x'}\right)
+\end{equation*}
+is either $0$ or $b_{pl}\exp\left((1-s)x_l+sx'_l\right)$, whose logarithm is
+affine in $s$ for all real $s$. By Kingman's theorem~\cite{1961Kingman-aa}, the largest eigenvalue of
+a non-negative matrix whose entries are each either identically zero or
+log-convex on an interval is log-convex there. So $F$ is convex on every
+segment, hence convex; $F$ is finite since $\rho>0$ for $B$ irreducible and
+$e^{\bm x}>0$.
+\end{proof}
+
+\begin{lemma}\label{log-g}
+Let $0<e\le 1$ and $\varphi(t)=\log\left((1-e)+e/t\right)$ for $t>0$. Then
+$\varphi$ is strictly decreasing and strictly convex.
+\end{lemma}
+\begin{proof}
+With $\gamma(t)=(1-e)+e/t>0$, $\gamma'=-e/t^2$ and $\gamma''=2e/t^3$, so
+$\varphi'=\gamma'/\gamma<0$ and
+$\varphi''=\left(\gamma''\gamma-(\gamma')^2\right)/\gamma^2
+=e\left(2(1-e)t+e\right)/\left(t^4\gamma^2\right)>0$.
+\end{proof}
+
+\begin{theorem}\label{thm-unique}
+Let $A_1$ be irreducible and $0<e_p\le 1$, $p=1:N$. Then $\log\Psi$ is strictly
+convex on $\{\bm t>0\}$, $\Psi$ has exactly one minimizer on $\mathcal{T}$, and
+$\bm t\in\mathcal{T}$ is this minimizer if and only if it satisfies~\eqref{kkt}.
+\end{theorem}
+\begin{proof}
+Let $F$ be as in Lemma~\ref{kingman} with $B=A_1$, and
+\begin{equation*}
+\bm\ell(\bm t)=\left(\varphi_p(t_p)\right)_{p=1}^N,\qquad
+\varphi_p(t)=\log\left((1-e_p)+e_p/t\right),
+\end{equation*}
+so that $\Phi=\log\Psi=F\circ\bm\ell$. By~\eqref{drho-dg} with $\bm g=e^{\bm x}$,
+\begin{equation*}
+\frac{\partial F}{\partial x_p}=\frac{g_p\left(A_1^T\bm w\right)_pv_p}{\rho\,\bm w^T\bm v}>0,
+\end{equation*}
+since $\bm v,\bm w>0$ and no column of $A_1$ is zero. Let $\bm t\ne\bm t'$ in
+$\{\bm t>0\}$, $s\in(0,1)$ and $\bm t_s=(1-s)\bm t+s\bm t'$. By
+Lemma~\ref{log-g}, $\bm\ell(\bm t_s)\le\bm y$ componentwise, where
+$\bm y=(1-s)\bm\ell(\bm t)+s\bm\ell(\bm t')$, with strict inequality where
+$t_p\ne t'_p$. Since $\nabla F>0$, the mean value theorem gives
+$F\left(\bm\ell(\bm t_s)\right)<F(\bm y)$, and by Lemma~\ref{kingman}
+\begin{equation*}
+\Phi(\bm t_s)<F(\bm y)\le(1-s)\Phi(\bm t)+s\Phi(\bm t').
+\end{equation*}
+So $\Phi$ is strictly convex.
+
+The set $\mathcal{T}$ is convex, closed, bounded ($t_p\le c_i/\widetilde\sigma_p$)
+and not empty ($t_p=c_i/\sum_{l\in I_i}\widetilde\sigma_l\ge 1$, $p\in I_i$, lies in it),
+and $\Psi$ is continuous, so a minimizer exists; two different minimizers
+would give a smaller value at their midpoint, by the strict convexity of
+$\Phi$ and $\Psi=e^\Phi$. Finally, $\nabla\Psi=\Psi\nabla\Phi$, so~\eqref{kkt}
+are the Karush--Kuhn--Tucker conditions for $\Phi$, with the multipliers divided
+by $\Psi>0$; $\Phi$ is convex and the constraints are affine, so they are
+sufficient for a minimizer~\cite[Section~5.5.3]{2004Boyd_Vandenberghe}, and they
+are necessary by Section~\ref{sec-algorithm}.
+\end{proof}
 
 \subsection{A fixed point iteration}\label{sec-fixed-point}
 
@@ -419,153 +487,6 @@ iterate does; the fixed points are those of the undamped iteration. On mock
 data the undamped iteration ($\theta=1$) ended in a cycle of two points,
 while the damped one converged.
 
-\subsection{Numerical results}\label{sec-numerics}
-
-At random $\bm\chi$, \eqref{g-new}, \eqref{e-new} and
-$g_p=(1-e_p)+e_p/t_p$ hold to $4\cdot 10^{-16}$, and~\eqref{dg} agrees with
-central differences to $2\cdot 10^{-9}$ (relative).
-
-\paragraph{The 51 by 16 data before vaccination.}
-Figures~\ref{fig-left} and~\ref{fig-grad} use the $51\times16$ data at
-$t=347$ and $\bm\chi=0$, where $\rho(\operatorname{NGM})=1.3074$.
-Figure~\ref{fig-left} shows the components of the dominant left
-eigenvector of $\operatorname{NGM}$ in the rows $2p-1$ (the susceptible
-rows), summed over the 51 locations; the largest, $0.18$ of the total, is
-at ages 15--19. Figure~\ref{fig-grad} shows $-\partial\rho/\partial\chi_{1,p}$,
-computed from~\eqref{drho-dg} and~\eqref{dg} with $\bm\chi=0$, for the
-ten states with the headquarters of the HHS regions; the states with the
-largest and the smallest maximum are in color. For every location the largest
-entry is at ages 15--19, as in~\cite[Fig.~3A]{2026Feng_Day_Glasser}, and all
-entries are negative: at $\bm\chi=0$ every first dose decreases
-$\rho(\operatorname{NGM})$.
-
-\begin{figure}[ht]
-\centering
-\includegraphics[width=0.85\textwidth]{fig_left_ev.pdf}
-\caption{The susceptible rows of the dominant left eigenvector of
-$\operatorname{NGM}$ at $\bm\chi=0$, summed over the 51 locations, by age: share
-of the total (left), and divided by the population of the age group, relative
-to the largest value (right).}\label{fig-left}
-\end{figure}
-
-\begin{figure}[ht]
-\centering
-\includegraphics[width=0.65\textwidth]{fig_grad_hhs.pdf}
-\caption{$-\partial\rho(\operatorname{NGM})/\partial\chi_{1,p}$ at
-$\bm\chi=0$ by age, for the ten states with the headquarters of the HHS
-regions; Missouri (Kansas City) and Washington (Seattle) have the largest and
-the smallest maximum.}\label{fig-grad}
-\end{figure}
-
-\paragraph{Comparison of allocations.}
-On the $4\times4$ data from~\cite{JZh} at $t=347$, the first week of
-vaccination ($\bm\chi_2=\bm\chi_3=0$), with $\sigma_{1,p}=S_p$ and
-$b_{1,i}=\sum_jD_{ij}$, $D_{ij}$ the first doses given in age group $j$ at
-location $i$~\cite{JZh}, we compare $\rho(\operatorname{NGM})$ for four
-allocations of the same doses:
-\begin{enumerate}
-\item \emph{actual}: $\chi_{1,p}=D_{ij}/S_p$, the doses given;
-\item \emph{left eigenvector, doses}: the doses at location $i$ divided over
-the age groups in proportion to the left eigenvector,
-$\chi_{1,p}S_p=b_{1,i}w_{p}/\sum_{l\in I_i}w_l$, the alternative strategy
-proposed in~\cite{2026Feng_Day_Glasser}, where $w_p$ is the entry of the dominant
-left eigenvector of $\operatorname{NGM}$ in row $2p-1$ at $\bm\chi=0$;
-\item \emph{left eigenvector, rates}: the rates in proportion to it,
-$\chi_{1,p}=b_{1,i}w_p/\sum_{l\in I_i}w_lS_l$;
-\item \emph{minimizer}: the fixed point of the iteration of
-Section~\ref{sec-fixed-point}.
-\end{enumerate}
-At $\bm\chi=0$, $z_p=0$, so $w_p$ is also, up to a factor, the entry $p$ of
-the left eigenvector of $A_1\operatorname{diag}(\bm g)$, and the choice between
-the two eigenvectors does not arise.
-
-Here $\varepsilon_1=0.8$, so $e_p=1-r_p(1-\varepsilon_1)$ runs from $0.805$
-(ages 0--19) to $0.854$ (60+), and $\rho(\operatorname{NGM})=4.4407$ at
-$\bm\chi=0$. From the uniform rates in every location, the fixed point
-iteration reaches a relative change of $\bm t$ below $10^{-13}$ in 47
-iterations. At its limit, in every location, $e_pa_p/(t_p^2\widetilde\sigma_p)$ is
-the same for the groups with $t_p>1$ to $1.5\cdot10^{-13}$ (relative), and
-the only group with $t_p=1$ is 60+, where $e_pa_p/\widetilde\sigma_p$ is
-between $0.26$ and $0.43$ times $\mu_i$; so~\eqref{kkt} holds. The trust
-region interior point method of SciPy~\cite{1999Byrd_Hribar_Nocedal}
-applied to $\Psi$, from 8 random starts satisfying the constraints, ends at
-the same allocation to $10^{-8}$ (relative) and at the same
-$\rho(\operatorname{NGM})$ to $2\cdot10^{-10}$ (relative).
-
-Table~\ref{tab-compare} lists $\rho(\operatorname{NGM})$ for the four
-allocations; each uses all the doses at every location. The minimizer gives
-no first doses to the age group 60+; the actual allocation gives the fewest
-to 0--19 (Table~\ref{tab-chi}). Figure~\ref{fig-doses} shows the doses
-$\chi_{1,p}S_p$ by age for three of the allocations; the allocation with
-rates in proportion to the left eigenvector differs from the one with doses
-in proportion to it by at most $0.05\%$ in $\rho(\operatorname{NGM})$ and is
-not shown.
-
-\begin{figure}[ht]
-\centering
-\includegraphics[width=0.85\textwidth]{fig_doses_4x4.pdf}
-\caption{First doses $\chi_{1,p}S_p$ by age and location for three
-allocations of the same doses, $4\times4$ data at $t=347$.}\label{fig-doses}
-\end{figure}
-
-\begin{table}[ht]
-\centering
-\begin{tabular}{lccc}
-allocation & $\rho(\operatorname{NGM})$ & decrease from $\bm\chi=0$ & excess over the minimizer\\\hline
-actual & 3.4378 & 22.58\% & 19.10\%\\
-left eigenvector, doses & 2.9107 & 34.45\% & 0.84\%\\
-left eigenvector, rates & 2.9122 & 34.42\% & 0.89\%\\
-minimizer & 2.8864 & 35.00\% & 0
-\end{tabular}
-\caption{$\rho(\operatorname{NGM})$ for the four allocations of the first
-doses, $4\times4$ data at $t=347$; $\rho(\operatorname{NGM})=4.4407$ at
-$\bm\chi=0$.}\label{tab-compare}
-\end{table}
-
-\begin{table}[ht]
-\centering
-\begin{tabular}{lcccc}
-allocation, location & 0--19 & 20--39 & 40--59 & 60+\\\hline
-actual, Northeast & 0.026 & 5.214 & 4.999 & 1.943\\
-actual, Midwest & 0.060 & 5.792 & 6.366 & 2.443\\
-actual, South & 0.044 & 3.937 & 4.785 & 2.101\\
-actual, West & 0.043 & 5.329 & 6.768 & 2.397\\\hline
-left eigenvector, doses, Northeast & 4.316 & 4.138 & 3.757 & 0.526\\
-left eigenvector, doses, Midwest & 4.721 & 4.773 & 4.652 & 0.640\\
-left eigenvector, doses, South & 3.520 & 3.525 & 3.386 & 0.489\\
-left eigenvector, doses, West & 4.986 & 4.667 & 4.433 & 0.437\\\hline
-minimizer, Northeast & 4.551 & 4.325 & 3.910 & 0\\
-minimizer, Midwest & 4.945 & 4.972 & 4.866 & 0\\
-minimizer, South & 3.693 & 3.675 & 3.530 & 0\\
-minimizer, West & 5.183 & 4.788 & 4.502 & 0
-\end{tabular}
-\caption{The first dose rates $\chi_{1,p}$, in units of $10^{-3}$ per day,
-$4\times4$ data at $t=347$.}\label{tab-chi}
-\end{table}
-
-\paragraph{Numerical check of Theorem~\ref{reduction}.}
-Table~\ref{tab} lists spectral radii computed by Arnoldi for the $4\times 4$
-data from~\cite{JZh} and for the $51\times 16$ data (51 locations, 16 age
-groups) from the model code accompanying~\cite{2026Feng_Day_Glasser} at $t=347$, the day
-before vaccination began. $FV^{-1}$, of order $8N$, is applied matrix free,
-with $V$ factored by sparse LU.
-
-\begin{table}[ht]
-\centering
-\begin{tabular}{|l|l|l|l|}\hline
-data, $\bm\chi$ & $\rho(FV^{-1})$ & computed via~\eqref{a1-g} & difference\\\hline
-$4\times4$, $\bm\chi=0$ & 4.440677536267 & 4.440677536267 & $8.9\cdot10^{-15}$\\\hline
-$4\times4$, $\bm\chi\ne 0$ & 1.570568657459 & 1.570568657459 & $1.6\cdot10^{-15}$\\\hline
-$51\times16$, $\bm\chi=0$ & 1.307390501274 & 1.307390501274 & $4.4\cdot10^{-16}$\\\hline
-$51\times16$, random $\bm\chi$ & 0.492928980848$^*$ & 0.492928980848 & $7.8\cdot10^{-16}$\\\hline
-\end{tabular}
-\caption{Numerical verification that
-$\rho(FV^{-1})=\rho\left(A_1\operatorname{diag}(\bm g)\right)$.
-${}^*$computed as $\rho(\operatorname{NGM})$, equal
-to $\rho(FV^{-1})$ by~\cite[Appendix~A]{2026Feng_Day_Glasser}. The ratios $r_p$ lie in
-$[0.732,0.977]$ for $4\times4$ and in $[0.714,0.985]$ for $51\times16$.}\label{tab}
-\end{table}
-
 \section{The alternating method for three doses}\label{sec-three}
 
 The constraints of~\eqref{problem} do not couple different $k$. The
@@ -573,37 +494,47 @@ alternating method minimizes over $\bm\chi_1$, $\bm\chi_3$, $\bm\chi_2$ in
 turn, the other two doses fixed. For each step we give the Lagrangian of the
 minimization over $\bm\chi_k$ and its Karush--Kuhn--Tucker conditions; these
 are~\eqref{kkt3} for this $k$, so a point at which each of the three steps
-leaves its variables unchanged satisfies~\eqref{kkt3} for $k=1,2,3$.
+leaves its variables unchanged satisfies~\eqref{kkt3} for $k=1,2,3$. Each step
+is the one dose problem of Section~\ref{sec-single}, possibly on a subset of the
+groups, so it has exactly one minimizer (Theorem~\ref{thm-unique}), computed by
+the damped fixed point iteration of Section~\ref{sec-fixed-point}. The problem
+for three doses is not convex, and different starts can end at different
+points; the method is therefore run from several starts, and the end point
+with the smallest $\rho$ is taken as the solution.
 
 \subsection{The step for the first dose}\label{sec-step1}
 With $\bm\chi_2=\bm\theta$ and $\bm\chi_3=\bm\zeta$ fixed, the Lagrangian is
-\begin{equation*}
-L_1(\bm\chi_1,\bm\mu_1,\bm\nu_1)=\rho
+\begin{equation}\label{lagrangian1}
+\begin{aligned}
+&L_1(\bm\chi_1,\bm\mu_1,\bm\nu_1)=\rho
 +\sum_{i=1}^m\mu_{1,i}\left(\sum_{p\in I_i}\sigma_{1,p}\chi_{1,p}-b_{1,i}\right)
--\sum_{p=1}^N\nu_{1,p}\chi_{1,p},
-\qquad
-\frac{\partial L_1}{\partial\chi_{1,p}}=\frac{\partial\rho}{\partial\chi_{1,p}}
+-\sum_{p=1}^N\nu_{1,p}\chi_{1,p},\\
+&\frac{\partial L_1}{\partial\chi_{1,p}}=\frac{\partial\rho}{\partial\chi_{1,p}}
 +\mu_{1,i}\sigma_{1,p}-\nu_{1,p},
-\end{equation*}
+\end{aligned}
+\end{equation}
 and its Karush--Kuhn--Tucker conditions are~\eqref{kkt3} for $k=1$. This is
 the one dose problem of Section~\ref{sec-single}. Since
 $\chi_{1,p}=\omega_p(t_p-1)/\alpha_p$ and
 $\partial\rho/\partial\chi_{1,p}=(\alpha_p/\omega_p)\,\partial\Psi/\partial t_p$,
 \eqref{kkt3} for $k=1$, multiplied by $\omega_p/\alpha_p$, is~\eqref{kkt} with the
 same $\mu_i=\mu_{1,i}$ and $\nu_p=\omega_p\nu_{1,p}/\alpha_p$, and
-$\nu_{1,p}\chi_{1,p}=\nu_p(t_p-1)$. So a fixed point of the iteration of
-Section~\ref{sec-fixed-point} satisfies~\eqref{kkt3} for $k=1$.
+$\nu_{1,p}\chi_{1,p}=\nu_p(t_p-1)$. Since $t_p$ is affine in $\chi_{1,p}$, by
+Theorem~\ref{thm-unique} the step has exactly one minimizer, and it is the only
+point satisfying~\eqref{kkt3} for $k=1$; a fixed point of the iteration of
+Section~\ref{sec-fixed-point} is this minimizer.
 
 \subsection{The step for the third dose}\label{sec-step3}
 With $\bm\chi_1$ and $\bm\chi_2$ fixed, the Lagrangian is
-\begin{equation*}
-L_3(\bm\chi_3,\bm\mu_3,\bm\nu_3)=\rho
+\begin{equation}\label{lagrangian3}
+\begin{aligned}
+&L_3(\bm\chi_3,\bm\mu_3,\bm\nu_3)=\rho
 +\sum_{i=1}^m\mu_{3,i}\left(\sum_{p\in I_i}\sigma_{3,p}\chi_{3,p}-b_{3,i}\right)
--\sum_{p=1}^N\nu_{3,p}\chi_{3,p},
-\qquad
-\frac{\partial L_3}{\partial\chi_{3,p}}=\frac{\partial\rho}{\partial\chi_{3,p}}
+-\sum_{p=1}^N\nu_{3,p}\chi_{3,p},\\
+&\frac{\partial L_3}{\partial\chi_{3,p}}=\frac{\partial\rho}{\partial\chi_{3,p}}
 +\mu_{3,i}\sigma_{3,p}-\nu_{3,p},
-\end{equation*}
+\end{aligned}
+\end{equation}
 and its Karush--Kuhn--Tucker conditions are~\eqref{kkt3} for $k=3$.
 $\mathcal{N}_p$ does not depend on $\chi_{3,p}$,
 and $\mathcal{D}_p=\mathcal{D}_p^0+\varepsilon_3\pi_{1,p}\pi_{2,p}\chi_{3,p}/\omega$,
@@ -616,20 +547,38 @@ which is the one dose form with $e_p=1$, $A_1$ replaced by
 $A_1\operatorname{diag}(\bm g^0)$, $\widetilde\sigma_p=\sigma_{3,p}/s_p$ and
 $c_i=b_{3,i}+\sum_{p\in I_i}\widetilde\sigma_p$, over the groups with $s_p>0$.
 As for $k=1$, a fixed point of the iteration satisfies~\eqref{kkt3} for $k=3$
-on these groups. A group with $s_p=0$ ($\chi_{1,p}=0$ or $\chi_{2,p}=0$)
-receives no third doses; there $\partial\rho/\partial\chi_{3,p}=0$, so $h_{3,p}=0<\mu_{3,i}$
-and~\eqref{kkt3} holds with $\nu_{3,p}=\mu_{3,i}\sigma_{3,p}$.
+on these groups.
+
+No third doses go to groups with $\chi_{1,p}=0$ or $\chi_{2,p}=0$, if the
+location contains a group $q$ with $\chi_{1,q}>0$ and $\chi_{2,q}>0$. Indeed,
+for such $p$, $\pi_{1,p}\pi_{2,p}=0$, so $P_p=0$ at the disease free
+equilibrium and $g_p$ does not depend on $\chi_{3,p}$. If $\chi_{3,p}>0$,
+replacing $\chi_{3,p}$ by $\chi_{3,p}-\delta$ and $\chi_{3,q}$ by
+$\chi_{3,q}+\delta\sigma_{3,p}/\sigma_{3,q}$, $0<\delta\le\chi_{3,p}$, keeps the
+constraint, leaves $g_p$ unchanged and decreases $g_q=g_q^0/t_q$ strictly, so
+it decreases $\rho$, since $\partial\rho/\partial g_l>0$ by~\eqref{drho-dg}.
+This holds for every $\delta$, however small, so $\chi_{3,p}=0$ at every
+local minimizer of~\eqref{problem}, not only at the end of this step. At a
+point satisfying~\eqref{kkt3} as well: $h_{3,p}=0$ and $h_{3,q}>0$, so
+$\mu_{3,i}\ge h_{3,q}>0$, and $\chi_{3,p}>0$ would give $\mu_{3,i}=h_{3,p}=0$;
+\eqref{kkt3} holds there with $\nu_{3,p}=\mu_{3,i}\sigma_{3,p}$. On the groups
+with $\chi_{1,p}>0$ and $\chi_{2,p}>0$ the step is the one dose problem with
+$e_p=1$ and $A_1\operatorname{diag}(\bm g^0)$, which is irreducible since
+$\bm g^0>0$. So, if every location contains such a group, by
+Theorem~\ref{thm-unique} the step has exactly one minimizer, the only point
+satisfying~\eqref{kkt3} for $k=3$.
 
 \subsection{The step for the second dose}\label{sec-step2}
 With $\bm\chi_1$ and $\bm\chi_3$ fixed, the Lagrangian is
-\begin{equation*}
-L_2(\bm\chi_2,\bm\mu_2,\bm\nu_2)=\rho
+\begin{equation}\label{lagrangian2}
+\begin{aligned}
+&L_2(\bm\chi_2,\bm\mu_2,\bm\nu_2)=\rho
 +\sum_{i=1}^m\mu_{2,i}\left(\sum_{p\in I_i}\sigma_{2,p}\chi_{2,p}-b_{2,i}\right)
--\sum_{p=1}^N\nu_{2,p}\chi_{2,p},
-\qquad
-\frac{\partial L_2}{\partial\chi_{2,p}}=\frac{\partial\rho}{\partial\chi_{2,p}}
+-\sum_{p=1}^N\nu_{2,p}\chi_{2,p},\\
+&\frac{\partial L_2}{\partial\chi_{2,p}}=\frac{\partial\rho}{\partial\chi_{2,p}}
 +\mu_{2,i}\sigma_{2,p}-\nu_{2,p},
-\end{equation*}
+\end{aligned}
+\end{equation}
 and its Karush--Kuhn--Tucker conditions are~\eqref{kkt3} for $k=2$.
 Multiplying the numerator and the denominator of~\eqref{g-new} by
 $\omega_p=\omega_v+\varepsilon_2\chi_{2,p}$ shows that $g_p$ is a ratio of affine
@@ -646,13 +595,36 @@ g_p=\frac{\kappa_p+\kappa_p'\chi_{2,p}}{\lambda_p+\lambda_p'\chi_{2,p}},\qquad
 so $\partial g_p/\partial\chi_{2,p}=-\Delta_p/(\lambda_p+\lambda_p'\chi_{2,p})^2$
 with $\Delta_p=\kappa_p\lambda_p'-\kappa_p'\lambda_p$, which does not depend on
 $\chi_{2,p}$: $g_p$ is strictly decreasing, constant or strictly increasing
-in $\chi_{2,p}$ as $\Delta_p>0$, $=0$ or $<0$. We assume that every location
-contains a group with $\Delta_p>0$; for $\omega=\omega_v$ this holds for
-instance for a group with a small positive $\chi_{1,p}$, and it holds in all our
-computations. Then the groups with $\Delta_p\le 0$ receive no second doses:
-moving the second doses of such a group to a group of the same location with
-$\Delta_q>0$ does not increase $g_p$ and decreases $g_q$, so it decreases
-$\rho$, since $\partial\rho/\partial g_l>0$ by~\eqref{drho-dg}. On the groups
+in $\chi_{2,p}$ as $\Delta_p>0$, $=0$ or $<0$.
+
+For $\omega=\omega_v$, with $x_p=\chi_{1,p}/\omega$ and $y_p=\varepsilon_3\chi_{3,p}/\omega$,
+the definitions give $\kappa_p=\omega(1+r_p(1-\varepsilon_1)x_p)$,
+$\kappa_p'=\varepsilon_2(1+r_px_p)$, $\lambda_p=\omega(1+x_p)$,
+$\lambda_p'=\varepsilon_2(1+(2+y_p)x_p)$, and multiplying out,
+\begin{equation}\label{delta-x}
+\frac{\Delta_p}{\omega\varepsilon_2}=x_p\left(1+y_p-r_p\varepsilon_1\right)
+-r_px_p^2\left(1-(1-\varepsilon_1)(2+y_p)\right).
+\end{equation}
+Since $0<r_p\le1$ and $\varepsilon_1<1$, the coefficient of $x_p$ is positive. So
+$\Delta_p=0$ for $\chi_{1,p}=0$, and $\Delta_p>0$ for small $\chi_{1,p}>0$; if
+$(1-\varepsilon_1)(2+y_p)<1$, then $\Delta_p>0$ exactly for
+$0<x_p<x_p^*=(1+y_p-r_p\varepsilon_1)/\left(r_p\left(1-(1-\varepsilon_1)(2+y_p)\right)\right)$,
+and $\Delta_p<0$ for $x_p>x_p^*$. Here $\chi_{1,p}$ is not small compared
+with $\omega$: in the computations of Section~\ref{sec-simulation},
+$\omega=\omega_v=1/365$ and $\varepsilon_1=0.9$, so for $\chi_{3,p}=0$ the
+condition $\Delta_p>0$ is $0<\chi_{1,p}<\omega x_p^*$, between
+$3.9\cdot10^{-4}$ ($r_p=0.985$) and $1.7\cdot10^{-3}$ ($r_p=0.714$) per day, while
+the first doses are given at larger rates in many groups. So a location may
+contain no group with $\Delta_p>0$: all its groups have $\chi_{1,p}=0$ or a
+$\chi_{1,p}$ above this bound. This happens there in several weeks.
+
+In a location that contains a group with $\Delta_q>0$, the groups with
+$\Delta_p\le 0$ receive no second doses: moving the second doses of such a group
+to the group $q$ does not increase $g_p$ and decreases $g_q$, so it decreases
+$\rho$, since $\partial\rho/\partial g_l>0$ by~\eqref{drho-dg}. In a location
+with no group with $\Delta_p>0$, second doses cannot decrease any $g_p$ of the
+location; there the step is done by spectral projected gradient, over all the
+groups of the location, and not by the fixed point iteration below. On the groups
 with $\Delta_p>0$, with $t_p=1+\lambda_p'\chi_{2,p}/\lambda_p$,
 \begin{equation*}
 g_p=g_p^0\left((1-e_p)+\frac{e_p}{t_p}\right),\qquad g_p^0=\frac{\kappa_p}{\lambda_p},\qquad
@@ -663,150 +635,343 @@ $\gamma_p=g_p^0$ on these groups and $\gamma_p=g_p$ on the others,
 $\widetilde\sigma_p=\sigma_{2,p}\lambda_p/\lambda_p'$ and
 $c_i=b_{2,i}+\sum\widetilde\sigma_p$, the sum over these groups of the location.
 So this step, like the other two, is done by the damped fixed point iteration
-of Section~\ref{sec-fixed-point}.
+of Section~\ref{sec-fixed-point}. The same exchange argument applies at every
+local minimizer of~\eqref{problem} and at every point satisfying~\eqref{kkt3},
+and since $0<e_p<1$ and $A_1\operatorname{diag}(\bm\gamma)$ is irreducible,
+by Theorem~\ref{thm-unique} the step has exactly one minimizer, the only point
+satisfying~\eqref{kkt3} for $k=2$.
 
 \subsection{Convergence}\label{sec-alt-convergence}
-We do not prove that the $\bm\chi_1$ and $\bm\chi_3$ steps decrease $\rho$, nor
+We do not prove that the fixed point iterations of the steps converge, nor
 that the method converges; Section~\ref{sec-three-numerics} reports both
-numerically. A limit point satisfies~\eqref{kkt3}, so it may be a local, not a
-global, minimizer.
+numerically. If the steps end at their minimizers, the limit points of the
+method satisfy~\eqref{kkt3}. Let $\bm x^{(s)}$ be the point at the start of
+sweep $s$, $\bm z^{(s)}$ the point after its $\bm\chi_1$ step, $\bm y^{(s)}$
+after its $\bm\chi_3$ step, and $\bm x^{(s+1)}$ after its $\bm\chi_2$ step.
+
+\begin{theorem}\label{alt-limit}
+Let $A_1$ be irreducible, $0<r_p\le 1$, and let each step end at the minimizer
+of $\rho$ over its dose. Then the sequence $\bm x^{(s)}$ has limit points. Let
+$\bar{\bm x}=(\bar{\bm\chi}_1,\bar{\bm\chi}_2,\bar{\bm\chi}_3)$ be one of them,
+and let every location contain a group $q$ with $\bar\chi_{1,q}>0$ and
+$\bar\chi_{2,q}>0$. Then each $\bar{\bm\chi}_k$ minimizes $\rho$ over
+$\bm\chi_k$ with the other two doses those of $\bar{\bm x}$, and $\bar{\bm x}$
+satisfies~\eqref{kkt3} for $k=1,2,3$.
+\end{theorem}
+\begin{proof}
+The feasible set is compact, so limit points exist, and $\rho(\bm x^{(s)})$
+decreases to some $\bar\rho$. Let $\bm x^{(s)}\to\bar{\bm x}$ along a
+subsequence $\mathcal S$; then $\rho(\bar{\bm x})=\bar\rho$, and
+$\rho(\bm z^{(s)})$, $\rho(\bm y^{(s)})\to\bar\rho$ as well.
+
+\emph{First dose.} Along a further subsequence $\bm z^{(s)}\to\bar{\bm z}$, which
+differs from $\bar{\bm x}$ only in $\bm\chi_1$. For every feasible $\bm\chi_1$,
+$\rho(\bm z^{(s)})\le\rho(\bm\chi_1,\bm\chi_2^{(s)},\bm\chi_3^{(s)})$, and by
+continuity $\rho(\bar{\bm z})\le\rho(\bm\chi_1,\bar{\bm\chi}_2,\bar{\bm\chi}_3)$.
+So $\bar{\bm z}_1$ minimizes $\rho$ over $\bm\chi_1$ at $\bar{\bm x}$, and so
+does $\bar{\bm\chi}_1$, since $\rho(\bar{\bm x})=\bar\rho=\rho(\bar{\bm z})$. The
+minimizer is unique (Section~\ref{sec-step1}), so $\bar{\bm z}=\bar{\bm x}$, and
+$\bm z^{(s)}\to\bar{\bm x}$ along $\mathcal S$.
+
+\emph{Third dose.} The same argument, with $\bm z^{(s)}$ in place of
+$\bm x^{(s)}$, shows that $\bar{\bm\chi}_3$ minimizes $\rho$ over $\bm\chi_3$ at
+$\bar{\bm x}$; by the hypothesis on $\bar{\bm\chi}_1$, $\bar{\bm\chi}_2$ this
+minimizer is unique (Section~\ref{sec-step3}), so $\bm y^{(s)}\to\bar{\bm x}$.
+
+\emph{Second dose.} The same argument, with $\bm y^{(s)}$, shows that
+$\bar{\bm\chi}_2$ minimizes $\rho$ over $\bm\chi_2$ at $\bar{\bm x}$.
+
+Each $\bar{\bm\chi}_k$ minimizes a differentiable function under affine
+constraints, so~\eqref{kkt3} holds for this $k$~\cite[Section~3.4]{1999Bertsekas};
+the constraints of different doses are separate, so the three systems together
+are~\eqref{kkt3}.
+\end{proof}
+
+A point satisfying~\eqref{kkt3} may be a local, not a global, minimizer. At
+$\bar{\bm x}$ of the theorem,
+$\nabla\rho(\bar{\bm x})^T(\bm x-\bar{\bm x})=\sum_{k=1}^3\nabla_{\bm\chi_k}\rho(\bar{\bm x})^T(\bm\chi_k-\bar{\bm\chi}_k)\ge 0$
+for every feasible $\bm x$, so if $\rho$ is convex on the feasible set, which
+depends on the parameters and on $C$, $\bar{\bm x}$ is a global minimizer, and
+if it is strictly convex every start gives the same limit. For our data $\rho$
+is not convex (see the supplement), and different starts end at different
+points (Section~\ref{sec-three-numerics}).
 
 \subsection{Numerical results}\label{sec-three-numerics}
 
-\paragraph{A mock instance.}
-The doses of the second and third type by location are not available, and
-we build $\sigma_{k,p}$ and $b_{k,i}$ for the $51\times16$ data at $t=347$
-from reference rates $\bm\chi^{\mathrm{ref}}$, the same for all groups:
+\paragraph{Data.}
+The model data are the public $51\times16$ data of DATA.tex, Section~1, with the
+parameters at $t=349$, the start of vaccination (14 December 2020); there
+$\rho(\operatorname{NGM})=0.913477$ at $\bm\chi=0$. The doses of the second and third type by location are not
+available, and we use mock doses $b_{k,i}$, read from an Excel file with three
+columns per week, and mock group sizes $\sigma_{k,p}$. They are built from reference rates
 $\chi^{\mathrm{ref}}_1=3\cdot10^{-3}$, $\chi^{\mathrm{ref}}_2=1/28$ and
-$\chi^{\mathrm{ref}}_3=10^{-3}$ per day. The sizes $\sigma_{1,p}$, $\sigma_{2,p}$,
-$\sigma_{3,p}$ are the numbers of susceptible, vaccinated and partially immune
-people of group $p$ at the disease free equilibrium with
-$\bm\chi=\bm\chi^{\mathrm{ref}}$, $0.478$, $0.038$ and $0.224$ of the
-population, and
+$\chi^{\mathrm{ref}}_3=10^{-3}$ per day, the same for all groups: $\sigma_{1,p}$,
+$\sigma_{2,p}$, $\sigma_{3,p}$ are the susceptible, vaccinated and partially
+immune people of group $p$ at the disease free equilibrium with
+$\bm\chi=\bm\chi^{\mathrm{ref}}$, and in week 1
 $b_{k,i}=\sum_{p\in I_i}\sigma_{k,p}\chi^{\mathrm{ref}}_k$, in total
-$4.72\cdot10^5$, $4.49\cdot10^5$ and $7.37\cdot10^4$ doses per day. The
-allocation $\bm\chi=\bm\chi^{\mathrm{ref}}$ is called uniform. As in
-Section~\ref{sec-numerics}, the left eigenvector allocation is
-$\chi_{k,p}\sigma_{k,p}=b_{k,i}w_p/\sum_{l\in I_i}w_l$, with $w_p$ the entry
-in row $2p-1$ of the dominant left eigenvector of $\operatorname{NGM}$, here
-at $\bm\chi^{\mathrm{ref}}$.
+$2.90\cdot10^5$, $2.96\cdot10^5$ and $9.74\cdot10^4$ doses per day; in weeks 2
+and 3 the doses are $1.25$ and $1.5$ times those of week 1.
 
-The damped fixed point iterations of the three steps stop at a relative
-change of $\bm t$ below $10^{-12}$, and the method stops when $\rho$ changes by less
-than $10^{-11}$ (relative) in a sweep. $\rho$ is computed by Arnoldi from
-$A_1\operatorname{diag}(\bm g)$, of order $N=816$; at the final points it agrees
-with $\rho(\operatorname{NGM})$, of order $2N$, to the digits shown. The
-conditions~\eqref{kkt3} are checked through $h_{k,p}$ and, for each $k$ and
-$i$, $\mu_{k,i}$ the mean of $h_{k,p}$ over the groups that receive doses:
-the spread is the largest $|h_{k,p}/\mu_{k,i}-1|$ over these groups, zero
-at a point satisfying~\eqref{kkt3}, and the ratio is the largest
-$h_{k,p}/\mu_{k,i}$ over the groups that receive no doses, at most $1$.
+\paragraph{Method.}
+The method is run from five starts: the uniform allocation (the same rate for
+all groups of a location), the allocation with doses in proportion to the
+susceptible rows of the dominant left eigenvector of $\operatorname{NGM}$ at
+the uniform allocation, and three random allocations. The damped fixed point
+iterations stop at a relative change of $\bm t$ below $10^{-12}$, and the
+method stops when $\rho$ changes by less than $10^{-11}$ (relative) in a sweep.
+$\rho$ is computed by Arnoldi from $A_1\operatorname{diag}(\bm g)$, of order
+$N=816$; at the solution it agrees with $\rho(\operatorname{NGM})$, of order
+$2N$, to twelve digits. The conditions~\eqref{kkt3} are checked through
+$h_{k,p}$ and, for each $k$ and $i$, $\mu_{k,i}$ the mean of $h_{k,p}$ over the
+groups that receive doses: the spread is the largest $|h_{k,p}/\mu_{k,i}-1|$
+over these groups, zero at a point satisfying~\eqref{kkt3}, and the ratio is
+the largest $h_{k,p}/\mu_{k,i}$ over the groups that receive no doses, at most
+$1$.
 
-\paragraph{One dose.}
-With $\bm\chi_2=\bm\chi_3=0$ and the same $\sigma_{1,p}$, $b_{1,i}$, the
-damped fixed point iteration from the uniform allocation stops after $43$
-iterations at $\rho=0.79347$; no iteration increases $\rho$ by more than
-$10^{-12}$ (relative). The spread is $2.1\cdot10^{-13}$ and the ratio is
-$0.9998$; the groups with no first doses are the four age groups from 60 on in
-every location, 0--4 in 18 locations and 55--59 in 2. Table~\ref{tab-mock} compares
-the allocations.
-
-\paragraph{Three doses.}
-The method is run from five starts: the uniform and the left eigenvector
-allocations, and three random allocations satisfying the constraints.
-Table~\ref{tab-mock-starts} lists the results and Figure~\ref{fig-mock-conv}
-shows $\rho$ after each step. In all runs no step increases $\rho$ by more
-than $10^{-12}$ (relative), and every end point satisfies~\eqref{kkt3} with
-spread at most $10^{-4}$ and ratio at most $0.97$. The five end points are
-different: $\rho$ lies between $0.764866$ and $0.765253$, and the allocations
-differ from the one with the smallest $\rho$ by $34$ to $70$ per cent of its
-largest entry. They are different
-points satisfying~\eqref{kkt3}, local and not all global minimizers. The
-smallest value, from the left eigenvector start, is compared with the other
-allocations in Table~\ref{tab-mock}; Figure~\ref{fig-mock-alloc} shows the
-doses by age.
+\paragraph{Results.}
+Table~\ref{tab-weeks} lists the solution for each week. Every step of every
+run was done by the fixed point iteration, and every end point
+satisfies~\eqref{kkt3} with spread at most $6.6\cdot10^{-5}$. The end points
+from different starts differ, by up to $4.7\%$ in $\rho$ (week 1): they are
+different points satisfying~\eqref{kkt3}, so taking the smallest of several
+starts matters. The three weeks take 247 seconds.
 
 \begin{table}[ht]
 \centering
-\begin{tabular}{|l|c|c|c|c|c|}\hline
-start & sweeps & $\rho$ & spread, $k=1$ & spread, $k=2$ & spread, $k=3$\\\hline
-uniform & 8 & 0.765041 & $4.2\cdot10^{-5}$ & $7.4\cdot10^{-11}$ & $2.1\cdot10^{-7}$\\\hline
-left eigenvector & 10 & 0.764866 & $2.3\cdot10^{-5}$ & $7.9\cdot10^{-11}$ & $1.0\cdot10^{-7}$\\\hline
-random 1 & 25 & 0.765101 & $2.2\cdot10^{-5}$ & $1.1\cdot10^{-11}$ & $5.2\cdot10^{-5}$\\\hline
-random 2 & 11 & 0.765253 & $6.7\cdot10^{-6}$ & $1.3\cdot10^{-11}$ & $4.9\cdot10^{-5}$\\\hline
-random 3 & 9 & 0.765070 & $1.3\cdot10^{-5}$ & $1.5\cdot10^{-11}$ & $2.2\cdot10^{-5}$\\\hline
+\begin{tabular}{|l|c|c|c|}\hline
+week & 1 & 2 & 3\\\hline
+$\rho(\operatorname{NGM})$ at the solution & 0.398984 & 0.361050 & 0.331369\\
+start & left eigenvector & left eigenvector & left eigenvector\\
+largest $\rho$ over the five end points & 0.417670 & 0.375511 & 0.344343\\\hline
+spread, $k=1$ & $2.5\cdot10^{-5}$ & $6.6\cdot10^{-5}$ & $5.2\cdot10^{-5}$\\
+spread, $k=2$ & $5.4\cdot10^{-12}$ & $2.0\cdot10^{-11}$ & $3.9\cdot10^{-12}$\\
+spread, $k=3$ & $1.3\cdot10^{-6}$ & $2.4\cdot10^{-6}$ & $9.8\cdot10^{-7}$\\
+ratio, $k=1$ & 0.817 & 0.775 & 0.811\\
+ratio, $k=3$ & 0.936 & 0.991 & 0.982\\\hline
+groups with no doses, $k=1$ & 137 & 108 & 97\\
+groups with no doses, $k=2$ & 698 & 684 & 693\\
+groups with no doses, $k=3$ & 755 & 745 & 737\\\hline
 \end{tabular}
-\caption{The alternating method from five starts, mock instance; the
-spread of~\eqref{kkt3} at the end point for each dose.}\label{tab-mock-starts}
+\caption{The solution of each week: $\rho(\operatorname{NGM})$, the start it
+came from, the largest $\rho$ over the five end points, the spread and the
+ratio of~\eqref{kkt3}, and the number of groups (of 816) with no doses of each
+type. For $k=2$ the ratio is $0$: the groups with no second doses are those with
+$\Delta_p\le 0$, where $h_{2,p}\le 0$.}\label{tab-weeks}
 \end{table}
 
-\begin{table}[ht]
-\centering
-\begin{tabular}{|l|c|c|c|c|}\hline
- & \multicolumn{2}{c|}{one dose} & \multicolumn{2}{c|}{three doses}\\\hline
-allocation & $\rho(\operatorname{NGM})$ & excess & $\rho(\operatorname{NGM})$ & excess\\\hline
-uniform & 0.8870 & 11.79\% & 0.8963 & 17.18\%\\\hline
-left eigenvector & 0.8051 & 1.47\% & 0.8287 & 8.34\%\\\hline
-minimizer & 0.7935 & 0 & 0.7649 & 0\\\hline
-\end{tabular}
-\caption{$\rho(\operatorname{NGM})$ for the allocations of the mock instance
-and the excess over the minimizer; $\rho(\operatorname{NGM})=1.3074$ at
-$\bm\chi=0$. For three doses the minimizer is the end point from the left
-eigenvector start.}\label{tab-mock}
-\end{table}
+\section{Simulation with the weekly optimization}\label{sec-simulation}
 
-\begin{figure}[ht]
-\centering
-\includegraphics[width=0.85\textwidth]{fig_mock_conv.pdf}
-\caption{$\rho$ at each iteration of the fixed point iteration for one dose
-(left) and after each step of the alternating method for three doses, from
-five starts (right), mock instance.}\label{fig-mock-conv}
-\end{figure}
+The problem~\eqref{problem} is solved week by week along a solution of the
+model. The system of ordinary differential equations
+of~\cite[Section~2.1]{2026Feng_Day_Glasser}, its data with their sources, and the
+computation are in the companion notes DATA.tex (Sections~1 and~2); all data
+are published or public, except the initial state and the weekly doses, which
+are mock data (DATA.tex, Section~1.9).
 
-\begin{figure}[ht]
-\centering
-\includegraphics[width=0.85\textwidth]{fig_mock_alloc.pdf}
-\caption{Doses per day by age, summed over the 51 locations, for the
-uniform, left eigenvector and minimizing allocations of the mock
-instance.}\label{fig-mock-alloc}
-\end{figure}
+\paragraph{The weekly loop.} The system is solved from $t=251$ (7 September
+2020) to $t=349$ (14 December 2020, the start of vaccination) without
+vaccination, and then on the weeks $[\tau,\tau+7]$, $\tau=349,356,\dots$, with
+rates $\chi_{k,p}$ constant on each week, computed at $\tau$ from the state
+$X(\tau)$ and the doses $D_{k,p}$ of the week: the doses of each location,
+summed over its age groups, are allocated by the solution of~\eqref{problem} at
+$\tau$. The actual strategy of~\cite{2026Feng_Day_Glasser}, the reported doses by
+location and age group, is the reference for this allocation; it is not computed
+here (DATA.tex, Remark~2.1).
+
+\paragraph{The problem of week $\tau$.}
+\begin{enumerate}
+\item $\sigma_{1,p}=S_p(\tau)$, $\sigma_{2,p}=V_p(\tau)$, $\sigma_{3,p}=P_p(\tau)$.
+Only the groups with $\sigma_{k,p}\ge1$ (at least one person) may receive doses
+of type $k$: for the others $\chi_{k,p}=0$, and they do not enter the constraint
+of~\eqref{problem}. (In the computations $\sigma_{k,p}$ is raised to at least
+$10^{-6}$, since the formulas need $\sigma_{k,p}>0$; in the first weeks $V=0$.)
+\item $b_{k,i}=\frac17\sum_{p\in I_i}D_{k,p}$ doses per day, at most
+$0.99\sum\sigma_{k,p}/7$ over the eligible groups of location $i$, the bound of
+the actual strategy; at least $10^{-9}$ (the method needs $b_{k,i}>0$); and
+$b_{k,i}=0$ if location $i$ has no eligible group.
+\item $A_1$ of~\eqref{a1-g} with the parameters at $\tau$:
+$d_{c,p}=s_i(\tau)\,a_p\,\psi_{S,p}(\tau)\,\beta_p(\tau)$, with $s_i$ the stringency
+factor of location $i\ni p$ (DATA.tex, Section~1.5) and the values of the variant
+dominant at $\tau$ (DATA.tex, Section~1.8); $\psi_{I,p}(\tau)$; $q_{s,p}$ and
+$q_{m,p}$ from the rates at $\tau$; and $\omega$, $\omega_v$,
+$\varepsilon_1=\varepsilon_2=\varepsilon_3=\varepsilon(\tau)$ in~\eqref{pis}.
+\item $C$ is the $816\times816$ contact matrix formed from public data and saved in
+\path{code/python/data/model/C_816x816.csv.gz} (DATA.tex, Section~1.5). Since
+$C>0$, it is irreducible. Its products can also be computed without forming it
+(Appendix~\ref{app-factored}).
+\item The alternating method of Section~\ref{sec-three} is run from two
+starts: the uniform allocation, and the allocation in proportion to the left
+Perron vector of $A_1\operatorname{diag}(\bm g)$ at the uniform allocation (in
+place of the susceptible rows of the left eigenvector of $\operatorname{NGM}$
+used in Section~\ref{sec-three-numerics}). The end point with the smaller $\rho$
+is taken.
+\item The rates are bounded, $\chi_{k,p}\le\chi_{\max}=-\frac17\ln(1-0.99)\approx0.658$
+per day, the largest rate of the actual strategy; this bound is added to the
+constraints of~\eqref{problem} (Section~\ref{sec-bound}). The problem stays
+feasible, since $b_{k,i}\le0.99\sum\sigma_{k,p}/7<\chi_{\max}\sum\sigma_{k,p}$, the
+sums over the eligible groups of location $i$.
+\end{enumerate}
+
+\paragraph{Why the bound.} By~\eqref{pis}, the factor $g_p$ of a group depends on
+$\bm\chi$ alone, not on the number of people in it, while the constraint
+of~\eqref{problem} charges $\sigma_{k,p}\chi_{k,p}$. So a group with few eligible
+people can take a very large rate at little cost. In the first computation,
+without the bound and with all groups eligible ($\sigma_{k,p}$ raised to $10^{-6}$),
+from the week $\tau=377$, the first with second doses, the minimizer put part of
+the second doses of locations on groups with $V_p=0$, with rates up to
+$3.7\cdot10^{10}$ per day, and the solution of the system did not advance after
+this week (we attribute this to stiffness for the explicit method, without having
+verified it). Moving the doses above $\chi_{\max}$ to other groups after the
+minimization gave $\rho$ far from the minimum (at $\tau=377$: $0.609$ at the
+uniform allocation, $0.479$ at the minimizer, $0.563$ after the move). With the
+eligible groups only ($\sigma_{k,p}\ge1$), the largest rate at $\tau=377$ was still
+$161$ per day, and $\rho$ was $0.609$, $0.479$ and $0.557$. Hence the bound as a
+constraint. After the minimization the computation checks that no rate exceeds
+$\chi_{\max}$ and reports the largest rate.
+
+\subsection{The one dose problem with a bound on the rates}\label{sec-bound}
+
+With $\chi_{1,p}\le\chi_{\max}$ added, the one dose problem of
+Section~\ref{sec-single} has the feasible set
+\begin{equation*}
+\mathcal T_{\max}=\left\{\bm t:\ \sum_{p\in I_i}\widetilde\sigma_pt_p=c_i,\ i=1:m,\
+1\le t_p\le T_p\right\},\qquad T_p=1+\frac{\alpha_p}{\omega_p}\chi_{\max},
+\end{equation*}
+and we assume $\sum_{p\in I_i}\widetilde\sigma_p<c_i<\sum_{p\in I_i}\widetilde\sigma_pT_p$,
+that is, $0<b_{1,i}<\chi_{\max}\sum_{p\in I_i}\sigma_{1,p}$.
+
+\begin{theorem}\label{thm-unique-bound}
+Let $A_1$ be irreducible and $0<e_p\le 1$. Then $\Psi$ has exactly one minimizer
+on $\mathcal T_{\max}$, and $\bm t\in\mathcal T_{\max}$ is this minimizer if and only
+if there are $\mu_i$, $\nu_p$, $\lambda_p$ with
+\begin{equation}\label{kkt-bound}
+\nu_p\ge0,\quad\lambda_p\ge0,\quad\nu_p(t_p-1)=0,\quad\lambda_p(T_p-t_p)=0,\quad
+\mu_i\widetilde\sigma_p=\nu_p-\lambda_p+\frac{e_pa_p}{t_p^2},\quad p\in I_i .
+\end{equation}
+\end{theorem}
+\begin{proof}
+$\log\Psi$ is strictly convex on $\{\bm t>0\}$ (Theorem~\ref{thm-unique}), and
+$\mathcal T_{\max}$ is convex, closed, bounded and not empty (it contains
+$t_p=1+(c_i-\sum_{l\in I_i}\widetilde\sigma_l)(T_p-1)/\sum_{l\in I_i}\widetilde\sigma_l(T_l-1)$,
+$p\in I_i$, which satisfies the constraint of location $i$ and $1<t_p<T_p$). So,
+as in Theorem~\ref{thm-unique}, $\Psi$ has exactly one minimizer on
+$\mathcal T_{\max}$. The Lagrangian of Section~\ref{sec-algorithm} gets the term
+$\sum_p\lambda_p(t_p-T_p)$, which gives~\eqref{kkt-bound}; the constraints are
+affine, so these conditions are necessary~\cite[Section~3.4]{1999Bertsekas}, and,
+written for $\log\Psi$ (with the multipliers divided by $\Psi>0$), sufficient,
+since $\log\Psi$ is convex~\cite[Section~5.5.3]{2004Boyd_Vandenberghe}.
+\end{proof}
+
+\begin{lemma}\label{frozen-bound}
+Let $a_p>0$, $e_p>0$, $\widetilde\sigma_p>0$, $T_p>1$ for $p\in I_i$, and
+$\sum_{p\in I_i}\widetilde\sigma_p<c_i<\sum_{p\in I_i}\widetilde\sigma_pT_p$. For
+$\mu>0$ let
+\begin{equation}\label{t-of-mu-bound}
+t_p(\mu)=\min\left\{T_p,\ \max\left\{1,\ \sqrt{\frac{e_pa_p}{\mu\widetilde\sigma_p}}\right\}\right\},
+\qquad F_i(\mu)=\sum_{p\in I_i}\widetilde\sigma_pt_p(\mu).
+\end{equation}
+Then $F_i(\mu)=c_i$ has exactly one solution $\mu_i>0$, and the only solution
+of~\eqref{kkt-bound} for the location $i$, with these $a_p$, is $\mu_i$,
+$t_p=t_p(\mu_i)$, $\nu_p=\max\{0,\mu_i\widetilde\sigma_p-e_pa_p\}$ and
+$\lambda_p=\max\{0,e_pa_p/T_p^2-\mu_i\widetilde\sigma_p\}$.
+\end{lemma}
+\begin{proof}
+Each $t_p(\mu)$ is continuous and non-increasing, and strictly decreasing where
+$1<t_p(\mu)<T_p$. So $F_i$ is continuous and non-increasing, with
+$F_i(\mu)=\sum_{p\in I_i}\widetilde\sigma_pT_p>c_i$ for
+$\mu\le\min_pe_pa_p/(\widetilde\sigma_pT_p^2)$ and
+$F_i(\mu)=\sum_{p\in I_i}\widetilde\sigma_p<c_i$ for
+$\mu\ge\max_pe_pa_p/\widetilde\sigma_p$. Hence $F_i(\mu)=c_i$ has a solution; at
+any solution $\sum\widetilde\sigma_p<F_i<\sum\widetilde\sigma_pT_p$, so some
+$t_p(\mu)$ lies strictly between $1$ and $T_p$ on a neighborhood, $F_i$ is
+strictly decreasing there, and the solution is unique.
+
+Let $t_p$, $\nu_p$, $\lambda_p$, $\mu_i$ solve~\eqref{kkt-bound}. If $1<t_p<T_p$,
+then $\nu_p=\lambda_p=0$ and $t_p^2=e_pa_p/(\mu_i\widetilde\sigma_p)$, so
+$t_p=t_p(\mu_i)$. If $t_p=1<T_p$, then $\lambda_p=0$ and
+$\nu_p=\mu_i\widetilde\sigma_p-e_pa_p\ge0$, so
+$\sqrt{e_pa_p/(\mu_i\widetilde\sigma_p)}\le1$ and $t_p(\mu_i)=1$. If $t_p=T_p>1$,
+then $\nu_p=0$ and $\lambda_p=e_pa_p/T_p^2-\mu_i\widetilde\sigma_p\ge0$, so
+$\sqrt{e_pa_p/(\mu_i\widetilde\sigma_p)}\ge T_p$ and $t_p(\mu_i)=T_p$. In all cases
+$t_p=t_p(\mu_i)$, the multipliers are the stated ones, and the constraint is
+$F_i(\mu_i)=c_i$, whose solution is unique. Conversely, $t_p(\mu_i)$ with these
+multipliers satisfies~\eqref{kkt-bound}, by the same three cases.
+\end{proof}
+
+$F_i$ is no longer of the form~\eqref{F-piece} on each interval, and $\mu_i$ is
+computed by bisection in $\log\mu$ between the two bounds of the proof, to a
+relative width of $10^{-14}$. The fixed point iteration of
+Section~\ref{sec-fixed-point} is then the same, with~\eqref{t-of-mu-bound}
+in place of~\eqref{t-of-mu}, and a fixed point satisfies~\eqref{kkt-bound}. The
+steps for the second and third doses (Sections~\ref{sec-step3}
+and~\ref{sec-step2}) have the same one dose form, with $T_p=1+s_p\chi_{\max}$, $s_p$
+the slope of $t_p$ in $\chi_{k,p}$ there. When a step is done by spectral
+projected gradient instead, the projection is onto the product of the simplices
+$\{\bm u\ge0,\ \sum_{p\in I_i}u_p=1\}$ capped by $u_p\le\sigma_{k,p}\chi_{\max}/b_{k,i}$,
+computed by bisection on the shift $\lambda$ in $u_p=\min\{\max\{y_p-\lambda,0\},\
+\sigma_{k,p}\chi_{\max}/b_{k,i}\}$; the starts are projected onto the same sets.
+With a bound $T_p$ that is never reached, the bisection gives the $\mu_i$
+of~\eqref{mu-exact} (computed: to relative $10^{-15}$). The convergence result for
+the alternating method (Section~\ref{sec-alt-convergence}) was proved without
+the bound; we have not checked that it holds with it.
+
+{\sloppy
+\paragraph{Implementation.} \path{code/python/seir7_ode.py}, run as
+\texttt{simulate optimal}; the problem of week $\tau$ is set by
+\path{Model.ngm_context} and \path{alternating.set_model}. The national totals of
+the compartments at the start of each week are written to
+\path{data/simulate_weekly_51x16_optimal.csv}, and $\rho$ at the uniform
+allocation and at the solution, for each week, to
+\path{data/simulate_weekly_51x16_optimal_rho.csv} (DATA.tex, Section~2).\par}
 
 \section{Conclusions}\label{sec-conclusions}
 
-For the model in~\cite{2026Feng_Day_Glasser}:
 \begin{enumerate}
-\item The next generation matrix on the states at infection, of order $2N$,
-has the same spectral radius as $FV^{-1}$, of order
-$8N$~\cite[Appendix~A]{2026Feng_Day_Glasser}. The eight infected states of a group enter only
-through the two weights $q_{s,p}$ and $q_{m,p}$,
-one for the immunologically naive and one for the partially immune infected.
-\item Its spectral radius equals that of $A_1\operatorname{diag}(\bm g)$, of
-order $N$ (Theorem~\ref{reduction}). The matrix $A_1\ge 0$ does not depend on
-the vaccination rates, which enter only through $\bm g$, $0<g_p\le 1$.
-\item With the second and third doses fixed, $g_p=(1-e_p)+e_p/t_p$ with
-$0<e_p\le 1$ and $t_p\ge 1$ affine in $\chi_{1,p}$; with the first and second
-doses fixed, $g_p=g_p^0/t_p$ with $t_p\ge 1$ affine in $\chi_{3,p}$. In both
-cases the constraints are affine in $\bm t$. The gradient of $\rho$ requires
-one right and one left Perron vector of $A_1\operatorname{diag}(\bm g)$, and
-with these vectors held fixed the Karush--Kuhn--Tucker conditions are solved
-in closed form, location by location (Lemma~\ref{frozen}
-and~\eqref{mu-exact}). This gives a fixed point iteration whose iterates
-satisfy the constraints. In $\chi_{2,p}$, $g_p$ is monotone; if every location
-has a group where it decreases, the groups where it does not decrease receive
-no second doses, and on the others $g_p$ has the one dose form, so the same
-iteration applies.
-\item On both data sets $\rho(FV^{-1})$ and
-$\rho\left(A_1\operatorname{diag}(\bm g)\right)$ agree to twelve digits
-(Table~\ref{tab}). On the $51\times16$ data at $t=347$ every first dose
-decreases $\rho(\operatorname{NGM})$, and in every location the largest
-decrease is at ages 15--19.
-\item On the $4\times4$ data, for the first doses of the first week of
-vaccination, the minimizer gives $\rho(\operatorname{NGM})=2.8864$, against
-$3.4378$ for the doses given and $2.9107$ for the allocation in proportion to
-the left eigenvector (Table~\ref{tab-compare}).
+\item The spectral radius of the next generation matrix of the model
+in~\cite{2026Feng_Day_Glasser} equals that of $A_1\operatorname{diag}(\bm g)$, of
+order $N$ (Theorem~\ref{reduction}); $A_1\ge 0$ does not depend on the
+vaccination rates, which enter only through $\bm g$.
+\item For one dose, with the other two fixed, the problem has exactly one
+minimizer, the only point satisfying the Karush--Kuhn--Tucker conditions
+(Theorem~\ref{thm-unique}). With the Perron vectors held fixed these conditions
+are solved in closed form, location by location, which gives the damped fixed
+point iteration of Section~\ref{sec-fixed-point}.
+\item This applies to each step of the alternating method: to the first dose
+directly, to the third dose on the groups with $\chi_{1,p}>0$ and
+$\chi_{2,p}>0$, and to the second dose on the groups with $\Delta_p>0$; the
+other groups receive no doses of that type. Under the condition of
+Theorem~\ref{alt-limit}, the limit points of the method satisfy the
+Karush--Kuhn--Tucker conditions of the problem for three doses.
+\item The problem for three doses is not convex, so the method is run from
+several starts and the smallest end point is taken as the solution.
 \end{enumerate}
-That a point satisfying~\eqref{kkt} is a global minimizer, and that the fixed
-point iteration converges, is checked numerically here, not proved.
+
+\appendix
+\section{Products with the contact matrix without forming it}\label{app-factored}
+
+The contact matrix of the $51\times16$ model has the entries
+$c_{ij,pq}=L_pU_{jq}e^{-b_qd_{ip}}/Z_{ij}$, with $Z_{ij}$ the sum of the numerators
+over $(p,q)$ (DATA.tex, Section~1.5). Only the factor $e^{-b_qd_{ip}}$ couples the two
+locations $i$ and $p$, so the sum over $(p,q)$ in $(C\bm x)_{ij}$ splits into a sum
+over $p$ followed by a sum over $q$:
+\begin{equation*}
+\sum_{p,q}L_pU_{jq}e^{-b_qd_{ip}}x_{pq}
+=\sum_{q=1}^nU_{jq}\,W_{iq},\qquad
+W_{iq}=\sum_{p=1}^me^{-b_qd_{ip}}L_px_{pq}.
+\end{equation*}
+That is, with the $n$ matrices $K^{(q)}\in\mathbb R^{m\times m}$,
+$K^{(q)}_{ip}=e^{-b_qd_{ip}}$, the column $q$ of $W\in\mathbb R^{m\times n}$ is
+$K^{(q)}$ times the vector $(L_px_{pq})_p$, and
+$(C\bm x)_{ij}=\left(WU^{\mathsf T}\right)_{ij}/Z_{ij}$, where $Z$ is the same
+expression with $x\equiv1$. Similarly
+$(C^{\mathsf T}\bm x)_{pq}=L_p\sum_iK^{(q)}_{ip}\left(\widetilde XU\right)_{iq}$ with
+$\widetilde X_{ij}=x_{ij}/Z_{ij}$. Each product takes $2m^2n+2mn^2\approx1.1\cdot10^5$
+operations and stores the $m^2n$ entries of the $K^{(q)}$, against $(mn)^2\approx
+6.7\cdot10^5$ for the formed matrix. The computations use the formed matrix
+(DATA.tex, Section~1.5); this form serves as a check of it: $C\bm x$ agrees to
+$2\cdot10^{-15}$ for random $\bm x$, and the solution of the model at $t=349$
+to $4\cdot10^{-10}$, the tolerance of the solver.
 
 \bibliographystyle{plain}
 \bibliography{bib_mb}

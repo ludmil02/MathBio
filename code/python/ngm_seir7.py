@@ -1,9 +1,9 @@
 """Next generation matrix of the 51 x 16 age- and location-stratified SEIR model at chi = 0.
 
 The model is that of Feng, Day, Glasser (J. Theor. Biol. 633 (2026) 112531) and of
-notes/stratified_seir_ngm.tex.  Data: intermediate/seir7_t347/, exported from
-"Age & Location Stratified SEIR 7 Actual Vax 3 with RE_orig.nb" by
-Mathematica_Wolfram/export_seir7.wls at t = 347 (just before vaccination began).
+notes/stratified_seir_ngm.tex.  Data: the public data of notes/DATA.tex, Section 1, through
+seir7_ode.Model, with the parameters at t = T_NGM = 349 (14 December 2020, the start of
+vaccination; Wuhan variant, stringency of that day).  All data are published or public.
 
 The NGM has size 2 m n = 1632 and is never formed:
 
@@ -13,7 +13,7 @@ a, b = 0 (rows Y, columns q_s) and 1 (rows Z, columns q_m).  Products with NGM
 and NGM^T cost one product with the 816 x 816 contact matrix mc.
 
 Importing the module loads the data and defines the functions; running it prints
-  1. mc formed here, checked against two slices computed in Mathematica;
+  1. the row sums of mc;
   2. rho(NGM) by Arnoldi;
   3. rho(F V^-1) from the full 8-state F and V (matrix free, V by sparse LU),
      which must equal rho(NGM);
@@ -27,14 +27,16 @@ Usage:
 
 import os
 import time
-from fractions import Fraction
 
 import numpy as np
 import scipy.sparse as sps
 import scipy.sparse.linalg as spsl
 
+import seir7_ode as _SO
+
 HERE = os.path.dirname(os.path.abspath(__file__))
-DATA = os.path.join(HERE, "intermediate", "seir7_t347")
+DATA = os.path.join(HERE, "data")          # the inputs of seir7_ode (notes/DATA.tex, F1-15 to F1-25)
+T_NGM = _SO.T_VACC                         # t = 349
 T0 = time.time()
 
 STATES = ("AL AK AZ AR CA CO CT DE DC FL GA HI ID IL IN IA KS KY LA ME MD MA MI MN "
@@ -52,59 +54,40 @@ def say(*args):
     print("[%7.2fs]" % (time.time() - T0), *args, flush=True)
 
 
-def load(name):
-    """A CSV written by Mathematica; entries may be exact rationals such as 1/5."""
-    with open(os.path.join(DATA, name + ".csv")) as f:
-        rows = [[float(Fraction(x.strip().strip('"'))) for x in line.split(",")]
-                for line in f if line.strip()]
-    return np.array(rows)
-
-
-def load_scalars():
-    out = {}
-    with open(os.path.join(DATA, "scalars.csv")) as f:
-        for line in f:
-            key, val = (x.strip().strip('"') for x in line.split(","))
-            out[key] = float(Fraction(val))
-    return out
-
-
 # ----------------------------------------------------------------------------- data
-mN = load("mN")
+_mod = _SO.Model(initial="none")
+if tuple(_mod.locs) != tuple(STATES) or list(_mod.ages) != AGES:
+    raise ValueError("the locations or ages of seir7_ode.Model differ from STATES, AGES")
+mN = _mod.N
 m, n = mN.shape
-usc = load("USC")
-lr = load("LR")[:, 0]
-dist = load("dist")
-b = load("b")[:, 0]
-ma_nb = load("ma")
-vS = load("vS")[:, 0]
-psiS = load("vpsiS")[:, 0]
-psiI = load("vpsiI")[:, 0]
-beta = load("vbeta")[:, 0]
-vp = load("vp")[:, 0]
-vq = load("vq")[:, 0]
-ga, gs, gm, gh = load("vgamma").T
-ds, dm = load("vdelta").T
-sc = load_scalars()
+usc = _mod.U
+lr = _mod.L
+dist = _mod.d
+b = _mod.b
+_bf, _eps, _cf, k, _sev = _mod.variant(T_NGM)
+vS = _mod.s(T_NGM)                                   # stringency factors s_i(T_NGM)
+_c = _cf * _mod.c0
+psiS = 1.0 - _c * _mod.bS
+psiI = 1.0 - _c * _mod.bI
+beta = _bf * _mod.beta0
+vp, vq = _mod.p, _mod.q
+ga, gs, gm, gh = (np.full(n, g) for g in (_mod.gamma_a, _mod.gamma_s, _mod.gamma_m, _mod.gamma_h))
+ds, dm = _sev * _mod.delta_s0, _sev * _mod.delta_m0
+sc = dict(omega=_mod.omega, omega_v=_mod.omega_v, eps1=_eps, eps2=_eps, eps3=_eps, k=k, xi=_mod.xi,
+          **{f"eta_{x}": v for x, v in zip(("a", "ps", "pm", "s", "m", "h"), _mod.eta)})
 
-# cell 53 of the notebook:  mC[p] = LR[p] USC,  ma[p,q] = sum_j mC[p,j,q],
-# mc[i,j,p,q] = mC[p,j,q] exp(-b[q] dist[i,p]) / sum_{s,r} mC[s,j,r] exp(-b[r] dist[i,s])
-ma = lr[:, None] * usc.sum(axis=0)[None, :]
-_expo = np.exp(-b[None, None, :] * dist[:, :, None])            # (i, p, q)
-_K = lr[None, None, :, None] * usc[None, :, None, :] * _expo[:, None, :, :]
-mc = _K / _K.sum(axis=(2, 3), keepdims=True)
-del _K, _expo
-C = mc.reshape(m * n, m * n)       # row (i,j), column (p,q)
-C_DROP = 1e-16                     # entries of C below this are set to 0 (0.3% of them; C stays irreducible)
-C = np.where(C >= C_DROP, C, 0.0)  # a new array: mc is unchanged
+# the contact matrix of notes/DATA.tex, Section 1.5 (data/model/C_816x816.csv.gz), and ma = a_ij
+ma = _mod.a
+C = _mod.C                         # row (i,j), column (p,q)
+mc = C.reshape(m, n, m, n)
 # irreducibility of C (and of A_1, which has the same pattern): one strongly connected component;
-# the fixed point steps of three_doses_51x16_mock.py use spg if it fails
+# the fixed point steps use spg if it fails (C > 0 here)
 from scipy.sparse.csgraph import connected_components as _scc
 IRREDUCIBLE = _scc(sps.csr_matrix(C), directed=True, connection="strong")[0] == 1
 
 om, omv = sc["omega"], sc["omega_v"]
 e1, e2, e3 = sc["eps1"], sc["eps2"], sc["eps3"]
-k, xi = sc["k"], sc["xi"]
+xi = sc["xi"]
 ea, eps_, epm, es, em, eh = (sc[s] for s in ("eta_a", "eta_ps", "eta_pm", "eta_s", "eta_m", "eta_h"))
 
 Qs = ea * vp / ga + eps_ * (1 - vp) / xi + es * (1 - vp) / (gs + ds) + eh * (1 - vp) * ds / (gs + ds) / gh
@@ -225,14 +208,9 @@ def left_and_gradient(Y, Z, pref):
 
 
 def main():
-    say("data from", DATA)
+    say("data from", DATA, "(notes/DATA.tex), parameters at t = %g" % T_NGM)
     say("m = %d locations, n = %d age groups, N = %.6e people" % (m, n, mN.sum()))
     say("scalars:", ", ".join("%s = %g" % kv for kv in sc.items()))
-    say("ma vs notebook: max rel diff = %.3e" % (np.abs(ma - ma_nb).max() / ma_nb.max()))
-    sl = load("mc_slices").reshape(2, n, m, n)
-    for kk, i in enumerate((0, 32)):
-        say("mc slice i = %s vs Mathematica: max rel diff = %.3e"
-            % (STATES[i], np.abs(mc[i] - sl[kk]).max() / sl[kk].max()))
     say("row sums of mc: min %.15f, max %.15f" % (mc.sum(axis=(2, 3)).min(), mc.sum(axis=(2, 3)).max()))
     say("Q_s by age:", np.array2string(Qs, precision=4, max_line_width=200))
     say("Q_m by age:", np.array2string(Qm, precision=4, max_line_width=200))

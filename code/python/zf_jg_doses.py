@@ -8,7 +8,7 @@ with X_1 = S, X_2 = V, X_3 = P at the end of the previous week.
 
 b1 comes from C2 of 16_Group_Model_Results_t=347_ZF.nb, the doses of the
 primary series by location and age group; b1[i] is the row sum, which is what
-that notebook used to export as b1Vector.csv.  No booster budget has ever been
+that Mathematica code used to export as b1Vector.csv.  No booster budget has ever been
 given, so b2 and b3 are zero.
 
 Nothing here is read from or written to disk.
@@ -27,7 +27,7 @@ C2 = np.array([[279, 62294, 60028, 24269],
 def dose_budgets(c2=None):
     """Return (b1, b2, b3), each of length m.
 
-    b1 = row sums of c2, i.e. Total[Transpose[C2]] of the notebook.
+    b1 = row sums of c2, i.e. Total[Transpose[C2]] in Mathematica.
     b2 = b3 = 0, no booster doses being specified.
     """
     c2 = C2 if c2 is None else np.asarray(c2, dtype=float)

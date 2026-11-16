@@ -1,14 +1,27 @@
 *.dat
 
-# files produced by runs, except the 51 x 16 data exported by
-# Mathematica_Wolfram/export_seir7.wls, read by ngm_seir7.py, and the
-# 4 x 4 susceptibles at t = 347, read by compare_allocations_4x4.py
+# Mathematica notebooks: never tracked (removed from the history on 2026-11-16);
+# they stay on disk, untracked.
+*.nb
+# the archive of earlier versions: untracked (removed from the history on 2026-11-16), kept on disk
+archive/
+# Wolfram scripts: also untracked (removed from the history on 2026-11-16), kept on disk
+*.wls
+*.wl
+
+# downloads (notes/DATA.tex, Section 1.1.1): the data files (csv, xlsx, txt) and the papers are
+# tracked; the zip archives and the metadata are kept on disk, untracked
+data/Downloaded_from_source/**/*.zip
+data/Downloaded_from_source/**/*.json
+
+# files produced by runs, except the 4 x 4 susceptibles at t = 347, read by
+# compare_allocations_4x4.py
 **/intermediate/*
-!code/python/intermediate/seir7_t347/
 !code/python/intermediate/zf_jg_t347/
 
 # TeX build files
 notes/stratified_seir_ngm.pdf
+notes/DATA.pdf
 notes/suplemental/stratified_seir_ngm_supplement.pdf
 *.aux
 *.bbl
