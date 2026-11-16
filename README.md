@@ -26,8 +26,8 @@ Build each with `pdflatex`, `bibtex`, `pdflatex` twice.
 
 * `data/Downloaded_from_source/`: the downloads, as downloaded (DATA.tex, Section 1.1.1):
   `papers/` (named `YYYYAuthor1...AuthorN.pdf`), `census/`, `prem2017/`, `oxcgrt/`, `cdc/`.
-  The data files (kept gzipped, `.csv.gz`, read by pandas without unpacking) and the papers
-  are tracked; the zip archives are not.
+  The data files (kept gzipped, `.csv.gz`, read by pandas without unpacking), the two zip
+  archives and the papers are tracked.
 * `code/python/data/`: the inputs of the model, built from the downloads by the scripts below
   (DATA.tex, Section 1.1.2, F1-15 to F1-25).
 

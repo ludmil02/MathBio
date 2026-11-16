@@ -9,9 +9,8 @@ archive/
 *.wls
 *.wl
 
-# downloads (notes/DATA.tex, Section 1.1.1): the data files (csv, xlsx, txt) and the papers are
-# tracked; the zip archives and the metadata are kept on disk, untracked
-data/Downloaded_from_source/**/*.zip
+# downloads (notes/DATA.tex, Section 1.1.1): the data files (csv, xlsx, txt, zip) and the papers
+# are tracked; the metadata is kept on disk, untracked
 data/Downloaded_from_source/**/*.json
 
 # files produced by runs, except the 4 x 4 susceptibles at t = 347, read by
