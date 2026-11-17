@@ -32,6 +32,14 @@ import scipy.sparse.linalg as spsl
 
 T0 = time.time()
 THETA = 0.5          # damping of the fixed point iteration (Section 5.2); 1 = undamped
+# wall time (s), iterations and steps of the dose-k steps of alternate (k = 0, 1, 2), added up
+# from the last reset_stats()
+STATS = {"time": [0.0, 0.0, 0.0], "iters": [0, 0, 0], "steps": [0, 0, 0]}
+
+
+def reset_stats():
+    for v in STATS.values():
+        v[:] = [0] * 3
 
 
 def set_model(m_, n_, C_, dc_, psq_, r_, om_, omv_, e1_, e2_, e3_, irreducible=True):
@@ -364,6 +372,16 @@ def fp_step(chi, k, b, sig, label=""):
     return new, it, "spg"
 
 
+def _timed_step(chi, k, b, sig, label):
+    """fp_step, with its wall time and iterations added to STATS[...][k]."""
+    tic = time.time()
+    out = fp_step(chi, k, b, sig, label)
+    STATS["time"][k] += time.time() - tic
+    STATS["iters"][k] += out[1]
+    STATS["steps"][k] += 1
+    return out
+
+
 # ----------------------------------------------------------------------------- the method
 def alternate(chi, b, sig, sweeps=200, tol=1e-11, label=""):
     """The alternating method from chi.  Returns chi, rho, the number of sweeps and the
@@ -373,11 +391,11 @@ def alternate(chi, b, sig, sweeps=200, tol=1e-11, label=""):
     say("%s start: rho = %.12f" % (label, rho))
     for sw in range(sweeps):
         lab = "%s sweep %d" % (label, sw)
-        chi, it1, _ = fp_step(chi, 0, b, sig, lab)
+        chi, it1, _ = _timed_step(chi, 0, b, sig, lab)
         r1 = rho_of(chi)
-        chi, it3, _ = fp_step(chi, 2, b, sig, lab)
+        chi, it3, _ = _timed_step(chi, 2, b, sig, lab)
         r3 = rho_of(chi)
-        chi, it2, _ = fp_step(chi, 1, b, sig, lab)
+        chi, it2, _ = _timed_step(chi, 1, b, sig, lab)
         r2 = rho_of(chi)
         hist += [r1, r3, r2]
         say("%s sweep %3d: after chi1 %.12f (%d it), chi3 %.12f (%d it), chi2 %.12f (%d it)"

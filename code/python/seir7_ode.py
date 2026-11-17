@@ -38,6 +38,7 @@ Usage:
     (implicit RK of order 4 with step control, matrix-free Newton-GMRES with jvp; sdirk.py).
 """
 import os
+import resource
 import sys
 import time
 
@@ -387,7 +388,9 @@ def optimal_rates(mod, A, tau, X, Dw, nrand):
     """The weekly problem of notes/stratified_seir_ngm.tex at tau: minimize rho over chi with
     sum_{p in I_i} sigma_{k,p} chi_{k,p} = b_{k,i}; sigma_k = S, V, P at tau, b_{k,i} the doses
     of location i in the week (all ages) per day, from Dw (3 x m, sheet 1 of the dose file).
-    Returns chi (3 x m x n) and a summary."""
+    Returns chi (3 x m x n) and a summary, with the wall time (s) and iterations of the steps for
+    chi1, chi2, chi3, added up over all sweeps and starts."""
+    A.reset_stats()
     A.set_model(*mod.ngm_context(tau))
     elig = [(X[comp] >= ELIG_MIN).ravel() for comp in (S, V, P)]
     A.set_eligible(elig)
@@ -409,7 +412,14 @@ def optimal_rates(mod, A, tau, X, Dw, nrand):
     rho_cap = A.rho_of(chi)
     return (np.stack([c.reshape(mod.m, mod.n) for c in chi]),
             dict(rho_uniform=rho_uni, rho_opt=rm, rho_capped=rho_cap, chi_max_before_cap=top,
-                 start=name, sweeps=sw))
+                 start=name, sweeps=sw,
+                 **{f"t_chi{k + 1}": A.STATS["time"][k] for k in range(3)},
+                 **{f"it_chi{k + 1}": A.STATS["iters"][k] for k in range(3)}))
+
+
+def max_rss_mb():
+    """Peak resident memory of this process so far, MB (ru_maxrss is in KB on Linux)."""
+    return resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024
 
 
 def checkpoint_path(strategy):
@@ -466,7 +476,14 @@ def do_simulate(mod, strategy="actual", nrand=0, resume=False):
                   f"{info['rho_opt']:.6f} ({info['start']}, {info['sweeps']} sweeps), capped "
                   f"{info['rho_capped']:.6f} (max chi before cap {info['chi_max_before_cap']:.3g});"
                   f" {time.time() - tic:.0f} s", flush=True)
+        t_ode = time.time()
         (x,), _ = mod.solve(tau, tau + 7.0, x)
+        t_ode = time.time() - t_ode
+        if strategy == "optimal":
+            opt[-1].update(t_ode=t_ode, max_rss_MB=max_rss_mb())
+            print("   times: " + ", ".join(f"chi{k} {info[f't_chi{k}']:.1f} s ({info[f'it_chi{k}']} it)"
+                                          for k in (1, 3, 2))
+                  + f", ODE {t_ode:.1f} s; max memory {max_rss_mb():.0f} MB", flush=True)
         if w + 1 < len(weeks):                 # the state at the start of the next week
             tmp = ckpt + ".tmp.npz"
             np.savez(tmp, next_week=w + 1, t=weeks[w + 1], x=x,
@@ -484,6 +501,12 @@ def do_simulate(mod, strategy="actual", nrand=0, resume=False):
           f"{time.time() - tic:.1f} s; at the end: V {out.V.iloc[-1] / 1e6:.1f} M, R {out.R.iloc[-1] / 1e6:.1f} M,"
           f" M (dead) {out.M.iloc[-1] / 1e3:.0f} K, hospitalized now {out.Ih.iloc[-1] / 1e3:.1f} K;"
           f" min compartment {x.min():.3g}")
+    if opt:
+        tot = {key: sum(o.get(key, 0) for o in opt)
+               for key in ("t_chi1", "t_chi3", "t_chi2", "it_chi1", "it_chi3", "it_chi2", "t_ode")}
+        print(f"total times over {len(opt)} weeks: " + ", ".join(
+            f"chi{k} {tot[f't_chi{k}']:.0f} s ({tot[f'it_chi{k}']} it)" for k in (1, 3, 2))
+            + f", ODE {tot['t_ode']:.0f} s; max memory {max_rss_mb():.0f} MB")
     print(f"wrote {path}")
 
 
