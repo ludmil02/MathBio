@@ -4,7 +4,7 @@ Bajema et al. 2021), rounds 3 (26 Aug - 9 Sep 2020) and 4 (9 - 18 Sep 2020).
 
 The survey gives the percentage seropositive by state and 4 age groups (0-17, 18-49, 50-64,
 65+). The model needs 16 age groups and the infected compartments; both steps below are
-mock rules (notes/DATA.tex, Section 8), to be replaced by the procedure of Glasser et al.
+mock rules (notes/DATA.tex, Section 1.9.1), to be replaced by the procedure of Glasser et al.
 2023, Section 3:
 
 1. 4 -> 16 age groups: each 5-year group takes the value of the survey group that contains

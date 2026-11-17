@@ -1,5 +1,5 @@
 """Solver of the ODE system of the age- and location-stratified SEIR model
-(notes/ODE.tex, equations (3.1); numerical method in Section 7). All data and their sources:
+(notes/DATA.tex, Section 2.1, equations (2)-(3); the computation in Section 2.2). All data and their sources:
 notes/DATA.tex; all data are published or public.
 
 Inputs (each built by its script from files in MathBio/data/Downloaded_from_source/):
@@ -26,7 +26,7 @@ Usage:
     python3 -u seir7_ode.py simulate [actual|optimal] [nrand] [resume] | tee -a intermediate/seir7_ode_simulate_<strategy>.output
         (after each week the state is saved to intermediate/simulate_<strategy>_checkpoint.npz;
         "resume" continues an interrupted run from the last completed week)
-        from t = 251 through the weeks of the dose file. actual: the rates (6.1) of ODE.tex from
+        from t = 251 through the weeks of the dose file. actual: the rates of DATA.tex, Remark 2.1, from
         the doses by location and age; optimal: each week, the doses of each location (all ages)
         allocated among its age groups by the alternating method (alternating.py, notes/
         stratified_seir_ngm.tex) with sigma = S, V, P of the solution at the start of the week,
@@ -89,7 +89,7 @@ def decay_rates(U, d):
 
 
 class Model:
-    """Parameters of ODE.tex, Sections 2 and 4, with the data of DATA.tex."""
+    """Parameters and data of DATA.tex, Section 1."""
 
     def __init__(self, initial="mock"):
         pop = pd.read_csv(CENSUS_N)
@@ -354,7 +354,7 @@ def cap_rates(chi, sig, elig, m, n):
 
 
 def actual_rates(mod, X, Dw):
-    """(6.1) of ODE.tex: chi = -ln(1 - min(D / X, 0.99)) / 7, for X = S, V, P."""
+    """DATA.tex, Remark 2.1: chi =-ln(1 - min(D / X, 0.99)) / 7, for X = S, V, P."""
     chi = np.zeros((3, mod.m, mod.n))
     for k, comp in enumerate((S, V, P)):
         with np.errstate(divide="ignore", invalid="ignore"):

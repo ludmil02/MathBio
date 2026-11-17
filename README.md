@@ -17,7 +17,8 @@ with `Ac` and `A1 = diag(d_c) C diag(psi_I q_s)` independent of `chi`, `g = y + 
 | --- | --- |
 | `stratified_seir_ngm.tex` | the main document: the NGM, the reduction to order `N = m n`, the optimality conditions, the fixed point iteration, the alternating method for three doses, the numerical results (Section 6.5), the simulation with the weekly optimization and the bound on the rates (Section 9), and the products with the contact matrix (appendix) |
 | `suplemental/stratified_seir_ngm_supplement.tex` | the supplement (more results for the alternating method, a Newton method, the 51 x 16 data before vaccination) |
-| `DATA.tex` | the data, each with its source, and the list of files (Section 1: F1-1 to F1-25); the model and the computation (Section 2: the program and its files F2-1 to F2-4) |
+| `DATA.tex` | the data, each with its source, and the list of files (Section 1: F1-1 to F1-26); the model and the computation (Section 2: the program and its files F2-1 to F2-5) |
+| `simulation_weekly_optimal.tex` | one page: the weekly optimal simulation, its figures, the public and the mock data |
 | `bib_mb.bib` | the bibliography |
 
 Build each with `pdflatex`, `bibtex`, `pdflatex` twice.
@@ -29,7 +30,7 @@ Build each with `pdflatex`, `bibtex`, `pdflatex` twice.
   The data files (kept gzipped, `.csv.gz`, read by pandas without unpacking), the two zip
   archives and the papers are tracked.
 * `code/python/data/`: the inputs of the model, built from the downloads by the scripts below
-  (DATA.tex, Section 1.1.2, F1-15 to F1-25).
+  (DATA.tex, Section 1.1.2, F1-16 to F1-26).
 
 ## Python (`code/python/`)
 
@@ -51,6 +52,7 @@ Run the scripts from `code/python/`.  Eigenvalues by Arnoldi (`scipy.sparse.lina
 | `seir7_ode.py` | the model and its solution: `simulate optimal` (the weekly optimization of Section 9 of the main document), `solve`, `verify` |
 | `alternating.py` | the alternating method of Section 6, with the bound on the rates of Section 9.1 |
 | `ngm_seir7.py` | the 51 x 16 NGM at `t = 349` (start of vaccination) from the same data: `rho(NGM)`, `rho(F V^-1)`, the left eigenvector, the gradient |
+| `plot_weekly_optimal.py` | the figures of the weekly optimal simulation, from `data/simulate_weekly_51x16_optimal*.csv`, saved to `notes/figures/fig_weekly_optimal*` |
 
 Order: `census_N_51x16.py`, `prem_U_16x16.py`, `geo_51.py`, `build_C_51x16.py`,
 `glasser2023_inputs.py`, `oxcgrt_s_51.py`, `cdc_variants.py`, `sero_initial_51x16.py`,
@@ -63,20 +65,9 @@ interruption (Ctrl-C), `simulate optimal resume` continues from the last complet
 
     python3 -u seir7_ode.py simulate optimal resume 2>&1 | tee -a intermediate/seir7_ode_simulate_optimal.output
 
+and then `python3 plot_weekly_optimal.py` for the figures.
+
 Logs are written as `*.output`, not `*.log`, so that they are not removed with the TeX logs.
-
-### The results of the main document and the supplement
-
-| file | |
-| --- | --- |
-| `verify_stratified_seir_ngm.py` | checks the formulas and the reduction on the 4 x 4 and 51 x 16 data; ends with PASS or FAIL |
-| `optimize_doses_51x16.py`, `three_doses_51x16_mock.py`, `mock_doses_51x16.py` | the three doses, week by week, with mock doses and mock group sizes: Section 6.5 and Table 2 of the main document; see `code/python/README_three_doses.md` |
-| `figures_stratified_seir_ngm.py` | the figures, written to `notes/figures/` |
-| `zf_jg.py`, `zf_jg_params.py`, `zf_jg_doses.py`, `compare_allocations_4x4.py` | the 4 x 4 model (four census regions, four age groups) |
-
-## Other directories
-
-* `archive/`: earlier versions, left as they are.
 
 ## Conventions
 

@@ -35,7 +35,7 @@ import scipy.sparse.linalg as spsl
 import seir7_ode as _SO
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-DATA = os.path.join(HERE, "data")          # the inputs of seir7_ode (notes/DATA.tex, F1-15 to F1-25)
+DATA = os.path.join(HERE, "data")          # the inputs of seir7_ode (notes/DATA.tex, F1-16 to F1-26)
 T_NGM = _SO.T_VACC                         # t = 349
 T0 = time.time()
 

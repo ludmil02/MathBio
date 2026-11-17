@@ -1,6 +1,6 @@
 """MOCK weekly doses by location, age group and dose, from the start of vaccination
 (t = 349, 14 December 2020) through the end of the Public Health Emergency (11 May 2023),
-126 weeks. To be replaced by the doses reported to the CDC (notes/DATA.tex, Section 8).
+126 weeks. To be replaced by the doses reported to the CDC (notes/DATA.tex, Section 1.9.2).
 
 Excel file data/mock/doses_51x16x16_mock.xlsx, sheets "Dose1", "Dose2", "Dose3"; in each,
 columns state, age, then one column per week headed by its first day t = 349, 356, ...;

@@ -1,4 +1,4 @@
-"""The contact matrix C = (c_{ij,pq}) of the 51 x 16 model (notes/ODE.tex, (2.2)), formed and
+"""The contact matrix C = (c_{ij,pq}) of the 51 x 16 model (notes/DATA.tex, Section 1.5.4, (1)), formed and
 saved to data/model/C_816x816.csv.gz (gzipped CSV; row (i,j) and column (p,q) labelled "state age",
 locations in FIPS order, ages 0-4, ..., 75+), from the public inputs of notes/DATA.tex only:
 
