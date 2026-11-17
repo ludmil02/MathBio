@@ -1,0 +1,68 @@
+\documentclass[10pt]{article}
+\usepackage[margin=0.65in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{xurl}
+\usepackage[colorlinks=true,urlcolor=blue]{hyperref}
+\graphicspath{{figures/}}
+\pagestyle{empty}
+
+\begin{document}
+\begin{center}
+{\large\bfseries The optimal weekly allocation of vaccine: simulation, 2020--2023}\\[2pt]
+Ludmil\footnote{Parts of this note were prepared with the assistance of an AI tool (Claude
+Opus 5.5, Anthropic). The author is solely responsible for all statements.}
+\end{center}
+
+\begin{center}
+\includegraphics[width=0.42\textwidth]{fig_weekly_optimal_rho.png}\hspace{0.04\textwidth}
+\includegraphics[width=0.42\textwidth]{fig_weekly_optimal_compartments.png}\\[2pt]
+\includegraphics[width=0.42\textwidth]{fig_weekly_optimal_infectious.png}\hspace{0.04\textwidth}
+\includegraphics[width=0.42\textwidth]{fig_weekly_optimal_deaths.png}
+\end{center}
+
+\paragraph{The simulation.}
+The model of Feng, Day and Glasser (J.~Theoret.\ Biol.\ 633, 2026), 13 compartments
+for each of $m=51$ locations (50 states and D.C.) and $n=16$ age groups, $10\,608$
+unknowns, as in \texttt{DATA.tex}, Section~2. The time $t$ is in days from 31 December
+2019. The system is solved by \texttt{DOP853} from $t=251$ (7 September 2020) to $t=1231$
+(15 May 2023), 980 days: without vaccination to $t=349$ (14 December 2020), then 126
+weeks. Each week the vaccination rates of the 3 doses are those that minimize the
+spectral radius $\rho$ of the next generation matrix, subject to the doses of the week of
+each location (all ages) and to at most $99\%$ of a group vaccinated in a week; the
+minimization is started from the uniform allocation and from the left eigenvector, and
+the smaller end value is kept. The variants Alpha, Delta, BA.1, BA.5 apply from $t=459$,
+$550$, $725$, $914$. The program is \texttt{code/python/seir7\_ode.py simulate
+optimal}; the figures are made by \texttt{code/python/plot\_weekly\_optimal.py}.
+
+\paragraph{Results.}
+In every one of the 126 weeks the optimal allocation gives a smaller $\rho$ than the
+uniform one, by $8$--$65\%$ ($23\%$ on average); $\rho>1$ in 78 weeks (optimal) and
+85 weeks (uniform). The vaccinated $V$ peak at $158$ million (14 June 2021); the
+infectious peak at $25.4$ million (24 January 2022) and the hospitalized at $1.18$
+million (31 January 2022). The deaths increase from $60$ thousand at $t=349$ to $774$
+thousand at $t=1231$.
+
+\paragraph{Mock data.}
+Two of the 11 inputs are mock (\texttt{DATA.tex}, Section~1.9), and the results above
+depend on them.
+(1)~The initial state at $t=251$, \texttt{cdc/state\_t251\_mock.csv}: from the public CDC
+seroprevalence survey, rounds 3 and 4, by made-up rules in place of the procedure of
+Glasser et al.\ (2023); $6.6\%$ seropositive.
+(2)~The weekly doses by location, age group and dose,
+\texttt{mock/doses\_51x16x16\_mock.xlsx}: made up, $287$, $256$ and $109$ million first,
+second and third doses in total; to be replaced by the doses reported to the CDC.
+
+\paragraph{Public data.}
+The other 9 inputs are built from published or public sources, each described in
+\texttt{DATA.tex}, Section~1, with its source and script: the population $N$ (Census
+Vintage 2024), the contact matrix $U$ (Prem, Cook, Jit 2017), the distances and activity
+factors (Census centers of population, county estimates, Gazetteer), the contact matrix
+$C$ (from $U$, $L$, $d$), the stringency $s_i(t)$ (OxCGRT), the age-specific values
+and $\beta^0$ (Glasser et al.\ 2023, Table~2 and Fig.~4), and the days of the variants (CDC
+variant proportions). The constants are those of the supplement of Feng, Day and Glasser
+(\texttt{DATA.tex}, Sections~1.7--1.8). Rebuilding all 11 inputs from the files in
+\texttt{data/Downloaded\_from\_source/} with the scripts named in \texttt{DATA.tex} gives
+files with contents identical to those used.
+
+\end{document}

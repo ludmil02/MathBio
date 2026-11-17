@@ -21,11 +21,14 @@ data/Downloaded_from_source/**/*.json
 # compare_allocations_4x4.py
 **/intermediate/*
 !code/python/intermediate/zf_jg_t347/
+# weekly results of seir7_ode.py simulate, recomputed by the run
+code/python/data/simulate_weekly_*.csv
 
 # TeX build files
 notes/stratified_seir_ngm.pdf
 notes/DATA.pdf
 notes/suplemental/stratified_seir_ngm_supplement.pdf
+notes/simulation_weekly_optimal.pdf
 *.aux
 *.bbl
 *.blg
