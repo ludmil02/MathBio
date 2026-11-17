@@ -191,6 +191,18 @@ description; neither paper prints~\eqref{contacts}.
 Its entries are in $[1.5\cdot10^{-23},\,0.34]$, every row adds up to $1$ (to
 $3\cdot10^{-15}$), and $C\bm x$ agrees with its computation without forming $C$
 (appendix of \src{stratified_seir_ngm.tex}) to $2\cdot10^{-15}$.
+The rank and the nonzero entries of $C$, and of $C$ after dropping its entries below a
+threshold ($\epsilon=2^{-52}$; the rank is the number of singular values, computed by the
+SVD, larger than $816\,\epsilon\,\sigma_{\max}$):
+\begin{center}
+\small
+\begin{tabular}{lcc}
+ & rank & nonzeros\\\hline
+$C$ & 816 & full\\
+drop $|c_{ij,pq}|<16\epsilon$ & 816 & $99.62\%$\\
+drop $|c_{ij,pq}|<\sqrt{\epsilon}$ & 816 & $95.86\%$
+\end{tabular}
+\end{center}
 
 \subsubsection{Stringency}\label{sec-s}
 $s_i(t)=1-\mathrm{SI}_i(t)/100$, the complement of the
