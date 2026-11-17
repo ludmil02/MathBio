@@ -20,13 +20,11 @@ iteration does not converge (fp_step).  The sweeps stop when rho changes by less
 1e-11 (relative).  The method is run from several starts (starts); the end point with
 the smallest rho is the solution.
 
-The data of the model come from ngm_seir7 (the public data of notes/DATA.tex), unless the
-environment variable SEIR7_PUBLIC=1 is set before the import: then nothing is loaded, and
-the model is given by set_model() (seir7_ode.Model.ngm_context, public and mock data only).
-The doses b and the group sizes sigma are arguments (see optimize_doses_51x16.py).
+Nothing is loaded on import: the model is given by set_model(), from
+seir7_ode.Model.ngm_context (the data files of notes/DATA.tex). The doses b and the group
+sizes sigma are arguments (see seir7_ode.optimal_rates).
 """
 
-import os
 import time
 
 import numpy as np
@@ -34,7 +32,6 @@ import scipy.sparse.linalg as spsl
 
 T0 = time.time()
 THETA = 0.5          # damping of the fixed point iteration (Section 5.2); 1 = undamped
-S7 = None            # ngm_seir7, when the model is given by it (not by set_model)
 
 
 def set_model(m_, n_, C_, dc_, psq_, r_, om_, omv_, e1_, e2_, e3_, irreducible=True):
@@ -116,13 +113,7 @@ def proj_capped_simplex(y, ub, iters=200):
     return np.clip(y - 0.5 * (lo + hi), 0.0, ub)
 
 
-if os.environ.get("SEIR7_PUBLIC") != "1":
-    import ngm_seir7 as S7
-    _, _, _PREF = S7.yz(np.zeros((S7.m, S7.n)), np.zeros((S7.m, S7.n)), np.zeros((S7.m, S7.n)))
-    set_model(S7.m, S7.n, S7.C, _PREF.ravel(), np.tile(S7.psiI * S7.Qs, S7.m),
-              np.tile(S7.Qm / S7.Qs, S7.m), S7.om, S7.omv, S7.e1, S7.e2, S7.e3, S7.IRREDUCIBLE)
-else:
-    m = n = N = None
+m = n = N = None      # set by set_model
 
 
 def say(*args):
@@ -177,15 +168,6 @@ def dg_all(chi):
     dD = e2 * p1 * ((1.0 + p3) / om - alpha / omp)
     return [-alpha * e / (omp * den**2), (den * dN - num * dD) / den**2,
             -e3 * p1 * p2 * num / (om * den**2)]
-
-
-def rho_ngm(chi):
-    """rho(NGM), order 2N, from ngm_seir7 (a check of rho_of); without ngm_seir7, rho_of
-    (equal by Theorem 2.1)."""
-    if S7 is None:
-        return rho_of(chi)
-    Y, Z, _ = S7.yz(*(c.reshape(m, n) for c in chi))
-    return S7.perron(S7.h_operator(Y, Z, S7.Qs, S7.Qm)[0])[0]
 
 
 # ----------------------------------------------------------------------------- one step
@@ -418,11 +400,7 @@ def starts(b, sig, nrand, seed):
         return np.where(e, b[k][i] / s if s > 0 else 0.0, 0.0)
 
     uni = [np.concatenate([_uniform(k, i, I) for i, I in enumerate(LOC)]) for k in range(3)]
-    if S7 is not None:
-        Y, Z, _ = S7.yz(*(c.reshape(m, n) for c in uni))
-        wS = np.abs(S7.perron(S7.h_operator(Y, Z, S7.Qs, S7.Qm)[0], transpose=True)[2].reshape(N, 2)[:, 0])
-    else:                     # left Perron vector of A_1 diag(g) at the uniform allocation
-        wS = np.abs(perron(g_of(*uni)[0])[2])
+    wS = np.abs(perron(g_of(*uni)[0])[2])   # left Perron vector of A_1 diag(g) at the uniform allocation
     def _share(k, i, I, wt):          # doses b_{k,i} in proportion to wt over the eligible groups
         wt = np.where(_elig(k)[I], wt, 0.0)
         return b[k][i] * wt / wt.sum() / sig[k][I] if wt.sum() > 0 else np.zeros(I.size)

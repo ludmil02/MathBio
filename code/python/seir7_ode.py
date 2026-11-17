@@ -405,7 +405,6 @@ def do_simulate(mod, strategy="actual", nrand=0, resume=False):
         raise ValueError(f"strategy {strategy!r}")
     A = None
     if strategy == "optimal":
-        os.environ["SEIR7_PUBLIC"] = "1"
         import alternating as A
     sheets = pd.read_excel(DOSES, sheet_name=None)
     weeks = [float(c) for c in sheets["Dose1"].columns[2:]]
