@@ -53,20 +53,28 @@ Run the scripts from `code/python/`.  Eigenvalues by Arnoldi (`scipy.sparse.lina
 | `sdirk.py` | an implicit Runge-Kutta method with step control (SDIRK of order 4, embedded order 3, Hairer-Wanner), matrix-free: Newton-GMRES with the Jacobian-vector product of `seir7_ode.py`; used by `seir7_ode.py ... method=SDIRK4` |
 | `alternating.py` | the alternating method of Section 6, with the bound on the rates of Section 9.1 |
 | `ngm_seir7.py` | the 51 x 16 NGM at `t = 349` (start of vaccination) from the same data: `rho(NGM)`, `rho(F V^-1)`, the left eigenvector, the gradient |
-| `plot_weekly_optimal.py` | the figures of the weekly optimal simulation, from `data/simulate_weekly_51x16_optimal*.csv`, saved to `notes/figures/fig_weekly_optimal*` |
+| `plot_weekly_optimal.py` | the figures of the weekly optimal simulation, from `data/simulate_weekly_51x16_optimal__<tag>*.csv` (options `initial=`, `doses=` as for `seir7_ode.py`), saved to `notes/figures/fig_weekly_optimal*` or to a directory given as argument |
 
 Order: `census_N_51x16.py`, `prem_U_16x16.py`, `geo_51.py`, `build_C_51x16.py`,
 `glasser2023_inputs.py`, `oxcgrt_s_51.py`, `cdc_variants.py`, `sero_initial_51x16.py`,
 `mock_doses_51x16x16.py`, then
 
-    python3 -u seir7_ode.py simulate optimal 2>&1 | tee intermediate/seir7_ode_simulate_optimal.output
+    python3 -u seir7_ode.py simulate optimal 2>&1 | tee intermediate/seir7_ode_simulate_optimal__state_t251_mock__doses_51x16x16_mock.output
 
-After each week the state is saved to `intermediate/simulate_optimal_checkpoint.npz`; after an
-interruption (Ctrl-C), `simulate optimal resume` continues from the last completed week:
+The inputs are `initial=FILE` (the state at `t = 251`, default `data/cdc/state_t251_mock.csv`)
+and `doses=FILE` (default `data/mock/doses_51x16x16_mock.xlsx`), e.g.
+`simulate optimal initial=data/cdc/my_state.csv doses=data/mock/my_doses.xlsx`.  The outputs
+are named by the two files, `tag = <initial>__<doses>` (file names without directory and
+extension): `data/simulate_weekly_51x16_optimal__<tag>.csv`,
+`data/simulate_weekly_51x16_optimal__<tag>_rho.csv`, and the checkpoint
+`intermediate/simulate_optimal__<tag>_checkpoint.npz`, saved after each week.  After an
+interruption (Ctrl-C), `resume` with the same inputs continues from the last completed week
+(and stops if there is no checkpoint for these inputs):
 
-    python3 -u seir7_ode.py simulate optimal resume 2>&1 | tee -a intermediate/seir7_ode_simulate_optimal.output
+    python3 -u seir7_ode.py simulate optimal resume 2>&1 | tee -a intermediate/seir7_ode_simulate_optimal__state_t251_mock__doses_51x16x16_mock.output
 
-and then `python3 plot_weekly_optimal.py` for the figures.
+and then `python3 plot_weekly_optimal.py` (with the same `initial=`, `doses=`, if not the
+defaults) for the figures.
 
 The ODEs are solved by DOP853 (explicit Runge-Kutta of order 8, scipy), the default.  Adding
 `method=SDIRK4` to any mode of `seir7_ode.py` uses `sdirk.py` instead.  On `[251, 600]` it

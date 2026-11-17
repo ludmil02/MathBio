@@ -24,16 +24,24 @@ Usage:
         tolerances, group sums, signs, spectral radius on [251, 349]
     python3 -u seir7_ode.py solve    | tee intermediate/seir7_ode_solve.output
         state at t = 349 (start of vaccination) -> data/state_t349_51x16.csv
-    python3 -u seir7_ode.py simulate [actual|optimal] [nrand] [resume] | tee -a intermediate/seir7_ode_simulate_<strategy>.output
-        (after each week the state is saved to intermediate/simulate_<strategy>_checkpoint.npz;
-        "resume" continues an interrupted run from the last completed week)
-        from t = 251 through the weeks of the (MOCK) dose file. actual: the rates of DATA.tex, Remark 2.1, from
+    python3 -u seir7_ode.py simulate [actual|optimal] [resume] [initial=FILE] [doses=FILE]
+            | tee -a intermediate/seir7_ode_simulate_<strategy>__<tag>.output
+        initial= the state at t = 251 (default data/cdc/state_t251_mock.csv), doses= the weekly
+        doses (default data/mock/doses_51x16x16_mock.xlsx); a FILE is taken as given, else
+        relative to this directory. tag = <initial>__<doses>, the two file names without
+        directory and extension, e.g. state_t251_mock__doses_51x16x16_mock. out=DIR: the
+        results and the checkpoint go to DIR (default: data/ and intermediate/). The number of
+        weeks is that of the dose file: the run ends at t = 349 + 7 (number of weeks).
+        (after each week the state is saved to intermediate/simulate_<strategy>__<tag>_checkpoint.npz;
+        "resume" continues an interrupted run with the same inputs from the last completed week)
+        from t = 251 through the weeks of the dose file. actual: the rates of DATA.tex, Remark 2.1, from
         the doses by location and age; optimal: each week, the doses of each location (all ages)
         allocated among its age groups by the alternating method (alternating.py, notes/
         stratified_seir_ngm.tex) with sigma = S, V, P of the solution at the start of the week,
-        from the uniform and left-eigenvector starts and nrand random ones (default 0)
-        -> data/simulate_weekly_51x16_<strategy>.csv (national totals at the start of each week),
-           and for optimal data/simulate_weekly_51x16_optimal_rho.csv (rho per week)
+        from the uniform and left-eigenvector starts (and NRAND random ones, a constant below,
+        0: random starts only to test for other local minima)
+        -> data/simulate_weekly_51x16_<strategy>__<tag>.csv (national totals at the start of each
+           week), and for optimal data/simulate_weekly_51x16_optimal__<tag>_rho.csv (rho per week)
     Any mode takes method=DOP853 (default; explicit RK of order 8, scipy) or method=SDIRK4
     (implicit RK of order 4 with step control, matrix-free Newton-GMRES with jvp; sdirk.py).
 """
@@ -57,6 +65,22 @@ DOSES = os.path.join(DATA, "mock", "doses_51x16x16_mock.xlsx")
 INITIAL = os.path.join(DATA, "cdc", "state_t251_mock.csv")
 STATE349 = os.path.join(DATA, "state_t349_51x16.csv")
 WEEKLY = os.path.join(DATA, "simulate_weekly_51x16.csv")
+
+
+def input_path(p):
+    """An input file given on the command line: as given (absolute, or relative to the current
+    directory), else relative to this directory."""
+    for q in (p, os.path.join(HERE, p)):
+        if os.path.isfile(q):
+            return os.path.abspath(q)
+    raise FileNotFoundError(p)
+
+
+def run_tag(initial, doses):
+    """The part of the output names given by the two input files: <initial>__<doses>, the file
+    names without directory and extension."""
+    stem = lambda p: os.path.splitext(os.path.basename(p))[0]
+    return f"{stem(initial)}__{stem(doses)}"
 
 # Constants (per day): supplement of Feng, Day, Glasser 2026, Table S1 (xi, gamma, omega, b_S, b_I,
 # gamma_{s->h}), Section 2 (eta); deaths 30% outside and 70% in hospital (Glasser et al. 2023, Sec. 3).
@@ -95,7 +119,9 @@ def decay_rates(U, d):
 class Model:
     """Parameters and data of DATA.tex, Section 1."""
 
-    def __init__(self, initial="mock"):
+    def __init__(self, initial=INITIAL):
+        """initial: the file of the state at T_START (default INITIAL; "mock" is the same), or
+        "none" for no initial state."""
         pop = pd.read_csv(CENSUS_N)
         self.locs = list(dict.fromkeys(pop.state))
         t2 = pd.read_csv(os.path.join(DATA, "glasser2023", "table2.csv"))
@@ -152,9 +178,12 @@ class Model:
         self.C = Cf.to_numpy(float)                                          # C[(i,j), (p,q)]
         self.chi = np.zeros((3, m, n))                                       # chi_1, chi_2, chi_3
         self.method = "DOP853"                                               # or "SDIRK4"
-        self.x251 = None
-        if initial == "mock":
-            st = pd.read_csv(INITIAL)
+        self.x251, self.initial_path = None, None
+        if initial not in (None, "none"):
+            self.initial_path = INITIAL if initial == "mock" else input_path(initial)
+            st = pd.read_csv(self.initial_path)
+            if list(st.state) != list(pop.state) or list(st.age) != list(pop.age):
+                raise ValueError(f"{self.initial_path}: rows not (state, age) in the order of the model")
             self.x251 = np.stack([st[c].to_numpy(float).reshape(m, n) for c in NAMES]).ravel()
 
     def variant(self, t):
@@ -344,6 +373,8 @@ ELIG_MIN = 1.0        # persons: only groups with sigma_{k,p} >= ELIG_MIN may re
 B_FLOOR = 1e-9        # persons per day: the optimizer needs b_{k,i} > 0
 B_CAP = 0.99          # weekly doses of a location at most this fraction of its eligible people
 CHI_MAX = -np.log(1 - B_CAP) / 7.0   # 0.658 per day: at most 99% of a group in a week, as in DATA.tex, Remark 2.1
+NRAND = 0             # random starts of the weekly optimization besides uniform and left ev; > 0 only
+                      # to test whether other starts reach a smaller rho (other local minima)
 
 
 def cap_rates(chi, sig, elig, m, n):
@@ -422,36 +453,57 @@ def max_rss_mb():
     return resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024
 
 
-def checkpoint_path(strategy):
-    return os.path.join(HERE, "intermediate", f"simulate_{strategy}_checkpoint.npz")
+def checkpoint_path(strategy, tag, outdir=None):
+    """The checkpoint, in intermediate/ or in outdir."""
+    d = outdir or os.path.join(HERE, "intermediate")
+    return os.path.join(d, f"simulate_{strategy}__{tag}_checkpoint.npz")
 
 
-def do_simulate(mod, strategy="actual", nrand=0, resume=False):
-    """Weekly vaccination from T_VACC. strategy "actual" (not run): the rates of DATA.tex, Remark
-    2.1, from the MOCK doses of the file by location and age; "optimal": the doses of each location
-    (all ages) allocated among its age groups by the optimization of notes/stratified_seir_ngm.tex.
-    After every week the state, the week and the results so far are saved to
-    intermediate/simulate_<strategy>_checkpoint.npz; with resume=True the run continues from it."""
+def output_paths(strategy, tag, outdir=None):
+    """The weekly totals and (optimal) the rho of each week, named by strategy and run_tag, in
+    data/ or in outdir."""
+    path = WEEKLY.replace(".csv", f"_{strategy}__{tag}.csv")
+    if outdir:
+        path = os.path.join(outdir, os.path.basename(path))
+    return path, path.replace(".csv", "_rho.csv")
+
+
+def do_simulate(mod, strategy="actual", nrand=0, resume=False, doses=DOSES, outdir=None):
+    """Weekly vaccination from T_VACC, with the initial state of mod and the dose file doses,
+    for as many weeks as the dose file has. strategy "actual" (not run): the rates of DATA.tex,
+    Remark 2.1, from the doses by location and age; "optimal": the doses of each location (all
+    ages) allocated among its age groups by the optimization of notes/stratified_seir_ngm.tex.
+    After every week the state, the week and the results so far are saved to the checkpoint
+    simulate_<strategy>__<tag>_checkpoint.npz (in intermediate/, or outdir), tag =
+    run_tag(initial, doses); with resume=True the run continues from it. The results go to
+    data/, or outdir."""
     if strategy not in ("actual", "optimal"):
         raise ValueError(f"strategy {strategy!r}")
+    tag = run_tag(mod.initial_path, doses)
+    if outdir:
+        os.makedirs(outdir, exist_ok=True)
+    print(f"initial state {mod.initial_path}\ndoses {doses}\noutput tag {tag}\n"
+          f"output directory {outdir or DATA}", flush=True)
     A = None
     if strategy == "optimal":
         import alternating as A
     from mock_doses_51x16x16 import read_sheet     # the layout of the dose file
     if strategy == "optimal":     # sheet 1: one row per location (all ages)
-        keys, nw, val = read_sheet(DOSES, 0, 1)
+        keys, nw, val = read_sheet(doses, 0, 1)
         if [k[0] for k in keys] != mod.locs:
-            raise ValueError(f"{DOSES}, sheet 1: states not in the order of the model")
+            raise ValueError(f"{doses}, sheet 1: states not in the order of the model")
         Dk = val.reshape(mod.m, nw, 3).transpose(2, 0, 1)                    # 3 x m x weeks
     else:                         # sheet 2: one row per location and age
-        keys, nw, val = read_sheet(DOSES, 1, 2)
+        keys, nw, val = read_sheet(doses, 1, 2)
         if keys != [[s, a] for s in mod.locs for a in mod.ages]:
-            raise ValueError(f"{DOSES}, sheet 2: (state, age) not in the order of the model")
+            raise ValueError(f"{doses}, sheet 2: (state, age) not in the order of the model")
         Dk = val.reshape(mod.m, mod.n, nw, 3).transpose(3, 0, 1, 2)         # 3 x m x n x weeks
     weeks = [T_VACC + 7.0 * w for w in range(nw)]                            # Week w+1 starts at t
     tic = time.time()
-    ckpt = checkpoint_path(strategy)
-    if resume and os.path.exists(ckpt):
+    ckpt = checkpoint_path(strategy, tag, outdir)
+    if resume and not os.path.exists(ckpt):
+        raise FileNotFoundError(f"resume: no checkpoint {ckpt} for these inputs")
+    if resume:
         z = np.load(ckpt, allow_pickle=True)
         w0, x = int(z["next_week"]), z["x"].copy()
         rows, opt = list(z["rows"]), list(z["opt"])
@@ -493,10 +545,11 @@ def do_simulate(mod, strategy="actual", nrand=0, resume=False):
     X = x.reshape(13, mod.m, mod.n)
     rows.append({"t": weeks[-1] + 7.0, **{nm: X[c].sum() for c, nm in enumerate(NAMES)}})
     out = pd.DataFrame(rows)
-    path = WEEKLY.replace(".csv", f"_{strategy}.csv")
+    path, path_rho = output_paths(strategy, tag, outdir)
     out.to_csv(path, index=False, float_format="%.6g")
     if opt:
-        pd.DataFrame(opt).to_csv(path.replace(".csv", "_rho.csv"), index=False, float_format="%.10g")
+        pd.DataFrame(opt).to_csv(path_rho, index=False, float_format="%.10g")
+        print(f"wrote {path_rho}")
     print(f"{strategy}: simulated [{T_START:g}, {weeks[-1] + 7:g}] with {len(weeks)} weeks of doses in "
           f"{time.time() - tic:.1f} s; at the end: V {out.V.iloc[-1] / 1e6:.1f} M, R {out.R.iloc[-1] / 1e6:.1f} M,"
           f" M (dead) {out.M.iloc[-1] / 1e3:.0f} K, hospitalized now {out.Ih.iloc[-1] / 1e3:.1f} K;"
@@ -511,11 +564,15 @@ def do_simulate(mod, strategy="actual", nrand=0, resume=False):
 
 
 if __name__ == "__main__":
-    argv = [a for a in sys.argv[1:] if not a.startswith("method=")]
-    meth = [a.split("=", 1)[1].upper() for a in sys.argv[1:] if a.startswith("method=")]
+    opts = dict(a.split("=", 1) for a in sys.argv[1:] if "=" in a)   # method=, initial=, doses=
+    argv = [a for a in sys.argv[1:] if "=" not in a]
+    bad = set(opts) - {"method", "initial", "doses", "out"}
+    if bad:
+        raise ValueError(f"unknown options {sorted(bad)}: method=, initial=, doses=, out=")
     mode = argv[0] if argv else "solve"
-    mod = Model()
-    mod.method = meth[-1] if meth else "DOP853"
+    mod = Model(initial=opts.get("initial", INITIAL))
+    doses = input_path(opts["doses"]) if "doses" in opts else DOSES
+    mod.method = opts.get("method", "DOP853").upper()
     if mod.method not in ("DOP853", "SDIRK4"):
         raise ValueError(f"method {mod.method!r}: DOP853 or SDIRK4")
     print(f"N total {mod.N.sum():,.0f}; variant days " +
@@ -524,7 +581,9 @@ if __name__ == "__main__":
         args = [a for a in argv[1:] if a != "resume"]
         resume = "resume" in argv[1:]
         strategy = args[0] if args else "optimal"   # actual: reference only, not run
-        nrand = int(args[1]) if len(args) > 1 else 0
-        do_simulate(mod, strategy, nrand, resume)
+        if len(args) > 1:
+            raise ValueError(f"unexpected arguments {args[1:]}: simulate [actual|optimal] [resume]")
+        do_simulate(mod, strategy, NRAND, resume, doses=doses,
+                    outdir=os.path.abspath(opts["out"]) if "out" in opts else None)
     else:
         {"verify": do_verify, "solve": do_solve}[mode](mod)
