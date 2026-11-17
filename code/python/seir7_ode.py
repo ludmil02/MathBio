@@ -322,7 +322,7 @@ SIG_FLOOR = 1e-6      # persons: group sizes below this are raised to it (optima
 ELIG_MIN = 1.0        # persons: only groups with sigma_{k,p} >= ELIG_MIN may receive dose k
 B_FLOOR = 1e-9        # persons per day: the optimizer needs b_{k,i} > 0
 B_CAP = 0.99          # weekly doses of a location at most this fraction of its eligible people
-CHI_MAX = -np.log(1 - B_CAP) / 7.0   # 0.658 per day: at most 99% of a group in a week, as in (6.1)
+CHI_MAX = -np.log(1 - B_CAP) / 7.0   # 0.658 per day: at most 99% of a group in a week, as in DATA.tex, Remark 2.1
 
 
 def cap_rates(chi, sig, elig, m, n):
