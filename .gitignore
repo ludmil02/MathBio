@@ -72,3 +72,8 @@ dist/
 .mypy_cache/
 .venv/
 venv/
+
+# results of weekly_simulation/run.sh, recomputed by the run; kept on disk
+results/
+input/
+run.sh
