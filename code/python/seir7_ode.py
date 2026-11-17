@@ -26,7 +26,7 @@ Usage:
     python3 -u seir7_ode.py simulate [actual|optimal] [nrand] [resume] | tee -a intermediate/seir7_ode_simulate_<strategy>.output
         (after each week the state is saved to intermediate/simulate_<strategy>_checkpoint.npz;
         "resume" continues an interrupted run from the last completed week)
-        from t = 251 through the weeks of the dose file. actual: the rates of DATA.tex, Remark 2.1, from
+        from t = 251 through the weeks of the (MOCK) dose file. actual: the rates of DATA.tex, Remark 2.1, from
         the doses by location and age; optimal: each week, the doses of each location (all ages)
         allocated among its age groups by the alternating method (alternating.py, notes/
         stratified_seir_ngm.tex) with sigma = S, V, P of the solution at the start of the week,
@@ -397,7 +397,7 @@ def checkpoint_path(strategy):
 
 def do_simulate(mod, strategy="actual", nrand=0, resume=False):
     """Weekly vaccination from T_VACC. strategy "actual" (not run): the rates of DATA.tex, Remark
-    2.1, from the doses of the file by location and age; "optimal": the doses of each location
+    2.1, from the MOCK doses of the file by location and age; "optimal": the doses of each location
     (all ages) allocated among its age groups by the optimization of notes/stratified_seir_ngm.tex.
     After every week the state, the week and the results so far are saved to
     intermediate/simulate_<strategy>_checkpoint.npz; with resume=True the run continues from it."""

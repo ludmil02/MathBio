@@ -379,7 +379,8 @@ of a group add up to $0$, so each group keeps its size $N_{ij}$.
 \item Solve~\eqref{ode} from $t=251$, with the initial state~\fref{f-x0}, to
 $t=349$, the start of vaccination, with $\chi=0$.
 \item For each week $[\tau,\tau+7]$, $\tau=349,356,\dots$ (126 weeks), with
-$S$, $V$, $P$ the state at $\tau$ and $D_{k,ij}$ the doses of the week~\fref{f-doses}:
+$S$, $V$, $P$ the state at $\tau$ and $D_{k,ij}$ the mock doses of the week~\fref{f-doses}
+(Section~\ref{sec-doses}):
 \begin{enumerate}[label=(\alph*)]
 \item compute the vaccination rates $\chi_{k,ij}$ for the week (the same on every
 day of the week; they change only from one week to the next): minimize the
@@ -411,7 +412,9 @@ $\chi_{k,ij}=-\frac17\ln\left(1-P_{k,ij}\right)$, and the system~\eqref{ode} is
 solved with these rates. With the doses by age group
 of~\cite[Section~2.2]{2026Feng_Day_Glasser}, it gives the reference against which
 the optimal allocation is measured (illnesses, hospitalizations and deaths
-averted). It is not computed here; only the optimal strategy is run.
+averted). It is not computed here; only the optimal strategy is run. We have no
+reported doses: computed with the mock doses $D_{k,ij}$ of~\fref{f-doses}, the actual
+strategy would give a mock reference only.
 \end{remark}
 
 \bibliographystyle{plain}
