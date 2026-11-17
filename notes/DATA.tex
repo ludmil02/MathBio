@@ -155,17 +155,42 @@ $\sum_lU_{ql}=\frac1m\sum_{r,k}e^{-b_qd_{rk}}$~\cite[Section~2.2.2.2]{2017Feng_H
 computed from $U$ and $d$, $b_q\in[0.0009,0.0087]$ per mile.
 
 \subsubsection{Contact matrix}\label{sec-C}
-$C=(c_{ij,pq})$, the mixing
-of~\cite[Section~2.4]{2023Glasser_Feng},
-\begin{equation}\label{contacts}
-c_{ij,pq}=\frac{L_pU_{jq}e^{-b_qd_{ip}}}{\sum_{p',q'}L_{p'}U_{jq'}e^{-b_{q'}d_{ip'}}},
-\end{equation}
-of order $mn=816$, is formed from $U$, $L$, $d$ and $b$, and from nothing else
-(\fref{f-C}); the model reads it from this file. Its entries are in $[1.5\cdot10^{-23},\,0.34]$, every row adds up
-to $1$ (to $3\cdot10^{-15}$), and $C\bm x$ agrees with its computation without
-forming $C$ (appendix of \src{stratified_seir_ngm.tex}) to $2\cdot10^{-15}$. The
-contact rates are
+The mixing matrix $C=(c_{ij,pq})$, of order $mn=816$: $c_{ij,pq}$ is the fraction of
+the contacts of a person of location $i$ and age group $j$ that are with persons of
+location $p$ and age group $q$, so that every row of $C$ adds up to $1$. How many
+contacts a person has is given separately, by the contact rates
 $a_{ij}=L_i\sum_lU_{lj}$.
+
+\emph{Source.} For locations alone, \cite[Section~2.4, p.~6]{2023Glasser_Feng} gives
+the contacts $C_{ip}=a_i\,e^{-bd_{ip}}/\sum_ke^{-bd_{ik}}$ and the mixing
+$c_{ip}=C_{ip}/\sum_kC_{ik}$. For the model with locations and age groups, the same
+section gives no formula; it states in words that (i) the age-specific contacts within
+locations are multiplied by the ratios of the natural logarithms of the location and
+national population densities, our $L_i$ (Section~\ref{sec-L}), and (ii) between
+locations, contacts decline exponentially with distance at age-specific rates,
+computed as in~\cite{2017Feng_Hill_Curns_Glasser}, our $b_q$
+(Section~\ref{sec-b}). By~\cite[Supplement, Section~2a]{2026Feng_Day_Glasser}, the
+mixing of the model of~\cite{2026Feng_Day_Glasser} is that
+of~\cite{2023Glasser_Feng}, except that the densities $\rho_i$ are computed from the
+county densities (Section~\ref{sec-L}).
+
+\emph{The formula used.} We write this description as
+\begin{equation}\label{contacts}
+c_{ij,pq}=\frac{L_pU_{jq}e^{-b_qd_{ip}}}{\sum_{p',q'}L_{p'}U_{jq'}e^{-b_{q'}d_{ip'}}}:
+\end{equation}
+a person of $(i,j)$ meets age group $q$ in proportion to $U_{jq}$, location $p$ in
+proportion to its activity $L_p$, and the contacts decline with the distance $d_{ip}$
+at the rate $b_q$ of the age group met; the denominator makes the row add up to $1$,
+as $c_{ip}$ above. For $n=1$ and $L_p=1$ it is the $c_{ip}$
+of~\cite[Section~2.4]{2023Glasser_Feng}. The factor $L_p$ in the numerator and the rate
+$b_q$ of the age group met (rather than of the age group $j$) are our reading of the
+description; neither paper prints~\eqref{contacts}.
+
+\emph{The file.} $C$ is formed from $U$, $L$, $d$ and $b$, and from nothing else, by
+\src{build_C_51x16.py} (\fref{f-C}), and \src{seir7_ode.py} loads it from this file.
+Its entries are in $[1.5\cdot10^{-23},\,0.34]$, every row adds up to $1$ (to
+$3\cdot10^{-15}$), and $C\bm x$ agrees with its computation without forming $C$
+(appendix of \src{stratified_seir_ngm.tex}) to $2\cdot10^{-15}$.
 
 \subsubsection{Stringency}\label{sec-s}
 $s_i(t)=1-\mathrm{SI}_i(t)/100$, the complement of the
