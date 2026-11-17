@@ -15,8 +15,8 @@
 \begin{document}
 \begin{center}
 {\large\bfseries The optimal weekly allocation of vaccine: simulation, 2020--2023}\\[2pt]
-Ludmil\footnote{Parts of this note were prepared with the assistance of an AI tool (Claude
-Opus 5.5, Anthropic). The author is solely responsible for all statements.}
+Authors\footnote{Parts of this note were prepared with the assistance of an AI tool (Claude
+Opus 5.5, Anthropic). The authors are solely responsible for all statements.}
 \end{center}
 
 \begin{center}
@@ -30,7 +30,10 @@ Opus 5.5, Anthropic). The author is solely responsible for all statements.}
 The model of Feng, Day and Glasser (J.~Theoret.\ Biol.\ 633, 2026), 13 compartments
 for each of $m=51$ locations (50 states and D.C.) and $n=16$ age groups, $10\,608$
 unknowns, as in \texttt{DATA.pdf}, Section~2. The time $t$ is in days from 31 December
-2019. The system is solved by the Runge--Kutta method of order 8 (\texttt{DOP853}) from $t=251$ (7 September 2020) to $t=1231$
+2019. We ran the model from $t=251$ to $t=1231$: with $\chi=0$ until vaccination began
+at $t=349$, then week by week, finding the optimal $\chi$ from the state at the start of
+each week and solving the system of ODEs over that week, through the week ending at
+$t=1231$. The system is solved by the Runge--Kutta method of order 8 (\texttt{DOP853}) from $t=251$ (7 September 2020) to $t=1231$
 (15 May 2023), 980 days. The first 98 days are run with $\chi=0$ (all vaccination
 rates $0$): from $t=251$, the initial time of Glasser et al.\ (J.~Theoret.\ Biol.\ 556,
 2023, Section~3), to $t=349$, 14 December 2020, ``when vaccination began'' (Feng, Day,
