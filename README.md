@@ -16,7 +16,7 @@ with `Ac` and `A1 = diag(d_c) C diag(psi_I q_s)` independent of `chi`, `g = y + 
 | file | |
 | --- | --- |
 | `stratified_seir_ngm.tex` | the main document: the NGM, the reduction to order `N = m n`, the optimality conditions, the fixed point iteration, the alternating method for three doses, the numerical results (Section 6.5), the simulation with the weekly optimization and the bound on the rates (Section 9), and the products with the contact matrix (appendix) |
-| `suplemental/stratified_seir_ngm_supplement.tex` | the supplement (more results for the alternating method, a Newton method, the 51 x 16 data before vaccination) |
+| `suplemental/stratified_seir_ngm_supplement.tex` | the supplement (more results for the alternating method, a Newton method) |
 | `DATA.tex` | the data, each with its source, and the list of files (Section 1: F1-1 to F1-26); the model and the computation (Section 2: the program and its files F2-1 to F2-5) |
 | `simulation_weekly_optimal.tex` | one page: the weekly optimal simulation, its figures, the public and the mock data |
 | `bib_mb.bib` | the bibliography |

@@ -1,17 +1,10 @@
-Mathematica_Wolfram/
 code/python/mock_contact_51x16.py
 data/real/
 backit/
 *.dat
 
-# Mathematica notebooks: never tracked (removed from the history on 2026-11-16);
-# they stay on disk, untracked.
-*.nb
 # the archive of earlier versions: untracked (removed from the history on 2026-11-16), kept on disk
 archive/
-# Wolfram scripts: also untracked (removed from the history on 2026-11-16), kept on disk
-*.wls
-*.wl
 
 # downloads (notes/DATA.tex, Section 1.1.1): the data files (csv, xlsx, txt, zip) and the papers
 # are tracked; the metadata is kept on disk, untracked
