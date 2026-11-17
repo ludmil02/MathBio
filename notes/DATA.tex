@@ -102,7 +102,8 @@ of~\fref{f-g23}; \src{glasser2023_inputs.py}. Section~\ref{sec-age}.
 \item\label{f-x0} \src{cdc/state_t251_mock.csv}: the initial state (mock);
 \src{sero_initial_51x16.py} from~\fref{f-sero}, \fref{f-N}, \fref{f-t2}.
 Section~\ref{sec-mock}.
-\item\label{f-doses} \src{mock/doses_51x16x16_mock.xlsx}: the weekly doses (mock);
+\item\label{f-doses} \src{mock/doses_51x16x16_mock.xlsx}: the weekly doses (mock),
+sheet \src{by_state} by location and sheet \src{by_state_age} by location and age group;
 \src{mock_doses_51x16x16.py} from~\fref{f-N}. Section~\ref{sec-mock}.
 \end{enumerate}
 
@@ -302,8 +303,21 @@ doses per week until the end, so that every location has first doses in every
 week; second doses $0.9$ times the first doses four
 weeks earlier; third doses half of all second doses of the group, evenly over 20
 weeks from week 40 (65+) or 48 (20--64); each location, dose and week multiplied
-by $e^{0.1z}$, $z$ standard normal. To be replaced by the doses reported to the
+by $e^{0.1z}$, $z$ standard normal; then each $D_{k,ij}$ rounded to the nearest
+integer. To be replaced by the doses reported to the
 CDC~\cite[Section~2.2]{2026Feng_Day_Glasser}.
+
+The file~\fref{f-doses} has two sheets, each with two header rows: in the first,
+``Week 1'', \dots, ``Week 126'', each over three columns (week $w$ starts on day
+$t=349+7(w-1)$); in the second, ``Dose 1'', ``Dose 2'', ``Dose 3+'' under each
+week. Sheet 1, \src{by_state}: the column ``State'' and one row for each of the
+51 locations, the doses $D_{k,i}=\sum_jD_{k,ij}$ of all ages. Sheet 2,
+\src{by_state_age}: the columns ``State'', ``Age'' and one row for each of the
+816 groups $(i,j)$, the doses $D_{k,ij}$. All entries are integers, stored as
+floating point numbers. Sheet 1 is the sum of sheet 2 over the age groups, exactly
+(checked by \src{mock_doses_51x16x16.py} after the file is written).
+The optimal strategy uses only sheet 1; sheet 2 is used only by the actual
+strategy (Remark~\ref{rem-actual}).
 
 \section{The model and the computation}\label{sec-model-comp}
 
@@ -379,13 +393,13 @@ of a group add up to $0$, so each group keeps its size $N_{ij}$.
 \item Solve~\eqref{ode} from $t=251$, with the initial state~\fref{f-x0}, to
 $t=349$, the start of vaccination, with $\chi=0$.
 \item For each week $[\tau,\tau+7]$, $\tau=349,356,\dots$ (126 weeks), with
-$S$, $V$, $P$ the state at $\tau$ and $D_{k,ij}$ the mock doses of the week~\fref{f-doses}
-(Section~\ref{sec-doses}):
+$S$, $V$, $P$ the state at $\tau$ and $D_{k,i}$ the mock doses of location $i$ in the
+week, sheet 1 of~\fref{f-doses} (Section~\ref{sec-doses}):
 \begin{enumerate}[label=(\alph*)]
 \item compute the vaccination rates $\chi_{k,ij}$ for the week (the same on every
 day of the week; they change only from one week to the next): minimize the
 spectral radius of the next generation matrix over $\chi$, subject to
-$\sum_j\sigma_{k,ij}\chi_{k,ij}=\frac17\sum_jD_{k,ij}$ for every location $i$ and
+$\sum_j\sigma_{k,ij}\chi_{k,ij}=\frac17D_{k,i}$ for every location $i$ and
 dose $k$ (the doses of the location, all ages, at most $0.99\sum_j\sigma_{k,ij}/7$),
 with $\sigma_1=S$, $\sigma_2=V$, $\sigma_3=P$, only the groups with
 $\sigma_{k,ij}\ge1$ (at least one eligible person) receiving dose $k$, and the bound
@@ -402,7 +416,7 @@ Prince~\cite{1980Dormand_Prince} (\texttt{DOP853} of
 \texttt{scipy.integrate.solve\_ivp}~\cite{2020Virtanen_scipy}), restarted at the
 days at which the variant changes.
 
-\begin{remark}[The actual strategy]
+\begin{remark}[The actual strategy]\label{rem-actual}
 In~\cite{2026Feng_Day_Glasser} the optimal allocation is compared with the
 actual one, the doses reported to the CDC by location, age group and dose. In
 the actual strategy no optimization is done: in each week, the fraction
@@ -413,7 +427,7 @@ solved with these rates. With the doses by age group
 of~\cite[Section~2.2]{2026Feng_Day_Glasser}, it gives the reference against which
 the optimal allocation is measured (illnesses, hospitalizations and deaths
 averted). It is not computed here; only the optimal strategy is run. We have no
-reported doses: computed with the mock doses $D_{k,ij}$ of~\fref{f-doses}, the actual
+reported doses: computed with the mock doses $D_{k,ij}$ of~\fref{f-doses} (sheet 2), the actual
 strategy would give a mock reference only.
 \end{remark}
 

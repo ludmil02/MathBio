@@ -48,8 +48,9 @@ Run the scripts from `code/python/`.  Eigenvalues by Arnoldi (`scipy.sparse.lina
 | `oxcgrt_s_51.py` | stringency factors `s_i(t) = 1 - SI_i(t)/100` (OxCGRT) |
 | `cdc_variants.py` | the days of the variants (CDC variant proportions) |
 | `sero_initial_51x16.py` | the initial state at `t = 251` (MOCK, from the CDC serosurvey) |
-| `mock_doses_51x16x16.py` | the weekly doses by location, age and dose (MOCK) |
+| `mock_doses_51x16x16.py` | the weekly doses (MOCK), `data/mock/doses_51x16x16_mock.xlsx`: sheet 1 `by_state` (51 rows, all ages; used by `simulate optimal`), sheet 2 `by_state_age` (816 rows; used only by `simulate actual`); header row 1 `Week 1` ... `Week 126`, each over three columns (week `w` starts at `t = 349 + 7 (w - 1)`), row 2 `State` (and `Age`), then `Dose 1`, `Dose 2`, `Dose 3+` under each week; the doses by age are rounded to integers (stored as floats), and sheet 1 is their sum over the ages, exactly |
 | `seir7_ode.py` | the model and its solution: `simulate optimal` (the weekly optimization of Section 9 of the main document), `solve`, `verify` |
+| `sdirk.py` | an implicit Runge-Kutta method with step control (SDIRK of order 4, embedded order 3, Hairer-Wanner), matrix-free: Newton-GMRES with the Jacobian-vector product of `seir7_ode.py`; used by `seir7_ode.py ... method=SDIRK4` |
 | `alternating.py` | the alternating method of Section 6, with the bound on the rates of Section 9.1 |
 | `ngm_seir7.py` | the 51 x 16 NGM at `t = 349` (start of vaccination) from the same data: `rho(NGM)`, `rho(F V^-1)`, the left eigenvector, the gradient |
 | `plot_weekly_optimal.py` | the figures of the weekly optimal simulation, from `data/simulate_weekly_51x16_optimal*.csv`, saved to `notes/figures/fig_weekly_optimal*` |
@@ -66,6 +67,11 @@ interruption (Ctrl-C), `simulate optimal resume` continues from the last complet
     python3 -u seir7_ode.py simulate optimal resume 2>&1 | tee -a intermediate/seir7_ode_simulate_optimal.output
 
 and then `python3 plot_weekly_optimal.py` for the figures.
+
+The ODEs are solved by DOP853 (explicit Runge-Kutta of order 8, scipy), the default.  Adding
+`method=SDIRK4` to any mode of `seir7_ode.py` uses `sdirk.py` instead.  On `[251, 600]` it
+agrees with DOP853 (rtol `1e-12`) to `1.2e-4`, `1.3e-6`, `3.7e-7` (relative, max norm) at
+rtol `1e-4`, `1e-6`, `1e-8`, but is slower: the system is not stiff there.
 
 Logs are written as `*.output`, not `*.log`, so that they are not removed with the TeX logs.
 

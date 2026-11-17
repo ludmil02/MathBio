@@ -11,7 +11,8 @@ Inputs (each built by its script from files in MathBio/data/Downloaded_from_sour
   data/model/C_816x816.csv.gz      build_C_51x16.py       contact matrix C (from U, L, d, b)
   data/cdc/variant_days.csv        cdc_variants.py        days of the variants of Table S4
   data/cdc/state_t251_mock.csv     sero_initial_51x16.py  initial state (MOCK)
-  data/mock/doses_51x16x16_mock.xlsx  mock_doses_51x16x16.py  weekly doses (MOCK)
+  data/mock/doses_51x16x16_mock.xlsx  mock_doses_51x16x16.py  weekly doses (MOCK): sheet 1
+                                   by state (read for optimal), sheet 2 by state and age (actual)
 
 The state vector has the order: compartment (S, P, Es, Ep, V, Ia, Ips, Ipm, Is, Im, Ih, R, M),
 then location i (FIPS order), then age j. The force of infection uses the contact matrix C
@@ -33,6 +34,8 @@ Usage:
         from the uniform and left-eigenvector starts and nrand random ones (default 0)
         -> data/simulate_weekly_51x16_<strategy>.csv (national totals at the start of each week),
            and for optimal data/simulate_weekly_51x16_optimal_rho.csv (rho per week)
+    Any mode takes method=DOP853 (default; explicit RK of order 8, scipy) or method=SDIRK4
+    (implicit RK of order 4 with step control, matrix-free Newton-GMRES with jvp; sdirk.py).
 """
 import os
 import sys
@@ -147,6 +150,7 @@ class Model:
             raise ValueError(f"rows or columns of {C_FILE} not in the order of the model")
         self.C = Cf.to_numpy(float)                                          # C[(i,j), (p,q)]
         self.chi = np.zeros((3, m, n))                                       # chi_1, chi_2, chi_3
+        self.method = "DOP853"                                               # or "SDIRK4"
         self.x251 = None
         if initial == "mock":
             st = pd.read_csv(INITIAL)
@@ -236,11 +240,27 @@ class Model:
                 + self.infection(t, self.Lam(t, x), v)).ravel()
 
     def solve(self, t0, t1, x0, rtol=1e-10, atol=1e-8, t_out=None, keep_steps=False):
-        """Integrate from t0 to t1, restarting at the variant days in (t0, t1).
-        Returns (states at t_out (default [t1]), stats)."""
+        """Integrate from t0 to t1, restarting at the variant days in (t0, t1), by the method
+        self.method: "DOP853" (explicit RK of order 8) or "SDIRK4" (implicit RK of order 4,
+        matrix-free, sdirk.py). Returns (states at t_out (default [t1]), stats)."""
         t_out = [t1] if t_out is None else list(t_out)
         knots = [t0] + [b for b in self.breaks if t0 < b < t1] + [t1]
         x, out, stats = np.asarray(x0, float), {}, {"nfev": 0, "steps": []}
+        if self.method == "SDIRK4":
+            import sdirk
+            h0 = None                     # after a variant day, start from the last accepted step
+            for a, b in zip(knots[:-1], knots[1:]):
+                te = [s for s in t_out if a < s <= b] or [b]
+                if te[-1] != b:
+                    te.append(b)
+                ts, ys, st = sdirk.solve(self.f, self.jvp, a, b, x, rtol=rtol, atol=atol, t_eval=te,
+                                         h0=h0)
+                h0 = st["h_next"]
+                stats["nfev"] += st["nfev"]
+                stats["steps"].extend(st["steps"])
+                x = ys[-1].copy()
+                out.update({s: y for s, y in zip(ts, ys)})
+            return [out.get(s) for s in t_out], stats
         for a, b in zip(knots[:-1], knots[1:]):
             te = [s for s in t_out if a < s <= b]
             sol = solve_ivp(self.f, (a, b), x, method="DOP853", rtol=rtol, atol=atol,
@@ -366,7 +386,8 @@ def actual_rates(mod, X, Dw):
 def optimal_rates(mod, A, tau, X, Dw, nrand):
     """The weekly problem of notes/stratified_seir_ngm.tex at tau: minimize rho over chi with
     sum_{p in I_i} sigma_{k,p} chi_{k,p} = b_{k,i}; sigma_k = S, V, P at tau, b_{k,i} the doses
-    of location i in the week (all ages) per day. Returns chi (3 x m x n) and a summary."""
+    of location i in the week (all ages) per day, from Dw (3 x m, sheet 1 of the dose file).
+    Returns chi (3 x m x n) and a summary."""
     A.set_model(*mod.ngm_context(tau))
     elig = [(X[comp] >= ELIG_MIN).ravel() for comp in (S, V, P)]
     A.set_eligible(elig)
@@ -375,7 +396,7 @@ def optimal_rates(mod, A, tau, X, Dw, nrand):
     b = []
     for k in range(3):
         se = np.where(elig[k], sig[k], 0.0).reshape(mod.m, mod.n).sum(axis=1)   # eligible people
-        bk = np.clip(Dw[k].sum(axis=1) / 7.0, B_FLOOR, np.maximum(B_CAP * se / 7.0, B_FLOOR))
+        bk = np.clip(Dw[k] / 7.0, B_FLOOR, np.maximum(B_CAP * se / 7.0, B_FLOOR))
         b.append(np.where(se > 0, bk, 0.0))       # no doses where no group is eligible
     ends = []
     for name, chi0 in A.starts(b, sig, nrand, seed=int(tau)):
@@ -406,10 +427,18 @@ def do_simulate(mod, strategy="actual", nrand=0, resume=False):
     A = None
     if strategy == "optimal":
         import alternating as A
-    sheets = pd.read_excel(DOSES, sheet_name=None)
-    weeks = [float(c) for c in sheets["Dose1"].columns[2:]]
-    Dk = np.stack([sheets[f"Dose{k}"].iloc[:, 2:].to_numpy(float).reshape(mod.m, mod.n, -1)
-                   for k in (1, 2, 3)])                                      # 3 x m x n x weeks
+    from mock_doses_51x16x16 import read_sheet     # the layout of the dose file
+    if strategy == "optimal":     # sheet 1: one row per location (all ages)
+        keys, nw, val = read_sheet(DOSES, 0, 1)
+        if [k[0] for k in keys] != mod.locs:
+            raise ValueError(f"{DOSES}, sheet 1: states not in the order of the model")
+        Dk = val.reshape(mod.m, nw, 3).transpose(2, 0, 1)                    # 3 x m x weeks
+    else:                         # sheet 2: one row per location and age
+        keys, nw, val = read_sheet(DOSES, 1, 2)
+        if keys != [[s, a] for s in mod.locs for a in mod.ages]:
+            raise ValueError(f"{DOSES}, sheet 2: (state, age) not in the order of the model")
+        Dk = val.reshape(mod.m, mod.n, nw, 3).transpose(3, 0, 1, 2)         # 3 x m x n x weeks
+    weeks = [T_VACC + 7.0 * w for w in range(nw)]                            # Week w+1 starts at t
     tic = time.time()
     ckpt = checkpoint_path(strategy)
     if resume and os.path.exists(ckpt):
@@ -426,7 +455,7 @@ def do_simulate(mod, strategy="actual", nrand=0, resume=False):
         tau = weeks[w]
         X = x.reshape(13, mod.m, mod.n)
         rows.append({"t": tau, **{nm: X[c].sum() for c, nm in enumerate(NAMES)}})
-        Dw = Dk[:, :, :, w]
+        Dw = Dk[..., w]                        # 3 x m (optimal) or 3 x m x n (actual)
         if strategy == "actual":
             mod.chi[:] = actual_rates(mod, X, Dw)
         else:
@@ -459,13 +488,18 @@ def do_simulate(mod, strategy="actual", nrand=0, resume=False):
 
 
 if __name__ == "__main__":
-    mode = sys.argv[1] if len(sys.argv) > 1 else "solve"
+    argv = [a for a in sys.argv[1:] if not a.startswith("method=")]
+    meth = [a.split("=", 1)[1].upper() for a in sys.argv[1:] if a.startswith("method=")]
+    mode = argv[0] if argv else "solve"
     mod = Model()
+    mod.method = meth[-1] if meth else "DOP853"
+    if mod.method not in ("DOP853", "SDIRK4"):
+        raise ValueError(f"method {mod.method!r}: DOP853 or SDIRK4")
     print(f"N total {mod.N.sum():,.0f}; variant days " +
-          ", ".join(f"{t:g}" for t in mod.breaks))
+          ", ".join(f"{t:g}" for t in mod.breaks) + f"; ODE method {mod.method}")
     if mode == "simulate":
-        args = [a for a in sys.argv[2:] if a != "resume"]
-        resume = "resume" in sys.argv[2:]
+        args = [a for a in argv[1:] if a != "resume"]
+        resume = "resume" in argv[1:]
         strategy = args[0] if args else "optimal"   # actual: reference only, not run
         nrand = int(args[1]) if len(args) > 1 else 0
         do_simulate(mod, strategy, nrand, resume)
