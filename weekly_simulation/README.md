@@ -14,11 +14,17 @@ model and the computation).  The program is in `code/python/` (`seir7_ode.py`,
 
 ## Contents
 
+Only this README is in the repository.  `run.sh`, `input/` and `results/` are kept on disk
+(listed in `.gitignore`) and copied between machines with `rsync`.  The mock inputs are also in
+the repository: `code/python/data/mock/doses_51x16x16_mock.xlsx` and
+`code/python/data/cdc/state_t251_mock.csv` (the files `seir7_ode.py` uses by default), and
+`code/python/data/mock/doses_51x16x16_mock_5wk.xlsx`.
+
 | | |
 | --- | --- |
 | `run.sh` | runs the simulation and then the figures |
 | `input/doses_51x16x16_mock.xlsx` | weekly doses (MOCK) |
-| `input/doses_51x16x16_mock_5wk.xlsx` | the first 5 weeks of the mock doses (a short test run: `./run.sh input/doses_51x16x16_mock_5wk.xlsx`) |
+| `input/doses_51x16x16_mock_5wk.xlsx` | 5 weeks of mock doses, weeks 1-2 zero and weeks 3-5 those of the full mock file (a short test run: `./run.sh input/doses_51x16x16_mock_5wk.xlsx`) |
 | `input/state_t251_mock.csv` | the state at `t = 251` (MOCK) |
 | `results/<tag>/` | made by `run.sh`: data, log and figures of one run |
 
