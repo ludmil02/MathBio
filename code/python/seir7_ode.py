@@ -153,26 +153,45 @@ def decay_rates(U, d):
     return np.array([brentq(g, 0.0, 1.0, args=(a,), xtol=1e-15, rtol=1e-14) for a in A])
 
 
-def read_state(path, m, n):
-    """The initial state file: CSV, no header, 13 m rows and n columns. Rows: 13 blocks of m
-    rows, the compartments in the order NAMES (S, P, Es, Ep, V, Ia, Ips, Ipm, Is, Im, Ih, R, M),
-    within a block the locations in FIPS order; columns: the age groups 0-4, ..., 75+.
-    Returns the state vector (compartment, location, age)."""
-    X = np.loadtxt(path, delimiter=",", ndmin=2)
-    if X.shape != (len(NAMES) * m, n):
-        raise ValueError(f"{path}: {X.shape[0]} x {X.shape[1]}, expected {len(NAMES) * m} x {n}"
-                         " (13 blocks of locations x ages, no header)")
+STATE_KEYS = ["variable", "location"]   # cells A1, B1 of the initial state file
+
+
+def read_state(path, locs, ages):
+    """The initial state file: CSV, 1 + 13 m rows and 2 + n columns. Row 1: "variable",
+    "location", then the age groups 0-4, ..., 75+. Then 13 blocks of m rows, the compartments
+    in the order NAMES (S, P, Es, Ep, V, Ia, Ips, Ipm, Is, Im, Ih, R, M), within a block the
+    locations in FIPS order; column A the compartment, column B the location, then the n ages.
+    The labels are checked. Returns the state vector (compartment, location, age)."""
+    m, n = len(locs), len(ages)
+    df = pd.read_csv(path, header=None, dtype=str, keep_default_na=False)
+    if df.shape != (1 + len(NAMES) * m, 2 + n):
+        raise ValueError(f"{path}: {df.shape[0]} x {df.shape[1]}, expected {1 + len(NAMES) * m}"
+                         f" x {2 + n} (a header row; columns variable, location, then {n} ages)")
+    head = df.iloc[0].str.strip().tolist()
+    if head != STATE_KEYS + list(ages):
+        raise ValueError(f"{path}: row 1 is {head}, expected {STATE_KEYS + list(ages)}")
+    want = [(nm, loc) for nm in NAMES for loc in locs]
+    got = list(zip(df.iloc[1:, 0].str.strip(), df.iloc[1:, 1].str.strip()))
+    for r, (g, w) in enumerate(zip(got, want)):
+        if g != w:
+            raise ValueError(f"{path}: row {r + 2} is {g[0]}, {g[1]}; expected {w[0]}, {w[1]}")
+    X = df.iloc[1:, 2:].to_numpy(float)
     B = X.reshape(len(NAMES), m, n)
-    print(f"{path}: {X.shape[0]} rows x {X.shape[1]} columns read ({len(NAMES)} blocks of {m}"
-          f" locations, {n} ages); total {B.sum():,.0f} people; negative entries"
+    print(f"{path}: {df.shape[0]} rows x {df.shape[1]} columns read (a header row, 2 label columns;"
+          f" {len(NAMES)} blocks of {m} locations, {n} ages); total {B.sum():,.0f} people; negative entries"
           f" {int((X < 0).sum())}", flush=True)
     print("   " + ", ".join(f"{nm} {B[c].sum():,.0f}" for c, nm in enumerate(NAMES)), flush=True)
     return X.ravel()
 
 
-def write_state(path, x, m, n):
+def write_state(path, x, locs, ages):
     """The state vector x in the format of read_state."""
-    np.savetxt(path, np.asarray(x, float).reshape(len(NAMES) * m, n), delimiter=",", fmt="%.17g")
+    m, n = len(locs), len(ages)
+    X = np.asarray(x, float).reshape(len(NAMES) * m, n)
+    with open(path, "w") as f:
+        f.write(",".join(STATE_KEYS + list(ages)) + "\n")
+        for r, row in enumerate(X):
+            f.write(f"{NAMES[r // m]},{locs[r % m]}," + ",".join("%.17g" % v for v in row) + "\n")
 
 
 class Model:
@@ -240,7 +259,7 @@ class Model:
         self.x251, self.initial_path = None, None
         if initial not in (None, "none"):
             self.initial_path = INITIAL if initial == "mock" else input_path(initial)
-            self.x251 = read_state(self.initial_path, m, n)
+            self.x251 = read_state(self.initial_path, self.locs, self.ages)
             g = self.x251.reshape(13, m, n).sum(axis=0)
             print(f"   sum of the 13 compartments vs the population N: max |sum - N| / N ="
                   f" {np.max(np.abs(g - self.N) / self.N):.2e}", flush=True)

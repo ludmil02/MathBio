@@ -1,4 +1,6 @@
 Mathematica_Wolfram/
+# Mathematica notebooks: never tracked
+*.nb
 code/python/mock_contact_51x16.py
 data/real/
 backit/

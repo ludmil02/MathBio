@@ -71,12 +71,16 @@ reported doses has to have the same layout.
 
 ## The initial state file
 
-The state at `t = 251`, a CSV file without a header, 663 rows and 16 columns: 13 blocks of 51 rows, the
-compartments in the order `S`, `P`, `Es`, `Ep`, `V`, `Ia`, `Ips`, `Ipm`, `Is`, `Im`, `Ih`, `R`,
-`M` (rows 1-51 `S`, rows 52-102 `P`, ..., rows 613-663 `M`); within a block, one row per
-location in FIPS order (AL, AK, AZ, ...); the columns are the age groups 0-4, 5-9, ..., 75+.
-Entries are numbers of people.  This is the only format read (`seir7_ode.read_state`);
-the size is checked.  The mock state is made by `code/python/sero_initial_51x16.py`.
+The state at `t = 251`, a CSV file, 664 rows and 18 columns:
+
+* Row 1: `variable`, `location`, then the age groups `0-4`, `5-9`, ..., `75+`.
+* Then 13 blocks of 51 rows, the compartments in the order `S`, `P`, `Es`, `Ep`, `V`, `Ia`,
+  `Ips`, `Ipm`, `Is`, `Im`, `Ih`, `R`, `M` (rows 2-52 `S`, rows 53-103 `P`, ..., rows 614-664
+  `M`); within a block, one row per location in FIPS order (AL, AK, AZ, ...).
+* Column A the compartment, column B the location, then the 16 ages.
+
+Entries are numbers of people.  This is the only format read (`seir7_ode.read_state`); the
+size and the labels in row 1 and columns A, B are checked.  The mock state is made by `code/python/sero_initial_51x16.py`.
 
 ## The results, in `results/<tag>/`
 
