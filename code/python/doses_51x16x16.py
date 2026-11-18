@@ -73,6 +73,37 @@ def write_sheet(ws, keys, key_rows, values):
         ws.append(list(kr) + v.tolist())
 
 
+def excel_col(j):
+    """Excel column name of the 0-based column index j: 0 -> A, 25 -> Z, 26 -> AA."""
+    s = ""
+    j += 1
+    while j:
+        j, r = divmod(j - 1, 26)
+        s = chr(65 + r) + s
+    return s
+
+
+def header_mismatch(df, nk):
+    """The first difference of the two header rows of df (after the nk key columns) from the
+    layout of write_sheet, as text with the Excel cell, or "" if there is none."""
+    rows, cols = df.index, df.columns
+    h1, h2 = df.iloc[0, nk:], df.iloc[1, nk:]
+    if len(h1) % 3:
+        return (f"{len(h1)} columns after the key column(s), not a multiple of 3; the last"
+                f" non-empty column is {excel_col(cols[-1])} (row {rows[0] + 1}: {h1.iloc[-1]!r},"
+                f" row {rows[1] + 1}: {h2.iloc[-1]!r})")
+    for c in range(len(h1)):
+        cell1, want1 = h1.iloc[c], (f"Week {c // 3 + 1}" if c % 3 == 0 else None)
+        if want1 is not None and cell1 != want1:
+            return (f"cell {excel_col(cols[nk + c])}{rows[0] + 1} is {cell1!r}, expected"
+                    f" {want1!r}")
+        cell2, want2 = h2.iloc[c], DOSE_LABELS[c % 3]
+        if cell2 != want2:
+            return (f"cell {excel_col(cols[nk + c])}{rows[1] + 1} is {cell2!r}, expected"
+                    f" {want2!r}")
+    return ""
+
+
 def read_sheet(path, sheet, nk):
     """The inverse of write_sheet, with checks of the two header rows. Returns (key rows,
     number of weeks, values: rows x (3 * weeks), week-major)."""
@@ -86,9 +117,10 @@ def read_sheet(path, sheet, nk):
           flush=True)
     h1, h2 = df.iloc[0, nk:], df.iloc[1, nk:]
     nw = len(h1) // 3
-    if len(h1) != 3 * nw or list(h2) != DOSE_LABELS * nw or \
-            [h1.iloc[3 * w] for w in range(nw)] != [f"Week {w + 1}" for w in range(nw)]:
-        raise ValueError(f"{path}, sheet {sheet}: header rows not Week w / Dose 1, Dose 2, Dose 3+")
+    bad = header_mismatch(df, nk)
+    if bad:
+        raise ValueError(f"{path}, sheet {sheet}: header rows not Week w / Dose 1, Dose 2, Dose 3+:"
+                         f" {bad}")
     keys, val = df.iloc[2:, :nk].values.tolist(), df.iloc[2:, nk:].to_numpy(float)
     tot = val.reshape(len(keys), nw, 3).sum(axis=(0, 1))
     print(f"   {nw} weeks (Week 1 ... Week {nw}), {len(keys)} rows of data ({keys[0]} ... "
