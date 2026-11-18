@@ -324,8 +324,8 @@ integer. To be replaced by the doses reported to the
 CDC~\cite[Section~2.2]{2026Feng_Day_Glasser}.
 
 The file~\fref{f-doses} has two sheets, each with two header rows: in the first,
-``Week 1'', \dots, ``Week 126'', each over three columns (week $w$ starts on day
-$t=349+7(w-1)$); in the second, ``Dose 1'', ``Dose 2'', ``Dose 3+'' under each
+``Week 1'', \dots, ``Week 126'', each in the middle one of its three columns (week $w$
+starts on day $t=t_{\mathrm{vacc}}+7(w-1)$, Section~\ref{sec-params-const}); in the second, ``Dose 1'', ``Dose 2'', ``Dose 3+'' under each
 week. Sheet 1, \src{by_state}: the column ``State'' and one row for each of the
 51 locations, the doses $D_{k,i}=\sum_jD_{k,ij}$ of all ages. Sheet 2,
 \src{by_state_age}: the columns ``State'', ``Age'' and one row for each of the

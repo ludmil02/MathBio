@@ -54,8 +54,8 @@ are taken by position, not by name: the optimal simulation reads the first sheet
 is called (`by_state` in the mock file, `doses` or any other name works), and a file with this
 one sheet is enough.
 
-* Row 1: empty cell(s) over the key columns, then `Week 1`, `Week 2`, ..., each over three
-  columns.
+* Row 1: empty cell(s) over the key columns, then `Week 1`, `Week 2`, ..., each in the middle
+  one of its three columns (over `Dose 2`); the other two cells are not read.
 * Row 2: the key columns, then `Dose 1`, `Dose 2`, `Dose 3+` under each week.
 * Sheet 1 (`by_state` in the mock file): key column `State`, one row per location (51, in FIPS order: AL, AK,
   AZ, ...), the doses of all ages.  This is the sheet the optimal simulation uses.

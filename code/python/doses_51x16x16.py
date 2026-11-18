@@ -8,7 +8,7 @@ To be replaced by the doses reported to the CDC (notes/DATA.tex, Section 1.9.2).
 
 Excel file data/mock/doses_51x16x16_mock.xlsx, two sheets; entries: people given that dose in
 that week. Row 1: empty cell(s) over the key columns, then "Week 1", ..., "Week 126", each
-merged over three columns; week w starts on day t = t_vacc + 7 (w - 1), t_vacc the start of
+in the middle one of its three columns (over Dose 2), centered; week w starts on day t = t_vacc + 7 (w - 1), t_vacc the start of
 vaccination of the parameter set of seir7_ode.py (2021: 347, feng2026: 349). Row 2: the key column
 names, then "Dose 1", "Dose 2", "Dose 3+" under each week. Then:
   sheet 1 "by_state":     key column State; 51 rows (FIPS order), all ages together;
@@ -59,16 +59,15 @@ DOSE_LABELS = ["Dose 1", "Dose 2", "Dose 3+"]
 
 
 def write_sheet(ws, keys, key_rows, values):
-    """Row 1: len(keys) empty cells, then "Week w" merged over its three columns; row 2: the key
-    names, then Dose 1, Dose 2, Dose 3+ for each week; then one row per key_rows entry with
+    """Row 1: len(keys) empty cells, then for each week "Week w" in the middle one of its three
+    columns (the column of Dose 2), centered, the other two empty; row 2: the key names, then
+    Dose 1, Dose 2, Dose 3+ for each week; then one row per key_rows entry with
     values[r] = (week 1: doses 1, 2, 3+, week 2: ..., ...)."""
     nk, nw = len(keys), values.shape[1] // 3
-    ws.append([None] * nk + [x for w in range(nw) for x in (f"Week {w + 1}", None, None)])
+    ws.append([None] * nk + [x for w in range(nw) for x in (None, f"Week {w + 1}", None)])
     ws.append(keys + DOSE_LABELS * nw)
     for w in range(nw):
-        c = nk + 3 * w + 1
-        ws.merge_cells(start_row=1, start_column=c, end_row=1, end_column=c + 2)
-        ws.cell(row=1, column=c).alignment = Alignment(horizontal="center")
+        ws.cell(row=1, column=nk + 3 * w + 2).alignment = Alignment(horizontal="center")
     for kr, v in zip(key_rows, values):
         ws.append(list(kr) + v.tolist())
 
@@ -93,7 +92,7 @@ def header_mismatch(df, nk):
                 f" non-empty column is {excel_col(cols[-1])} (row {rows[0] + 1}: {h1.iloc[-1]!r},"
                 f" row {rows[1] + 1}: {h2.iloc[-1]!r})")
     for c in range(len(h1)):
-        cell1, want1 = h1.iloc[c], (f"Week {c // 3 + 1}" if c % 3 == 0 else None)
+        cell1, want1 = h1.iloc[c], (f"Week {c // 3 + 1}" if c % 3 == 1 else None)
         if want1 is not None and cell1 != want1:
             return (f"cell {excel_col(cols[nk + c])}{rows[0] + 1} is {cell1!r}, expected"
                     f" {want1!r}")
