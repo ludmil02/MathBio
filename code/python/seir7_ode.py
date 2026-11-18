@@ -23,7 +23,8 @@ then location i (FIPS order), then age j. The force of infection uses the contac
 read from data/model/C_816x816.csv.gz; the system is integrated by DOP853, interval by interval
 between the switch days of the parameters (and the weeks of vaccination).
 
-Every mode takes params=NAME, a set (column) of weekly_simulation/input/parameters.xlsx (default 2021); t_vacc,
+Every mode takes params=NAME, a set (column) of the parameter file (default 2021), and
+paramfile=FILE, the parameter file (default weekly_simulation/input/parameters.xlsx); t_vacc,
 the start of vaccination, is a parameter of the set (2021: 347, feng2026: 349).
 
 Usage:
@@ -155,9 +156,10 @@ def decay_rates(U, d):
 class Model:
     """Parameters and data of DATA.tex, Section 1."""
 
-    def __init__(self, initial=INITIAL, params=DEFAULT_PARAMS):
+    def __init__(self, initial=INITIAL, params=DEFAULT_PARAMS, params_file=PARAMS_FILE):
         """initial: the file of the state at T_START (default INITIAL; "mock" is the same), or
-        "none" for no initial state. params: the name of a set of PARAMS_FILE."""
+        "none" for no initial state. params: the name of a set of params_file (default
+        PARAMS_FILE)."""
         pop = pd.read_csv(CENSUS_N)
         self.locs = list(dict.fromkeys(pop.state))
         self.ages = list(dict.fromkeys(pop.age))
@@ -173,8 +175,8 @@ class Model:
         if (list(Uf.index) != self.ages or list(D.index) != self.locs or list(Lf.state) != self.locs
                 or list(sf.columns) != self.locs):
             raise ValueError("locations or ages of an input file differ from the model's")
-        self.params = str(params)
-        sc, ba, over = read_params(self.params, self.ages)
+        self.params, self.params_file = str(params), os.path.abspath(params_file)
+        sc, ba, over = read_params(self.params, self.ages, self.params_file)
         self.t_vacc = sc["t_vacc"]
         self.U = Uf.to_numpy(float)                                          # U[j, q]
         self.d = D.to_numpy(float)                                           # d[i, p], miles
@@ -518,7 +520,7 @@ def do_simulate(mod, strategy="actual", nrand=0, resume=False, doses=DOSES, outd
     tag = run_tag(mod.initial_path, doses, mod.params)
     if outdir:
         os.makedirs(outdir, exist_ok=True)
-    print(f"initial state {mod.initial_path}\ndoses {doses}\nparameters {mod.params} of {PARAMS_FILE}"
+    print(f"initial state {mod.initial_path}\ndoses {doses}\nparameters {mod.params} of {mod.params_file}"
           f" (vaccination from t = {mod.t_vacc:g})\noutput tag {tag}\n"
           f"output directory {outdir or DATA}", flush=True)
     A = None
@@ -601,13 +603,15 @@ def do_simulate(mod, strategy="actual", nrand=0, resume=False, doses=DOSES, outd
 
 
 if __name__ == "__main__":
-    opts = dict(a.split("=", 1) for a in sys.argv[1:] if "=" in a)   # method=, initial=, doses=, params=
+    opts = dict(a.split("=", 1) for a in sys.argv[1:] if "=" in a)   # method=, initial=, doses=, params=, paramfile=
     argv = [a for a in sys.argv[1:] if "=" not in a]
-    bad = set(opts) - {"method", "initial", "doses", "out", "params"}
+    bad = set(opts) - {"method", "initial", "doses", "out", "params", "paramfile"}
     if bad:
-        raise ValueError(f"unknown options {sorted(bad)}: method=, initial=, doses=, out=, params=")
+        raise ValueError(f"unknown options {sorted(bad)}: method=, initial=, doses=, out=, params=,"
+                         " paramfile=")
     mode = argv[0] if argv else "solve"
-    mod = Model(initial=opts.get("initial", INITIAL), params=opts.get("params", DEFAULT_PARAMS))
+    mod = Model(initial=opts.get("initial", INITIAL), params=opts.get("params", DEFAULT_PARAMS),
+                params_file=input_path(opts["paramfile"]) if "paramfile" in opts else PARAMS_FILE)
     doses = input_path(opts["doses"]) if "doses" in opts else DOSES
     mod.method = opts.get("method", "DOP853").upper()
     if mod.method not in ("DOP853", "SDIRK4"):
