@@ -1,10 +1,15 @@
 \documentclass[10pt]{article}
+% the figures: the folder (relative to this file) and the four files
+\newcommand{\figdir}{../weekly_simulation/results/state_t251_mock__doses_51x16x16_mock__2021/figures/}
+\newcommand{\figrho}{fig_weekly_optimal_rho.png}
+\newcommand{\figcomp}{fig_weekly_optimal_compartments.png}
+\newcommand{\figinf}{fig_weekly_optimal_infectious.png}
+\newcommand{\figdeaths}{fig_weekly_optimal_deaths.png}
 \usepackage[margin=0.65in]{geometry}
 \usepackage{amsmath,amssymb}
 \usepackage{graphicx}
 \usepackage{xurl}
 \usepackage[colorlinks=true,urlcolor=blue]{hyperref}
-\graphicspath{{figures/}}
 \pagestyle{empty}
 % less space above a paragraph heading
 \makeatletter
@@ -14,46 +19,43 @@
 
 \begin{document}
 \begin{center}
-{\large\bfseries The optimal weekly allocation of vaccine: simulation, 2020--2023}\\[2pt]
+{\large\bfseries The optimal weekly allocation of vaccine: simulation, 2020--2022}\\[2pt]
 Authors\footnote{Parts of this note were prepared with the assistance of an AI tool (Claude
 Opus 5.5, Anthropic). The authors are solely responsible for all statements.}
 \end{center}
 
 \begin{center}
-\includegraphics[width=0.36\textwidth]{fig_weekly_optimal_rho.png}\hspace{0.04\textwidth}
-\includegraphics[width=0.36\textwidth]{fig_weekly_optimal_compartments.png}\\[2pt]
-\includegraphics[width=0.36\textwidth]{fig_weekly_optimal_infectious.png}\hspace{0.04\textwidth}
-\includegraphics[width=0.36\textwidth]{fig_weekly_optimal_deaths.png}
+\includegraphics[width=0.36\textwidth]{\figdir\figrho}\hspace{0.04\textwidth}
+\includegraphics[width=0.36\textwidth]{\figdir\figcomp}\\[2pt]
+\includegraphics[width=0.36\textwidth]{\figdir\figinf}\hspace{0.04\textwidth}
+\includegraphics[width=0.36\textwidth]{\figdir\figdeaths}
 \end{center}
 
 \paragraph{The simulation.}
 The model of Feng, Day and Glasser (J.~Theoret.\ Biol.\ 633, 2026), 13 compartments
 for each of $m=51$ locations (50 states and D.C.) and $n=16$ age groups, $10\,608$
 unknowns, as in \texttt{DATA.pdf}, Section~2. The time $t$ is in days from 31 December
-2019. We ran the model from $t=251$ to $t=1231$: with $\chi=0$ until vaccination began
-at $t=349$, then week by week, finding the optimal $\chi$ from the state at the start of
-each week and solving the system of ODEs over that week, through the week ending at
-$t=1231$. The system is solved by the Runge--Kutta method of order 8 (\texttt{DOP853}) from $t=251$ (7 September 2020) to $t=1231$
-(15 May 2023), 980 days. The first 98 days are run with $\chi=0$ (all vaccination
-rates $0$): from $t=251$, the initial time of Glasser et al.\ (J.~Theoret.\ Biol.\ 556,
-2023, Section~3), to $t=349$, 14 December 2020, ``when vaccination began'' (Feng, Day,
-Glasser 2026, Section~2.2). Then come 126 weeks with vaccination, $t=349,356,\dots,1224$, the last containing
-11 May 2023, the end of the Public Health Emergency (Feng, Day, Glasser 2026,
-Section~2.2, p.~4). Each week the vaccination rates of the 3 doses are those that minimize the
-spectral radius $\rho$ of the next generation matrix, subject to the mock doses of the week of
-each location (all ages) and to at most $99\%$ of a group vaccinated in a week; the
-minimization is started from the uniform allocation and from the left eigenvector, and
-the smaller end value is kept. The variants Alpha, Delta, BS1, BA5 (the names of Table~S4 of the supplement of Feng, Day and Glasser) apply from $t=459$,
-$550$, $725$, $914$. The program is \texttt{code/python/seir7\_ode.py simulate
-optimal}; the figures are made by \texttt{code/python/plot\_weekly\_optimal.py}.
+2019. With the parameter set \texttt{2021} (Unknown 2020/21, \texttt{DATA.pdf},
+Section~3), the system is solved by the Runge--Kutta method of order 8 (\texttt{DOP853})
+from $t=251$ (7 September 2020), the initial time of Glasser et al.\ (J.~Theoret.\
+Biol.\ 556, 2023, Section~3), to $t=732$ (1 January 2022): with $\chi=0$ to $t=347$
+(12 December 2020), the start of vaccination of the set, then over 55 weeks,
+$t=347,354,\dots,725$, the number of weeks of the reported doses. Each week the vaccination rates of the 3 doses are
+those that minimize the spectral radius $\rho$ of the next generation matrix, subject to
+the mock doses of the week of each location (all ages) and to at most $99\%$ of a group
+vaccinated in a week; the minimization is started from the uniform allocation and from
+the left eigenvector, and the smaller end value is kept. The transmission, the efficacy
+and the contact rates change at $t=398$, $460$ and $548$ (1 February, 4 April and 1 July
+2021; \texttt{DATA.pdf}, Section~3.3). The program is \texttt{code/python/seir7\_ode.py
+simulate optimal}; the figures are made by \texttt{code/python/plot\_weekly\_optimal.py}.
 
 \paragraph{Results.}
-In every one of the 126 weeks the optimal allocation gives a smaller $\rho$ than the
-uniform one, by $8$--$65\%$ ($23\%$ on average); $\rho>1$ in 78 weeks (optimal) and
-85 weeks (uniform). The vaccinated $V$ peak at $158$ million (14 June 2021); the
-infectious peak at $25.4$ million (24 January 2022) and the hospitalized at $1.18$
-million (31 January 2022). The deaths increase from $60$ thousand at $t=349$ to $774$
-thousand at $t=1231$.
+In every one of the 55 weeks the optimal allocation gives a smaller $\rho$ than the
+uniform one, by $5.5$--$40\%$ ($20\%$ on average); $\rho>1$ in 24 weeks (optimal) and
+35 weeks (uniform). In 38 weeks the bound of $99\%$ a week is reached by some group.
+The vaccinated $V$ peak at $132$ million (12 June 2021); the infectious peak at $21.4$
+million (30 October 2021) and the hospitalized at $1.33$ million (13 November 2021). The
+deaths increase from $63$ thousand at $t=347$ to $838$ thousand at $t=732$.
 
 \paragraph{Public data.}
 Nine of the 11 inputs are built from published or public sources, each described in
@@ -62,8 +64,8 @@ Vintage 2024), the contact matrix $U$ (Prem, Cook, Jit 2017), the distances and 
 factors (Census centers of population, county estimates, Gazetteer), the contact matrix
 $C$ (from $U$, $L$, $d$), the stringency $s_i(t)$ (OxCGRT), the age-specific values
 and $\beta^0$ (Glasser et al.\ 2023, Table~2 and Fig.~4), and the days of the variants (CDC
-variant proportions). The constants are those of the supplement of Feng, Day and Glasser
-(\texttt{DATA.pdf}, Sections~1.7--1.8). Rebuilding all 11 inputs from the files in
+variant proportions). The constants are those of the set \texttt{2021}
+(\texttt{DATA.pdf}, Section~3). Rebuilding all 11 inputs from the files in
 \texttt{data/Downloaded\_from\_source/} with the scripts named in \texttt{DATA.pdf} gives
 files with contents identical to those used.
 
@@ -75,7 +77,8 @@ seroprevalence survey, rounds 3 and 4, by made-up rules (\texttt{DATA.pdf},
 Section~1.9.1) in place of the procedure of Glasser et al.\ (2023, Section~3); $6.6\%$
 seropositive.
 (2)~The weekly doses by location, age group and dose,
-\texttt{mock/doses\_51x16x16\_mock.xlsx}: made up, $287$, $256$ and $109$ million first,
-second and third doses in total; to be replaced by more realistic data later.
+\texttt{mock/doses\_51x16x16\_mock.xlsx}: made up, 55 weeks, $237$, $210$ and $55$
+million first, second and third doses in total; to be replaced by more realistic data
+later.
 
 \end{document}

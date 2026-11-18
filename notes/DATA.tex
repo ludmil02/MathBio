@@ -100,11 +100,13 @@ of~\fref{f-g23}; \src{glasser2023_inputs.py}. Section~\ref{sec-age}.
 \item\label{f-vd} \src{cdc/variant_days.csv}: the days of the variants;
 \src{cdc_variants.py} from~\fref{f-var}. Section~\ref{sec-var}.
 \item\label{f-x0} \src{cdc/state_t251_mock.csv}: the initial state (mock);
-\src{sero_initial_51x16.py} from~\fref{f-sero}, \fref{f-N}, \fref{f-t2}. CSV without a
-header, $13m=663$ rows and $n=16$ columns: 13 blocks of $m$ rows, the compartments in the
-order $S$, $P$, $E_s$, $E_p$, $V$, $I_a$, $I_{ps}$, $I_{pm}$, $I_s$, $I_m$, $I_h$, $R$, $M$;
-within a block the locations in FIPS order; the columns are the age groups.
-Section~\ref{sec-mock}.
+\src{sero_initial_51x16.py} from~\fref{f-sero}, \fref{f-N}, \fref{f-t2}. CSV,
+$1+13m=664$ rows and $2+n=18$ columns. Row 1: ``variable'', ``location'', then the age
+groups 0--4, \dots, 75+. Then 13 blocks of $m$ rows, the compartments in the order $S$,
+$P$, $E_s$, $E_p$, $V$, $I_a$, $I_{ps}$, $I_{pm}$, $I_s$, $I_m$, $I_h$, $R$, $M$; within a
+block the locations in FIPS order; column A the compartment, column B the location, then
+the $n$ age groups. The program checks the labels of row 1 and of columns A and B
+(\src{read_state} in \src{seir7_ode.py}). Section~\ref{sec-mock}.
 \item\label{f-doses} \src{mock/doses_51x16x16_mock.xlsx}: the weekly doses (mock),
 sheet \src{by_state} by location and sheet \src{by_state_age} by location and age group;
 \src{doses_51x16x16.py} from~\fref{f-N}. Section~\ref{sec-mock}.
@@ -115,7 +117,9 @@ sheet \src{by_state} by location and sheet \src{by_state_age} by location and ag
 The time $t$ is the number of days from 31 December 2019, and the model is
 started at $t=251$, 7 September 2020~\cite[Section~3]{2023Glasser_Feng}.
 Vaccination began on 14 December 2020~\cite[Section~2.2]{2026Feng_Day_Glasser},
-$t=349$.
+$t=349$; the parameter set \src{2021}, used in the computation of
+Section~\ref{sec-comp}, starts it at $t_{\mathrm{vacc}}=347$, 12 December 2020
+(Section~\ref{sec-params-const}).
 
 \subsection{Population}\label{sec-pop}
 
@@ -308,9 +312,10 @@ that the 13 compartments add up to $N_{ij}$, and the other compartments $0$.
 This gives $6.6\%$ seropositive. (\fref{f-x0})
 
 \subsubsection{Weekly doses (mock)}\label{sec-doses}
-Made up, by location, age group and dose, for
-the 126 weeks from $t=349$ through the end of the Public Health Emergency,
-11 May 2023~\cite[Section~2.2, p.~4]{2026Feng_Day_Glasser} (\fref{f-doses}): age group
+Made up, by location, age group and dose, for 55 weeks from the start of vaccination,
+the number of weeks of the reported doses (\fref{f-doses}). The rules below are applied
+over 126 weeks, through the end of the Public Health Emergency, 11 May
+2023~\cite[Section~2.2, p.~4]{2026Feng_Day_Glasser}, and the file has the first 55: age group
 $j$ receives $\mathrm{cov}_jN_{ij}$ first doses evenly over 12 weeks from its
 start week ($\mathrm{cov}=0.9$ from week 1 for 65+; $0.8$ from week 9 for 50--64;
 $0.7$ from week 15 for 20--49; $0.55$, $0.45$, $0.3$, $0.1$ from weeks 17, 22, 47,
@@ -324,7 +329,7 @@ integer. To be replaced by the doses reported to the
 CDC~\cite[Section~2.2]{2026Feng_Day_Glasser}.
 
 The file~\fref{f-doses} has two sheets, each with two header rows: in the first,
-``Week 1'', \dots, ``Week 126'', each in the middle one of its three columns (week $w$
+``Week 1'', \dots, ``Week 55'', each in the middle one of its three columns (week $w$
 starts on day $t=t_{\mathrm{vacc}}+7(w-1)$, Section~\ref{sec-params-const}); in the second, ``Dose 1'', ``Dose 2'', ``Dose 3+'' under each
 week. Sheet 1, \src{by_state}: the column ``State'' and one row for each of the
 51 locations, the doses $D_{k,i}=\sum_jD_{k,ij}$ of all ages. Sheet 2,
@@ -332,6 +337,9 @@ week. Sheet 1, \src{by_state}: the column ``State'' and one row for each of the
 816 groups $(i,j)$, the doses $D_{k,ij}$. All entries are integers, stored as
 floating point numbers. Sheet 1 is the sum of sheet 2 over the age groups, exactly
 (checked by \src{doses_51x16x16.py} after the file is written).
+A file of reported doses has the same layout. An empty cell below the two header rows
+and right of the key columns is read as $0$, and each one is listed in the log with
+its cell, location, week and dose (\src{read_sheet} in \src{doses_51x16x16.py}).
 The optimal strategy uses only sheet 1; sheet 2 is used only by the actual
 strategy (Remark~\ref{rem-actual}).
 
@@ -407,8 +415,9 @@ of a group add up to $0$, so each group keeps its size $N_{ij}$.
 
 \begin{enumerate}[leftmargin=*]
 \item Solve~\eqref{ode} from $t=251$, with the initial state~\fref{f-x0}, to
-$t=349$, the start of vaccination, with $\chi=0$.
-\item For each week $[\tau,\tau+7]$, $\tau=349,356,\dots$ (126 weeks), with
+$t=347$, the start of vaccination of the parameter set \src{2021}, with $\chi=0$.
+\item For each week $[\tau,\tau+7]$, $\tau=347,354,\dots,725$ (55 weeks, to $t=732$,
+1 January 2022), with
 $S$, $V$, $P$ the state at $\tau$ and $D_{k,i}$ the mock doses of location $i$ in the
 week, sheet 1 of~\fref{f-doses} (Section~\ref{sec-doses}):
 \begin{enumerate}[label=(\alph*)]

@@ -44,8 +44,7 @@ the values of Feng, Day, Glasser 2026).  The results go to `results/<tag>/`, `ta
 <INITIAL>__<DOSES>__<PARAMS>` (the two file names without extension, and the set), e.g.
 `results/state_t251_mock__doses_51x16x16_mock__2021/`, so runs with different inputs are kept
 apart.  After an interruption, `RESUME=1 ./run.sh` with the same arguments continues
-from the last completed week.  The run with the 126 weeks of the mock doses took about 5000 s
-(about 1.4 h); memory about 150 MB.
+from the last completed week.
 
 ## The dose file
 
@@ -64,10 +63,11 @@ one sheet is enough.
   sum of sheet 2 over the ages.
 
 Week `w` starts on day `t = t_vacc + 7 (w - 1)`.  The number of weeks is that of the file, and
-the run ends at `t = t_vacc + 7 W` for `W` weeks; for the 126 weeks of the mock file, at `t =
-1229` (13 May 2023) with `2021` and `t = 1231` (15 May 2023) with `feng2026`.  The mock doses are made by
+the run ends at `t = t_vacc + 7 W` for `W` weeks; for the 55 weeks of the mock file, at `t =
+732` (1 January 2022) with `2021` and `t = 734` (3 January 2022) with `feng2026`.  The mock doses are made by
 `code/python/doses_51x16x16.py` (rules in `notes/DATA.tex`, Section 1.9.2); a file of
-reported doses has to have the same layout.
+reported doses has to have the same layout.  An empty cell below the two header rows and right
+of the key column(s) is read as 0, and each one is listed in the log.
 
 ## The initial state file
 

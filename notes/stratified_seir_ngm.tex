@@ -770,8 +770,9 @@ are published or public, except the initial state and the weekly doses, which
 are mock data (DATA.tex, Section~1.9).
 
 \paragraph{The weekly loop.} The system is solved from $t=251$ (7 September
-2020) to $t=349$ (14 December 2020, the start of vaccination) without
-vaccination, and then on the weeks $[\tau,\tau+7]$, $\tau=349,356,\dots$, with
+2020) to $t=347$ (12 December 2020, the start of vaccination of the parameter set
+\texttt{2021}) without vaccination, and then on the 55 weeks $[\tau,\tau+7]$,
+$\tau=347,354,\dots,725$, to $t=732$ (1 January 2022), with
 rates $\chi_{k,p}$ constant on each week, computed at $\tau$ from the state
 $X(\tau)$ and the mock doses $D_{k,p}$ of the week (DATA.tex, Section~1.9.2): the doses of each location,
 summed over its age groups, are allocated by the solution of~\eqref{problem} at
@@ -831,6 +832,38 @@ constraint. After the minimization the computation checks that no rate exceeds
 $\chi_{\max}$ and reports the largest rate.
 
 \subsection{The one dose problem with a bound on the rates}\label{sec-bound}
+
+\paragraph{The value of the bound.} Let a group be vaccinated at the rate $\chi\ge0$,
+constant on the week $[\tau,\tau+7]$, and leave out the other flows out of the
+compartment. A person present at $\tau$ is then not yet vaccinated at $\tau+s$ with
+probability $e^{-\chi s}$, and the fraction of the group vaccinated in the week is
+\begin{equation}\label{phi-week}
+\varphi(\chi)=1-e^{-7\chi}.
+\end{equation}
+The actual strategy (DATA.tex, Remark~2.1) gives $D$ doses to $X$ people in the week
+with the rate $\chi$ for which $\varphi(\chi)=\min\{D/X,0.99\}$, that is,
+$\chi=-\frac17\ln\left(1-\min\{D/X,0.99\}\right)$. Since $\varphi$ is strictly
+increasing, its rates are those with $\varphi(\chi)\le0.99$, that is,
+$\chi\le\chi_{\max}=-\frac17\ln(1-0.99)=\frac17\ln100\approx0.6579$ per day, and the
+bound $\chi_{k,p}\le\chi_{\max}$ states that at most $99\%$ of a group is vaccinated
+in a week.
+
+\begin{lemma}\label{lem-bound-feasible}
+Let $J_i$ be the eligible groups of location $i$ for dose $k$, $\sigma_{k,p}>0$ for
+$p\in J_i$, and $0<b_{k,i}\le0.99\sum_{p\in J_i}\sigma_{k,p}/7$. Then
+$b_{k,i}<\chi_{\max}\sum_{p\in J_i}\sigma_{k,p}$, and the set
+$\left\{\chi_{k,p}:\ 0\le\chi_{k,p}\le\chi_{\max},\ p\in J_i,\
+\sum_{p\in J_i}\sigma_{k,p}\chi_{k,p}=b_{k,i}\right\}$ contains the rates
+$\chi_{k,p}=b_{k,i}/\sum_{l\in J_i}\sigma_{k,l}<\chi_{\max}$.
+\end{lemma}
+\begin{proof}
+For $x>0$, $1-e^{-x}<x$, since the two sides agree at $x=0$ and the derivative
+$e^{-x}$ of the left side is smaller than $1$. With $x=7\chi_{\max}$, for which
+$1-e^{-x}=0.99$, this gives $0.99<7\chi_{\max}$, so
+$b_{k,i}\le0.99\sum_{p\in J_i}\sigma_{k,p}/7<\chi_{\max}\sum_{p\in J_i}\sigma_{k,p}$.
+The uniform rates $b_{k,i}/\sum_{l\in J_i}\sigma_{k,l}$ satisfy the constraint, and
+they are smaller than $\chi_{\max}$ by this inequality.
+\end{proof}
 
 With $\chi_{1,p}\le\chi_{\max}$ added, the one dose problem of
 Section~\ref{sec-single} has the feasible set
@@ -915,6 +948,81 @@ With a bound $T_p$ that is never reached, the bisection gives the $\mu_i$
 of~\eqref{mu-exact} (computed: to relative $10^{-15}$). The convergence result for
 the alternating method (Section~\ref{sec-alt-convergence}) was proved without
 the bound; we have not checked that it holds with it.
+
+\begin{lemma}\label{lem-capped-proj}
+Let $y\in\mathbb R^q$, $U_p>0$ for $p=1:q$, $\sum_pU_p\ge1$, and
+$\mathcal U=\{u:\ 0\le u_p\le U_p,\ \sum_pu_p=1\}$. For $\lambda\in\mathbb R$ let
+$u_p(\lambda)=\min\{\max\{y_p-\lambda,0\},U_p\}$ and $G(\lambda)=\sum_pu_p(\lambda)$.
+Then $G(\lambda)=1$ has a solution, $u(\lambda)$ is the same at all solutions, and it
+is the Euclidean projection of $y$ onto $\mathcal U$.
+\end{lemma}
+\begin{proof}
+Each $u_p(\lambda)$ is continuous and non-increasing, so $G$ is. For
+$\lambda\le\min_p(y_p-U_p)$, $u_p(\lambda)=U_p$ and $G(\lambda)=\sum_pU_p\ge1$; for
+$\lambda\ge\max_py_p$, $G(\lambda)=0$. Hence $G(\lambda)=1$ has a solution. If
+$\lambda<\lambda'$ are two solutions, then $\sum_p\left(u_p(\lambda)-u_p(\lambda')\right)=0$
+with every term $\ge0$, so $u(\lambda)=u(\lambda')$.
+
+The projection minimizes $\frac12\|u-y\|^2$, strictly convex, on the convex, closed,
+non-empty set $\mathcal U$ (it contains $u(\lambda)$ at a solution), so it exists and
+is unique. The constraints are affine, so $u$ is the minimizer if and only if there
+are $\lambda$ and $\alpha_p,\beta_p\ge0$ with
+$u_p-y_p+\lambda-\alpha_p+\beta_p=0$, $\alpha_pu_p=0$, $\beta_p(U_p-u_p)=0$, $u\in\mathcal U$
+\cite[Section~5.5.3]{2004Boyd_Vandenberghe}. If $0<u_p<U_p$, then
+$\alpha_p=\beta_p=0$ and $u_p=y_p-\lambda$; if $u_p=0$, then $\beta_p=0$ and
+$y_p-\lambda=-\alpha_p\le0$; if $u_p=U_p$, then $\alpha_p=0$ and
+$y_p-\lambda=U_p+\beta_p\ge U_p$. In all three cases $u_p=u_p(\lambda)$, and
+$\sum_pu_p=1$ is $G(\lambda)=1$. Conversely, for a solution $\lambda$ of
+$G(\lambda)=1$, $u=u(\lambda)$ with $\alpha_p=\max\{0,\lambda-y_p\}$ and
+$\beta_p=\max\{0,y_p-\lambda-U_p\}$ satisfies these conditions.
+\end{proof}
+
+The projection of the spectral projected gradient step is this one, for each location
+$i$, with $q=|J_i|$, $u_p=\sigma_{k,p}\chi_{k,p}/b_{k,i}$ and
+$U_p=\sigma_{k,p}\chi_{\max}/b_{k,i}$; $\sum_pU_p>1$ by
+Lemma~\ref{lem-bound-feasible}. $G$ is non-increasing, and $\lambda$ is computed by
+bisection between $\min_p(y_p-U_p)-1$ and $\max_py_p$, where $G\ge1$ and $G\le1$.
+
+\paragraph{The check after the minimization.} The bound is a constraint of the
+minimization, and the rates it returns exceed $\chi_{\max}$ at most by rounding
+errors: the step~\eqref{t-of-mu-bound} gives $t_p\le T_p$, the code updates
+$\bm t\leftarrow\bm t+\theta(\bm t^{\mathrm{new}}-\bm t)$ with $\theta=\frac12$, a convex
+combination of values $\le T_p$, and the projection of
+Lemma~\ref{lem-capped-proj} gives $u_p\le U_p$. The computation then applies, to each location $i$
+and dose $k$, the following step, repeated while some rate exceeds $\chi_{\max}$:
+with $O=\{p\in J_i:\ \chi_p>\chi_{\max}\}$ and
+$E=\sum_{p\in O}\sigma_p(\chi_p-\chi_{\max})$ (we drop the index $k$), set
+$\chi_p=\chi_{\max}$ for $p\in O$, and, with
+$F=\{p\in J_i\setminus O:\ \chi_p<\chi_{\max}\}$, set
+$\chi_p\leftarrow\chi_p\left(1+E/\sum_{l\in F}\sigma_l\chi_l\right)$ for $p\in F$
+if $\sum_{l\in F}\sigma_l\chi_l>0$, and $\chi_p\leftarrow\chi_p+E/\sum_{l\in F}\sigma_l$
+otherwise. So the doses above the bound go to the other groups of the location below
+it, in proportion to their doses.
+
+\begin{lemma}\label{lem-cap-check}
+Let $\chi_p\ge0$ for $p\in J_i$, $\sum_{p\in J_i}\sigma_p\chi_p=b_{k,i}$, and
+$b_{k,i}<\chi_{\max}\sum_{p\in J_i}\sigma_p$. Then each step keeps
+$\sum_{p\in J_i}\sigma_p\chi_p=b_{k,i}$ and $\chi_p\ge0$, $F$ is not empty in each
+step, and after at most $|J_i|-1$ steps $\chi_p\le\chi_{\max}$ for all $p\in J_i$.
+\end{lemma}
+\begin{proof}
+A step removes $E$ from the doses $\sigma_p\chi_p$ of the groups in $O$ and adds
+$E\,\sigma_p\chi_p/\sum_{l\in F}\sigma_l\chi_l$, or $E\,\sigma_p/\sum_{l\in F}\sigma_l$,
+to those of the groups in $F$, in all $E$; so the sum is kept, and no rate decreases
+below $0$. After the groups of $O$ are set to $\chi_{\max}$, if $F$ were empty then
+every $p\in J_i$ would have $\chi_p\ge\chi_{\max}$ and
+$\sum_{p\in J_i}\sigma_p\chi_p\ge\chi_{\max}\sum_{p\in J_i}\sigma_p>b_{k,i}$, against
+the sum being $b_{k,i}$. Let $K$ be the set of groups with $\chi_p=\chi_{\max}$. A
+group of $K$ is in neither $O$ nor $F$ in a later step, so its rate stays
+$\chi_{\max}$, and the groups of $O$, which are not in $K$, join $K$. So each step
+with $O$ not empty enlarges $K$ by at least one group. By the argument for $F$, $K$
+never contains all of $J_i$, so there are at most $|J_i|-1$ such steps, and after them
+$O$ is empty.
+\end{proof}
+
+The code (\path{cap_rates} in \path{seir7_ode.py}) does at most $n\ge|J_i|$ passes,
+the last of them only finding $O$ empty, and reports the largest rate before the
+check.
 
 {\sloppy
 \paragraph{Implementation.} \path{code/python/seir7_ode.py}, run as
