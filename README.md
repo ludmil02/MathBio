@@ -48,7 +48,7 @@ Run the scripts from `code/python/`.  Eigenvalues by Arnoldi (`scipy.sparse.lina
 | `oxcgrt_s_51.py` | stringency factors `s_i(t) = 1 - SI_i(t)/100` (OxCGRT) |
 | `cdc_variants.py` | the days of the variants (CDC variant proportions) |
 | `sero_initial_51x16.py` | the initial state at `t = 251` (MOCK, from the CDC serosurvey) |
-| `mock_doses_51x16x16.py` | the weekly doses (MOCK), `data/mock/doses_51x16x16_mock.xlsx`: sheet 1 `by_state` (51 rows, all ages; used by `simulate optimal`), sheet 2 `by_state_age` (816 rows; used only by `simulate actual`); header row 1 `Week 1` ... `Week 126`, each over three columns (week `w` starts at `t = t_vacc + 7 (w - 1)`, `t_vacc` of the parameter set), row 2 `State` (and `Age`), then `Dose 1`, `Dose 2`, `Dose 3+` under each week; the doses by age are rounded to integers (stored as floats), and sheet 1 is their sum over the ages, exactly |
+| `doses_51x16x16.py` | reads a dose file, real or mock (`read_sheet`, used by every run of `seir7_ode.py`); run as a script, it writes the weekly doses (MOCK), `data/mock/doses_51x16x16_mock.xlsx`: sheet 1 `by_state` (51 rows, all ages; used by `simulate optimal`), sheet 2 `by_state_age` (816 rows; used only by `simulate actual`); header row 1 `Week 1` ... `Week 126`, each over three columns (week `w` starts at `t = t_vacc + 7 (w - 1)`, `t_vacc` of the parameter set), row 2 `State` (and `Age`), then `Dose 1`, `Dose 2`, `Dose 3+` under each week; the doses by age are rounded to integers (stored as floats), and sheet 1 is their sum over the ages, exactly |
 | `seir7_ode.py` | the model and its solution: `simulate optimal` (the weekly optimization of Section 9 of the main document), `solve`, `verify` |
 | `sdirk.py` | an implicit Runge-Kutta method with step control (SDIRK of order 4, embedded order 3, Hairer-Wanner), matrix-free: Newton-GMRES with the Jacobian-vector product of `seir7_ode.py`; used by `seir7_ode.py ... method=SDIRK4` |
 | `alternating.py` | the alternating method of Section 6, with the bound on the rates of Section 9.1 |
@@ -57,7 +57,7 @@ Run the scripts from `code/python/`.  Eigenvalues by Arnoldi (`scipy.sparse.lina
 
 Order: `census_N_51x16.py`, `prem_U_16x16.py`, `geo_51.py`, `build_C_51x16.py`,
 `glasser2023_inputs.py`, `oxcgrt_s_51.py`, `cdc_variants.py`, `sero_initial_51x16.py`,
-`mock_doses_51x16x16.py`, then
+`doses_51x16x16.py`, then
 
     python3 -u seir7_ode.py simulate optimal 2>&1 | tee intermediate/seir7_ode_simulate_optimal__state_t251_mock__doses_51x16x16_mock__2021.output
 

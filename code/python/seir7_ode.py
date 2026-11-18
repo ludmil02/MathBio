@@ -15,7 +15,7 @@ Inputs (each built by its script from files in MathBio/data/Downloaded_from_sour
   data/oxcgrt/s_51_daily.csv       oxcgrt_s_51.py         stringency factors s_i(t)
   data/model/C_816x816.csv.gz      build_C_51x16.py       contact matrix C (from U, L, d, b)
   data/cdc/state_t251_mock.csv     sero_initial_51x16.py  initial state (MOCK); format: read_state
-  data/mock/doses_51x16x16_mock.xlsx  mock_doses_51x16x16.py  weekly doses (MOCK): sheet 1
+  data/mock/doses_51x16x16_mock.xlsx  doses_51x16x16.py  weekly doses (MOCK): sheet 1
                                    by state (read for optimal), sheet 2 by state and age (actual)
 
 The state vector has the order: compartment (S, P, Es, Ep, V, Ia, Ips, Ipm, Is, Im, Ih, R, M),
@@ -548,7 +548,7 @@ def do_simulate(mod, strategy="actual", nrand=0, resume=False, doses=DOSES, outd
     A = None
     if strategy == "optimal":
         import alternating as A
-    from mock_doses_51x16x16 import read_sheet     # the layout of the dose file
+    from doses_51x16x16 import read_sheet          # reads a dose file, real or mock
     if strategy == "optimal":     # sheet 1: one row per location (all ages)
         keys, nw, val = read_sheet(doses, 0, 1)
         if [k[0] for k in keys] != mod.locs:

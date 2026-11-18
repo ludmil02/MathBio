@@ -107,7 +107,7 @@ within a block the locations in FIPS order; the columns are the age groups.
 Section~\ref{sec-mock}.
 \item\label{f-doses} \src{mock/doses_51x16x16_mock.xlsx}: the weekly doses (mock),
 sheet \src{by_state} by location and sheet \src{by_state_age} by location and age group;
-\src{mock_doses_51x16x16.py} from~\fref{f-N}. Section~\ref{sec-mock}.
+\src{doses_51x16x16.py} from~\fref{f-N}. Section~\ref{sec-mock}.
 \end{enumerate}
 
 \subsection{Time}\label{sec-time}
@@ -331,7 +331,7 @@ week. Sheet 1, \src{by_state}: the column ``State'' and one row for each of the
 \src{by_state_age}: the columns ``State'', ``Age'' and one row for each of the
 816 groups $(i,j)$, the doses $D_{k,ij}$. All entries are integers, stored as
 floating point numbers. Sheet 1 is the sum of sheet 2 over the age groups, exactly
-(checked by \src{mock_doses_51x16x16.py} after the file is written).
+(checked by \src{doses_51x16x16.py} after the file is written).
 The optimal strategy uses only sheet 1; sheet 2 is used only by the actual
 strategy (Remark~\ref{rem-actual}).
 

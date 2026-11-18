@@ -1,4 +1,7 @@
-"""MOCK weekly doses by location, age group and dose, from the start of vaccination
+"""The dose files: read_sheet reads a dose file, real or mock (seir7_ode.py uses it for every
+run); write_sheet writes one; run as a script, it generates the MOCK doses below.
+
+MOCK weekly doses by location, age group and dose, from the start of vaccination
 (t_vacc of the parameter set in weekly_simulation/input/parameters.xlsx) for 126 weeks,
 through about the end of the Public Health Emergency (11 May 2023).
 To be replaced by the doses reported to the CDC (notes/DATA.tex, Section 1.9.2).
@@ -32,7 +35,7 @@ Mock rules (all made up, chosen only to look plausible):
           week 40 for ages 65+ and week 48 for ages 20-64; none below age 20;
   each location, dose and week is multiplied by exp(0.1 z), z standard normal (seed 0).
 
-Usage:  python3 -u mock_doses_51x16x16.py
+Usage:  python3 -u doses_51x16x16.py      (writes the mock doses)
 """
 import os
 

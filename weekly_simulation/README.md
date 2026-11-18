@@ -66,7 +66,7 @@ one sheet is enough.
 Week `w` starts on day `t = t_vacc + 7 (w - 1)`.  The number of weeks is that of the file, and
 the run ends at `t = t_vacc + 7 W` for `W` weeks; for the 126 weeks of the mock file, at `t =
 1229` (13 May 2023) with `2021` and `t = 1231` (15 May 2023) with `feng2026`.  The mock doses are made by
-`code/python/mock_doses_51x16x16.py` (rules in `notes/DATA.tex`, Section 1.9.2); a file of
+`code/python/doses_51x16x16.py` (rules in `notes/DATA.tex`, Section 1.9.2); a file of
 reported doses has to have the same layout.
 
 ## The initial state file
