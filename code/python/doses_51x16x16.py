@@ -105,7 +105,8 @@ def header_mismatch(df, nk):
 
 def read_sheet(path, sheet, nk):
     """The inverse of write_sheet, with checks of the two header rows. Returns (key rows,
-    number of weeks, values: rows x (3 * weeks), week-major)."""
+    number of weeks, values: rows x (3 * weeks), week-major). Empty data cells (after the key
+    columns and the two header rows) are set to 0, and each is reported."""
     xl = pd.ExcelFile(path)
     name = xl.sheet_names[sheet] if isinstance(sheet, int) else sheet
     df = pd.read_excel(xl, sheet_name=sheet, header=None)
@@ -121,15 +122,17 @@ def read_sheet(path, sheet, nk):
         raise ValueError(f"{path}, sheet {sheet}: header rows not Week w / Dose 1, Dose 2, Dose 3+:"
                          f" {bad}")
     keys, val = df.iloc[2:, :nk].values.tolist(), df.iloc[2:, nk:].to_numpy(float)
+    empty = np.isnan(val)                                 # empty data cells: set to 0 below
+    val = np.where(empty, 0.0, val)
     tot = val.reshape(len(keys), nw, 3).sum(axis=(0, 1))
     print(f"   {nw} weeks (Week 1 ... Week {nw}), {len(keys)} rows of data ({keys[0]} ... "
           f"{keys[-1]}); doses in total: dose 1 {tot[0]:,.0f}, dose 2 {tot[1]:,.0f}, dose 3+"
-          f" {tot[2]:,.0f}; empty cells {int(np.isnan(val).sum())}, negative {int((val < 0).sum())}",
-          flush=True)
+          f" {tot[2]:,.0f}; empty cells {int(empty.sum())} (set to 0), negative"
+          f" {int((val < 0).sum())}", flush=True)
     rows, cols = df.index, df.columns
-    for i, j in zip(*np.nonzero(np.isnan(val))):          # row-major: by key, then week, dose
+    for i, j in zip(*np.nonzero(empty)):                  # row-major: by key, then week, dose
         print(f"   empty cell {excel_col(cols[nk + j])}{rows[2 + i] + 1}: {keys[i]}, Week"
-              f" {j // 3 + 1}, {DOSE_LABELS[j % 3]}", flush=True)
+              f" {j // 3 + 1}, {DOSE_LABELS[j % 3]}; set to 0", flush=True)
     return keys, nw, val
 
 
