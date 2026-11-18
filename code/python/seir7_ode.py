@@ -47,8 +47,8 @@ Usage:
         the doses by location and age; optimal: each week, the doses of each location (all ages)
         allocated among its age groups by the alternating method (alternating.py, notes/
         stratified_seir_ngm.tex) with sigma = S, V, P of the solution at the start of the week,
-        from the uniform and left-eigenvector starts (and NRAND random ones, a constant below,
-        0: random starts only to test for other local minima); eigenvector: the same doses
+        from the uniform and eigenvector-strategy starts (and NRAND random
+        ones, a constant below, 0: random starts only to test for other local minima); eigenvector: the same doses
         allocated by the eigenvector strategy, no optimization (notes/DATA.tex, Section 2.3)
         -> data/simulate_weekly_51x16_<strategy>__<tag>.csv (national totals at the start of each
            week), and except for actual data/simulate_weekly_51x16_<strategy>__<tag>_rho.csv (rho
@@ -454,7 +454,7 @@ ELIG_MIN = 1.0        # persons: only groups with sigma_{k,p} >= ELIG_MIN may re
 B_FLOOR = 1e-9        # persons per day: the optimizer needs b_{k,i} > 0
 B_CAP = 0.99          # weekly doses of a location at most this fraction of its eligible people
 CHI_MAX = -np.log(1 - B_CAP) / 7.0   # 0.658 per day: at most 99% of a group in a week, as in DATA.tex, Remark 2.1
-NRAND = 0             # random starts of the weekly optimization besides uniform and left ev; > 0 only
+NRAND = 0             # random starts of the weekly optimization besides uniform and eigenvector; > 0 only
                       # to test whether other starts reach a smaller rho (other local minima)
 
 
@@ -554,25 +554,34 @@ def eigenvector_rates(mod, A, tau, X, Dw, chi_prev):
                  **doses_by_age(mod, chi, sig, elig)))
 
 
-def optimal_rates(mod, A, tau, X, Dw, nrand):
+def optimal_rates(mod, A, tau, X, Dw, nrand, chi_prev):
     """The weekly problem of notes/stratified_seir_ngm.tex at tau: minimize rho over chi with
     sum_{p in I_i} sigma_{k,p} chi_{k,p} = b_{k,i}; sigma_k = S, V, P at tau, b_{k,i} the doses
     of location i in the week (all ages) per day, from Dw (3 x m, sheet 1 of the dose file).
+    Started from the uniform start of alternating.starts (and nrand random ones, NRAND, 0 by
+    default; its left-ev start is not used) and from the rates of the eigenvector strategy at
+    tau (chi_prev the rates of the previous week); all satisfy the constraints. The smallest end value is kept;
+    the alternating method returns the smallest rho seen, the start included, so rho_opt <= rho
+    of the eigenvector strategy at this state.
     Returns chi (3 x m x n) and a summary, with the wall time (s) and iterations of the steps for
     chi1, chi2, chi3, added up over all sweeps and starts."""
+    chi_eig, _ = eigenvector_rates(mod, A, tau, X, Dw, chi_prev)
     A.reset_stats()
     sig, elig, b = week_problem(mod, A, tau, X, Dw)
     ends = []
-    for name, chi0 in A.starts(b, sig, nrand, seed=int(tau)):
+    st = A.starts(b, sig, nrand, seed=int(tau))
+    st = [st[0], ("eigenvector", [c.ravel() for c in chi_eig])] + st[2:]   # uniform, eigenvector, random
+    for name, chi0 in st:
         rho0 = A.rho_of(chi0)
         cm, rm, sw, _ = A.alternate(chi0, b, sig, label=f"[t={tau:g} {name}]")
         ends.append((rm, name, cm, sw, rho0))
     rm, name, chi, sw, _ = min(ends, key=lambda e: e[0])
     rho_uni = next(e[4] for e in ends if e[1] == "uniform")
+    rho_eig = next(e[4] for e in ends if e[1] == "eigenvector")
     chi, top = cap_rates(chi, sig, elig, mod.m, mod.n)
     rho_cap = A.rho_of(chi)
     return (np.stack([c.reshape(mod.m, mod.n) for c in chi]),
-            dict(rho_uniform=rho_uni, rho_opt=rm, rho_capped=rho_cap, rho_applied=rho_cap,
+            dict(rho_uniform=rho_uni, rho_eigenvector=rho_eig, rho_opt=rm, rho_capped=rho_cap, rho_applied=rho_cap,
                  chi_max_before_cap=top, start=name, sweeps=sw,
                  **{f"t_chi{k + 1}": A.STATS["time"][k] for k in range(3)},
                  **{f"it_chi{k + 1}": A.STATS["iters"][k] for k in range(3)},
@@ -662,10 +671,11 @@ def do_simulate(mod, strategy="actual", nrand=0, resume=False, doses=DOSES, outd
             print(f"week {w + 1} (t = {tau:g}): rho {strategy} {info['rho_applied']:.6f} (max chi"
                   f" before cap {info['chi_max_before_cap']:.3g}); {time.time() - tic:.0f} s", flush=True)
         else:
-            chi, info = optimal_rates(mod, A, tau, X, Dw, nrand)
+            chi, info = optimal_rates(mod, A, tau, X, Dw, nrand, mod.chi.copy())
             mod.chi[:] = chi
             opt.append({"t": tau, **info})
-            print(f"week {w + 1} (t = {tau:g}): rho uniform {info['rho_uniform']:.6f}, optimal "
+            print(f"week {w + 1} (t = {tau:g}): rho eigenvector "
+                  f"{info['rho_eigenvector']:.6f}, optimal "
                   f"{info['rho_opt']:.6f} ({info['start']}, {info['sweeps']} sweeps), capped "
                   f"{info['rho_capped']:.6f} (max chi before cap {info['chi_max_before_cap']:.3g});"
                   f" {time.time() - tic:.0f} s", flush=True)

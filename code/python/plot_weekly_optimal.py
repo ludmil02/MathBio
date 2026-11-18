@@ -7,7 +7,7 @@ else to notes/figures/.
 
 Inputs (produced by seir7_ode.py simulate optimal, tag = <initial>__<doses>__<params>, seir7_ode.run_tag):
   data/simulate_weekly_51x16_optimal__<tag>.csv      national totals at the start of each week
-  data/simulate_weekly_51x16_optimal__<tag>_rho.csv  rho per week, uniform and optimal allocation
+  data/simulate_weekly_51x16_optimal__<tag>_rho.csv  rho per week (rho_opt is plotted)
 Output, in notes/figures/ or in OUTDIR:
   fig_weekly_optimal_{rho,compartments,infectious,deaths}.png   one panel each
 """
@@ -36,18 +36,16 @@ def day(t):
 
 
 def panel_rho(a, w, r):
-    a.plot(day(r.t), r.rho_uniform, color=C[0], label="uniform allocation")
-    a.plot(day(r.t), r.rho_opt, color=C[1], label="optimal allocation")
+    a.plot(day(r.t), r.rho_opt, color=C[1])
     a.axhline(1.0, color="#8a8984", lw=0.8, ls="--")
-    a.set_title("Spectral radius of the next-generation matrix", loc="left")
-    a.legend()
+    a.set_title("Spectral radius ρ(NGM), optimal", loc="left")
 
 
 def panel_compartments(a, w, r):
     for k, (c, nm) in enumerate([("S", "susceptible S"), ("P", "partially immune P"), ("V", "vaccinated V"),
                                  ("R", "recovered R")]):
         a.plot(day(w.t), w[c] / 1e6, color=C[k], label=nm)
-    a.set_title("Compartments (millions)", loc="left")
+    a.set_title("Compartments, optimal (millions)", loc="left")
     a.legend()
 
 
@@ -55,13 +53,13 @@ def panel_infectious(a, w, r):
     infectious = w[["Ia", "Ips", "Ipm", "Is", "Im", "Ih"]].sum(axis=1)
     a.plot(day(w.t), infectious / 1e3, color=C[0], label="all infectious Ia+Ips+Ipm+Is+Im+Ih")
     a.plot(day(w.t), w.Ih / 1e3, color=C[1], label="hospitalized Ih")
-    a.set_title("Infectious (thousands)", loc="left")
+    a.set_title("Infectious, optimal (thousands)", loc="left")
     a.legend(loc="upper left")
 
 
 def panel_deaths(a, w, r):
     a.plot(day(w.t), w.M / 1e3, color=C[0])
-    a.set_title("Deaths M, cumulative (thousands)", loc="left")
+    a.set_title("Deaths M, optimal (thousands)", loc="left")
 
 
 PANELS = {"rho": panel_rho, "compartments": panel_compartments,

@@ -83,12 +83,8 @@ def values(resdir):
     v["RunSwitch"] = ("no change of the parameters" if not sw else
                       ", ".join(f"$t={s:g}$" for s in sw[:-1]) + (" and " if len(sw) > 1 else "")
                       + f"$t={sw[-1]:g}$ (" + ", ".join(date(s) for s in sw) + ")")
-    red = 100 * (1 - r.rho_opt / r.rho_uniform)
     cap = np.log(100) / 7
-    v.update(RunRhoBetter=f"{int((r.rho_opt < r.rho_uniform).sum())}",
-             RunRhoRedMin=sig(red.min()), RunRhoRedMax=sig(red.max()), RunRhoRedMean=sig(red.mean()),
-             RunRhoOptAbove=f"{int((r.rho_opt > 1).sum())}",
-             RunRhoUniAbove=f"{int((r.rho_uniform > 1).sum())}",
+    v.update(RunRhoOptAbove=f"{int((r.rho_opt > 1).sum())}",
              RunCapWeeks=f"{int(np.isclose(r.chi_max_before_cap, cap, rtol=1e-6).sum())}")
     inf = w[INFECTIOUS].sum(axis=1)
     for name, s, scale, n in (("V", w.V, 1e6, 3), ("Inf", inf, 1e6, 3), ("Hosp", w.Ih, 1e6, 3)):

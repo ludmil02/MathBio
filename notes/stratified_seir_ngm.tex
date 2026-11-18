@@ -753,11 +753,10 @@ groups with no doses, $k=1$ & 137 & 108 & 97\\
 groups with no doses, $k=2$ & 698 & 684 & 693\\
 groups with no doses, $k=3$ & 755 & 745 & 737\\\hline
 \end{tabular}
-\caption{The solution of each week: $\rho(\operatorname{NGM})$, the start it
-came from, the largest $\rho$ over the five end points, the spread and the
-ratio of~\eqref{kkt3}, and the number of groups (of 816) with no doses of each
-type. For $k=2$ the ratio is $0$: the groups with no second doses are those with
-$\Delta_p\le 0$, where $h_{2,p}\le 0$.}\label{tab-weeks}
+\caption{Each week: $\rho(\operatorname{NGM})$, its start, the largest $\rho$
+of the five end points, the spread and ratio of~\eqref{kkt3}, and the groups
+(of 816) with no doses. For $k=2$ the ratio is $0$, since $h_{2,p}\le 0$ where
+$\Delta_p\le 0$.}\label{tab-weeks}
 \end{table}
 
 \section{Simulation with the weekly optimization}\label{sec-simulation}
@@ -801,12 +800,19 @@ $\varepsilon_1=\varepsilon_2=\varepsilon_3=\varepsilon(\tau)$ in~\eqref{pis}.
 \path{code/python/data/model/C_816x816.csv.gz} (DATA.tex, Section~1.5). Since
 $C>0$, it is irreducible. Its products can also be computed without forming it
 (Appendix~\ref{app-factored}).
-\item The alternating method of Section~\ref{sec-three} is run from two
-starts: the uniform allocation, and the allocation in proportion to the left
-Perron vector of $A_1\operatorname{diag}(\bm g)$ at the uniform allocation (in
-place of the susceptible rows of the left eigenvector of $\operatorname{NGM}$
-used in Section~\ref{sec-three-numerics}). The end point with the smaller $\rho$
-is taken.
+\item The alternating method of Section~\ref{sec-three} is run each week from
+two starts: the uniform allocation, and the rates of the eigenvector
+strategy of~\cite{2026Feng_Day_Glasser} with the choices described in DATA.tex,
+Section~2.3, computed from the state and the next generation matrix at the
+start of the week and the rates of the previous week. The end point with the
+smaller $\rho$ is taken. Both starts satisfy the constraints, and the method
+returns the smallest $\rho$ seen, the start included; hence the $\rho$ of each
+week is at most that of the eigenvector strategy at the same state. Different
+starts can end at different points: in a run of 55 weeks with mock doses, the
+end values from the uniform start and from the allocation in proportion to the
+left Perron vector of $A_1\operatorname{diag}(\bm g)$ at the uniform allocation
+(an earlier second start) differ by up to $0.2\%$, each the smaller in about
+half of the weeks.
 \item The rates are bounded, $\chi_{k,p}\le\chi_{\max}=-\frac17\ln(1-0.99)\approx0.658$
 per day, the largest rate of the actual strategy; this bound is added to the
 constraints of~\eqref{problem} (Section~\ref{sec-bound}). The problem stays

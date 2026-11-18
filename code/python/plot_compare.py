@@ -73,13 +73,13 @@ def main(resdir):
 
     fig, a = plt.subplots(figsize=size, constrained_layout=True)
     lines(a, {s: r for s, (w, r) in runs.items()}, lambda y: y.rho_applied,
-          "Spectral radius of the next-generation matrix", one=True)
+          "Spectral radius ρ(NGM)", one=True)
     save(fig, outdir, "fig_compare_rho.png")
 
     for name, f, title in [
-            ("infectious", lambda y: y[INFECTIOUS].sum(axis=1) / 1e3, "All infectious (thousands)"),
+            ("infectious", lambda y: y[INFECTIOUS].sum(axis=1) / 1e3, "Infectious (thousands)"),
             ("hospitalized", lambda y: y.Ih / 1e3, "Hospitalized Ih (thousands)"),
-            ("deaths", lambda y: y.M / 1e3, "Deaths M, cumulative (thousands)")]:
+            ("deaths", lambda y: y.M / 1e3, "Deaths M (thousands)")]:
         fig, a = plt.subplots(figsize=size, constrained_layout=True)
         lines(a, {s: w for s, (w, r) in runs.items()}, f, title)
         save(fig, outdir, f"fig_compare_{name}.png")
@@ -99,7 +99,7 @@ def main(resdir):
             a.bar(x + (i - (len(with_doses) - 1) / 2) * wbar, runs[s][1][cols].sum() / 1e6,
                   width=wbar * 0.92, color=c, label=label)
         a.set_xticks(x, ages, rotation=45, ha="right", fontsize=7)
-        a.set_title(f"Dose {k}" + ("+" if k == 3 else "") + " by age group, all weeks (millions)",
+        a.set_title(f"Dose {k}" + ("+" if k == 3 else "") + ", all weeks (millions)",
                     loc="left")
         a.grid(axis="x", visible=False)
         a.legend()

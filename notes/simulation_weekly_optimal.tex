@@ -2,7 +2,7 @@
 % BEGIN run values: written by code/python/weekly_report.py from weekly_simulation/results/state_t251_mock__doses_51x16x16_mock_15wk__2021/
 \providecommand{\RunTag}{}\renewcommand{\RunTag}{code/\allowbreak{}python/\allowbreak{}state\_\allowbreak{}t251\_\allowbreak{}mock\_\allowbreak{}\_\allowbreak{}doses\_\allowbreak{}51x16x16\_\allowbreak{}mock\_\allowbreak{}15wk\_\allowbreak{}\_\allowbreak{}2021}
 \providecommand{\RunInitialFile}{}\renewcommand{\RunInitialFile}{weekly\_\allowbreak{}simulation/\allowbreak{}input/\allowbreak{}state\_\allowbreak{}t251\_\allowbreak{}mock.csv}
-\providecommand{\RunDosesFile}{}\renewcommand{\RunDosesFile}{weekly\_\allowbreak{}simulation/\allowbreak{}input/\allowbreak{}doses\_\allowbreak{}51x16x16\_\allowbreak{}mock\_\allowbreak{}15wk.xlsx}
+\providecommand{\RunDosesFile}{}\renewcommand{\RunDosesFile}{code/\allowbreak{}python/\allowbreak{}data/\allowbreak{}mock/\allowbreak{}doses\_\allowbreak{}51x16x16\_\allowbreak{}mock\_\allowbreak{}15wk.xlsx}
 \providecommand{\RunParams}{}\renewcommand{\RunParams}{2021}
 \providecommand{\RunTvacc}{}\renewcommand{\RunTvacc}{347}
 \providecommand{\RunTvaccDate}{}\renewcommand{\RunTvaccDate}{12 December 2020}
@@ -13,12 +13,7 @@
 \providecommand{\RunDaysNoVacc}{}\renewcommand{\RunDaysNoVacc}{96}
 \providecommand{\RunFigDir}{}\renewcommand{\RunFigDir}{../weekly_simulation/results/state_t251_mock__doses_51x16x16_mock_15wk__2021/figures/}
 \providecommand{\RunSwitch}{}\renewcommand{\RunSwitch}{$t=398$, $t=460$ and $t=548$ (1 February 2021, 4 April 2021, 1 July 2021)}
-\providecommand{\RunRhoBetter}{}\renewcommand{\RunRhoBetter}{15}
-\providecommand{\RunRhoRedMin}{}\renewcommand{\RunRhoRedMin}{8.7}
-\providecommand{\RunRhoRedMax}{}\renewcommand{\RunRhoRedMax}{22}
-\providecommand{\RunRhoRedMean}{}\renewcommand{\RunRhoRedMean}{13}
 \providecommand{\RunRhoOptAbove}{}\renewcommand{\RunRhoOptAbove}{0}
-\providecommand{\RunRhoUniAbove}{}\renewcommand{\RunRhoUniAbove}{0}
 \providecommand{\RunCapWeeks}{}\renewcommand{\RunCapWeeks}{11}
 \providecommand{\RunVPeak}{}\renewcommand{\RunVPeak}{61.1}
 \providecommand{\RunVPeakDate}{}\renewcommand{\RunVPeakDate}{27 March 2021}
@@ -42,7 +37,7 @@
 \providecommand{\CmpOptimalHospPeak}{}\renewcommand{\CmpOptimalHospPeak}{0.0708}
 % END run values
 % the four figures, in the folder \RunFigDir of the run (relative to this file)
-\newcommand{\figrho}{fig_weekly_optimal_rho.png}
+\newcommand{\figrho}{fig_compare_rho.png}
 \newcommand{\figcomp}{fig_weekly_optimal_compartments.png}
 \newcommand{\figinf}{fig_weekly_optimal_infectious.png}
 \newcommand{\figdeaths}{fig_weekly_optimal_deaths.png}
@@ -82,17 +77,18 @@ from $t=251$ (7 September 2020), the initial time of Glasser et al.\ (J.~Theoret
 Biol.\ 556, 2023, Section~3), to $t=\RunTend$ (\RunTendDate): with $\chi=0$ to $t=\RunTvacc$
 (\RunTvaccDate), the start of vaccination of the set, then over \RunWeeks{} weeks,
 $t=\RunTvacc,\dots,\RunTlast$, the number of weeks of the dose file. Each week the vaccination rates of the 3 doses are
-those that minimize the spectral radius $\rho$ of the next generation matrix, subject to
+those that minimize the spectral radius $\rho=\rho(\mathrm{NGM})$ of the next generation matrix NGM, subject to
 the doses of the week of each location (all ages) and to at most $99\%$ of a group
 vaccinated in a week; the minimization is started from the uniform allocation and from
-the left eigenvector, and the smaller end value is kept. The values that change over time
+the rates of the eigenvector strategy of the week, and the smaller end value is kept; so
+each week $\rho$ is at most that of the eigenvector strategy at the same
+state. The two runs are at the same state only in the first week; later, the eigenvector run
+can have the smaller $\rho$ of the two. The values that change over time
 change at \RunSwitch{} (\texttt{DATA.pdf}, Section~3.3). The program is \texttt{code/python/seir7\_ode.py
 simulate optimal}; the figures are made by \texttt{code/python/plot\_weekly\_optimal.py}.
 
 \paragraph{Results.}
-In \RunRhoBetter{} of the \RunWeeks{} weeks the optimal allocation gives a smaller $\rho$ than
-the uniform one, by $\RunRhoRedMin$--$\RunRhoRedMax\%$ ($\RunRhoRedMean\%$ on average);
-$\rho>1$ in \RunRhoOptAbove{} weeks (optimal) and \RunRhoUniAbove{} weeks (uniform). In
+With the optimal allocation, $\rho>1$ in \RunRhoOptAbove{} of the \RunWeeks{} weeks. In
 \RunCapWeeks{} weeks the bound of $99\%$ a week is reached by some group. The vaccinated
 $V$ peak at $\RunVPeak$ million (\RunVPeakDate); the infectious peak at $\RunInfPeak$
 million (\RunInfPeakDate) and the hospitalized at $\RunHospPeak$ million
@@ -157,17 +153,16 @@ deaths at $t=\RunTend$ (thousands) & \CmpOptimalDeathsEnd & \CmpEigenvectorDeath
 \end{center}
 
 \begin{center}
-\includegraphics[width=0.48\textwidth]{\RunFigDir fig_compare_rho.png}\hfill
-\includegraphics[width=0.48\textwidth]{\RunFigDir fig_compare_infectious.png}\\[4pt]
-\includegraphics[width=0.48\textwidth]{\RunFigDir fig_compare_hospitalized.png}\hfill
-\includegraphics[width=0.48\textwidth]{\RunFigDir fig_compare_deaths.png}
+\includegraphics[width=0.48\textwidth]{\RunFigDir fig_compare_infectious.png}\hfill
+\includegraphics[width=0.48\textwidth]{\RunFigDir fig_compare_hospitalized.png}\\[4pt]
+\includegraphics[width=0.48\textwidth]{\RunFigDir fig_compare_deaths.png}\hfill
+\includegraphics[width=0.48\textwidth]{\RunFigDir fig_compare_doses_age_dose1.png}
 \end{center}
 
 \paragraph{Doses by age.} The doses of each type given to each age group, summed over the
-weeks and the locations.
+weeks and the locations: dose 1 above, doses 2 and 3 below.
 \begin{center}
-\includegraphics[width=0.48\textwidth]{\RunFigDir fig_compare_doses_age_dose1.png}\hfill
-\includegraphics[width=0.48\textwidth]{\RunFigDir fig_compare_doses_age_dose2.png}\\[4pt]
+\includegraphics[width=0.48\textwidth]{\RunFigDir fig_compare_doses_age_dose2.png}\hfill
 \includegraphics[width=0.48\textwidth]{\RunFigDir fig_compare_doses_age_dose3.png}
 \end{center}
 

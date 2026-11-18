@@ -18,7 +18,7 @@
 % BEGIN run values: written by code/python/weekly_report.py from weekly_simulation/results/state_t251_mock__doses_51x16x16_mock_15wk__2021/
 \providecommand{\RunTag}{}\renewcommand{\RunTag}{code/\allowbreak{}python/\allowbreak{}state\_\allowbreak{}t251\_\allowbreak{}mock\_\allowbreak{}\_\allowbreak{}doses\_\allowbreak{}51x16x16\_\allowbreak{}mock\_\allowbreak{}15wk\_\allowbreak{}\_\allowbreak{}2021}
 \providecommand{\RunInitialFile}{}\renewcommand{\RunInitialFile}{weekly\_\allowbreak{}simulation/\allowbreak{}input/\allowbreak{}state\_\allowbreak{}t251\_\allowbreak{}mock.csv}
-\providecommand{\RunDosesFile}{}\renewcommand{\RunDosesFile}{weekly\_\allowbreak{}simulation/\allowbreak{}input/\allowbreak{}doses\_\allowbreak{}51x16x16\_\allowbreak{}mock\_\allowbreak{}15wk.xlsx}
+\providecommand{\RunDosesFile}{}\renewcommand{\RunDosesFile}{code/\allowbreak{}python/\allowbreak{}data/\allowbreak{}mock/\allowbreak{}doses\_\allowbreak{}51x16x16\_\allowbreak{}mock\_\allowbreak{}15wk.xlsx}
 \providecommand{\RunParams}{}\renewcommand{\RunParams}{2021}
 \providecommand{\RunTvacc}{}\renewcommand{\RunTvacc}{347}
 \providecommand{\RunTvaccDate}{}\renewcommand{\RunTvaccDate}{12 December 2020}
@@ -29,12 +29,7 @@
 \providecommand{\RunDaysNoVacc}{}\renewcommand{\RunDaysNoVacc}{96}
 \providecommand{\RunFigDir}{}\renewcommand{\RunFigDir}{../weekly_simulation/results/state_t251_mock__doses_51x16x16_mock_15wk__2021/figures/}
 \providecommand{\RunSwitch}{}\renewcommand{\RunSwitch}{$t=398$, $t=460$ and $t=548$ (1 February 2021, 4 April 2021, 1 July 2021)}
-\providecommand{\RunRhoBetter}{}\renewcommand{\RunRhoBetter}{15}
-\providecommand{\RunRhoRedMin}{}\renewcommand{\RunRhoRedMin}{8.7}
-\providecommand{\RunRhoRedMax}{}\renewcommand{\RunRhoRedMax}{22}
-\providecommand{\RunRhoRedMean}{}\renewcommand{\RunRhoRedMean}{13}
 \providecommand{\RunRhoOptAbove}{}\renewcommand{\RunRhoOptAbove}{0}
-\providecommand{\RunRhoUniAbove}{}\renewcommand{\RunRhoUniAbove}{0}
 \providecommand{\RunCapWeeks}{}\renewcommand{\RunCapWeeks}{11}
 \providecommand{\RunVPeak}{}\renewcommand{\RunVPeak}{61.1}
 \providecommand{\RunVPeakDate}{}\renewcommand{\RunVPeakDate}{27 March 2021}
@@ -405,7 +400,9 @@ by~\fref{f-prog}.
 \item\label{f-out-o} \src{data/simulate_weekly_51x16_optimal.csv}: the national
 totals of the 13 compartments at the start of each week.
 \item\label{f-out-rho} \src{data/simulate_weekly_51x16_optimal_rho.csv}: the
-spectral radius of each week, at the uniform allocation and at the solution.
+spectral radius of each week at the solution (and, in columns \texttt{rho\_uniform} and
+\texttt{rho\_eigenvector}, at the two starts of the minimization: the uniform allocation and
+the rates of the eigenvector strategy).
 \item\label{f-ckpt} \src{intermediate/simulate_optimal_checkpoint.npz}: after every
 week, the state, the week and the results so far; with the argument
 \texttt{resume} the computation continues from the last completed week.
