@@ -124,11 +124,11 @@ def _check_order():
              "b.c^3": (C ** 3, 1 / 4), "b.(c*Ac)": (C * (A @ C), 1 / 8),
              "b.Ac^2": (A @ C ** 2, 1 / 12), "b.AAc": (A @ (A @ C), 1 / 24)}
     for nm, (v, val) in conds.items():
-        print(f"  {nm:10s} b: {B @ v - val:+.1e}   bhat: {BHAT @ v - val:+.1e}")
+        print(f"  {nm:10s} b: {B @ v - val:+.1e}   bhat: {BHAT @ v - val:+.1e}", flush=True)
 
 
 if __name__ == "__main__":
-    print("order conditions (residuals; b up to order 4, bhat up to order 3):")
+    print("order conditions (residuals; b up to order 4, bhat up to order 3):", flush=True)
     _check_order()
     # stiff linear test: x' = L (x - g(t)) + g'(t), g = (sin t, cos t, ...), exact x = g
     rng = np.random.default_rng(0)
@@ -141,8 +141,8 @@ if __name__ == "__main__":
     gp = lambda t: w * np.cos(w * t)
     f = lambda t, x: Lm @ (x - g(t)) + gp(t)
     jv = lambda t, x, v: Lm @ v
-    print("stiff test (eigenvalues -1 to -1e3), t in [0, 10], exact x = sin(w t):")
+    print("stiff test (eigenvalues -1 to -1e3), t in [0, 10], exact x = sin(w t):", flush=True)
     for tol in (1e-4, 1e-6, 1e-8):
         ts, ys, st = solve(f, jv, 0.0, 10.0, g(0.0), rtol=tol, atol=tol)
         print(f"  rtol=atol={tol:.0e}: error {np.abs(ys[-1] - g(10.0)).max():.2e}, "
-              f"{st['nsteps']} steps, {st['nreject']} rejected, {st['nfev']} f, {st['njev']} jvp")
+              f"{st['nsteps']} steps, {st['nreject']} rejected, {st['nfev']} f, {st['njev']} jvp", flush=True)

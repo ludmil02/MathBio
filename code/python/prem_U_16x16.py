@@ -36,8 +36,8 @@ def build():
     U = np.sqrt(M * M.T)
     pd.DataFrame(U, index=AGES, columns=AGES).to_csv(OUT, index_label="age", float_format="%.17g")
     print(f"Prem et al. 2017, US, all locations: row sums {M.sum(1).min():.2f} - {M.sum(1).max():.2f},"
-          f" max |M - M^T| / max M = {np.abs(M - M.T).max() / M.max():.3f}")
-    print(f"balanced U: row sums {U.sum(1).min():.2f} - {U.sum(1).max():.2f}; wrote {OUT}")
+          f" max |M - M^T| / max M = {np.abs(M - M.T).max() / M.max():.3f}", flush=True)
+    print(f"balanced U: row sums {U.sum(1).min():.2f} - {U.sum(1).max():.2f}; wrote {OUT}", flush=True)
     return U
 
 

@@ -122,7 +122,7 @@ def build():
     if err != 0 or (a1 != np.rint(a1)).any() or (a2 != np.rint(a2)).any():
         raise ValueError(f"sheets out of sync ({err:g}) or values not integers")
     print(f"doses 1, 2, 3 in total: " + ", ".join(f"{D[k].sum() / 1e6:.0f} M" for k in range(3))
-          + f" (population {N.sum() / 1e6:.0f} M); integer values, sheets in sync exactly; wrote {OUT}")
+          + f" (population {N.sum() / 1e6:.0f} M); integer values, sheets in sync exactly; wrote {OUT}", flush=True)
 
 
 if __name__ == "__main__":

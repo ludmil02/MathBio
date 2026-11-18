@@ -38,12 +38,12 @@ def fetch():
     for f, u in URLS.items():
         p = os.path.join(RAW, f)
         if not os.path.exists(p):
-            print(f"downloading {u}")
+            print(f"downloading {u}", flush=True)
             fetch_gz(u, p)
     zp = os.path.join(RAW, "2024_Gaz_counties_national.zip")    # read as is, not unpacked
     if not os.path.exists(zp):
         os.makedirs(RAW, exist_ok=True)
-        print(f"downloading {GAZ_ZIP}")
+        print(f"downloading {GAZ_ZIP}", flush=True)
         urllib.request.urlretrieve(GAZ_ZIP, zp)
 
 
@@ -115,13 +115,13 @@ def activity():
     L = np.log(rho_i) / np.log(rho)
     pd.DataFrame({"state": [FIPS[s] for s in st.index], "rho": rho_i, "L": L}).to_csv(
         os.path.join(DIR, "L_51.csv"), index=False, float_format="%.10g")
-    print(f"rho (US, per sq mi) = {rho:.1f}; L_i in [{L.min():.3f}, {L.max():.3f}]")
+    print(f"rho (US, per sq mi) = {rho:.1f}; L_i in [{L.min():.3f}, {L.max():.3f}]", flush=True)
     return L
 
 
 if __name__ == "__main__":
     fetch()
     D = distances()
-    print(f"distances: max {D.max():.1f} miles")
+    print(f"distances: max {D.max():.1f} miles", flush=True)
     activity()
-    print(f"wrote {DIR}/d_51x51.csv, L_51.csv")
+    print(f"wrote {DIR}/d_51x51.csv, L_51.csv", flush=True)

@@ -83,8 +83,8 @@ def build():
     df.to_csv(OUT, index=False, float_format="%.10g")
     print(f"seropositive at t = 251: {R.sum() / N.sum():.2%} of N; lambda in [{lam.min():.2e}, {lam.max():.2e}]"
           f" (at the floor in {(lam == LAMBDA_FLOOR).sum()} of {lam.size} groups);"
-          f" infected (E + I) {X[[O.ES, O.IA, O.IPS, O.IS]].sum():,.0f}")
-    print(f"wrote {OUT}")
+          f" infected (E + I) {X[[O.ES, O.IA, O.IPS, O.IS]].sum():,.0f}", flush=True)
+    print(f"wrote {OUT}", flush=True)
 
 
 if __name__ == "__main__":

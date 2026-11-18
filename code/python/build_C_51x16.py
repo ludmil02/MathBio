@@ -42,12 +42,12 @@ def build():
     err = np.abs(C @ x.ravel() - (cy(x) / Z).ravel()).max()
     print(f"C: {m * n} x {m * n}, entries in [{C.min():.3g}, {C.max():.3g}]; "
           f"max |row sum - 1| = {np.abs(C.sum(axis=1) - 1).max():.1e}; "
-          f"max |C x - factored| = {err:.1e}")
+          f"max |C x - factored| = {err:.1e}", flush=True)
     labels = [f"{s} {a}" for s in locs for a in ages]
     os.makedirs(os.path.dirname(OUT), exist_ok=True)
     pd.DataFrame(C, index=labels, columns=labels).to_csv(OUT, index_label="state age",
                                                          float_format="%.17g")
-    print(f"wrote {OUT}")
+    print(f"wrote {OUT}", flush=True)
 
 
 if __name__ == "__main__":

@@ -48,7 +48,7 @@ def build():
     os.makedirs(DIR, exist_ok=True)
     os.makedirs(os.path.dirname(RAW), exist_ok=True)
     if not os.path.exists(RAW):
-        print(f"downloading {URL}")
+        print(f"downloading {URL}", flush=True)
         fetch_gz(URL, RAW)
     df = pd.read_csv(RAW, encoding="latin-1")
     df = df[(df.SEX == 0) & (df.ORIGIN == 0) & (df.STATE > 0)]
@@ -60,7 +60,7 @@ def build():
     out = pd.DataFrame({"state": np.repeat([FIPS[s] for s in by_age.index], 16),
                         "age": np.tile(AGES, 51), "N": N.ravel().astype(np.int64)})
     out.to_csv(OUT, index=False)
-    print(f"wrote {OUT}: {len(out)} groups, total {out.N.sum():,}")
+    print(f"wrote {OUT}: {len(out)} groups, total {out.N.sum():,}", flush=True)
     return out
 
 

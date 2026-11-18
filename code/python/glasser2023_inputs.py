@@ -78,7 +78,7 @@ def beta0_fig4():
     df = pd.DataFrame({"age": AGES, "beta0": np.round(beta, 4)})
     df.to_csv(os.path.join(DIR, "beta0.csv"), index=False)
     print(f"Fig. 4: axes at x = {xa}, y = {ya}; {abs(cy[0]):.6f} per pixel; beta0 = "
-          + " ".join(f"{b:.4f}" for b in df.beta0))
+          + " ".join(f"{b:.4f}" for b in df.beta0), flush=True)
     return df
 
 
@@ -86,4 +86,4 @@ if __name__ == "__main__":
     os.makedirs(DIR, exist_ok=True)
     table2()
     beta0_fig4()
-    print(f"wrote {DIR}/table2.csv, beta0.csv")
+    print(f"wrote {DIR}/table2.csv, beta0.csv", flush=True)

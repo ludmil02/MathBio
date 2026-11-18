@@ -55,7 +55,7 @@ def build():
                      "max_share": round(float(share[f].max()), 3)})
     out = pd.DataFrame(rows)
     out.to_csv(os.path.join(DIR, "variant_days.csv"), index=False)
-    print(out.to_string(index=False))
+    print(out.to_string(index=False), flush=True)
     return out
 
 

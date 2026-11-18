@@ -40,7 +40,7 @@ def build():
     s = 1 - si[states] / 100
     s.to_csv(OUT, float_format="%.6g")
     print(f"t = {s.index.min()} - {s.index.max()}; s at t = 251: {s.loc[251].min():.2f} - {s.loc[251].max():.2f};"
-          f" at t = 349: {s.loc[349].min():.2f} - {s.loc[349].max():.2f}; wrote {OUT}")
+          f" at t = 349: {s.loc[349].min():.2f} - {s.loc[349].max():.2f}; wrote {OUT}", flush=True)
 
 
 if __name__ == "__main__":

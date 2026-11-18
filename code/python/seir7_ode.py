@@ -359,16 +359,16 @@ def do_verify(mod):
         h = np.array(st["steps"])
         res[rtol] = x
         print(f"rtol = atol = {rtol:.0e}: {len(h)} steps, h in [{h.min():.3g}, {h.max():.3g}],"
-              f" nfev {st['nfev']}, {time.time() - tic:.1f} s")
+              f" nfev {st['nfev']}, {time.time() - tic:.1f} s", flush=True)
     xb = res[1e-12]
     for rtol, x in res.items():
         print(f"   |x({t1:g}; {rtol:.0e}) - x({t1:g}; 1e-12)|_inf / |x|_inf = "
-              f"{np.max(np.abs(x - xb)) / np.max(np.abs(xb)):.2e}")
+              f"{np.max(np.abs(x - xb)) / np.max(np.abs(xb)):.2e}", flush=True)
     g0, g1 = group_sums(mod, mod.x251), group_sums(mod, xb)
     print(f"group sums: |sum(t0) - N| / N <= {np.max(np.abs(g0 - mod.N) / mod.N):.2e};"
-          f" change on [{t0:g}, {t1:g}] <= {np.max(np.abs(g1 - g0) / mod.N):.2e} relative to N")
+          f" change on [{t0:g}, {t1:g}] <= {np.max(np.abs(g1 - g0) / mod.N):.2e} relative to N", flush=True)
     X = xb.reshape(13, mod.m, mod.n)
-    print(f"min over groups at {t1:g}: " + "  ".join(f"{nm} {X[c].min():.3g}" for c, nm in enumerate(NAMES)))
+    print(f"min over groups at {t1:g}: " + "  ".join(f"{nm} {X[c].min():.3g}" for c, nm in enumerate(NAMES)), flush=True)
     ts = [t0, (t0 + t1) / 2, t1]
     xs, _ = mod.solve(t0, t1, mod.x251, rtol=1e-10, atol=1e-10, t_out=ts[1:])
     for t, x in zip(ts, [mod.x251] + xs):
@@ -385,7 +385,7 @@ def do_verify(mod):
             est = f"Arnoldi |mu|max = {np.abs(mu).max():.4g} (mu = {mu[0].real:.4g}{mu[0].imag:+.3g}i)"
         except Exception as err:            # ArpackNoConvergence
             est = f"Arnoldi not converged ({type(err).__name__})"
-        print(f"t = {t:g}: ||f_x||_1 = {norm1:.4g} (bound on rho); {est}")
+        print(f"t = {t:g}: ||f_x||_1 = {norm1:.4g} (bound on rho); {est}", flush=True)
 
 
 def frame(mod, x):
@@ -400,10 +400,10 @@ def do_solve(mod):
     tic = time.time()
     (x,), st = mod.solve(T_START, mod.t_vacc, mod.x251)
     print(f"solved [{T_START:g}, {mod.t_vacc:g}]: nfev {st['nfev']}, {time.time() - tic:.1f} s;"
-          f" min compartment {x.min():.3g}")
+          f" min compartment {x.min():.3g}", flush=True)
     path = STATE_VACC.format(t=mod.t_vacc, params=mod.params)
     frame(mod, x).to_csv(path, index=False, float_format="%.17g")
-    print(f"wrote {path}")
+    print(f"wrote {path}", flush=True)
 
 
 SIG_FLOOR = 1e-6      # persons: group sizes below this are raised to it (optimal strategy)
@@ -588,18 +588,18 @@ def do_simulate(mod, strategy="actual", nrand=0, resume=False, doses=DOSES, outd
     out.to_csv(path, index=False, float_format="%.6g")
     if opt:
         pd.DataFrame(opt).to_csv(path_rho, index=False, float_format="%.10g")
-        print(f"wrote {path_rho}")
+        print(f"wrote {path_rho}", flush=True)
     print(f"{strategy}: simulated [{T_START:g}, {weeks[-1] + 7:g}] with {len(weeks)} weeks of doses in "
           f"{time.time() - tic:.1f} s; at the end: V {out.V.iloc[-1] / 1e6:.1f} M, R {out.R.iloc[-1] / 1e6:.1f} M,"
           f" M (dead) {out.M.iloc[-1] / 1e3:.0f} K, hospitalized now {out.Ih.iloc[-1] / 1e3:.1f} K;"
-          f" min compartment {x.min():.3g}")
+          f" min compartment {x.min():.3g}", flush=True)
     if opt:
         tot = {key: sum(o.get(key, 0) for o in opt)
                for key in ("t_chi1", "t_chi3", "t_chi2", "it_chi1", "it_chi3", "it_chi2", "t_ode")}
         print(f"total times over {len(opt)} weeks: " + ", ".join(
             f"chi{k} {tot[f't_chi{k}']:.0f} s ({tot[f'it_chi{k}']} it)" for k in (1, 3, 2))
-            + f", ODE {tot['t_ode']:.0f} s; max memory {max_rss_mb():.0f} MB")
-    print(f"wrote {path}")
+            + f", ODE {tot['t_ode']:.0f} s; max memory {max_rss_mb():.0f} MB", flush=True)
+    print(f"wrote {path}", flush=True)
 
 
 if __name__ == "__main__":
@@ -617,7 +617,7 @@ if __name__ == "__main__":
     if mod.method not in ("DOP853", "SDIRK4"):
         raise ValueError(f"method {mod.method!r}: DOP853 or SDIRK4")
     print(f"N total {mod.N.sum():,.0f}; parameters {mod.params}; vaccination from t = {mod.t_vacc:g};"
-          f" switch days " + ", ".join(f"{t:g}" for t in mod.breaks) + f"; ODE method {mod.method}")
+          f" switch days " + ", ".join(f"{t:g}" for t in mod.breaks) + f"; ODE method {mod.method}", flush=True)
     if mode == "simulate":
         args = [a for a in argv[1:] if a != "resume"]
         resume = "resume" in argv[1:]

@@ -79,7 +79,7 @@ def main(outdir, initial, doses, params, resdir=None):
     tag = so.run_tag(so.input_path(initial), so.input_path(doses), params)
     path, path_rho = so.output_paths("optimal", tag, resdir)
     os.makedirs(outdir, exist_ok=True)
-    print("reading", path, "and", path_rho)
+    print("reading", path, "and", path_rho, flush=True)
     w = pd.read_csv(path)
     r = pd.read_csv(path_rho)
 
@@ -93,7 +93,7 @@ def main(outdir, initial, doses, params, resdir=None):
     out = os.path.join(outdir, "fig_weekly_optimal.pdf")
     fig.savefig(out)
     plt.close(fig)
-    print("wrote", out)
+    print("wrote", out, flush=True)
 
     for name, f in PANELS.items():
         fig, a = plt.subplots(figsize=(5, 3.25), constrained_layout=True)
@@ -102,7 +102,7 @@ def main(outdir, initial, doses, params, resdir=None):
         out = os.path.join(outdir, f"fig_weekly_optimal_{name}.png")
         fig.savefig(out, dpi=200)
         plt.close(fig)
-        print("wrote", out)
+        print("wrote", out, flush=True)
 
 
 if __name__ == "__main__":
