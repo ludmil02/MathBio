@@ -2,13 +2,13 @@
 
 Usage:  python3 plot_weekly_optimal.py [initial=FILE] [doses=FILE] [params=NAME] [out=DIR] [FIGDIR]
 with initial=, doses=, params= and out= as given to seir7_ode.py simulate optimal (default: the
-default files and set, and the results in data/). The figures go to FIGDIR; without it, to DIR if out= is given,
-else to notes/figures/.
+default files and set, and the results in data/). The figures go to FIGDIR; without it, to DIR
+(out=); one of the two is required.
 
 Inputs (produced by seir7_ode.py simulate optimal, tag = <initial>__<doses>__<params>, seir7_ode.run_tag):
   data/simulate_weekly_51x16_optimal__<tag>.csv      national totals at the start of each week
   data/simulate_weekly_51x16_optimal__<tag>_rho.csv  rho per week (rho_opt is plotted)
-Output, in notes/figures/ or in OUTDIR:
+Output, in FIGDIR or DIR:
   fig_weekly_optimal_{rho,compartments,infectious,deaths}.png   one panel each
 """
 import os
@@ -23,7 +23,6 @@ import matplotlib.dates as mdates
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 DATA = os.path.join(HERE, "data")
-OUTDIR = os.path.normpath(os.path.join(HERE, "..", "..", "notes", "figures"))
 C = ["#2a78d6", "#eb6834", "#1baf7a", "#eda100"]
 plt.rcParams.update({"font.size": 9, "axes.spines.top": False, "axes.spines.right": False,
                      "axes.grid": True, "grid.color": "#e4e3df", "grid.linewidth": 0.6,
@@ -103,5 +102,7 @@ if __name__ == "__main__":
         raise ValueError(f"unknown options {sorted(bad)}: initial=, doses=, params=, out=")
     pos = [a for a in sys.argv[1:] if "=" not in a]
     resdir = os.path.abspath(opts["out"]) if "out" in opts else None
-    main(pos[0] if pos else (resdir or OUTDIR), opts.get("initial", so.INITIAL),
+    if not pos and resdir is None:
+        raise SystemExit("plot_weekly_optimal.py: give the figure folder FIGDIR or out=DIR")
+    main(pos[0] if pos else resdir, opts.get("initial", so.INITIAL),
          opts.get("doses", so.DOSES), opts.get("params", so.DEFAULT_PARAMS), resdir)

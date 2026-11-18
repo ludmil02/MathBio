@@ -489,11 +489,14 @@ def alternate(chi, b, sig, sweeps=200, tol=1e-11, label=""):
     return best_chi, best_rho, sw + 1, np.array(hist)
 
 
-def starts(b, sig, nrand, seed):
+def starts(b, sig, nrand, seed, rescale=()):
     """The starts, all satisfying the constraints: "uniform" (the same rate for all groups
     of a location), "left ev" (doses in proportion to the susceptible rows of the dominant
-    left eigenvector of NGM at the uniform allocation) and nrand random allocations
-    (doses split at random among the groups of each location)."""
+    left eigenvector of NGM at the uniform allocation), nrand random allocations
+    (doses split at random among the groups of each location), then the rates of rescale, a
+    list of (name, chi), chi 3 x N rates found at another state: the doses b_{k,i} of location
+    i in proportion to sigma_{k,p} chi_{k,p} over its eligible groups (uniform in a location
+    where these are all 0)."""
     def _uniform(k, i, I):
         e = _elig(k)[I]
         s = sig[k][I][e].sum()
@@ -512,6 +515,16 @@ def starts(b, sig, nrand, seed):
         alloc = [np.concatenate([_share(k, i, I, rng.random(n)) for i, I in enumerate(LOC)])
                  for k in range(3)]
         out.append(("random %d" % (s + 1), alloc))
+    for name, chi in rescale:
+        alloc = []
+        for k in range(3):
+            c = np.asarray(chi[k], float).ravel()
+            parts = []
+            for i, I in enumerate(LOC):
+                wt = np.where(_elig(k)[I], sig[k][I] * np.maximum(c[I], 0.0), 0.0)
+                parts.append(_share(k, i, I, wt) if wt.sum() > 0 else _uniform(k, i, I))
+            alloc.append(np.concatenate(parts))
+        out.append((name, alloc))
     if CHI_CAP is not None:           # project every start onto the capped simplices
         capped = []
         for name, chi in out:

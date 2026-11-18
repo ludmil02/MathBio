@@ -554,13 +554,15 @@ def eigenvector_rates(mod, A, tau, X, Dw, chi_prev):
                  **doses_by_age(mod, chi, sig, elig)))
 
 
-def optimal_rates(mod, A, tau, X, Dw, nrand, chi_prev):
+def optimal_rates(mod, A, tau, X, Dw, nrand, chi_prev, chi_run=None):
     """The weekly problem of notes/stratified_seir_ngm.tex at tau: minimize rho over chi with
     sum_{p in I_i} sigma_{k,p} chi_{k,p} = b_{k,i}; sigma_k = S, V, P at tau, b_{k,i} the doses
     of location i in the week (all ages) per day, from Dw (3 x m, sheet 1 of the dose file).
     Started from the uniform start of alternating.starts (and nrand random ones, NRAND, 0 by
     default; its left-ev start is not used) and from the rates of the eigenvector strategy at
-    tau (chi_prev the rates of the previous week); all satisfy the constraints. The smallest end value is kept;
+    tau (chi_prev the rates of the previous week), and, if chi_run is given, from the rates of
+    the eigenvector run in this week (at its own state), rescaled in each location to the doses
+    b_{k,i} at tau (alternating.starts); all satisfy the constraints. The smallest end value is kept;
     the alternating method returns the smallest rho seen, the start included, so rho_opt <= rho
     of the eigenvector strategy at this state.
     Returns chi (3 x m x n) and a summary, with the wall time (s) and iterations of the steps for
@@ -569,8 +571,9 @@ def optimal_rates(mod, A, tau, X, Dw, nrand, chi_prev):
     A.reset_stats()
     sig, elig, b = week_problem(mod, A, tau, X, Dw)
     ends = []
-    st = A.starts(b, sig, nrand, seed=int(tau))
-    st = [st[0], ("eigenvector", [c.ravel() for c in chi_eig])] + st[2:]   # uniform, eigenvector, random
+    run = [] if chi_run is None else [("eigenvector run", [c.ravel() for c in chi_run])]
+    st = A.starts(b, sig, nrand, seed=int(tau), rescale=run)
+    st = [st[0], ("eigenvector", [c.ravel() for c in chi_eig])] + st[2:]   # uniform, eigenvector, random, eigenvector run
     for name, chi0 in st:
         rho0 = A.rho_of(chi0)
         cm, rm, sw, _ = A.alternate(chi0, b, sig, label=f"[t={tau:g} {name}]")
@@ -578,10 +581,11 @@ def optimal_rates(mod, A, tau, X, Dw, nrand, chi_prev):
     rm, name, chi, sw, _ = min(ends, key=lambda e: e[0])
     rho_uni = next(e[4] for e in ends if e[1] == "uniform")
     rho_eig = next(e[4] for e in ends if e[1] == "eigenvector")
+    rho_run = next((e[4] for e in ends if e[1] == "eigenvector run"), np.nan)
     chi, top = cap_rates(chi, sig, elig, mod.m, mod.n)
     rho_cap = A.rho_of(chi)
     return (np.stack([c.reshape(mod.m, mod.n) for c in chi]),
-            dict(rho_uniform=rho_uni, rho_eigenvector=rho_eig, rho_opt=rm, rho_capped=rho_cap, rho_applied=rho_cap,
+            dict(rho_uniform=rho_uni, rho_eigenvector=rho_eig, rho_eigenvector_run=rho_run, rho_opt=rm, rho_capped=rho_cap, rho_applied=rho_cap,
                  chi_max_before_cap=top, start=name, sweeps=sw,
                  **{f"t_chi{k + 1}": A.STATS["time"][k] for k in range(3)},
                  **{f"it_chi{k + 1}": A.STATS["iters"][k] for k in range(3)},
@@ -606,6 +610,11 @@ def output_paths(strategy, tag, outdir=None):
     if outdir:
         path = os.path.join(outdir, os.path.basename(path))
     return path, path.replace(".csv", "_rho.csv")
+
+
+def chi_path(strategy, tag, outdir=None):
+    """The rates of every week of a run (eigenvector: the third start of the optimal run)."""
+    return output_paths(strategy, tag, outdir)[0].replace(".csv", "_chi.npz")
 
 
 def do_simulate(mod, strategy="actual", nrand=0, resume=False, doses=DOSES, outdir=None):
@@ -641,6 +650,18 @@ def do_simulate(mod, strategy="actual", nrand=0, resume=False, doses=DOSES, outd
             raise ValueError(f"{doses}, sheet 2: (state, age) not in the order of the model")
         Dk = val.reshape(mod.m, mod.n, nw, 3).transpose(3, 0, 1, 2)         # 3 x m x n x weeks
     weeks = [mod.t_vacc + 7.0 * w for w in range(nw)]                        # Week w+1 starts at t
+    chi_run = None                # optimal: the rates of the eigenvector run, a third start
+    if strategy == "optimal":
+        p = chi_path("eigenvector", tag, outdir)
+        if os.path.exists(p):
+            z = np.load(p)
+            if z["t"].size == nw and np.allclose(z["t"], weeks):
+                chi_run = z["chi"]
+                print(f"third start: the rates of the eigenvector run, {p}", flush=True)
+            else:
+                print(f"{p}: weeks differ from the dose file; no third start", flush=True)
+        else:
+            print(f"no {p} (run simulate eigenvector first); no third start", flush=True)
     tic = time.time()
     ckpt = checkpoint_path(strategy, tag, outdir)
     if resume and not os.path.exists(ckpt):
@@ -651,12 +672,13 @@ def do_simulate(mod, strategy="actual", nrand=0, resume=False, doses=DOSES, outd
         rows, opt = list(z["rows"]), list(z["opt"])
         if "chi" in z.files:                   # the rates of the last completed week
             mod.chi[:] = z["chi"]
+        chis = list(z["chis"]) if "chis" in z.files else None   # the rates of all completed weeks
         if not np.isclose(float(z["t"]), weeks[w0]):
             raise ValueError(f"{ckpt}: t = {float(z['t'])} is not the start of week {w0 + 1}")
         print(f"resuming from {ckpt}: week {w0 + 1} (t = {weeks[w0]:g})", flush=True)
     else:
         (x,), _ = mod.solve(T_START, mod.t_vacc, mod.x251)
-        w0, rows, opt = 0, [], []
+        w0, rows, opt, chis = 0, [], [], []
     for w in range(w0, len(weeks)):
         tau = weeks[w]
         X = x.reshape(13, mod.m, mod.n)
@@ -671,14 +693,18 @@ def do_simulate(mod, strategy="actual", nrand=0, resume=False, doses=DOSES, outd
             print(f"week {w + 1} (t = {tau:g}): rho {strategy} {info['rho_applied']:.6f} (max chi"
                   f" before cap {info['chi_max_before_cap']:.3g}); {time.time() - tic:.0f} s", flush=True)
         else:
-            chi, info = optimal_rates(mod, A, tau, X, Dw, nrand, mod.chi.copy())
+            chi, info = optimal_rates(mod, A, tau, X, Dw, nrand, mod.chi.copy(),
+                                      None if chi_run is None else chi_run[w])
             mod.chi[:] = chi
             opt.append({"t": tau, **info})
             print(f"week {w + 1} (t = {tau:g}): rho eigenvector "
-                  f"{info['rho_eigenvector']:.6f}, optimal "
+                  f"{info['rho_eigenvector']:.6f}, eigenvector run rates "
+                  f"{info['rho_eigenvector_run']:.6f}, optimal "
                   f"{info['rho_opt']:.6f} ({info['start']}, {info['sweeps']} sweeps), capped "
                   f"{info['rho_capped']:.6f} (max chi before cap {info['chi_max_before_cap']:.3g});"
                   f" {time.time() - tic:.0f} s", flush=True)
+        if chis is not None:
+            chis.append(mod.chi.copy())
         t_ode = time.time()
         (x,), _ = mod.solve(tau, tau + 7.0, x)
         t_ode = time.time() - t_ode
@@ -691,7 +717,8 @@ def do_simulate(mod, strategy="actual", nrand=0, resume=False, doses=DOSES, outd
         if w + 1 < len(weeks):                 # the state at the start of the next week
             tmp = ckpt + ".tmp.npz"
             np.savez(tmp, next_week=w + 1, t=weeks[w + 1], x=x, chi=mod.chi,
-                     rows=np.array(rows, dtype=object), opt=np.array(opt, dtype=object))
+                     rows=np.array(rows, dtype=object), opt=np.array(opt, dtype=object),
+                     **({} if chis is None else {"chis": np.array(chis)}))
             os.replace(tmp, ckpt)
     mod.chi[:] = 0.0
     X = x.reshape(13, mod.m, mod.n)
@@ -702,6 +729,9 @@ def do_simulate(mod, strategy="actual", nrand=0, resume=False, doses=DOSES, outd
     if opt:
         pd.DataFrame(opt).to_csv(path_rho, index=False, float_format="%.10g")
         print(f"wrote {path_rho}", flush=True)
+    if strategy == "eigenvector" and chis is not None:
+        np.savez(chi_path(strategy, tag, outdir), t=np.array(weeks), chi=np.array(chis))
+        print(f"wrote {chi_path(strategy, tag, outdir)}", flush=True)
     print(f"{strategy}: simulated [{T_START:g}, {weeks[-1] + 7:g}] with {len(weeks)} weeks of doses in "
           f"{time.time() - tic:.1f} s; at the end: V {out.V.iloc[-1] / 1e6:.1f} M, R {out.R.iloc[-1] / 1e6:.1f} M,"
           f" M (dead) {out.M.iloc[-1] / 1e3:.0f} K, hospitalized now {out.Ih.iloc[-1] / 1e3:.1f} K;"

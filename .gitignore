@@ -79,3 +79,4 @@ venv/
 results/
 input/
 run.sh
+rsync_w_claude.sh
