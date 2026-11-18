@@ -73,14 +73,26 @@ def write_sheet(ws, keys, key_rows, values):
 def read_sheet(path, sheet, nk):
     """The inverse of write_sheet, with checks of the two header rows. Returns (key rows,
     number of weeks, values: rows x (3 * weeks), week-major)."""
-    df = pd.read_excel(path, sheet_name=sheet, header=None)
+    xl = pd.ExcelFile(path)
+    name = xl.sheet_names[sheet] if isinstance(sheet, int) else sheet
+    df = pd.read_excel(xl, sheet_name=sheet, header=None)
+    r0, c0 = df.shape
     df = df.dropna(axis=1, how="all").dropna(axis=0, how="all")     # empty columns and rows
+    print(f"{path}: sheet {sheet} ('{name}', of {len(xl.sheet_names)}): {r0} rows x {c0} columns"
+          f" read; {r0 - df.shape[0]} empty rows and {c0 - df.shape[1]} empty columns removed",
+          flush=True)
     h1, h2 = df.iloc[0, nk:], df.iloc[1, nk:]
     nw = len(h1) // 3
     if len(h1) != 3 * nw or list(h2) != DOSE_LABELS * nw or \
             [h1.iloc[3 * w] for w in range(nw)] != [f"Week {w + 1}" for w in range(nw)]:
         raise ValueError(f"{path}, sheet {sheet}: header rows not Week w / Dose 1, Dose 2, Dose 3+")
-    return (df.iloc[2:, :nk].values.tolist(), nw, df.iloc[2:, nk:].to_numpy(float))
+    keys, val = df.iloc[2:, :nk].values.tolist(), df.iloc[2:, nk:].to_numpy(float)
+    tot = val.reshape(len(keys), nw, 3).sum(axis=(0, 1))
+    print(f"   {nw} weeks (Week 1 ... Week {nw}), {len(keys)} rows of data ({keys[0]} ... "
+          f"{keys[-1]}); doses in total: dose 1 {tot[0]:,.0f}, dose 2 {tot[1]:,.0f}, dose 3+"
+          f" {tot[2]:,.0f}; empty cells {int(np.isnan(val).sum())}, negative {int((val < 0).sum())}",
+          flush=True)
+    return keys, nw, val
 
 
 def build():

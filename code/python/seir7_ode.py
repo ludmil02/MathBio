@@ -162,6 +162,11 @@ def read_state(path, m, n):
     if X.shape != (len(NAMES) * m, n):
         raise ValueError(f"{path}: {X.shape[0]} x {X.shape[1]}, expected {len(NAMES) * m} x {n}"
                          " (13 blocks of locations x ages, no header)")
+    B = X.reshape(len(NAMES), m, n)
+    print(f"{path}: {X.shape[0]} rows x {X.shape[1]} columns read ({len(NAMES)} blocks of {m}"
+          f" locations, {n} ages); total {B.sum():,.0f} people; negative entries"
+          f" {int((X < 0).sum())}", flush=True)
+    print("   " + ", ".join(f"{nm} {B[c].sum():,.0f}" for c, nm in enumerate(NAMES)), flush=True)
     return X.ravel()
 
 
@@ -236,6 +241,9 @@ class Model:
         if initial not in (None, "none"):
             self.initial_path = INITIAL if initial == "mock" else input_path(initial)
             self.x251 = read_state(self.initial_path, m, n)
+            g = self.x251.reshape(13, m, n).sum(axis=0)
+            print(f"   sum of the 13 compartments vs the population N: max |sum - N| / N ="
+                  f" {np.max(np.abs(g - self.N) / self.N):.2e}", flush=True)
 
     def variant(self, t):
         """(beta factor, eps, compliance factor, k, severity factor) at time t."""
