@@ -2,9 +2,10 @@
 \usepackage[margin=1in]{geometry}
 \usepackage{amsmath,amssymb,amsfonts}
 \usepackage{bm}
-\usepackage{amsthm}
+\usepackage{amsthm,mathrsfs}
+\newtheorem{lemma}{Lemma}[section]
 \theoremstyle{remark}
-\newtheorem{remark}{Remark}[section]
+\newtheorem{remark}[lemma]{Remark}
 \usepackage{enumitem}
 \usepackage{xurl}
 \usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
@@ -13,6 +14,49 @@
 \newcommand{\src}[1]{\path{#1}}
 % a file of Section 1, by its label: F<number>
 \newcommand{\fref}[1]{\ref{#1}}
+
+% BEGIN run values: written by code/python/weekly_report.py from weekly_simulation/results/state_t251_mock__doses_51x16x16_mock_15wk__2021/
+\providecommand{\RunTag}{}\renewcommand{\RunTag}{code/\allowbreak{}python/\allowbreak{}state\_\allowbreak{}t251\_\allowbreak{}mock\_\allowbreak{}\_\allowbreak{}doses\_\allowbreak{}51x16x16\_\allowbreak{}mock\_\allowbreak{}15wk\_\allowbreak{}\_\allowbreak{}2021}
+\providecommand{\RunInitialFile}{}\renewcommand{\RunInitialFile}{weekly\_\allowbreak{}simulation/\allowbreak{}input/\allowbreak{}state\_\allowbreak{}t251\_\allowbreak{}mock.csv}
+\providecommand{\RunDosesFile}{}\renewcommand{\RunDosesFile}{weekly\_\allowbreak{}simulation/\allowbreak{}input/\allowbreak{}doses\_\allowbreak{}51x16x16\_\allowbreak{}mock\_\allowbreak{}15wk.xlsx}
+\providecommand{\RunParams}{}\renewcommand{\RunParams}{2021}
+\providecommand{\RunTvacc}{}\renewcommand{\RunTvacc}{347}
+\providecommand{\RunTvaccDate}{}\renewcommand{\RunTvaccDate}{12 December 2020}
+\providecommand{\RunWeeks}{}\renewcommand{\RunWeeks}{15}
+\providecommand{\RunTlast}{}\renewcommand{\RunTlast}{445}
+\providecommand{\RunTend}{}\renewcommand{\RunTend}{452}
+\providecommand{\RunTendDate}{}\renewcommand{\RunTendDate}{27 March 2021}
+\providecommand{\RunDaysNoVacc}{}\renewcommand{\RunDaysNoVacc}{96}
+\providecommand{\RunFigDir}{}\renewcommand{\RunFigDir}{../weekly_simulation/results/state_t251_mock__doses_51x16x16_mock_15wk__2021/figures/}
+\providecommand{\RunSwitch}{}\renewcommand{\RunSwitch}{$t=398$, $t=460$ and $t=548$ (1 February 2021, 4 April 2021, 1 July 2021)}
+\providecommand{\RunRhoBetter}{}\renewcommand{\RunRhoBetter}{15}
+\providecommand{\RunRhoRedMin}{}\renewcommand{\RunRhoRedMin}{8.7}
+\providecommand{\RunRhoRedMax}{}\renewcommand{\RunRhoRedMax}{22}
+\providecommand{\RunRhoRedMean}{}\renewcommand{\RunRhoRedMean}{13}
+\providecommand{\RunRhoOptAbove}{}\renewcommand{\RunRhoOptAbove}{0}
+\providecommand{\RunRhoUniAbove}{}\renewcommand{\RunRhoUniAbove}{0}
+\providecommand{\RunCapWeeks}{}\renewcommand{\RunCapWeeks}{11}
+\providecommand{\RunVPeak}{}\renewcommand{\RunVPeak}{61.1}
+\providecommand{\RunVPeakDate}{}\renewcommand{\RunVPeakDate}{27 March 2021}
+\providecommand{\RunInfPeak}{}\renewcommand{\RunInfPeak}{1.05}
+\providecommand{\RunInfPeakDate}{}\renewcommand{\RunInfPeakDate}{12 December 2020}
+\providecommand{\RunHospPeak}{}\renewcommand{\RunHospPeak}{0.0708}
+\providecommand{\RunHospPeakDate}{}\renewcommand{\RunHospPeakDate}{12 December 2020}
+\providecommand{\RunDeathsStart}{}\renewcommand{\RunDeathsStart}{60}
+\providecommand{\RunDeathsEnd}{}\renewcommand{\RunDeathsEnd}{79}
+\providecommand{\RunSeroPct}{}\renewcommand{\RunSeroPct}{6.6}
+\providecommand{\RunDosesOne}{}\renewcommand{\RunDosesOne}{87}
+\providecommand{\RunDosesTwo}{}\renewcommand{\RunDosesTwo}{52}
+\providecommand{\RunDosesThree}{}\renewcommand{\RunDosesThree}{0}
+\providecommand{\CmpEigenvectorDeathsEnd}{}\renewcommand{\CmpEigenvectorDeathsEnd}{78}
+\providecommand{\CmpEigenvectorRhoAbove}{}\renewcommand{\CmpEigenvectorRhoAbove}{0}
+\providecommand{\CmpEigenvectorInfPeak}{}\renewcommand{\CmpEigenvectorInfPeak}{1.05}
+\providecommand{\CmpEigenvectorHospPeak}{}\renewcommand{\CmpEigenvectorHospPeak}{0.0708}
+\providecommand{\CmpOptimalDeathsEnd}{}\renewcommand{\CmpOptimalDeathsEnd}{79}
+\providecommand{\CmpOptimalRhoAbove}{}\renewcommand{\CmpOptimalRhoAbove}{0}
+\providecommand{\CmpOptimalInfPeak}{}\renewcommand{\CmpOptimalInfPeak}{1.05}
+\providecommand{\CmpOptimalHospPeak}{}\renewcommand{\CmpOptimalHospPeak}{0.0708}
+% END run values
 
 \title{The age- and location-stratified SEIR model: the data\thanks{Parts of this
 manuscript were edited with the assistance of an AI tool (Claude Opus 5.5, Anthropic).
@@ -99,7 +143,8 @@ from Table~2 of~\fref{f-g23}; \src{glasser2023_inputs.py}. Section~\ref{sec-age}
 of~\fref{f-g23}; \src{glasser2023_inputs.py}. Section~\ref{sec-age}.
 \item\label{f-vd} \src{cdc/variant_days.csv}: the days of the variants;
 \src{cdc_variants.py} from~\fref{f-var}. Section~\ref{sec-var}.
-\item\label{f-x0} \src{cdc/state_t251_mock.csv}: the initial state (mock);
+\item\label{f-x0} \texttt{\RunInitialFile}: the initial state of the computation of
+Section~\ref{sec-comp}; the mock state \src{cdc/state_t251_mock.csv} is made by
 \src{sero_initial_51x16.py} from~\fref{f-sero}, \fref{f-N}, \fref{f-t2}. CSV,
 $1+13m=664$ rows and $2+n=18$ columns. Row 1: ``variable'', ``location'', then the age
 groups 0--4, \dots, 75+. Then 13 blocks of $m$ rows, the compartments in the order $S$,
@@ -107,8 +152,9 @@ $P$, $E_s$, $E_p$, $V$, $I_a$, $I_{ps}$, $I_{pm}$, $I_s$, $I_m$, $I_h$, $R$, $M$
 block the locations in FIPS order; column A the compartment, column B the location, then
 the $n$ age groups. The program checks the labels of row 1 and of columns A and B
 (\src{read_state} in \src{seir7_ode.py}). Section~\ref{sec-mock}.
-\item\label{f-doses} \src{mock/doses_51x16x16_mock.xlsx}: the weekly doses (mock),
-sheet \src{by_state} by location and sheet \src{by_state_age} by location and age group;
+\item\label{f-doses} \texttt{\RunDosesFile}: the weekly doses of the computation of
+Section~\ref{sec-comp}, sheet \src{by_state} by location and sheet \src{by_state_age} by
+location and age group; the mock doses \src{mock/doses_51x16x16_mock.xlsx} are made by
 \src{doses_51x16x16.py} from~\fref{f-N}. Section~\ref{sec-mock}.
 \end{enumerate}
 
@@ -117,8 +163,8 @@ sheet \src{by_state} by location and sheet \src{by_state_age} by location and ag
 The time $t$ is the number of days from 31 December 2019, and the model is
 started at $t=251$, 7 September 2020~\cite[Section~3]{2023Glasser_Feng}.
 Vaccination began on 14 December 2020~\cite[Section~2.2]{2026Feng_Day_Glasser},
-$t=349$; the parameter set \src{2021}, used in the computation of
-Section~\ref{sec-comp}, starts it at $t_{\mathrm{vacc}}=347$, 12 December 2020
+$t=349$; the parameter set \texttt{\RunParams}, used in the computation of
+Section~\ref{sec-comp}, starts it at $t_{\mathrm{vacc}}=\RunTvacc$, \RunTvaccDate{}
 (Section~\ref{sec-params-const}).
 
 \subsection{Population}\label{sec-pop}
@@ -340,8 +386,9 @@ floating point numbers. Sheet 1 is the sum of sheet 2 over the age groups, exact
 A file of reported doses has the same layout. An empty cell below the two header rows
 and right of the key columns is read as $0$, and each one is listed in the log with
 its cell, location, week and dose (\src{read_sheet} in \src{doses_51x16x16.py}).
-The optimal strategy uses only sheet 1; sheet 2 is used only by the actual
-strategy (Remark~\ref{rem-actual}).
+The strategies computed here (optimal, eigenvector) use only sheet 1; sheet 2 is
+kept for the record only (it would be the input of the actual strategy,
+Remark~\ref{rem-actual}, which is not run).
 
 \section{The model and the computation}\label{sec-model-comp}
 
@@ -415,10 +462,10 @@ of a group add up to $0$, so each group keeps its size $N_{ij}$.
 
 \begin{enumerate}[leftmargin=*]
 \item Solve~\eqref{ode} from $t=251$, with the initial state~\fref{f-x0}, to
-$t=347$, the start of vaccination of the parameter set \src{2021}, with $\chi=0$.
-\item For each week $[\tau,\tau+7]$, $\tau=347,354,\dots,725$ (55 weeks, to $t=732$,
-1 January 2022), with
-$S$, $V$, $P$ the state at $\tau$ and $D_{k,i}$ the mock doses of location $i$ in the
+$t=\RunTvacc$, the start of vaccination of the parameter set \texttt{\RunParams}, with $\chi=0$.
+\item For each week $[\tau,\tau+7]$, $\tau=\RunTvacc,\dots,\RunTlast$ (\RunWeeks{} weeks, to
+$t=\RunTend$, \RunTendDate), with
+$S$, $V$, $P$ the state at $\tau$ and $D_{k,i}$ the doses of location $i$ in the
 week, sheet 1 of~\fref{f-doses} (Section~\ref{sec-doses}):
 \begin{enumerate}[label=(\alph*)]
 \item compute the vaccination rates $\chi_{k,ij}$ for the week (the same on every
@@ -430,7 +477,7 @@ with $\sigma_1=S$, $\sigma_2=V$, $\sigma_3=P$, only the groups with
 $\sigma_{k,ij}\ge1$ (at least one eligible person) receiving dose $k$, and the bound
 $0\le\chi_{k,ij}\le\chi_{\max}=-\frac17\ln(0.01)\approx0.658$ per day (at most $99\%$
 of a group in a week) as a constraint of the minimization
-(\src{stratified_seir_ngm.tex}, problem (1.1), Section~9 and its Section~9.1);
+(\src{stratified_seir_ngm.tex}, problem (1.1), Section~7 and its Section~7.1);
 \item solve~\eqref{ode} on $[\tau,\tau+7]$ with these rates, which gives the state
 at $\tau+7$;
 \item advance to the next week, $\tau\leftarrow\tau+7$.
@@ -455,6 +502,76 @@ averted). It is not computed here; only the optimal strategy is run. We have no
 reported doses: computed with the mock doses $D_{k,ij}$ of~\fref{f-doses} (sheet 2), the actual
 strategy would give a mock reference only.
 \end{remark}
+
+\subsection{The eigenvector strategy}\label{sec-ev}
+
+The eigenvector strategy is the alternative strategy
+of~\cite[Section~2.2 and Appendix~A]{2026Feng_Day_Glasser}: each week the doses of each
+location and dose, summed over the ages, go to its eligible age groups in proportion to the
+left eigenvector of the dominant eigenvalue of the next generation matrix. We compare it
+with the optimal strategy, each with its own solution of~\eqref{ode} from
+$t=t_{\mathrm{vacc}}$, the same doses $b_{k,i}$ per day of each location, dose and week as
+in Section~\ref{sec-comp}, and the parameter set \src{2021} (the default).
+
+\paragraph{The rates.} With the notation of \src{stratified_seir_ngm.tex}, Sections~1--2,
+let $\bm u>0$ be the left Perron vector of $A_1\operatorname{diag}(\bm g)$ and
+$J_{k,i}=\{p\in I_i:\ \sigma_{k,p}\ge1\}$ the eligible groups of location $i$ for dose
+$k$. The weights are
+\begin{equation}\label{w-ev}
+w_{1,p}=\frac{u_p}{g_p},\qquad w_{2,p}=w_{3,p}=r_p\,\frac{u_p}{g_p},
+\end{equation}
+and the rates of the week are
+\begin{equation}\label{chi-ev}
+\chi_{k,p}=\frac{b_{k,i}}{\sigma_{k,p}}\,\frac{w_{k,p}}{\sum_{l\in J_{k,i}}w_{k,l}},\quad
+p\in J_{k,i},\qquad\chi_{k,p}=0,\quad p\in I_i\setminus J_{k,i},
+\end{equation}
+followed by the bound $\chi_{k,p}\le\chi_{\max}$ as in (C4) below. By Lemma~\ref{lem-ev},
+$\rho\,w_{1,p}$ and $\rho\,w_{2,p}$ are the entries $2p-1$ and $2p$ of the left Perron vector
+of $\operatorname{NGM}$, the matrix $\mathbf H$ of~\cite[Appendix~A]{2026Feng_Day_Glasser},
+whose rows $2p-1$ and $2p$ are the infections of group $p$ that start in $S$ (through $E_s$)
+and in $V$ or $P$ (through $E_p$).
+
+\paragraph{Our choices.} \cite{2026Feng_Day_Glasser} does not specify the following; we take:
+\begin{enumerate}[label=(C\arabic*), leftmargin=*]
+\item The time: $\bm u$ and $\bm g$ at $\tau$, with the parameters and the state at $\tau$
+and the rates $\chi_{k,p}$ of the previous week ($\chi=0$ in the first week).
+\item The entries: entry $2p-1$ for the first dose, given to $S$; entry $2p$ for the second
+and the third dose, given to $V$ and $P$.
+\item Doses and rates: the doses $\sigma_{k,p}\chi_{k,p}$, not the rates, are in proportion
+to the weights, and they add up to $b_{k,i}$, the constraint of the optimal problem; so the
+three strategies give the same doses per day. The conversion $\chi=-\frac17\ln(1-\nu)$ of
+the actual strategy (Remark~\ref{rem-actual}) is not used.
+\item The bound: a rate above $\chi_{\max}$ is lowered to $\chi_{\max}$, and the doses above
+it go to the other eligible groups of the location below it, in proportion to their doses
+(\src{stratified_seir_ngm.tex}, Lemma~7.5: this ends with all rates $\le\chi_{\max}$ and
+the same doses).
+\end{enumerate}
+
+\begin{lemma}\label{lem-ev}
+Let $C>0$, $\bm d_c,\bm\psi_I,\bm q_s,\bm g>0$, $r_p=q_{m,p}/q_{s,p}$, and let $\bm u>0$ be
+the left Perron vector of $A_1\operatorname{diag}(\bm g)$, with eigenvalue $\rho$. With
+$\operatorname{NGM}=X_1X_2$, $X_1=\operatorname{diag}(\bm d)\mathscr P$,
+$X_2=\operatorname{diag}(\bm d_c)C\mathscr P^T\Psi_IQ$ (\src{stratified_seir_ngm.tex},
+Theorem~2.1), $\bm w^T=\bm u^TX_2$ is a left Perron vector of $\operatorname{NGM}$, and
+$w_{2p-1}=\rho\,u_p/g_p$, $w_{2p}=r_pw_{2p-1}$, $p=1:N$.
+\end{lemma}
+\begin{proof}
+$A_1=\operatorname{diag}(\bm d_c)C\operatorname{diag}(\bm\psi_I\odot\bm q_s)>0$, so
+$A_1\operatorname{diag}(\bm g)>0$ is irreducible and, by the Perron--Frobenius theorem,
+$\rho>0$ is a simple eigenvalue with a left eigenvector $\bm u>0$. Since
+$X_2X_1=A_1\operatorname{diag}(\bm g)$, $\bm w^T\operatorname{NGM}=\bm u^TX_2X_1X_2=\rho\bm u^TX_2
+=\rho\bm w^T$, and $\bm w\ne0$ since $\bm w^TX_1=\rho\bm u^T\ne0$. Entry $2p-1$ of
+$\bm u^T\operatorname{diag}(\bm d_c)C\mathscr P^T\Psi_IQ$ is
+$\left(C^T\operatorname{diag}(\bm d_c)\bm u\right)_p\psi_{I,p}q_{s,p}=(A_1^T\bm u)_p$, and entry
+$2p$ is the same with $q_{m,p}=r_pq_{s,p}$ in place of $q_{s,p}$. From
+$\bm u^TA_1\operatorname{diag}(\bm g)=\rho\bm u^T$, $(A_1^T\bm u)_pg_p=\rho u_p$. So $\bm w>0$,
+and it is the left Perron vector of $\operatorname{NGM}\ge0$: a nonnegative matrix has, up
+to a factor, no other positive left eigenvector.
+\end{proof}
+
+For each strategy and week, $\rho$ is computed at $\tau$ for the rates applied in the week,
+with the state of that strategy. The strategies are compared by $\rho$, by the infectious,
+hospitalized and dead over time, and by the doses given to each age group.
 
 \section[The two parameter sets: Unknown 2020/21 and Feng, Day, Glasser 2026; Glasser et al.\ 2023]{The two parameter sets: Unknown 2020/21 and~\cite{2026Feng_Day_Glasser},~\cite{2023Glasser_Feng}}\label{sec-params}
 
@@ -522,7 +639,7 @@ from day $t$ holds for the days after $t$:
 factor of $\beta_j^0$ & 1 & 1.25 & & 1.5\\
 $\varepsilon_1=\varepsilon_2=\varepsilon_3$ & 0.9 & 0.8 & & 0.7\\
 factor of $c_j^0$ & 1 & & 0.8 & \\
-$1/k$ (days) & 5 & & & \\
+$1/k$ (days) & 3 & & & \\
 factor of $d_j$ and $1-\theta_{w,j}$ & 1 & & &
 \end{tabular}
 \end{center}
@@ -530,8 +647,8 @@ A blank keeps the previous value. In the set used in~\cite{2026Feng_Day_Glasser}
 described in Section~\ref{sec-var}, all values change together on the days of the variants,
 $t=459$, $550$, $725$, $914$. The two sets differ in the day of the first change ($t=398$
 for $\beta$ and $\varepsilon$, $t=460$ for the compliance, against $t=459$ for all), in
-the factor of $c_j^0$ under Delta (0.8 against 0.6), in $k$ under Delta ($1/5$ against
-$1/4$), and after Delta.
+the factor of $c_j^0$ under Delta (0.8 against 0.6), in $k$ ($1/3$ throughout, against
+$1/5$, $1/4$ from Delta and $1/3$ from BA5), and after Delta.
 
 \bibliographystyle{plainurl}
 \bibliography{bib_mb}

@@ -32,7 +32,7 @@ Usage:
         tolerances, group sums, signs, spectral radius on [251, t_vacc]
     python3 -u seir7_ode.py solve    | tee intermediate/seir7_ode_solve.output
         state at t_vacc (start of vaccination) -> data/state_t<t_vacc>_51x16__<params>.csv
-    python3 -u seir7_ode.py simulate [actual|optimal] [resume] [initial=FILE] [doses=FILE] [params=NAME]
+    python3 -u seir7_ode.py simulate [optimal|eigenvector|actual] [resume] [initial=FILE] [doses=FILE] [params=NAME]
             | tee -a intermediate/seir7_ode_simulate_<strategy>__<tag>.output
         initial= the state at t = 251 (default data/cdc/state_t251_mock.csv), doses= the weekly
         doses (default data/mock/doses_51x16x16_mock.xlsx); a FILE is taken as given, else
@@ -48,9 +48,11 @@ Usage:
         allocated among its age groups by the alternating method (alternating.py, notes/
         stratified_seir_ngm.tex) with sigma = S, V, P of the solution at the start of the week,
         from the uniform and left-eigenvector starts (and NRAND random ones, a constant below,
-        0: random starts only to test for other local minima)
+        0: random starts only to test for other local minima); eigenvector: the same doses
+        allocated by the eigenvector strategy, no optimization (notes/DATA.tex, Section 2.3)
         -> data/simulate_weekly_51x16_<strategy>__<tag>.csv (national totals at the start of each
-           week), and for optimal data/simulate_weekly_51x16_optimal__<tag>_rho.csv (rho per week)
+           week), and except for actual data/simulate_weekly_51x16_<strategy>__<tag>_rho.csv (rho
+           of the applied rates, rho_applied, and the doses by age, D<k>_<age>, per week)
     Any mode takes method=DOP853 (default; explicit RK of order 8, scipy) or method=SDIRK4
     (implicit RK of order 4 with step control, matrix-free Newton-GMRES with jvp; sdirk.py).
 """
@@ -494,13 +496,11 @@ def actual_rates(mod, X, Dw):
     return chi
 
 
-def optimal_rates(mod, A, tau, X, Dw, nrand):
-    """The weekly problem of notes/stratified_seir_ngm.tex at tau: minimize rho over chi with
-    sum_{p in I_i} sigma_{k,p} chi_{k,p} = b_{k,i}; sigma_k = S, V, P at tau, b_{k,i} the doses
-    of location i in the week (all ages) per day, from Dw (3 x m, sheet 1 of the dose file).
-    Returns chi (3 x m x n) and a summary, with the wall time (s) and iterations of the steps for
-    chi1, chi2, chi3, added up over all sweeps and starts."""
-    A.reset_stats()
+def week_problem(mod, A, tau, X, Dw):
+    """The data of the week at tau, the same for every strategy: A set to the model at tau, with
+    the eligible groups (sigma_{k,p} >= ELIG_MIN) and the bound CHI_MAX; returns sigma_k = S, V,
+    P at tau (raised to SIG_FLOOR), the eligible groups and b_{k,i}, the doses of location i per
+    day, from Dw (3 x m), at most B_CAP of its eligible people in the week."""
     A.set_model(*mod.ngm_context(tau))
     elig = [(X[comp] >= ELIG_MIN).ravel() for comp in (S, V, P)]
     A.set_eligible(elig)
@@ -511,6 +511,57 @@ def optimal_rates(mod, A, tau, X, Dw, nrand):
         se = np.where(elig[k], sig[k], 0.0).reshape(mod.m, mod.n).sum(axis=1)   # eligible people
         bk = np.clip(Dw[k] / 7.0, B_FLOOR, np.maximum(B_CAP * se / 7.0, B_FLOOR))
         b.append(np.where(se > 0, bk, 0.0))       # no doses where no group is eligible
+    return sig, elig, b
+
+
+def doses_by_age(mod, chi, sig, elig):
+    """The doses of the week, 7 sigma chi over the eligible groups, summed over the locations:
+    {"D<k>_<age>": ...} for k = 1, 2, 3."""
+    out = {}
+    for k in range(3):
+        d = 7.0 * np.where(elig[k], sig[k] * np.asarray(chi[k]).ravel(), 0.0)
+        for j, a in enumerate(d.reshape(mod.m, mod.n).sum(axis=0)):
+            out[f"D{k + 1}_{mod.ages[j]}"] = a
+    return out
+
+
+def eigenvector_rates(mod, A, tau, X, Dw, chi_prev):
+    """The rates of the week at tau by the eigenvector strategy, notes/DATA.tex, Section 2.3,
+    with the doses b_{k,i} of optimal_rates: the doses sigma chi of location i in proportion to
+    the weights (2.6), from the left Perron vector u of A_1 diag(g) at tau with the rates
+    chi_prev of the previous week (choices C1-C4), then cap_rates. Returns chi (3 x m x n) and a
+    summary."""
+    sig, elig, b = week_problem(mod, A, tau, X, Dw)
+    tic = time.time()
+    g = A.g_of(*[np.asarray(c, float).ravel() for c in chi_prev])[0]
+    _, _, u = A.perron(g)
+    w1 = u / g                                     # (2.6): rows 2p-1 of the left vector of NGM
+    wts = [w1, A.r * w1, A.r * w1]                 # rows 2p: doses 2 and 3 (to V and P)
+    chi = []
+    for k in range(3):
+        c = np.zeros(A.N)
+        for i, I in enumerate(A.LOC):
+            J = I[elig[k][I]]
+            if b[k][i] <= 0 or J.size == 0:
+                continue
+            wk = wts[k][J]
+            c[J] = b[k][i] * wk / wk.sum() / sig[k][J]
+        chi.append(c)
+    chi, top = cap_rates(chi, sig, elig, mod.m, mod.n)
+    rho = A.rho_of(chi)
+    return (np.stack([c.reshape(mod.m, mod.n) for c in chi]),
+            dict(rho_applied=rho, chi_max_before_cap=top, t_rule=time.time() - tic,
+                 **doses_by_age(mod, chi, sig, elig)))
+
+
+def optimal_rates(mod, A, tau, X, Dw, nrand):
+    """The weekly problem of notes/stratified_seir_ngm.tex at tau: minimize rho over chi with
+    sum_{p in I_i} sigma_{k,p} chi_{k,p} = b_{k,i}; sigma_k = S, V, P at tau, b_{k,i} the doses
+    of location i in the week (all ages) per day, from Dw (3 x m, sheet 1 of the dose file).
+    Returns chi (3 x m x n) and a summary, with the wall time (s) and iterations of the steps for
+    chi1, chi2, chi3, added up over all sweeps and starts."""
+    A.reset_stats()
+    sig, elig, b = week_problem(mod, A, tau, X, Dw)
     ends = []
     for name, chi0 in A.starts(b, sig, nrand, seed=int(tau)):
         rho0 = A.rho_of(chi0)
@@ -521,10 +572,11 @@ def optimal_rates(mod, A, tau, X, Dw, nrand):
     chi, top = cap_rates(chi, sig, elig, mod.m, mod.n)
     rho_cap = A.rho_of(chi)
     return (np.stack([c.reshape(mod.m, mod.n) for c in chi]),
-            dict(rho_uniform=rho_uni, rho_opt=rm, rho_capped=rho_cap, chi_max_before_cap=top,
-                 start=name, sweeps=sw,
+            dict(rho_uniform=rho_uni, rho_opt=rm, rho_capped=rho_cap, rho_applied=rho_cap,
+                 chi_max_before_cap=top, start=name, sweeps=sw,
                  **{f"t_chi{k + 1}": A.STATS["time"][k] for k in range(3)},
-                 **{f"it_chi{k + 1}": A.STATS["iters"][k] for k in range(3)}))
+                 **{f"it_chi{k + 1}": A.STATS["iters"][k] for k in range(3)},
+                 **doses_by_age(mod, chi, sig, elig)))
 
 
 def max_rss_mb():
@@ -551,12 +603,13 @@ def do_simulate(mod, strategy="actual", nrand=0, resume=False, doses=DOSES, outd
     """Weekly vaccination from mod.t_vacc, with the initial state of mod and the dose file doses,
     for as many weeks as the dose file has. strategy "actual" (not run): the rates of DATA.tex,
     Remark 2.1, from the doses by location and age; "optimal": the doses of each location (all
-    ages) allocated among its age groups by the optimization of notes/stratified_seir_ngm.tex.
+    ages) allocated among its age groups by the optimization of notes/stratified_seir_ngm.tex;
+    "eigenvector": the same doses allocated by the eigenvector strategy, notes/DATA.tex, Section 2.3.
     After every week the state, the week and the results so far are saved to the checkpoint
     simulate_<strategy>__<tag>_checkpoint.npz (in intermediate/, or outdir), tag =
     run_tag(initial, doses, params); with resume=True the run continues from it. The results go
     to data/, or outdir."""
-    if strategy not in ("actual", "optimal"):
+    if strategy not in ("actual", "optimal", "eigenvector"):
         raise ValueError(f"strategy {strategy!r}")
     tag = run_tag(mod.initial_path, doses, mod.params)
     if outdir:
@@ -565,10 +618,10 @@ def do_simulate(mod, strategy="actual", nrand=0, resume=False, doses=DOSES, outd
           f" (vaccination from t = {mod.t_vacc:g})\noutput tag {tag}\n"
           f"output directory {outdir or DATA}", flush=True)
     A = None
-    if strategy == "optimal":
+    if strategy != "actual":
         import alternating as A
     from doses_51x16x16 import read_sheet          # reads a dose file, real or mock
-    if strategy == "optimal":     # sheet 1: one row per location (all ages)
+    if strategy != "actual":      # sheet 1: one row per location (all ages)
         keys, nw, val = read_sheet(doses, 0, 1)
         if [k[0] for k in keys] != mod.locs:
             raise ValueError(f"{doses}, sheet 1: states not in the order of the model")
@@ -587,6 +640,8 @@ def do_simulate(mod, strategy="actual", nrand=0, resume=False, doses=DOSES, outd
         z = np.load(ckpt, allow_pickle=True)
         w0, x = int(z["next_week"]), z["x"].copy()
         rows, opt = list(z["rows"]), list(z["opt"])
+        if "chi" in z.files:                   # the rates of the last completed week
+            mod.chi[:] = z["chi"]
         if not np.isclose(float(z["t"]), weeks[w0]):
             raise ValueError(f"{ckpt}: t = {float(z['t'])} is not the start of week {w0 + 1}")
         print(f"resuming from {ckpt}: week {w0 + 1} (t = {weeks[w0]:g})", flush=True)
@@ -597,9 +652,15 @@ def do_simulate(mod, strategy="actual", nrand=0, resume=False, doses=DOSES, outd
         tau = weeks[w]
         X = x.reshape(13, mod.m, mod.n)
         rows.append({"t": tau, **{nm: X[c].sum() for c, nm in enumerate(NAMES)}})
-        Dw = Dk[..., w]                        # 3 x m (optimal) or 3 x m x n (actual)
+        Dw = Dk[..., w]                        # 3 x m, or 3 x m x n (actual)
         if strategy == "actual":
             mod.chi[:] = actual_rates(mod, X, Dw)
+        elif strategy == "eigenvector":
+            chi, info = eigenvector_rates(mod, A, tau, X, Dw, mod.chi.copy())
+            mod.chi[:] = chi
+            opt.append({"t": tau, **info})
+            print(f"week {w + 1} (t = {tau:g}): rho {strategy} {info['rho_applied']:.6f} (max chi"
+                  f" before cap {info['chi_max_before_cap']:.3g}); {time.time() - tic:.0f} s", flush=True)
         else:
             chi, info = optimal_rates(mod, A, tau, X, Dw, nrand)
             mod.chi[:] = chi
@@ -611,14 +672,15 @@ def do_simulate(mod, strategy="actual", nrand=0, resume=False, doses=DOSES, outd
         t_ode = time.time()
         (x,), _ = mod.solve(tau, tau + 7.0, x)
         t_ode = time.time() - t_ode
-        if strategy == "optimal":
+        if opt:
             opt[-1].update(t_ode=t_ode, max_rss_MB=max_rss_mb())
+        if strategy == "optimal":
             print("   times: " + ", ".join(f"chi{k} {info[f't_chi{k}']:.1f} s ({info[f'it_chi{k}']} it)"
                                           for k in (1, 3, 2))
                   + f", ODE {t_ode:.1f} s; max memory {max_rss_mb():.0f} MB", flush=True)
         if w + 1 < len(weeks):                 # the state at the start of the next week
             tmp = ckpt + ".tmp.npz"
-            np.savez(tmp, next_week=w + 1, t=weeks[w + 1], x=x,
+            np.savez(tmp, next_week=w + 1, t=weeks[w + 1], x=x, chi=mod.chi,
                      rows=np.array(rows, dtype=object), opt=np.array(opt, dtype=object))
             os.replace(tmp, ckpt)
     mod.chi[:] = 0.0
@@ -634,7 +696,7 @@ def do_simulate(mod, strategy="actual", nrand=0, resume=False, doses=DOSES, outd
           f"{time.time() - tic:.1f} s; at the end: V {out.V.iloc[-1] / 1e6:.1f} M, R {out.R.iloc[-1] / 1e6:.1f} M,"
           f" M (dead) {out.M.iloc[-1] / 1e3:.0f} K, hospitalized now {out.Ih.iloc[-1] / 1e3:.1f} K;"
           f" min compartment {x.min():.3g}", flush=True)
-    if opt:
+    if strategy == "optimal":
         tot = {key: sum(o.get(key, 0) for o in opt)
                for key in ("t_chi1", "t_chi3", "t_chi2", "it_chi1", "it_chi3", "it_chi2", "t_ode")}
         print(f"total times over {len(opt)} weeks: " + ", ".join(
@@ -664,7 +726,7 @@ if __name__ == "__main__":
         resume = "resume" in argv[1:]
         strategy = args[0] if args else "optimal"   # actual: reference only, not run
         if len(args) > 1:
-            raise ValueError(f"unexpected arguments {args[1:]}: simulate [actual|optimal] [resume]")
+            raise ValueError(f"unexpected arguments {args[1:]}: simulate [optimal|eigenvector|actual] [resume]")
         do_simulate(mod, strategy, NRAND, resume, doses=doses,
                     outdir=os.path.abspath(opts["out"]) if "out" in opts else None)
     else:

@@ -15,10 +15,10 @@ with `Ac` and `A1 = diag(d_c) C diag(psi_I q_s)` independent of `chi`, `g = y + 
 
 | file | |
 | --- | --- |
-| `stratified_seir_ngm.tex` | the main document: the NGM, the reduction to order `N = m n`, the optimality conditions, the fixed point iteration, the alternating method for three doses, the numerical results (Section 6.5), the simulation with the weekly optimization and the bound on the rates (Section 9), and the products with the contact matrix (appendix) |
+| `stratified_seir_ngm.tex` | the main document: the NGM, the reduction to order `N = m n`, the optimality conditions, the fixed point iteration, the alternating method for three doses, the numerical results (Section 6.5), the simulation with the weekly optimization and the bound on the rates (Section 7), and the products with the contact matrix (appendix) |
 | `suplemental/stratified_seir_ngm_supplement.tex` | the supplement (more results for the alternating method, a Newton method) |
-| `DATA.tex` | the data, each with its source, and the list of files (Section 1: F1-1 to F1-26); the model and the computation (Section 2: the program and its files F2-1 to F2-5) |
-| `simulation_weekly_optimal.tex` | one page: the weekly optimal simulation, its figures, the public and the mock data |
+| `DATA.tex` | the data, each with its source, and the list of files (Section 1: F1-1 to F1-26); the model and the computation (Section 2: the program and its files F2-1 to F2-5; Section 2.3: the eigenvector strategy) |
+| `simulation_weekly_optimal.tex` | the weekly optimal simulation, its figures, the public and the mock data, and its comparison with the eigenvector strategy (a table and the comparison figures) |
 | `bib_mb.bib` | the bibliography |
 
 Build each with `pdflatex`, `bibtex`, `pdflatex` twice.
@@ -49,11 +49,13 @@ Run the scripts from `code/python/`.  Eigenvalues by Arnoldi (`scipy.sparse.lina
 | `cdc_variants.py` | the days of the variants (CDC variant proportions) |
 | `sero_initial_51x16.py` | the initial state at `t = 251` (MOCK, from the CDC serosurvey) |
 | `doses_51x16x16.py` | reads a dose file, real or mock (`read_sheet`, used by every run of `seir7_ode.py`); run as a script, it writes the weekly doses (MOCK), `data/mock/doses_51x16x16_mock.xlsx`: sheet 1 `by_state` (51 rows, all ages; used by `simulate optimal`), sheet 2 `by_state_age` (816 rows; used only by `simulate actual`); header row 1 `Week 1` ... `Week 55`, each in the middle one of its three columns, over `Dose 2` (week `w` starts at `t = t_vacc + 7 (w - 1)`, `t_vacc` of the parameter set), row 2 `State` (and `Age`), then `Dose 1`, `Dose 2`, `Dose 3+` under each week; the doses by age are rounded to integers (stored as floats), and sheet 1 is their sum over the ages, exactly |
-| `seir7_ode.py` | the model and its solution: `simulate optimal` (the weekly optimization of Section 9 of the main document), `solve`, `verify` |
+| `seir7_ode.py` | the model and its solution: `simulate optimal` (the weekly optimization of Section 7 of the main document), `simulate eigenvector` (the same doses by the eigenvector strategy of Feng, Day, Glasser 2026, `DATA.tex`, Section 2.3), `solve`, `verify` |
 | `sdirk.py` | an implicit Runge-Kutta method with step control (SDIRK of order 4, embedded order 3, Hairer-Wanner), matrix-free: Newton-GMRES with the Jacobian-vector product of `seir7_ode.py`; used by `seir7_ode.py ... method=SDIRK4` |
-| `alternating.py` | the alternating method of Section 6, with the bound on the rates of Section 9.1 |
+| `alternating.py` | the alternating method of Section 6, with the bound on the rates of Section 7.1 |
 | `ngm_seir7.py` | the 51 x 16 NGM at `t = t_vacc` (start of vaccination) from the same data (option `params=`): `rho(NGM)`, `rho(F V^-1)`, the left eigenvector, the gradient |
 | `plot_weekly_optimal.py` | the figures of the weekly optimal simulation, from `data/simulate_weekly_51x16_optimal__<tag>*.csv` (options `initial=`, `doses=`, `params=` as for `seir7_ode.py`), saved to `notes/figures/fig_weekly_optimal*` or to a directory given as argument |
+| `plot_compare.py` | the comparison figures of the strategies run for one set of inputs (`python3 plot_compare.py RESULTS_DIR`), saved to `RESULTS_DIR/figures/fig_compare_*.png` |
+| `weekly_report.py` | `python3 weekly_report.py RESULTS_DIR`: all figures of one results directory (`plot_weekly_optimal.py`, `plot_compare.py`), and the run values (input files, parameter set, days, weeks, results) written between `% BEGIN run values` and `% END run values` in `notes/DATA.tex` and `notes/simulation_weekly_optimal.tex`; nothing else in these files is changed |
 
 Order: `census_N_51x16.py`, `prem_U_16x16.py`, `geo_51.py`, `build_C_51x16.py`,
 `glasser2023_inputs.py`, `oxcgrt_s_51.py`, `cdc_variants.py`, `sero_initial_51x16.py`,

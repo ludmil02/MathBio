@@ -69,7 +69,12 @@ PANELS = {"rho": panel_rho, "compartments": panel_compartments,
 
 
 def dates(a):
-    a.xaxis.set_major_locator(mdates.MonthLocator(bymonth=(1, 7)))
+    """Date ticks, by the span of the plotted days: every month up to about 7 months, every 3
+    months up to about 14 months, else January and July."""
+    lo, hi = a.get_xlim()
+    span = hi - lo                                   # days
+    months = (range(1, 13) if span <= 215 else (1, 4, 7, 10) if span <= 430 else (1, 7))
+    a.xaxis.set_major_locator(mdates.MonthLocator(bymonth=months))
     a.xaxis.set_major_formatter(mdates.DateFormatter("%b %Y"))
 
 

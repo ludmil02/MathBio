@@ -8,10 +8,12 @@ location (all ages) are allocated among its age groups so as to minimize the spe
 the next generation matrix, and the system is solved over the week with these rates.  Time `t`
 is in days from 31 December 2019.
 
-The methods are in `notes/stratified_seir_ngm.tex` (the optimization; Section 9 for the
+The methods are in `notes/stratified_seir_ngm.tex` (the optimization; Section 7 for the
 simulation and the bound on the rates) and `notes/DATA.tex` (the data with their sources, the
 model and the computation).  The program is in `code/python/` (`seir7_ode.py`,
-`alternating.py`, `plot_weekly_optimal.py`).
+`alternating.py`, `plot_weekly_optimal.py`, `plot_compare.py`, `weekly_report.py`).  For
+comparison, the same doses can also be allocated by the eigenvector strategy of Feng, Day,
+Glasser 2026 (`notes/DATA.tex`, Section 2.3).
 
 ## Contents
 
@@ -22,7 +24,7 @@ the repository: `code/python/data/mock/doses_51x16x16_mock.xlsx` and
 
 | | |
 | --- | --- |
-| `run.sh` | runs the simulation and then the figures |
+| `run.sh` | runs the optimal simulation, the eigenvector strategy, the figures, and writes the run values into the notes |
 | `input/doses_51x16x16_mock.xlsx` | weekly doses (MOCK) |
 | `input/state_t251_mock.csv` | the state at `t = 251` (MOCK); format below |
 | `results/<tag>/` | made by `run.sh`: data, log and figures of one run |
@@ -43,6 +45,15 @@ the values of Feng, Day, Glasser 2026).  The results go to `results/<tag>/`, `ta
 `results/state_t251_mock__doses_51x16x16_mock__2021/`, so runs with different inputs are kept
 apart.  After an interruption, `RESUME=1 ./run.sh` with the same arguments continues
 from the last completed week.
+
+After the optimal run, `run.sh` runs the eigenvector strategy with the same inputs into the
+same `results/<tag>/` (a few seconds per week; `notes/DATA.tex`, Section
+2.3), makes the figures (`plot_weekly_optimal.py`, `plot_compare.py`), and writes the values of
+the run into `notes/DATA.tex` and `notes/simulation_weekly_optimal.tex`, between
+`% BEGIN run values` and `% END run values` (`weekly_report.py RESULTS nofigures`), so that the
+notes show this run.  Each of these steps is one line of `run.sh` and can be commented out.
+`python3 weekly_report.py RESULTS`, from `code/python/`, makes all figures and writes the
+values for an existing `results/<tag>/`.
 
 ## The dose file
 
@@ -85,13 +96,16 @@ size and the labels in row 1 and columns A, B are checked.  The mock state is ma
 | file | |
 | --- | --- |
 | `simulate_weekly_51x16_optimal__<tag>.csv` | national totals of the 13 compartments (`S`, `P`, `Es`, `Ep`, `V`, `Ia`, `Ips`, `Ipm`, `Is`, `Im`, `Ih`, `R`, `M`) at the start of each week and at the end |
-| `simulate_weekly_51x16_optimal__<tag>_rho.csv` | for each week: the spectral radius at the uniform allocation (`rho_uniform`), at the optimum (`rho_opt`, `rho_capped`), the largest rate (`chi_max_before_cap`, at most 0.658 per day), the start and sweeps of the optimization, the times and iterations of the steps for the three doses (`t_chi1`, ..., `it_chi3`), the time of the ODE solution (`t_ode`) and the memory used (`max_rss_MB`) |
+| `simulate_weekly_51x16_optimal__<tag>_rho.csv` | for each week: the spectral radius at the uniform allocation (`rho_uniform`), at the optimum (`rho_opt`, `rho_capped`, `rho_applied`), the doses by age (`D1_0-4`, ..., `D3_75+`), the largest rate (`chi_max_before_cap`, at most 0.658 per day), the start and sweeps of the optimization, the times and iterations of the steps for the three doses (`t_chi1`, ..., `it_chi3`), the time of the ODE solution (`t_ode`) and the memory used (`max_rss_MB`) |
 | `simulate_optimal__<tag>.output` | the log of the run |
 | `simulate_optimal__<tag>_checkpoint.npz` | the state after the last completed week (for `RESUME=1`) |
 | `figures/fig_weekly_optimal_rho.png` | spectral radius, uniform and optimal allocation |
 | `figures/fig_weekly_optimal_compartments.png` | `S`, `P`, `V`, `R` (millions) |
 | `figures/fig_weekly_optimal_infectious.png` | all infectious and hospitalized (thousands) |
 | `figures/fig_weekly_optimal_deaths.png` | cumulative deaths (thousands) |
+| `simulate_weekly_51x16_eigenvector__<tag>.csv`, `..._rho.csv`, `simulate_eigenvector__<tag>.output` | the same for the eigenvector strategy (`rho_applied`, the largest rate before the bound, the doses by age) |
+| `figures/fig_compare_{rho,infectious,hospitalized,deaths}.png` | the strategies compared over time |
+| `figures/fig_compare_doses_age_dose{1,2,3}.png` | the doses of each type by age group, summed over the weeks, for each strategy |
 
 The initial state and the doses in `input/` are mock data; the results computed from them are
 a test of the computation, not predictions.
