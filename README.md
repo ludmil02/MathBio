@@ -48,7 +48,7 @@ Run the scripts from `code/python/`.  Eigenvalues by Arnoldi (`scipy.sparse.lina
 | `oxcgrt_s_51.py` | stringency factors `s_i(t) = 1 - SI_i(t)/100` (OxCGRT) |
 | `cdc_variants.py` | the days of the variants (CDC variant proportions) |
 | `sero_initial_51x16.py` | the initial state at `t = 251` (MOCK, from the CDC serosurvey) |
-| `doses_51x16x16.py` | reads a dose file, real or mock (`read_sheet`, used by every run of `seir7_ode.py`); run as a script, it writes the weekly doses (MOCK), `data/mock/doses_51x16x16_mock.xlsx`: sheet 1 `by_state` (51 rows, all ages; used by `simulate optimal`), sheet 2 `by_state_age` (816 rows; used only by `simulate actual`); header row 1 `Week 1` ... `Week 55`, each in the middle one of its three columns, over `Dose 2` (week `w` starts at `t = t_vacc + 7 (w - 1)`, `t_vacc` of the parameter set), row 2 `State` (and `Age`), then `Dose 1`, `Dose 2`, `Dose 3+` under each week; the doses by age are rounded to integers (stored as floats), and sheet 1 is their sum over the ages, exactly |
+| `doses_51x16x16.py` | reads a dose file, real or mock (`read_sheet`, used by every run of `seir7_ode.py`); run as a script, it writes the weekly doses (MOCK), `data/mock/doses_51x16x16_mock_<W>wk.xlsx` for `W = 126`, `55` (the default) and `15` (a short test run), the first `W` weeks of the same values: sheet 1 `by_state` (51 rows, all ages; used by `simulate optimal`), sheet 2 `by_state_age` (816 rows; used only by `simulate actual`); header row 1 `Week 1` ... `Week 55`, each in the middle one of its three columns, over `Dose 2` (week `w` starts at `t = t_vacc + 7 (w - 1)`, `t_vacc` of the parameter set), row 2 `State` (and `Age`), then `Dose 1`, `Dose 2`, `Dose 3+` under each week; the doses by age are rounded to integers (stored as floats), and sheet 1 is their sum over the ages, exactly |
 | `seir7_ode.py` | the model and its solution: `simulate optimal` (the weekly optimization of Section 7 of the main document), `simulate eigenvector` (the same doses by the eigenvector strategy of Feng, Day, Glasser 2026, `DATA.tex`, Section 2.3), `solve`, `verify` |
 | `sdirk.py` | an implicit Runge-Kutta method with step control (SDIRK of order 4, embedded order 3, Hairer-Wanner), matrix-free: Newton-GMRES with the Jacobian-vector product of `seir7_ode.py`; used by `seir7_ode.py ... method=SDIRK4` |
 | `alternating.py` | the alternating method of Section 6, with the bound on the rates of Section 7.1 |
@@ -61,7 +61,7 @@ Order: `census_N_51x16.py`, `prem_U_16x16.py`, `geo_51.py`, `build_C_51x16.py`,
 `glasser2023_inputs.py`, `oxcgrt_s_51.py`, `cdc_variants.py`, `sero_initial_51x16.py`,
 `doses_51x16x16.py`, then
 
-    python3 -u seir7_ode.py simulate optimal 2>&1 | tee intermediate/seir7_ode_simulate_optimal__state_t251_mock__doses_51x16x16_mock__2021.output
+    python3 -u seir7_ode.py simulate optimal 2>&1 | tee intermediate/seir7_ode_simulate_optimal__state_t251_mock__doses_51x16x16_mock_55wk__2021.output
 
 The inputs are `initial=FILE` (the state at `t = 251`, default `data/cdc/state_t251_mock.csv`;
 a CSV file, 664 rows and 18 columns: row 1 `variable`, `location`, then the age groups 0-4,
@@ -69,7 +69,7 @@ a CSV file, 664 rows and 18 columns: row 1 `variable`, `location`, then the age 
 `V`, `Ia`, `Ips`, `Ipm`, `Is`, `Im`, `Ih`, `R`, `M` (rows 2-52 `S`, rows 53-103 `P`, ..., rows
 614-664 `M`); within a block, one row per location in FIPS order (AL, AK, AZ, ...); column A
 the compartment, column B the location, then the 16 ages.  Entries are numbers of people.)
-and `doses=FILE` (default `data/mock/doses_51x16x16_mock.xlsx`), e.g.
+and `doses=FILE` (default `data/mock/doses_51x16x16_mock_55wk.xlsx`), e.g.
 `simulate optimal initial=data/cdc/my_state.csv doses=data/mock/my_doses.xlsx`, and the
 parameter set `params=NAME`, a column of `weekly_simulation/input/parameters.xlsx` (kept on
 disk, not in the repository; default `2021`, the values of Unknown 2020/21; also `feng2026`,
@@ -83,7 +83,7 @@ without directory and extension, and the set): `data/simulate_weekly_51x16_optim
 interruption (Ctrl-C), `resume` with the same inputs continues from the last completed week
 (and stops if there is no checkpoint for these inputs):
 
-    python3 -u seir7_ode.py simulate optimal resume 2>&1 | tee -a intermediate/seir7_ode_simulate_optimal__state_t251_mock__doses_51x16x16_mock__2021.output
+    python3 -u seir7_ode.py simulate optimal resume 2>&1 | tee -a intermediate/seir7_ode_simulate_optimal__state_t251_mock__doses_51x16x16_mock_55wk__2021.output
 
 and then `python3 plot_weekly_optimal.py` (with the same `initial=`, `doses=`, `params=`, if
 not the defaults) for the figures.

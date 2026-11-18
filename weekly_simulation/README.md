@@ -19,13 +19,16 @@ Glasser 2026 (`notes/DATA.tex`, Section 2.3).
 
 Only this README is in the repository.  `run.sh`, `input/` and `results/` are kept on disk
 (listed in `.gitignore`) and copied between machines with `rsync`.  The mock inputs are also in
-the repository: `code/python/data/mock/doses_51x16x16_mock.xlsx` and
-`code/python/data/cdc/state_t251_mock.csv` (the files `seir7_ode.py` uses by default).
+the repository: `code/python/data/mock/doses_51x16x16_mock_55wk.xlsx` and
+`code/python/data/cdc/state_t251_mock.csv` (the files `seir7_ode.py` uses by default), with
+`code/python/data/mock/doses_51x16x16_mock_126wk.xlsx` (126 weeks) and
+`code/python/data/mock/doses_51x16x16_mock_15wk.xlsx` (the first 15 weeks, a short test run:
+`./run.sh ../code/python/data/mock/doses_51x16x16_mock_15wk.xlsx`, about 15 minutes).
 
 | | |
 | --- | --- |
 | `run.sh` | runs the optimal simulation, the eigenvector strategy, the figures, and writes the run values into the notes |
-| `input/doses_51x16x16_mock.xlsx` | weekly doses (MOCK) |
+| `input/doses_51x16x16_mock_55wk.xlsx` | weekly doses (MOCK), 55 weeks, the number of weeks of the reported doses; the default |
 | `input/state_t251_mock.csv` | the state at `t = 251` (MOCK); format below |
 | `results/<tag>/` | made by `run.sh`: data, log and figures of one run |
 
@@ -42,7 +45,7 @@ The parameters are a set (a column) of `input/parameters.xlsx`, `PARAMS=NAME`
 (default `2021`, the values of Unknown 2020/21; also `feng2026`,
 the values of Feng, Day, Glasser 2026).  The results go to `results/<tag>/`, `tag =
 <INITIAL>__<DOSES>__<PARAMS>` (the two file names without extension, and the set), e.g.
-`results/state_t251_mock__doses_51x16x16_mock__2021/`, so runs with different inputs are kept
+`results/state_t251_mock__doses_51x16x16_mock_55wk__2021/`, so runs with different inputs are kept
 apart.  After an interruption, `RESUME=1 ./run.sh` with the same arguments continues
 from the last completed week.
 
@@ -72,8 +75,9 @@ one sheet is enough.
   sum of sheet 2 over the ages.
 
 Week `w` starts on day `t = t_vacc + 7 (w - 1)`.  The number of weeks is that of the file, and
-the run ends at `t = t_vacc + 7 W` for `W` weeks; for the 55 weeks of the mock file, at `t =
-732` (1 January 2022) with `2021` and `t = 734` (3 January 2022) with `feng2026`.  The mock doses are made by
+the run ends at `t = t_vacc + 7 W` for `W` weeks; for the 55 weeks of the default mock file, at `t =
+732` (1 January 2022) with `2021` and `t = 734` (3 January 2022) with `feng2026`; for the
+126 weeks of `code/python/data/mock/doses_51x16x16_mock_126wk.xlsx`, at `t = 1229` (13 May 2023) with `2021`.  The mock doses are made by
 `code/python/doses_51x16x16.py` (rules in `notes/DATA.tex`, Section 1.9.2); a file of
 reported doses has to have the same layout.  An empty cell below the two header rows and right
 of the key column(s) is read as 0, and each one is listed in the log.

@@ -154,7 +154,7 @@ the $n$ age groups. The program checks the labels of row 1 and of columns A and 
 (\src{read_state} in \src{seir7_ode.py}). Section~\ref{sec-mock}.
 \item\label{f-doses} \texttt{\RunDosesFile}: the weekly doses of the computation of
 Section~\ref{sec-comp}, sheet \src{by_state} by location and sheet \src{by_state_age} by
-location and age group; the mock doses \src{mock/doses_51x16x16_mock.xlsx} are made by
+location and age group; the mock doses \src{mock/doses_51x16x16_mock_55wk.xlsx} are made by
 \src{doses_51x16x16.py} from~\fref{f-N}. Section~\ref{sec-mock}.
 \end{enumerate}
 
@@ -358,10 +358,13 @@ that the 13 compartments add up to $N_{ij}$, and the other compartments $0$.
 This gives $6.6\%$ seropositive. (\fref{f-x0})
 
 \subsubsection{Weekly doses (mock)}\label{sec-doses}
-Made up, by location, age group and dose, for 55 weeks from the start of vaccination,
-the number of weeks of the reported doses (\fref{f-doses}). The rules below are applied
-over 126 weeks, through the end of the Public Health Emergency, 11 May
-2023~\cite[Section~2.2, p.~4]{2026Feng_Day_Glasser}, and the file has the first 55: age group
+Made up, by location, age group and dose, from the start of vaccination
+(\fref{f-doses}). The rules below are applied over 126 weeks, through the end of the Public
+Health Emergency, 11 May 2023~\cite[Section~2.2, p.~4]{2026Feng_Day_Glasser}, and written to two
+files: \src{mock/doses_51x16x16_mock_126wk.xlsx}, all 126 weeks, and
+\src{mock/doses_51x16x16_mock_55wk.xlsx}, the first 55, the number of weeks of the reported
+doses (the default), and \src{mock/doses_51x16x16_mock_15wk.xlsx}, the first 15, for a short
+test run; their common weeks are the same: age group
 $j$ receives $\mathrm{cov}_jN_{ij}$ first doses evenly over 12 weeks from its
 start week ($\mathrm{cov}=0.9$ from week 1 for 65+; $0.8$ from week 9 for 50--64;
 $0.7$ from week 15 for 20--49; $0.55$, $0.45$, $0.3$, $0.1$ from weeks 17, 22, 47,
@@ -375,7 +378,7 @@ integer. To be replaced by the doses reported to the
 CDC~\cite[Section~2.2]{2026Feng_Day_Glasser}.
 
 The file~\fref{f-doses} has two sheets, each with two header rows: in the first,
-``Week 1'', \dots, ``Week 55'', each in the middle one of its three columns (week $w$
+``Week 1'', \dots, ``Week $W$'' ($W=15$, $55$ or $126$), each in the middle one of its three columns (week $w$
 starts on day $t=t_{\mathrm{vacc}}+7(w-1)$, Section~\ref{sec-params-const}); in the second, ``Dose 1'', ``Dose 2'', ``Dose 3+'' under each
 week. Sheet 1, \src{by_state}: the column ``State'' and one row for each of the
 51 locations, the doses $D_{k,i}=\sum_jD_{k,ij}$ of all ages. Sheet 2,

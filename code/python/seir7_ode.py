@@ -15,7 +15,7 @@ Inputs (each built by its script from files in MathBio/data/Downloaded_from_sour
   data/oxcgrt/s_51_daily.csv       oxcgrt_s_51.py         stringency factors s_i(t)
   data/model/C_816x816.csv.gz      build_C_51x16.py       contact matrix C (from U, L, d, b)
   data/cdc/state_t251_mock.csv     sero_initial_51x16.py  initial state (MOCK); format: read_state
-  data/mock/doses_51x16x16_mock.xlsx  doses_51x16x16.py  weekly doses (MOCK): sheet 1
+  data/mock/doses_51x16x16_mock_55wk.xlsx  doses_51x16x16.py  weekly doses (MOCK): sheet 1
                                    by state (read for optimal), sheet 2 by state and age (actual)
 
 The state vector has the order: compartment (S, P, Es, Ep, V, Ia, Ips, Ipm, Is, Im, Ih, R, M),
@@ -35,10 +35,10 @@ Usage:
     python3 -u seir7_ode.py simulate [optimal|eigenvector|actual] [resume] [initial=FILE] [doses=FILE] [params=NAME]
             | tee -a intermediate/seir7_ode_simulate_<strategy>__<tag>.output
         initial= the state at t = 251 (default data/cdc/state_t251_mock.csv), doses= the weekly
-        doses (default data/mock/doses_51x16x16_mock.xlsx); a FILE is taken as given, else
+        doses (default data/mock/doses_51x16x16_mock_55wk.xlsx); a FILE is taken as given, else
         relative to this directory. tag = <initial>__<doses>__<params>, the two file names
         without directory and extension and the set, e.g.
-        state_t251_mock__doses_51x16x16_mock__2021. out=DIR: the results and the checkpoint go
+        state_t251_mock__doses_51x16x16_mock_55wk__2021. out=DIR: the results and the checkpoint go
         to DIR (default: data/ and intermediate/). The number of weeks is that of the dose file:
         week w starts at t = t_vacc + 7 (w - 1), and the run ends at t_vacc + 7 (number of weeks).
         (after each week the state is saved to intermediate/simulate_<strategy>__<tag>_checkpoint.npz;
@@ -72,7 +72,7 @@ DATA = os.path.join(HERE, "data")
 CENSUS_N = os.path.join(DATA, "census", "N_51x16.csv")
 PREM_U = os.path.join(DATA, "prem2017", "U_16x16.csv")
 C_FILE = os.path.join(DATA, "model", "C_816x816.csv.gz")
-DOSES = os.path.join(DATA, "mock", "doses_51x16x16_mock.xlsx")
+DOSES = os.path.join(DATA, "mock", "doses_51x16x16_mock_55wk.xlsx")
 INITIAL = os.path.join(DATA, "cdc", "state_t251_mock.csv")
 STATE_VACC = os.path.join(DATA, "state_t{t:g}_51x16__{params}.csv")    # the state at t_vacc
 WEEKLY = os.path.join(DATA, "simulate_weekly_51x16.csv")

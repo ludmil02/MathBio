@@ -2,13 +2,15 @@
 run); write_sheet writes one; run as a script, it generates the MOCK doses below.
 
 MOCK weekly doses by location, age group and dose, from the start of vaccination
-(t_vacc of the parameter set in weekly_simulation/input/parameters.xlsx) for 55 weeks, the
-number of weeks of the reported doses: the rules below are applied over 126 weeks, through
-about the end of the Public Health Emergency (11 May 2023), and the file has the first 55.
+(t_vacc of the parameter set in weekly_simulation/input/parameters.xlsx): the rules below are
+applied over 126 weeks, through about the end of the Public Health Emergency (11 May 2023), and
+written to three files: all 126 weeks, the first 55 (the number of weeks of the reported doses)
+and the first 15 (a short test run); their common weeks are the same.
 To be replaced by the doses reported to the CDC (notes/DATA.tex, Section 1.9.2).
 
-Excel file data/mock/doses_51x16x16_mock.xlsx, two sheets; entries: people given that dose in
-that week. Row 1: empty cell(s) over the key columns, then "Week 1", ..., "Week 55", each
+Excel files data/mock/doses_51x16x16_mock_<W>wk.xlsx, W = 15, 55, 126, two sheets each;
+entries: people given that dose in that week. Row 1: empty cell(s) over the key
+columns, then "Week 1", ..., "Week W", each
 in the middle one of its three columns (over Dose 2), centered; week w starts on day t = t_vacc + 7 (w - 1), t_vacc the start of
 vaccination of the parameter set of seir7_ode.py (2021: 347, feng2026: 349). Row 2: the key column
 names, then "Dose 1", "Dose 2", "Dose 3+" under each week. Then:
@@ -46,9 +48,15 @@ from openpyxl import Workbook
 from openpyxl.styles import Alignment
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-OUT = os.path.join(HERE, "data", "mock", "doses_51x16x16_mock.xlsx")
+OUTDIR = os.path.join(HERE, "data", "mock")
 HORIZON = 126          # the rules below are applied over 126 weeks (to 11 May 2023) ...
-WEEKS = 55             # ... and the file has the first 55 of them, the weeks of the reported doses
+WEEKS = (15, 55, 126)  # ... and written to three files, the first W weeks of the same values,
+                       # doses_51x16x16_mock_<W>wk.xlsx: 15 (a short test run), 55 (the weeks of
+                       # the reported doses), all 126
+
+
+def out_path(W):
+    return os.path.join(OUTDIR, f"doses_51x16x16_mock_{W}wk.xlsx")
 # coverage and start week of dose 1, by age group 0-4, ..., 75+
 COV = np.array([0.10, 0.30, 0.45, 0.55] + [0.70] * 6 + [0.80] * 3 + [0.90] * 3)
 START = np.array([79, 47, 22, 17] + [15] * 6 + [9] * 3 + [1] * 3)
@@ -158,9 +166,16 @@ def build():
             D[2, :, j, w] = (F3 * D[1, :, j, :].sum(axis=1) / SPREAD3)[None, :]
     rng = np.random.default_rng(0)
     D *= np.exp(0.1 * rng.standard_normal((3, m, 1, H)))
-    D = np.rint(D)[..., :WEEKS]             # floats with integer values; sheet 1 sums these exactly
+    D = np.rint(D)                          # floats with integer values; sheet 1 sums these exactly
     if not (D[0].sum(axis=1) > 0).all():
         raise ValueError("after rounding, a location has no first doses in some week")
+    for W in WEEKS:                         # the first W weeks, the same values in every file
+        write_file(out_path(W), D[..., :W], pop, N)
+
+
+def write_file(OUT, D, pop, N):
+    """The dose file OUT of the doses D (3 x m x n x weeks): the two sheets, checked."""
+    m, n, WEEKS = D.shape[1], D.shape[2], D.shape[3]
     os.makedirs(os.path.dirname(OUT), exist_ok=True)
     locs = list(dict.fromkeys(pop.state))
     wb = Workbook()
@@ -178,7 +193,7 @@ def build():
     err = np.abs(a1 - a2).max()
     if err != 0 or (a1 != np.rint(a1)).any() or (a2 != np.rint(a2)).any():
         raise ValueError(f"sheets out of sync ({err:g}) or values not integers")
-    print(f"doses 1, 2, 3 in total: " + ", ".join(f"{D[k].sum() / 1e6:.0f} M" for k in range(3))
+    print(f"{WEEKS} weeks, doses 1, 2, 3 in total: " + ", ".join(f"{D[k].sum() / 1e6:.0f} M" for k in range(3))
           + f" (population {N.sum() / 1e6:.0f} M); integer values, sheets in sync exactly; wrote {OUT}", flush=True)
 
 
