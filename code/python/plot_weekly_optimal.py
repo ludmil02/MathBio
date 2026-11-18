@@ -9,8 +9,7 @@ Inputs (produced by seir7_ode.py simulate optimal, tag = <initial>__<doses>__<pa
   data/simulate_weekly_51x16_optimal__<tag>.csv      national totals at the start of each week
   data/simulate_weekly_51x16_optimal__<tag>_rho.csv  rho per week, uniform and optimal allocation
 Output, in notes/figures/ or in OUTDIR:
-  fig_weekly_optimal.pdf                      the four panels together
-  fig_weekly_optimal_{rho,compartments,infectious,deaths}.png   each panel alone
+  fig_weekly_optimal_{rho,compartments,infectious,deaths}.png   one panel each
 """
 import os
 import sys
@@ -45,7 +44,7 @@ def panel_rho(a, w, r):
 
 
 def panel_compartments(a, w, r):
-    for k, (c, nm) in enumerate([("S", "susceptible S"), ("P", "P"), ("V", "vaccinated V"),
+    for k, (c, nm) in enumerate([("S", "susceptible S"), ("P", "partially immune P"), ("V", "vaccinated V"),
                                  ("R", "recovered R")]):
         a.plot(day(w.t), w[c] / 1e6, color=C[k], label=nm)
     a.set_title("Compartments (millions)", loc="left")
@@ -82,18 +81,6 @@ def main(outdir, initial, doses, params, resdir=None):
     print("reading", path, "and", path_rho, flush=True)
     w = pd.read_csv(path)
     r = pd.read_csv(path_rho)
-
-    fig, ax = plt.subplots(2, 2, figsize=(10, 6.5), sharex=True, constrained_layout=True)
-    for a, f in zip(ax.ravel(), PANELS.values()):
-        f(a, w, r)
-    for a in ax[1]:
-        dates(a)
-    fig.suptitle(f"seir7_ode.py, optimal strategy, weekly from {day(w.t.iloc[0])} (t = {w.t.iloc[0]:g})"
-                 f" to t = {w.t.iloc[-1]:g}; {tag}")
-    out = os.path.join(outdir, "fig_weekly_optimal.pdf")
-    fig.savefig(out)
-    plt.close(fig)
-    print("wrote", out, flush=True)
 
     for name, f in PANELS.items():
         fig, a = plt.subplots(figsize=(5, 3.25), constrained_layout=True)
