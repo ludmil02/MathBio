@@ -100,7 +100,10 @@ of~\fref{f-g23}; \src{glasser2023_inputs.py}. Section~\ref{sec-age}.
 \item\label{f-vd} \src{cdc/variant_days.csv}: the days of the variants;
 \src{cdc_variants.py} from~\fref{f-var}. Section~\ref{sec-var}.
 \item\label{f-x0} \src{cdc/state_t251_mock.csv}: the initial state (mock);
-\src{sero_initial_51x16.py} from~\fref{f-sero}, \fref{f-N}, \fref{f-t2}.
+\src{sero_initial_51x16.py} from~\fref{f-sero}, \fref{f-N}, \fref{f-t2}. CSV without a
+header, $13m=663$ rows and $n=16$ columns: 13 blocks of $m$ rows, the compartments in the
+order $S$, $P$, $E_s$, $E_p$, $V$, $I_a$, $I_{ps}$, $I_{pm}$, $I_s$, $I_m$, $I_h$, $R$, $M$;
+within a block the locations in FIPS order; the columns are the age groups.
 Section~\ref{sec-mock}.
 \item\label{f-doses} \src{mock/doses_51x16x16_mock.xlsx}: the weekly doses (mock),
 sheet \src{by_state} by location and sheet \src{by_state_age} by location and age group;

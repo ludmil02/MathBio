@@ -61,7 +61,12 @@ Order: `census_N_51x16.py`, `prem_U_16x16.py`, `geo_51.py`, `build_C_51x16.py`,
 
     python3 -u seir7_ode.py simulate optimal 2>&1 | tee intermediate/seir7_ode_simulate_optimal__state_t251_mock__doses_51x16x16_mock__2021.output
 
-The inputs are `initial=FILE` (the state at `t = 251`, default `data/cdc/state_t251_mock.csv`)
+The inputs are `initial=FILE` (the state at `t = 251`, default `data/cdc/state_t251_mock.csv`;
+a CSV file without a header, 663 rows and 16 columns: 13 blocks of 51 rows, the
+compartments in the order `S`, `P`, `Es`, `Ep`, `V`, `Ia`, `Ips`, `Ipm`, `Is`, `Im`, `Ih`, `R`,
+`M` (rows 1-51 `S`, rows 52-102 `P`, ..., rows 613-663 `M`); within a block, one row per
+location in FIPS order (AL, AK, AZ, ...); the columns are the age groups 0-4, 5-9, ..., 75+.
+Entries are numbers of people.)
 and `doses=FILE` (default `data/mock/doses_51x16x16_mock.xlsx`), e.g.
 `simulate optimal initial=data/cdc/my_state.csv doses=data/mock/my_doses.xlsx`, and the
 parameter set `params=NAME`, a column of `weekly_simulation/input/parameters.xlsx` (kept on

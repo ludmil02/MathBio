@@ -14,7 +14,7 @@ Inputs (each built by its script from files in MathBio/data/Downloaded_from_sour
                                    params=NAME (default 2021)
   data/oxcgrt/s_51_daily.csv       oxcgrt_s_51.py         stringency factors s_i(t)
   data/model/C_816x816.csv.gz      build_C_51x16.py       contact matrix C (from U, L, d, b)
-  data/cdc/state_t251_mock.csv     sero_initial_51x16.py  initial state (MOCK)
+  data/cdc/state_t251_mock.csv     sero_initial_51x16.py  initial state (MOCK); format: read_state
   data/mock/doses_51x16x16_mock.xlsx  mock_doses_51x16x16.py  weekly doses (MOCK): sheet 1
                                    by state (read for optimal), sheet 2 by state and age (actual)
 
@@ -153,6 +153,23 @@ def decay_rates(U, d):
     return np.array([brentq(g, 0.0, 1.0, args=(a,), xtol=1e-15, rtol=1e-14) for a in A])
 
 
+def read_state(path, m, n):
+    """The initial state file: CSV, no header, 13 m rows and n columns. Rows: 13 blocks of m
+    rows, the compartments in the order NAMES (S, P, Es, Ep, V, Ia, Ips, Ipm, Is, Im, Ih, R, M),
+    within a block the locations in FIPS order; columns: the age groups 0-4, ..., 75+.
+    Returns the state vector (compartment, location, age)."""
+    X = np.loadtxt(path, delimiter=",", ndmin=2)
+    if X.shape != (len(NAMES) * m, n):
+        raise ValueError(f"{path}: {X.shape[0]} x {X.shape[1]}, expected {len(NAMES) * m} x {n}"
+                         " (13 blocks of locations x ages, no header)")
+    return X.ravel()
+
+
+def write_state(path, x, m, n):
+    """The state vector x in the format of read_state."""
+    np.savetxt(path, np.asarray(x, float).reshape(len(NAMES) * m, n), delimiter=",", fmt="%.17g")
+
+
 class Model:
     """Parameters and data of DATA.tex, Section 1."""
 
@@ -218,10 +235,7 @@ class Model:
         self.x251, self.initial_path = None, None
         if initial not in (None, "none"):
             self.initial_path = INITIAL if initial == "mock" else input_path(initial)
-            st = pd.read_csv(self.initial_path)
-            if list(st.state) != list(pop.state) or list(st.age) != list(pop.age):
-                raise ValueError(f"{self.initial_path}: rows not (state, age) in the order of the model")
-            self.x251 = np.stack([st[c].to_numpy(float).reshape(m, n) for c in NAMES]).ravel()
+            self.x251 = read_state(self.initial_path, m, n)
 
     def variant(self, t):
         """(beta factor, eps, compliance factor, k, severity factor) at time t."""

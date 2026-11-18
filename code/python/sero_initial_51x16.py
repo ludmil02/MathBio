@@ -20,7 +20,9 @@ mock rules (notes/DATA.tex, Section 1.9.1), to be replaced by the procedure of G
    E_s = lambda S / k, I_a = k p E_s / gamma_a, I_ps = k (1 - p) E_s / xi,
    I_s = xi I_ps / (gamma_s + delta_s), S = N - R - E_s - I_a - I_ps - I_s (solved for S),
    and V = P = E_p = I_pm = I_m = I_h = M = 0.
-->  data/cdc/state_t251_mock.csv (columns state, age, S, P, Es, Ep, V, Ia, Ips, Ipm, Is, Im, Ih, R, M)
+->  data/cdc/state_t251_mock.csv: CSV, no header, 663 rows x 16 columns: 13 blocks of 51 rows,
+    the compartments S, P, Es, Ep, V, Ia, Ips, Ipm, Is, Im, Ih, R, M, within a block the
+    locations in FIPS order; columns the age groups 0-4, ..., 75+ (seir7_ode.read_state)
 
 Usage:  python3 -u sero_initial_51x16.py
 """
@@ -77,10 +79,7 @@ def build():
     S = (N - R) / (1 + es + ia + ips + is_)
     X = np.zeros((13, mod.m, mod.n))
     X[O.S], X[O.ES], X[O.IA], X[O.IPS], X[O.IS], X[O.R] = S, es * S, ia * S, ips * S, is_ * S, R
-    df = pd.DataFrame({"state": np.repeat(mod.locs, mod.n), "age": np.tile(mod.ages, mod.m)})
-    for c, nm in enumerate(O.NAMES):
-        df[nm] = X[c].ravel()
-    df.to_csv(OUT, index=False, float_format="%.10g")
+    O.write_state(OUT, X, mod.m, mod.n)
     print(f"seropositive at t = 251: {R.sum() / N.sum():.2%} of N; lambda in [{lam.min():.2e}, {lam.max():.2e}]"
           f" (at the floor in {(lam == LAMBDA_FLOOR).sum()} of {lam.size} groups);"
           f" infected (E + I) {X[[O.ES, O.IA, O.IPS, O.IS]].sum():,.0f}", flush=True)

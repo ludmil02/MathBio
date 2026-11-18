@@ -26,7 +26,7 @@ the repository: `code/python/data/mock/doses_51x16x16_mock.xlsx` and
 | `run.sh` | runs the simulation and then the figures |
 | `input/doses_51x16x16_mock.xlsx` | weekly doses (MOCK) |
 | `input/doses_51x16x16_mock_5wk.xlsx` | 5 weeks of mock doses, weeks 1-2 zero and weeks 3-5 those of the full mock file (a short test run: `./run.sh input/doses_51x16x16_mock_5wk.xlsx`) |
-| `input/state_t251_mock.csv` | the state at `t = 251` (MOCK) |
+| `input/state_t251_mock.csv` | the state at `t = 251` (MOCK); format below |
 | `results/<tag>/` | made by `run.sh`: data, log and figures of one run |
 
 ## Running
@@ -65,6 +65,15 @@ the run ends at `t = t_vacc + 7 W` for `W` weeks; for the 126 weeks of the mock 
 1229` (13 May 2023) with `2021` and `t = 1231` (15 May 2023) with `feng2026`.  The mock doses are made by
 `code/python/mock_doses_51x16x16.py` (rules in `notes/DATA.tex`, Section 1.9.2); a file of
 reported doses has to have the same layout.
+
+## The initial state file
+
+The state at `t = 251`, a CSV file without a header, 663 rows and 16 columns: 13 blocks of 51 rows, the
+compartments in the order `S`, `P`, `Es`, `Ep`, `V`, `Ia`, `Ips`, `Ipm`, `Is`, `Im`, `Ih`, `R`,
+`M` (rows 1-51 `S`, rows 52-102 `P`, ..., rows 613-663 `M`); within a block, one row per
+location in FIPS order (AL, AK, AZ, ...); the columns are the age groups 0-4, 5-9, ..., 75+.
+Entries are numbers of people.  This is the only format read (`seir7_ode.read_state`);
+the size is checked.  The mock state is made by `code/python/sero_initial_51x16.py`.
 
 ## The results, in `results/<tag>/`
 
