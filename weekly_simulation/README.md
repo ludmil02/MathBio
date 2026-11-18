@@ -49,14 +49,17 @@ from the last completed week.  The run with the 126 weeks of the mock doses took
 
 ## The dose file
 
-An Excel file with two sheets; the entries are the numbers of people given the dose in the week.
+An Excel file; the entries are the numbers of people given the dose in the week.  The sheets
+are taken by position, not by name: the optimal simulation reads the first sheet, whatever it
+is called (`by_state` in the mock file, `doses` or any other name works), and a file with this
+one sheet is enough.
 
 * Row 1: empty cell(s) over the key columns, then `Week 1`, `Week 2`, ..., each over three
   columns.
 * Row 2: the key columns, then `Dose 1`, `Dose 2`, `Dose 3+` under each week.
-* Sheet 1 `by_state`: key column `State`, one row per location (51, in FIPS order: AL, AK,
+* Sheet 1 (`by_state` in the mock file): key column `State`, one row per location (51, in FIPS order: AL, AK,
   AZ, ...), the doses of all ages.  This is the sheet the optimal simulation uses.
-* Sheet 2 `by_state_age`: key columns `State`, `Age`, one row per location and age group
+* Sheet 2 (`by_state_age` in the mock file; optional): key columns `State`, `Age`, one row per location and age group
   (816; ages 0-4, 5-9, ..., 75+); used only for the actual strategy (not run).  Sheet 1 is the
   sum of sheet 2 over the ages.
 

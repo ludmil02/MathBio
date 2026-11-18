@@ -74,6 +74,7 @@ def read_sheet(path, sheet, nk):
     """The inverse of write_sheet, with checks of the two header rows. Returns (key rows,
     number of weeks, values: rows x (3 * weeks), week-major)."""
     df = pd.read_excel(path, sheet_name=sheet, header=None)
+    df = df.dropna(axis=1, how="all").dropna(axis=0, how="all")     # empty columns and rows
     h1, h2 = df.iloc[0, nk:], df.iloc[1, nk:]
     nw = len(h1) // 3
     if len(h1) != 3 * nw or list(h2) != DOSE_LABELS * nw or \
