@@ -142,14 +142,72 @@ def g_of(chi1, chi2, chi3):
     return num / den, num, den
 
 
+def _arpack_report(err, side, g, op, mv, rmv):
+    """Print what is needed to diagnose a failed eigs in perron: the data of A1 diag(g), its
+    zero rows and columns, the partial Ritz values, the 6 largest moduli and a power-iteration
+    estimate of rho. Only matrix-vector products; nothing is written to disk."""
+    def stats(name, x):
+        x = np.asarray(x, float)
+        fin = np.isfinite(x)
+        say("   %-4s finite %d/%d, min %.3e, max %.3e, zeros %d, negative %d"
+            % (name, fin.sum(), x.size, np.min(x[fin]) if fin.any() else np.nan,
+               np.max(x[fin]) if fin.any() else np.nan, (x == 0).sum(), (x < 0).sum()))
+    say("ARPACK no convergence in perron, %s eigenvector: %s" % (side, err))
+    say("   N = %d (m = %d locations, n = %d groups)" % (N, m, n))
+    for name, x in (("g", g), ("dc", dc), ("psq", psq), ("psq g", psq * g)):
+        stats(name, x)
+    one = np.ones(N)
+    rows, cols = mv(one), rmv(one)      # row and column sums of A1 diag(g) (nonnegative entries)
+    stats("rows", rows)
+    stats("cols", cols)
+    zr, zc = np.flatnonzero(rows == 0), np.flatnonzero(cols == 0)
+    for name, z in (("zero rows", zr), ("zero cols", zc)):
+        if z.size:
+            loc = np.unique(z // n)
+            say("   %s: %d, in %d locations %s; groups %s"
+                % (name, z.size, loc.size, loc[:20].tolist(), np.unique(z % n).tolist()))
+    ev = np.asarray(getattr(err, "eigenvalues", []))
+    say("   partial Ritz values: %s" % np.array2string(ev, precision=6))
+    try:
+        top = spsl.eigs(op, k=6, which="LM", tol=1e-8, maxiter=20 * N, return_eigenvectors=False)
+        top = top[np.argsort(-np.abs(top))]
+        say("   6 largest |lambda| (eigs, tol 1e-8): %s" % np.array2string(np.abs(top), precision=8))
+        say("   their values: %s" % np.array2string(top, precision=6))
+    except spsl.ArpackNoConvergence as e6:
+        say("   eigs k = 6 also failed; partial: %s"
+            % np.array2string(np.asarray(e6.eigenvalues), precision=6))
+    except Exception as e6:
+        say("   eigs k = 6 raised %r" % e6)
+    x = one / np.sqrt(N)
+    est = []
+    for it in range(1, 401):
+        y = mv(x)
+        nrm = np.linalg.norm(y)
+        if not np.isfinite(nrm) or nrm == 0:
+            say("   power iteration: |A x| = %g at step %d" % (nrm, it))
+            break
+        x = y / nrm
+        if it in (50, 100, 200, 300, 400):
+            est.append((it, nrm))
+    if est:
+        say("   power iteration |A x_k| (k, value): %s"
+            % ", ".join("%d: %.10f" % e for e in est))
+
+
 def perron(g):
     """rho, v, w of A1 diag(g), A1 = diag(dc) C diag(psq), by Arnoldi."""
     mv = lambda x: dc * (C @ (psq * g * x))
     rmv = lambda x: g * psq * (C.T @ (dc * x))
     op = spsl.LinearOperator((N, N), matvec=mv, rmatvec=rmv, dtype=float)
     v0 = np.ones(N)
-    lam, v = spsl.eigs(op, k=1, which="LM", tol=1e-13, v0=v0)
-    _, w = spsl.eigs(op.adjoint(), k=1, which="LM", tol=1e-13, v0=v0)
+    try:
+        side = "right (v)"
+        lam, v = spsl.eigs(op, k=1, which="LM", tol=1e-13, v0=v0)
+        side = "left (w)"
+        _, w = spsl.eigs(op.adjoint(), k=1, which="LM", tol=1e-13, v0=v0)
+    except spsl.ArpackNoConvergence as err:
+        _arpack_report(err, side, g, op, mv, rmv)
+        raise
     v, w = np.real(v[:, 0]), np.real(w[:, 0])
     return float(np.real(lam[0])), v * np.sign(v.sum()), w * np.sign(w.sum())
 
