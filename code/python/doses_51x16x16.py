@@ -126,6 +126,10 @@ def read_sheet(path, sheet, nk):
           f"{keys[-1]}); doses in total: dose 1 {tot[0]:,.0f}, dose 2 {tot[1]:,.0f}, dose 3+"
           f" {tot[2]:,.0f}; empty cells {int(np.isnan(val).sum())}, negative {int((val < 0).sum())}",
           flush=True)
+    rows, cols = df.index, df.columns
+    for i, j in zip(*np.nonzero(np.isnan(val))):          # row-major: by key, then week, dose
+        print(f"   empty cell {excel_col(cols[nk + j])}{rows[2 + i] + 1}: {keys[i]}, Week"
+              f" {j // 3 + 1}, {DOSE_LABELS[j % 3]}", flush=True)
     return keys, nw, val
 
 
