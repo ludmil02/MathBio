@@ -55,7 +55,7 @@ Run the scripts from `code/python/`.  Eigenvalues by Arnoldi (`scipy.sparse.lina
 | `ngm_seir7.py` | the 51 x 16 NGM at `t = t_vacc` (start of vaccination) from the same data (option `params=`): `rho(NGM)`, `rho(F V^-1)`, the left eigenvector, the gradient |
 | `plot_weekly_optimal.py` | the figures of the weekly optimal simulation, from `data/simulate_weekly_51x16_optimal__<tag>*.csv` (options `initial=`, `doses=`, `params=` as for `seir7_ode.py`), saved to `notes/figures/fig_weekly_optimal*` or to a directory given as argument |
 | `plot_compare.py` | the comparison figures of the strategies run for one set of inputs (`python3 plot_compare.py RESULTS_DIR`), saved to `RESULTS_DIR/figures/fig_compare_*.png` |
-| `weekly_report.py` | `python3 weekly_report.py RESULTS_DIR`: all figures of one results directory (`plot_weekly_optimal.py`, `plot_compare.py`), and the run values (input files, parameter set, days, weeks, results) written between `% BEGIN run values` and `% END run values` in `notes/DATA.tex` and `notes/simulation_weekly_optimal.tex`; nothing else in these files is changed |
+| `weekly_report.py` | `python3 weekly_report.py RESULTS_DIR`: all figures of one results directory (`plot_weekly_optimal.py`, `plot_compare.py`), and the run values (input files, parameter set, days, weeks, results) written between `% BEGIN run values` and `% END run values` in `notes/DATA.tex`, `notes/simulation_weekly_optimal.tex` and `notes/stratified_seir_ngm.tex` (the bounds of its Section 5.3); nothing else in these files is changed |
 
 Order: `census_N_51x16.py`, `prem_U_16x16.py`, `geo_51.py`, `build_C_51x16.py`,
 `glasser2023_inputs.py`, `oxcgrt_s_51.py`, `cdc_variants.py`, `sero_initial_51x16.py`,

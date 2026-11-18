@@ -58,7 +58,7 @@ the optimal run's rho of the same week.
 After the optimal run, `run.sh` runs the eigenvector strategy with the same inputs into the
 same `results/<tag>/` (a few seconds per week; `notes/DATA.tex`, Section
 2.3), makes the figures (`plot_weekly_optimal.py`, `plot_compare.py`), and writes the values of
-the run into `notes/DATA.tex` and `notes/simulation_weekly_optimal.tex`, between
+the run into `notes/DATA.tex`, `notes/simulation_weekly_optimal.tex` and `notes/stratified_seir_ngm.tex`, between
 `% BEGIN run values` and `% END run values` (`weekly_report.py RESULTS nofigures`), so that the
 notes show this run.  Each of these steps is one line of `run.sh` and can be commented out.
 `python3 weekly_report.py RESULTS`, from `code/python/`, makes all figures and writes the

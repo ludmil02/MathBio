@@ -9,7 +9,7 @@ the eigenvector run (notes/DATA.tex, Section 2.3). It
      (plot_weekly_optimal.py) and, with at least two strategies, the comparison
      (plot_compare.py);
      (not with nofigures, when the figures are made separately, as in weekly_simulation/run.sh);
-  2. rewrites, in notes/DATA.tex and notes/simulation_weekly_optimal.tex, the lines between
+  2. rewrites, in notes/DATA.tex, notes/simulation_weekly_optimal.tex and notes/stratified_seir_ngm.tex, the lines between
         % BEGIN run values ... and % END run values
      with \\newcommand definitions of the values of the run (input files, parameter set, days,
      weeks, figure folder, results); the rest of each file is not touched.
@@ -27,7 +27,7 @@ import pandas as pd
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.normpath(os.path.join(HERE, "..", ".."))          # ~/claude/MathBio
 NOTES = os.path.join(ROOT, "notes")
-TEX = ["DATA.tex", "simulation_weekly_optimal.tex"]
+TEX = ["DATA.tex", "simulation_weekly_optimal.tex", "stratified_seir_ngm.tex"]
 BEGIN, END = "% BEGIN run values", "% END run values"
 INFECTIOUS = ["Ia", "Ips", "Ipm", "Is", "Im", "Ih"]
 
@@ -73,7 +73,7 @@ def values(resdir):
     w = pd.read_csv(os.path.join(resdir, f"simulate_weekly_51x16_optimal__{tag}.csv"))
     r = pd.read_csv(os.path.join(resdir, f"simulate_weekly_51x16_optimal__{tag}_rho.csv"))
     W, tv = len(r), L["tvacc"]
-    v = {"RunTag": tt(tag),
+    v = {"RunTag": tag.replace("_", r"\_\allowbreak{}"),
          "RunInitialFile": tt(L["initial"]), "RunDosesFile": tt(L["doses"]),
          "RunParams": L["params"], "RunTvacc": f"{tv:g}", "RunTvaccDate": date(tv),
          "RunWeeks": f"{W}", "RunTlast": f"{tv + 7 * (W - 1):g}", "RunTend": f"{tv + 7 * W:g}",
@@ -101,6 +101,21 @@ def values(resdir):
     _, nw, val = read_sheet(L["doses"], 0, 1)
     tot = val.reshape(-1, nw, 3).sum(axis=(0, 1)) / 1e6
     v.update(RunDosesOne=f"{tot[0]:.0f}", RunDosesTwo=f"{tot[1]:.0f}", RunDosesThree=f"{tot[2]:.0f}")
+    # the two inputs not from public sources, described as mock only if the file name says so
+    mock = lambda p: "mock" in os.path.basename(p).lower()
+    v["RunInitialText"] = (
+        r"the initial state at $t=251$, \texttt{\RunInitialFile}"
+        + (r", mock, built from the CDC seroprevalence survey (rounds 3 and 4) by made-up rules"
+           r" (\texttt{DATA.pdf}, Section~1.9.1), in place of the procedure of Glasser et al.\ (2023,"
+           r" Section~3)" if mock(L["initial"]) else "")
+        + r"; $\RunSeroPct\%$ seropositive")
+    v["RunDosesText"] = (
+        r"the weekly doses by location and dose, \texttt{\RunDosesFile}: \RunWeeks{} "
+        + ("made-up weeks" if mock(L["doses"]) else "weeks")
+        + r", with $\RunDosesOne$, $\RunDosesTwo$ and $\RunDosesThree$ million first, second and"
+          r" third doses" + ("; to be replaced by reported doses" if mock(L["doses"]) else ""))
+    v["RunOtherInputs"] = ("mock (\\texttt{DATA.pdf}, Section~1.9)" if mock(L["initial"]) and mock(L["doses"])
+                           else "not from public sources")
     for s in ("eigenvector",):                       # the other strategy, if run
         p = os.path.join(resdir, f"simulate_weekly_51x16_{s}__{tag}.csv")
         if os.path.exists(p):
@@ -110,9 +125,49 @@ def values(resdir):
             v[f"Cmp{key}RhoAbove"] = f"{int((rs.rho_applied > 1).sum())}"
             v[f"Cmp{key}InfPeak"] = sig(ws[INFECTIOUS].sum(axis=1).max() / 1e6, 3)
             v[f"Cmp{key}HospPeak"] = sig(ws.Ih.max() / 1e6, 3)
+    v.update(delta_values(mod, resdir, tag, tv, W))
     v["CmpOptimalDeathsEnd"], v["CmpOptimalRhoAbove"] = v["RunDeathsEnd"], v["RunRhoOptAbove"]
     v["CmpOptimalInfPeak"], v["CmpOptimalHospPeak"] = v["RunInfPeak"], v["RunHospPeak"]
     return tag, v
+
+
+def delta_values(mod, resdir, tag, tv, W):
+    """The bounds of stratified_seir_ngm.tex, Section 5.3, for the parameter set of the run:
+    Delta_p > 0 (with chi_3 = 0) iff 0 < chi_1 < omega x*, x* = (1 - r eps_1) / (r (1 - 2 (1 -
+    eps_1))), over the weeks of the run, for the first and the last eps_1; and the weeks of the
+    optimal run in which a location has no group with Delta_p > 0 (from its log)."""
+    taus = [tv + 7 * w for w in range(W)]
+    ctx = [mod.ngm_context(t) for t in taus]
+    r = np.concatenate([c[5] for c in ctx])
+    om = ctx[0][6]
+    eps = [c[8] for c in ctx]
+    first_change = next((t for t, e in zip(taus, eps) if e != eps[0]), None)
+    last_from = next(t for t, e in zip(taus, eps) if e == eps[-1])
+
+    def bounds(e):
+        if 2 * (1 - e) >= 1:                       # Delta_p > 0 for all chi_1 > 0
+            return r"\infty", r"\infty"
+        xs = lambda rr: (1 - rr * e) / (rr * (1 - 2 * (1 - e)))
+        lo, hi = om * xs(r.max()), om * xs(r.min())
+        tex = lambda x: f"{x / 10 ** np.floor(np.log10(x)):.1f}\\cdot10^{{{int(np.floor(np.log10(x)))}}}"
+        return tex(lo), tex(hi)
+
+    v = {"RunOmegaInv": f"{1 / om:g}", "RunRMin": f"{r.min():.3f}", "RunRMax": f"{r.max():.3f}",
+         "RunEpsFirst": f"{eps[0]:g}"}
+    v["RunDeltaBoundLo"], v["RunDeltaBoundHi"] = bounds(eps[0])
+    v["RunEpsFirstTo"] = (f" in the weeks before $t={first_change:g}$" if first_change is not None else "")
+    if eps[-1] != eps[0]:
+        lo, hi = bounds(eps[-1])
+        v["RunDeltaLast"] = (f" (with $\\varepsilon_1={eps[-1]:g}$, in the weeks from $t={last_from:g}$: between"
+                             f" ${lo}$ and ${hi}$)")
+    else:
+        v["RunDeltaLast"] = ""
+    txt = open(os.path.join(resdir, f"simulate_optimal__{tag}.output")).read()
+    ts = sorted({int(t) for t in re.findall(r"\[t=(\d+) [^\]]*\] sweep \d+ dose 2 step: a location has no"
+                                            r" group with Delta_p", txt)})
+    v["RunDeltaText"] = (f"in {len(ts)} of the {W} weeks, the first at $t={ts[0]}$" if ts
+                         else f"in none of the {W} weeks")
+    return v
 
 
 def write_block(path, tag, v):
