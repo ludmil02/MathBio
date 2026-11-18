@@ -2,8 +2,10 @@
 
 The model is that of Feng, Day, Glasser (J. Theor. Biol. 633 (2026) 112531) and of
 notes/stratified_seir_ngm.tex.  Data: the public data of notes/DATA.tex, Section 1, through
-seir7_ode.Model, with the parameters at t = T_NGM = 349 (14 December 2020, the start of
-vaccination; Wuhan variant, stringency of that day).  All data are published or public.
+seir7_ode.Model, with the parameter set params=NAME of
+weekly_simulation/input/parameters.xlsx (default 2021) at
+t = T_NGM = t_vacc of the set (2021: 347, feng2026: 349; the start of vaccination; Wuhan
+variant, stringency of that day).  All data are published or public.
 
 The NGM has size 2 m n = 1632 and is never formed:
 
@@ -22,10 +24,11 @@ Importing the module loads the data and defines the functions; running it prints
      states of Fig. 3A of the paper, with a finite difference check.
 
 Usage:
-    python3 -u ngm_seir7.py | tee intermediate/ngm_seir7.output
+    python3 -u ngm_seir7.py [params=NAME] | tee intermediate/ngm_seir7.output
 """
 
 import os
+import sys
 import time
 
 import numpy as np
@@ -36,8 +39,10 @@ import seir7_ode as _SO
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 DATA = os.path.join(HERE, "data")          # the inputs of seir7_ode (notes/DATA.tex, F1-16 to F1-26)
-T_NGM = _SO.T_VACC                         # t = 349
 T0 = time.time()
+# the parameter set: params=NAME on the command line when run, else the default
+PARAMS = next((a.split("=", 1)[1] for a in sys.argv[1:] if a.startswith("params=")),
+              _SO.DEFAULT_PARAMS) if __name__ == "__main__" else _SO.DEFAULT_PARAMS
 
 STATES = ("AL AK AZ AR CA CO CT DE DC FL GA HI ID IL IN IA KS KY LA ME MD MA MI MN "
           "MS MO MT NE NV NH NJ NM NY NC ND OH OK OR PA RI SC SD TN TX UT VT VA WA "
@@ -55,7 +60,8 @@ def say(*args):
 
 
 # ----------------------------------------------------------------------------- data
-_mod = _SO.Model(initial="none")
+_mod = _SO.Model(initial="none", params=PARAMS)
+T_NGM = _mod.t_vacc                                  # the start of vaccination of the set
 if tuple(_mod.locs) != tuple(STATES) or list(_mod.ages) != AGES:
     raise ValueError("the locations or ages of seir7_ode.Model differ from STATES, AGES")
 mN = _mod.N
@@ -208,7 +214,7 @@ def left_and_gradient(Y, Z, pref):
 
 
 def main():
-    say("data from", DATA, "(notes/DATA.tex), parameters at t = %g" % T_NGM)
+    say("data from", DATA, "(notes/DATA.tex), parameter set %s at t = %g" % (PARAMS, T_NGM))
     say("m = %d locations, n = %d age groups, N = %.6e people" % (m, n, mN.sum()))
     say("scalars:", ", ".join("%s = %g" % kv for kv in sc.items()))
     say("row sums of mc: min %.15f, max %.15f" % (mc.sum(axis=(2, 3)).min(), mc.sum(axis=(2, 3)).max()))

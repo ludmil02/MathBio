@@ -1,10 +1,12 @@
 """MOCK weekly doses by location, age group and dose, from the start of vaccination
-(t = 349, 14 December 2020) through the end of the Public Health Emergency (11 May 2023),
-126 weeks. To be replaced by the doses reported to the CDC (notes/DATA.tex, Section 1.9.2).
+(t_vacc of the parameter set in weekly_simulation/input/parameters.xlsx) for 126 weeks,
+through about the end of the Public Health Emergency (11 May 2023).
+To be replaced by the doses reported to the CDC (notes/DATA.tex, Section 1.9.2).
 
 Excel file data/mock/doses_51x16x16_mock.xlsx, two sheets; entries: people given that dose in
 that week. Row 1: empty cell(s) over the key columns, then "Week 1", ..., "Week 126", each
-merged over three columns; week w starts on day t = 349 + 7 (w - 1). Row 2: the key column
+merged over three columns; week w starts on day t = t_vacc + 7 (w - 1), t_vacc the start of
+vaccination of the parameter set of seir7_ode.py (2021: 347, feng2026: 349). Row 2: the key column
 names, then "Dose 1", "Dose 2", "Dose 3+" under each week. Then:
   sheet 1 "by_state":     key column State; 51 rows (FIPS order), all ages together;
   sheet 2 "by_state_age": key columns State, Age; 816 rows (location, age 0-4, ..., 75+).
@@ -41,7 +43,7 @@ from openpyxl.styles import Alignment
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, "data", "mock", "doses_51x16x16_mock.xlsx")
-T_VACC, WEEKS = 349, 126
+WEEKS = 126
 # coverage and start week of dose 1, by age group 0-4, ..., 75+
 COV = np.array([0.10, 0.30, 0.45, 0.55] + [0.70] * 6 + [0.80] * 3 + [0.90] * 3)
 START = np.array([79, 47, 22, 17] + [15] * 6 + [9] * 3 + [1] * 3)

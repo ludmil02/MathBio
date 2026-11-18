@@ -6,10 +6,14 @@ Inputs (each built by its script from files in MathBio/data/Downloaded_from_sour
   data/census/N_51x16.csv          census_N_51x16.py      populations N
   data/prem2017/U_16x16.csv        prem_U_16x16.py        contact matrix U
   data/census/d_51x51.csv, L_51.csv  geo_51.py            distances d, activity factors L
-  data/glasser2023/table2.csv, beta0.csv  glasser2023_inputs.py   p, d, IFR, compliance, beta0
+  ../../weekly_simulation/input/parameters.xlsx
+                                   (edited by hand)       the parameter sets, one column each
+                                   (2021: the values of Unknown 2020/21; feng2026: from
+                                   glasser2023/table2.csv, beta0.csv, cdc/variant_days.csv and
+                                   Tables S1, S4), then edited by hand; the set is chosen by
+                                   params=NAME (default 2021)
   data/oxcgrt/s_51_daily.csv       oxcgrt_s_51.py         stringency factors s_i(t)
   data/model/C_816x816.csv.gz      build_C_51x16.py       contact matrix C (from U, L, d, b)
-  data/cdc/variant_days.csv        cdc_variants.py        days of the variants of Table S4
   data/cdc/state_t251_mock.csv     sero_initial_51x16.py  initial state (MOCK)
   data/mock/doses_51x16x16_mock.xlsx  mock_doses_51x16x16.py  weekly doses (MOCK): sheet 1
                                    by state (read for optimal), sheet 2 by state and age (actual)
@@ -17,21 +21,25 @@ Inputs (each built by its script from files in MathBio/data/Downloaded_from_sour
 The state vector has the order: compartment (S, P, Es, Ep, V, Ia, Ips, Ipm, Is, Im, Ih, R, M),
 then location i (FIPS order), then age j. The force of infection uses the contact matrix C
 read from data/model/C_816x816.csv.gz; the system is integrated by DOP853, interval by interval
-between the variant days (and the weeks of vaccination).
+between the switch days of the parameters (and the weeks of vaccination).
+
+Every mode takes params=NAME, a set (column) of weekly_simulation/input/parameters.xlsx (default 2021); t_vacc,
+the start of vaccination, is a parameter of the set (2021: 347, feng2026: 349).
 
 Usage:
     python3 -u seir7_ode.py verify   | tee intermediate/seir7_ode_verify.output
-        tolerances, group sums, signs, spectral radius on [251, 349]
+        tolerances, group sums, signs, spectral radius on [251, t_vacc]
     python3 -u seir7_ode.py solve    | tee intermediate/seir7_ode_solve.output
-        state at t = 349 (start of vaccination) -> data/state_t349_51x16.csv
-    python3 -u seir7_ode.py simulate [actual|optimal] [resume] [initial=FILE] [doses=FILE]
+        state at t_vacc (start of vaccination) -> data/state_t<t_vacc>_51x16__<params>.csv
+    python3 -u seir7_ode.py simulate [actual|optimal] [resume] [initial=FILE] [doses=FILE] [params=NAME]
             | tee -a intermediate/seir7_ode_simulate_<strategy>__<tag>.output
         initial= the state at t = 251 (default data/cdc/state_t251_mock.csv), doses= the weekly
         doses (default data/mock/doses_51x16x16_mock.xlsx); a FILE is taken as given, else
-        relative to this directory. tag = <initial>__<doses>, the two file names without
-        directory and extension, e.g. state_t251_mock__doses_51x16x16_mock. out=DIR: the
-        results and the checkpoint go to DIR (default: data/ and intermediate/). The number of
-        weeks is that of the dose file: the run ends at t = 349 + 7 (number of weeks).
+        relative to this directory. tag = <initial>__<doses>__<params>, the two file names
+        without directory and extension and the set, e.g.
+        state_t251_mock__doses_51x16x16_mock__2021. out=DIR: the results and the checkpoint go
+        to DIR (default: data/ and intermediate/). The number of weeks is that of the dose file:
+        week w starts at t = t_vacc + 7 (w - 1), and the run ends at t_vacc + 7 (number of weeks).
         (after each week the state is saved to intermediate/simulate_<strategy>__<tag>_checkpoint.npz;
         "resume" continues an interrupted run with the same inputs from the last completed week)
         from t = 251 through the weeks of the dose file. actual: the rates of DATA.tex, Remark 2.1, from
@@ -63,7 +71,7 @@ PREM_U = os.path.join(DATA, "prem2017", "U_16x16.csv")
 C_FILE = os.path.join(DATA, "model", "C_816x816.csv.gz")
 DOSES = os.path.join(DATA, "mock", "doses_51x16x16_mock.xlsx")
 INITIAL = os.path.join(DATA, "cdc", "state_t251_mock.csv")
-STATE349 = os.path.join(DATA, "state_t349_51x16.csv")
+STATE_VACC = os.path.join(DATA, "state_t{t:g}_51x16__{params}.csv")    # the state at t_vacc
 WEEKLY = os.path.join(DATA, "simulate_weekly_51x16.csv")
 
 
@@ -76,28 +84,56 @@ def input_path(p):
     raise FileNotFoundError(p)
 
 
-def run_tag(initial, doses):
-    """The part of the output names given by the two input files: <initial>__<doses>, the file
-    names without directory and extension."""
+def run_tag(initial, doses, params):
+    """The part of the output names given by the inputs: <initial>__<doses>__<params>, the file
+    names without directory and extension, and the name of the parameter set."""
     stem = lambda p: os.path.splitext(os.path.basename(p))[0]
-    return f"{stem(initial)}__{stem(doses)}"
+    return f"{stem(initial)}__{stem(doses)}__{params}"
 
-# Constants (per day): supplement of Feng, Day, Glasser 2026, Table S1 (xi, gamma, omega, b_S, b_I,
-# gamma_{s->h}), Section 2 (eta); deaths 30% outside and 70% in hospital (Glasser et al. 2023, Sec. 3).
-XI = 1 / 2
-GAMMA_A, GAMMA_S, GAMMA_M, GAMMA_H = 1 / 7, 1 / 5, 1 / 5, 1 / 10
-GAMMA_S_TO_H = 1 / 2
-OMEGA = 1 / 365
-ETA = (0.5, 1.25, 1.0, 1.0, 0.75, 0.1)          # a, ps, pm, s, m, h
-B_SI = 0.31
-THETA_SPLIT = (0.3, 0.7)
-T_START, T_VACC = 251.0, 349.0                  # 7 September and 14 December 2020
+T_START = 251.0                                 # 7 September 2020, the initial state
 
-# Table S4 of the supplement: factor of beta, epsilon_1,2,3, factor of the compliance, k, factor of
-# the hospitalization rates and of the death fractions; None = unchanged from the previous variant.
-VARIANTS = {"Wuhan": (1.0, 0.9, 1.0, 1 / 5, 1.0), "Alpha": (1.25, 0.8, 0.8, None, 1.0),
-            "Delta": (1.5, 0.7, 0.6, 1 / 4, 1.0), "BA.1": (2.0, 0.6, 0.4, None, 0.67),
-            "BA.5": (1.0, 0.5, 0.2, 1 / 3, 0.67)}
+# The parameters: one set (a column) of weekly_simulation/input/parameters.xlsx (edited by hand),
+# chosen by params=NAME; the start of vaccination t_vacc is one of them.
+PARAMS_FILE = os.path.normpath(os.path.join(HERE, "..", "..", "weekly_simulation", "input", "parameters.xlsx"))
+DEFAULT_PARAMS = "2021"
+OVER_TIME = ["beta_factor", "eps", "compliance_factor", "k", "severity"]   # order of Model.variant
+SCALARS = ["xi", "gamma_a", "gamma_s", "gamma_m", "gamma_h", "gamma_s_to_h", "delta_m_factor",
+           "q_factor", "omega", "omega_v", "eta_a", "eta_ps", "eta_pm", "eta_s", "eta_m", "eta_h",
+           "b_S", "b_I", "deaths_outside", "deaths_hospital", "t_vacc"]
+BY_AGE = ["p", "d", "IFR_percent", "compliance", "beta0"]
+
+
+def read_params(name, ages, path=PARAMS_FILE):
+    """The set name of the parameter file: (scalars dict, by-age dict of arrays, over-time dict
+    parameter -> [(from_t, value), ...] increasing in from_t, from_t = -inf first)."""
+    xs = pd.read_excel(path, sheet_name=None)
+    for df in xs.values():
+        df.columns = [str(c) for c in df.columns]
+    if name not in xs["scalars"].columns:
+        sets = [c for c in xs["scalars"].columns if c not in ("parameter", "meaning")]
+        raise ValueError(f"params={name}: not a set of {path}; sets: {', '.join(sets)}")
+    sc = xs["scalars"].set_index("parameter")[name]
+    miss = [p for p in SCALARS if p not in sc.index or pd.isna(sc[p])]
+    if miss:
+        raise ValueError(f"{path}, set {name}: scalars {miss} missing")
+    scal = {p: float(sc[p]) for p in SCALARS}
+    ba = xs["by_age"]
+    byage = {}
+    for p in BY_AGE:
+        r = ba[ba.parameter == p]
+        if list(r.age) != list(ages) or r[name].isna().any():
+            raise ValueError(f"{path}, set {name}: {p} not given for the ages {ages}")
+        byage[p] = r[name].to_numpy(float)
+    ot = xs["over_time"]
+    over = {}
+    for p in OVER_TIME:
+        r = ot[(ot.parameter == p) & ot[name].notna()]
+        sw = sorted((-np.inf if str(f).strip() == "start" else float(f), float(v))
+                    for f, v in zip(r.from_t, r[name]))
+        if not sw or sw[0][0] != -np.inf or len({f for f, _ in sw}) != len(sw):
+            raise ValueError(f"{path}, set {name}: {p} needs one 'start' value and distinct days")
+        over[p] = sw
+    return scal, byage, over
 
 NAMES = ["S", "P", "Es", "Ep", "V", "Ia", "Ips", "Ipm", "Is", "Im", "Ih", "R", "M"]
 (S, P, ES, EP, V, IA, IPS, IPM, IS, IM, IH, R, M) = range(13)
@@ -119,13 +155,12 @@ def decay_rates(U, d):
 class Model:
     """Parameters and data of DATA.tex, Section 1."""
 
-    def __init__(self, initial=INITIAL):
+    def __init__(self, initial=INITIAL, params=DEFAULT_PARAMS):
         """initial: the file of the state at T_START (default INITIAL; "mock" is the same), or
-        "none" for no initial state."""
+        "none" for no initial state. params: the name of a set of PARAMS_FILE."""
         pop = pd.read_csv(CENSUS_N)
         self.locs = list(dict.fromkeys(pop.state))
-        t2 = pd.read_csv(os.path.join(DATA, "glasser2023", "table2.csv"))
-        self.ages = list(t2.age)
+        self.ages = list(dict.fromkeys(pop.age))
         m, n = len(self.locs), len(self.ages)
         self.m, self.n = m, n
         if list(pop.state) != list(np.repeat(self.locs, n)) or list(pop.age) != self.ages * m:
@@ -135,39 +170,39 @@ class Model:
         D = pd.read_csv(os.path.join(DATA, "census", "d_51x51.csv"), index_col=0)
         Lf = pd.read_csv(os.path.join(DATA, "census", "L_51.csv"))
         sf = pd.read_csv(os.path.join(DATA, "oxcgrt", "s_51_daily.csv"), index_col=0)
-        bf = pd.read_csv(os.path.join(DATA, "glasser2023", "beta0.csv"))
         if (list(Uf.index) != self.ages or list(D.index) != self.locs or list(Lf.state) != self.locs
-                or list(sf.columns) != self.locs or list(bf.age) != self.ages):
+                or list(sf.columns) != self.locs):
             raise ValueError("locations or ages of an input file differ from the model's")
+        self.params = str(params)
+        sc, ba, over = read_params(self.params, self.ages)
+        self.t_vacc = sc["t_vacc"]
         self.U = Uf.to_numpy(float)                                          # U[j, q]
         self.d = D.to_numpy(float)                                           # d[i, p], miles
         self.L = Lf.L.to_numpy(float)
         self.s_t = sf.index.to_numpy(float)
         self.s_val = sf.to_numpy(float)                                      # s_i(t), daily
         self.b = decay_rates(self.U, self.d)
-        self.p = t2.p.to_numpy(float)
-        self.q = 1 - 0.5 * (1 - self.p)                                     # paper, Table 2
-        self.delta_s0 = GAMMA_S_TO_H * t2.d.to_numpy(float)
-        self.delta_m0 = 0.5 * self.delta_s0                                 # paper, Table 2
-        sfr = t2.IFR_percent.to_numpy(float) / 100 * (1 - self.p)          # supplement, Section 2
-        self.die_s0, self.die_h0 = THETA_SPLIT[0] * sfr, THETA_SPLIT[1] * sfr   # 1 - theta
-        self.c0 = t2.compliance.to_numpy(float)
-        self.beta0 = bf.beta0.to_numpy(float)
-        self.xi, self.omega, self.omega_v = XI, OMEGA, OMEGA
-        self.gamma_a, self.gamma_s, self.gamma_m, self.gamma_h = GAMMA_A, GAMMA_S, GAMMA_M, GAMMA_H
-        self.eta = np.array(ETA)
-        self.bS = self.bI = B_SI
-        # variants: switch days from cdc_variants.py, factors of Table S4
-        vd = pd.read_csv(os.path.join(DATA, "cdc", "variant_days.csv"))
-        self.var_t, self.var_par, prev = [], [], None
-        for name, t in zip(vd.variant, vd.t):
-            f = VARIANTS[name]
-            par = tuple(prev[i] if f[i] is None else f[i] for i in range(5)) if prev else f
-            self.var_t.append(float(t))
-            self.var_par.append(par)
-            prev = par
+        self.p = ba["p"]
+        self.q = 1 - sc["q_factor"] * (1 - self.p)
+        self.delta_s0 = sc["gamma_s_to_h"] * ba["d"]
+        self.delta_m0 = sc["delta_m_factor"] * self.delta_s0
+        sfr = ba["IFR_percent"] / 100 * (1 - self.p)                        # supplement, Section 2
+        self.die_s0, self.die_h0 = sc["deaths_outside"] * sfr, sc["deaths_hospital"] * sfr  # 1 - theta
+        self.c0 = ba["compliance"]
+        self.beta0 = ba["beta0"]
+        self.xi, self.omega, self.omega_v = sc["xi"], sc["omega"], sc["omega_v"]
+        self.gamma_a, self.gamma_s, self.gamma_m, self.gamma_h = (sc[g] for g in
+                                                                  ("gamma_a", "gamma_s", "gamma_m", "gamma_h"))
+        self.eta = np.array([sc[f"eta_{x}"] for x in ("a", "ps", "pm", "s", "m", "h")])
+        self.bS, self.bI = sc["b_S"], sc["b_I"]
+        # the parameters that change over time: each its own switch days; var_t the union of
+        # them, var_par[i] the values (beta factor, eps, compliance factor, k, severity) on
+        # (var_t[i], var_t[i + 1]]
+        self.var_t = sorted({f for sw in over.values() for f, _ in sw})
+        self.var_par = [tuple(next(v for f, v in reversed(over[p]) if f <= t) for p in OVER_TIME)
+                        for t in self.var_t]
         self.breaks = [t for t in self.var_t if np.isfinite(t)]
-        self.k = self.var_par[0][3]                                          # Wuhan, for sero_initial
+        self.k = self.var_par[0][3]                                          # at the start, for sero_initial
         self.delta_s, self.delta_m = self.delta_s0, self.delta_m0
         self.a = np.outer(self.L, self.U.sum(axis=0))                        # a_ij = L_i sum_l U_lj
         # the contact matrix C, formed by build_C_51x16.py from U, L, d, b and read from its file
@@ -314,7 +349,7 @@ def group_sums(mod, x):
 
 
 def do_verify(mod):
-    t0, t1 = T_START, T_VACC
+    t0, t1 = T_START, mod.t_vacc
     res = {}
     for rtol in (1e-6, 1e-8, 1e-10, 1e-12):
         tic = time.time()
@@ -361,11 +396,12 @@ def frame(mod, x):
 
 def do_solve(mod):
     tic = time.time()
-    (x,), st = mod.solve(T_START, T_VACC, mod.x251)
-    print(f"solved [{T_START:g}, {T_VACC:g}]: nfev {st['nfev']}, {time.time() - tic:.1f} s;"
+    (x,), st = mod.solve(T_START, mod.t_vacc, mod.x251)
+    print(f"solved [{T_START:g}, {mod.t_vacc:g}]: nfev {st['nfev']}, {time.time() - tic:.1f} s;"
           f" min compartment {x.min():.3g}")
-    frame(mod, x).to_csv(STATE349, index=False, float_format="%.17g")
-    print(f"wrote {STATE349}")
+    path = STATE_VACC.format(t=mod.t_vacc, params=mod.params)
+    frame(mod, x).to_csv(path, index=False, float_format="%.17g")
+    print(f"wrote {path}")
 
 
 SIG_FLOOR = 1e-6      # persons: group sizes below this are raised to it (optimal strategy)
@@ -469,20 +505,21 @@ def output_paths(strategy, tag, outdir=None):
 
 
 def do_simulate(mod, strategy="actual", nrand=0, resume=False, doses=DOSES, outdir=None):
-    """Weekly vaccination from T_VACC, with the initial state of mod and the dose file doses,
+    """Weekly vaccination from mod.t_vacc, with the initial state of mod and the dose file doses,
     for as many weeks as the dose file has. strategy "actual" (not run): the rates of DATA.tex,
     Remark 2.1, from the doses by location and age; "optimal": the doses of each location (all
     ages) allocated among its age groups by the optimization of notes/stratified_seir_ngm.tex.
     After every week the state, the week and the results so far are saved to the checkpoint
     simulate_<strategy>__<tag>_checkpoint.npz (in intermediate/, or outdir), tag =
-    run_tag(initial, doses); with resume=True the run continues from it. The results go to
-    data/, or outdir."""
+    run_tag(initial, doses, params); with resume=True the run continues from it. The results go
+    to data/, or outdir."""
     if strategy not in ("actual", "optimal"):
         raise ValueError(f"strategy {strategy!r}")
-    tag = run_tag(mod.initial_path, doses)
+    tag = run_tag(mod.initial_path, doses, mod.params)
     if outdir:
         os.makedirs(outdir, exist_ok=True)
-    print(f"initial state {mod.initial_path}\ndoses {doses}\noutput tag {tag}\n"
+    print(f"initial state {mod.initial_path}\ndoses {doses}\nparameters {mod.params} of {PARAMS_FILE}"
+          f" (vaccination from t = {mod.t_vacc:g})\noutput tag {tag}\n"
           f"output directory {outdir or DATA}", flush=True)
     A = None
     if strategy == "optimal":
@@ -498,7 +535,7 @@ def do_simulate(mod, strategy="actual", nrand=0, resume=False, doses=DOSES, outd
         if keys != [[s, a] for s in mod.locs for a in mod.ages]:
             raise ValueError(f"{doses}, sheet 2: (state, age) not in the order of the model")
         Dk = val.reshape(mod.m, mod.n, nw, 3).transpose(3, 0, 1, 2)         # 3 x m x n x weeks
-    weeks = [T_VACC + 7.0 * w for w in range(nw)]                            # Week w+1 starts at t
+    weeks = [mod.t_vacc + 7.0 * w for w in range(nw)]                        # Week w+1 starts at t
     tic = time.time()
     ckpt = checkpoint_path(strategy, tag, outdir)
     if resume and not os.path.exists(ckpt):
@@ -511,7 +548,7 @@ def do_simulate(mod, strategy="actual", nrand=0, resume=False, doses=DOSES, outd
             raise ValueError(f"{ckpt}: t = {float(z['t'])} is not the start of week {w0 + 1}")
         print(f"resuming from {ckpt}: week {w0 + 1} (t = {weeks[w0]:g})", flush=True)
     else:
-        (x,), _ = mod.solve(T_START, T_VACC, mod.x251)
+        (x,), _ = mod.solve(T_START, mod.t_vacc, mod.x251)
         w0, rows, opt = 0, [], []
     for w in range(w0, len(weeks)):
         tau = weeks[w]
@@ -564,19 +601,19 @@ def do_simulate(mod, strategy="actual", nrand=0, resume=False, doses=DOSES, outd
 
 
 if __name__ == "__main__":
-    opts = dict(a.split("=", 1) for a in sys.argv[1:] if "=" in a)   # method=, initial=, doses=
+    opts = dict(a.split("=", 1) for a in sys.argv[1:] if "=" in a)   # method=, initial=, doses=, params=
     argv = [a for a in sys.argv[1:] if "=" not in a]
-    bad = set(opts) - {"method", "initial", "doses", "out"}
+    bad = set(opts) - {"method", "initial", "doses", "out", "params"}
     if bad:
-        raise ValueError(f"unknown options {sorted(bad)}: method=, initial=, doses=, out=")
+        raise ValueError(f"unknown options {sorted(bad)}: method=, initial=, doses=, out=, params=")
     mode = argv[0] if argv else "solve"
-    mod = Model(initial=opts.get("initial", INITIAL))
+    mod = Model(initial=opts.get("initial", INITIAL), params=opts.get("params", DEFAULT_PARAMS))
     doses = input_path(opts["doses"]) if "doses" in opts else DOSES
     mod.method = opts.get("method", "DOP853").upper()
     if mod.method not in ("DOP853", "SDIRK4"):
         raise ValueError(f"method {mod.method!r}: DOP853 or SDIRK4")
-    print(f"N total {mod.N.sum():,.0f}; variant days " +
-          ", ".join(f"{t:g}" for t in mod.breaks) + f"; ODE method {mod.method}")
+    print(f"N total {mod.N.sum():,.0f}; parameters {mod.params}; vaccination from t = {mod.t_vacc:g};"
+          f" switch days " + ", ".join(f"{t:g}" for t in mod.breaks) + f"; ODE method {mod.method}")
     if mode == "simulate":
         args = [a for a in argv[1:] if a != "resume"]
         resume = "resume" in argv[1:]

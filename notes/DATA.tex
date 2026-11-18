@@ -141,7 +141,7 @@ WGS84 ellipsoid~\cite{1975Vincenty}. (\fref{f-d})
 \subsubsection{Activity factors}\label{sec-L}
 $L_i=\ln\rho_i/\ln\rho$~\cite[Section~2.4]{2023Glasser_Feng},
 densities in persons per square mile of land. As
-in~\cite[Supplement, Section~1a]{2026Feng_Day_Glasser}, $\rho_i$ is the
+in~\cite[Supplement, Section~2a]{2026Feng_Day_Glasser}, $\rho_i$ is the
 population-weighted average of the densities of the counties of location $i$,
 and $\rho$ the population-weighted average of the $\rho_i$; county populations
 on July 1, 2020 (\fref{f-co}), land areas (\fref{f-gaz}). Then $\rho=2253$ and
@@ -161,30 +161,41 @@ location $p$ and age group $q$, so that every row of $C$ adds up to $1$. How man
 contacts a person has is given separately, by the contact rates
 $a_{ij}=L_i\sum_lU_{lj}$.
 
-\emph{Source.} For locations alone, \cite[Section~2.4, p.~6]{2023Glasser_Feng} gives
-the contacts $C_{ip}=a_i\,e^{-bd_{ip}}/\sum_ke^{-bd_{ik}}$ and the mixing
-$c_{ip}=C_{ip}/\sum_kC_{ik}$. For the model with locations and age groups, the same
-section gives no formula; it states in words that (i) the age-specific contacts within
-locations are multiplied by the ratios of the natural logarithms of the location and
-national population densities, our $L_i$ (Section~\ref{sec-L}), and (ii) between
-locations, contacts decline exponentially with distance at age-specific rates,
-computed as in~\cite{2017Feng_Hill_Curns_Glasser}, our $b_q$
-(Section~\ref{sec-b}). By~\cite[Supplement, Section~2a]{2026Feng_Day_Glasser}, the
-mixing of the model of~\cite{2026Feng_Day_Glasser} is that
-of~\cite{2023Glasser_Feng}, except that the densities $\rho_i$ are computed from the
-county densities (Section~\ref{sec-L}).
+\emph{Source.} The mixing matrix is defined in~\cite[Section~2.4, pp.~5--6]{2023Glasser_Feng}.
+For age groups, $c_{jq}=U_{jq}/a_j$ with $a_j=\sum_kU_{jk}$, so that every row adds up to
+$1$, the condition $\sum_qc_{jq}=1$ on mixing matrices stated
+in~\cite[Section~2.1]{2017Feng_Hill_Curns_Glasser}. For locations alone, the contacts are
+$C_{ip}=a_i\,e^{-bd_{ip}}/\sum_ke^{-bd_{ik}}$ and the mixing is
+$c_{ip}=C_{ip}/\sum_kC_{ik}$. For locations and age groups,
+\cite[Section~2.4, p.~6]{2023Glasser_Feng} gives
+\begin{equation}\label{contacts-glasser}
+c_{l_ia_j,\,l_pa_q}=\frac{c^{(p)}_{a_ja_q}\,e^{-b_{a_q}d_{l_il_p}}}
+{\sum_{r=1}^{n}\sum_{s=1}^{m}c^{(s)}_{a_ja_r}\,e^{-b_{a_r}d_{l_il_s}}},
+\qquad
+c^{(p)}_{a_ja_q}=c_{a_ja_q}\,\frac{\ln\left(\rho^{(p)}\right)}{\ln\left(\rho\right)}:
+\end{equation}
+the age-specific mixing within location $p$ is multiplied by the ratio of the natural
+logarithms of the location and national population densities, our $L_p$
+(Section~\ref{sec-L}), and between locations the contacts decline exponentially with
+distance at the rate of the age group met, computed as
+in~\cite{2017Feng_Hill_Curns_Glasser}, our $b_q$ (Section~\ref{sec-b}).
+By~\cite[Supplement, Section~2a]{2026Feng_Day_Glasser}, the mixing of the model
+of~\cite{2026Feng_Day_Glasser} is the mixing used in~\cite{2023Glasser_Feng}, except that
+the densities $\rho_i$ are computed from the county densities (Section~\ref{sec-L}).
 
-\emph{The formula used.} We write this description as
+\emph{The formula used.} In our notation, with $l_i\to i$, $a_j\to j$,
+\eqref{contacts-glasser} is
 \begin{equation}\label{contacts}
 c_{ij,pq}=\frac{L_pU_{jq}e^{-b_qd_{ip}}}{\sum_{p',q'}L_{p'}U_{jq'}e^{-b_{q'}d_{ip'}}}:
 \end{equation}
-a person of $(i,j)$ meets age group $q$ in proportion to $U_{jq}$, location $p$ in
-proportion to its activity $L_p$, and the contacts decline with the distance $d_{ip}$
-at the rate $b_q$ of the age group met; the denominator makes the row add up to $1$,
-as $c_{ip}$ above. For $n=1$ and $L_p=1$ it is the $c_{ip}$
-of~\cite[Section~2.4]{2023Glasser_Feng}. The factor $L_p$ in the numerator and the rate
-$b_q$ of the age group met (rather than of the age group $j$) are our reading of the
-description; neither paper prints~\eqref{contacts}.
+we use the contacts $U_{jq}$ in place of $c_{jq}=U_{jq}/a_j$; the factor $1/a_j$ depends
+only on the row $(i,j)$ and cancels between the numerator and the denominator, so
+\eqref{contacts} and~\eqref{contacts-glasser} give the same matrix. A person of $(i,j)$
+meets age group $q$ in proportion to $U_{jq}$, location $p$ in proportion to its activity
+$L_p$, and the contacts decline with the distance $d_{ip}$ at the rate $b_q$ of the age
+group met. For fixed $(i,j)$ the denominator is the sum of the numerator over all $(p,q)$,
+so every row adds up to $1$. For $n=1$ and $L_p=1$, \eqref{contacts} is the $c_{ip}$
+given for locations alone.
 
 \emph{The file.} $C$ is formed from $U$, $L$, $d$ and $b$, and from nothing else, by
 \src{build_C_51x16.py} (\fref{f-C}), and \src{seir7_ode.py} loads it from this file.
@@ -224,8 +235,8 @@ $\mathrm{SFR}_j=\mathrm{IFR}_j(1-p_j)$ (Supplement, Section~2); and
 $\theta_{h,j}=1-0.7\,\mathrm{SFR}_j$, $\theta_{s,j}=1-0.3\,\mathrm{SFR}_j$, from the
 $70\%$ of deaths among inpatients in~\cite[Section~3]{2023Glasser_Feng}.
 
-The probabilities of infection on contact $\beta_j^0$ are those of 26 November
-2020 in~\cite[Fig.~4]{2023Glasser_Feng}, used there for transmission
+The probabilities of infection on contact $\beta_j^0$ are the values for 26 November
+2020 shown in~\cite[Fig.~4]{2023Glasser_Feng}, used there for transmission
 modeling~\cite[Section~2.3]{2023Glasser_Feng}. The figure gives no table; we
 digitized the curve at the 16 age groups (axis calibrated on the tick marks,
 values read at the centers of the markers; resolution $5.7\cdot10^{-4}$, accuracy
@@ -249,13 +260,13 @@ $\eta_a,\eta_{ps},\eta_{pm},\eta_s,\eta_m,\eta_h=0.5,1.25,1,1,0.75,0.1$ (Section
 
 \subsection{Variants}\label{sec-var}
 
-The values that change with the dominant variant are those of Table~S4
+The values that change with the dominant variant are set as in Table~S4
 of~\cite{2026Feng_Day_Glasser} (a blank there keeps the previous value; $k$ for
 Wuhan from Table~S4, where Table~S1 gives $1/4$):
 \begin{center}
 \small
 \begin{tabular}{lccccc}
- & Wuhan & Alpha & Delta & BA.1 & BA.5\\\hline
+ & Wuhan & Alpha & Delta & BS1 & BA5\\\hline
 factor of $\beta_j^0$ & 1 & 1.25 & 1.5 & 2 & 1\\
 $\varepsilon_1=\varepsilon_2=\varepsilon_3$ & 0.9 & 0.8 & 0.7 & 0.6 & 0.5\\
 factor of $c_j^0$ & 1 & 0.8 & 0.6 & 0.4 & 0.2\\
@@ -267,9 +278,11 @@ from ($t$) & & 459 & 550 & 725 & 914
 \end{center}
 A variant is taken to apply from the end of the first week in which its share of
 the US sequences exceeds $1/2$, in the weighted estimates of~\fref{f-var} (for
-each week the estimates of the latest creation date; lineages grouped as Alpha:
-B.1.1.7, Q; Delta: B.1.617.2, AY; BA.1: B.1.1.529, BA.1; BA.5: BA.5, BQ, BF, BE).
-The threshold $1/2$ is our choice. (\fref{f-vd})
+each week the estimates of the latest creation date; lineages, named as in the CDC data,
+grouped as Alpha: B.1.1.7, Q; Delta: B.1.617.2, AY; BS1: B.1.1.529, BA.1; BA5: BA.5, BQ,
+BF, BE). The names Wuhan, Alpha, Delta, BS1, BA5 are the column names of Table~S4; the
+table gives no lineages, and the lineages assigned to each name and the threshold $1/2$ are
+our choice. (\fref{f-vd})
 
 \subsection{Mock data}\label{sec-mock}
 
@@ -431,6 +444,83 @@ reported doses: computed with the mock doses $D_{k,ij}$ of~\fref{f-doses} (sheet
 strategy would give a mock reference only.
 \end{remark}
 
-\bibliographystyle{plain}
+\section[The two parameter sets: Unknown 2020/21 and Feng, Day, Glasser 2026; Glasser et al.\ 2023]{The two parameter sets: Unknown 2020/21 and~\cite{2026Feng_Day_Glasser},~\cite{2023Glasser_Feng}}\label{sec-params}
+
+The model is computed with one of two parameter sets: the values of Unknown 2020/21
+(set \src{2021}, the default) and the values used in~\cite{2026Feng_Day_Glasser}
+and~\cite{2023Glasser_Feng}, as described in Section~\ref{sec-data} (set \src{feng2026}). Both are
+in \src{weekly_simulation/input/parameters.xlsx}, one column per set (sheets \src{scalars},
+\src{by_age}, \src{over_time}); the set is chosen by \src{params=2021} or
+\src{params=feng2026} in \src{seir7_ode.py}, \src{ngm_seir7.py} and
+\src{plot_weekly_optimal.py}, and its name ends the names of the output files.
+
+\subsection{Constants of the two sets}\label{sec-params-const}
+
+Per day, unless stated otherwise:
+\begin{center}
+\small
+\begin{tabular}{lcc}
+ & Unknown 2020/21 & \cite{2026Feng_Day_Glasser}, \cite{2023Glasser_Feng}\\\hline
+$\xi$, $\gamma_{s\to h}$ & $1/2$, $1/2$ & $1/2$, $1/2$\\
+$\gamma_a$, $\gamma_s$, $\gamma_m$, $\gamma_h$ & $1/7$, $1/5$, $1/5$, $1/10$ & $1/7$, $1/5$, $1/5$, $1/10$\\
+$\omega=\omega_v$ & $1/182.5$ & $1/365$\\
+$b_S=b_I$ & 0.31 & 0.31\\
+$\eta_a,\eta_{ps},\eta_{pm},\eta_s,\eta_m,\eta_h$ & 0.5, 1.25, 1, 1, 0.75, 0.1 & 0.5, 1.25, 1, 1, 0.75, 0.1\\
+deaths of $\mathrm{SFR}_j$: outside, in hospital & 0.33, 0.67 & 0.3, 0.7\\
+start of vaccination & $t=347$ (12 Dec 2020) & $t=349$ (14 Dec 2020)
+\end{tabular}
+\end{center}
+That is, $\theta_{s,j}=1-0.33\,\mathrm{SFR}_j$ and $\theta_{h,j}=1-0.67\,\mathrm{SFR}_j$ in the
+set of Unknown 2020/21. In both sets $q_j=1-(1-p_j)/2$, $\delta_{s,j}=\gamma_{s\to h}d_j$ and
+$\delta_{m,j}=\delta_{s,j}/2$. The doses of week $w$ are given from
+$t=t_{\mathrm{vacc}}+7(w-1)$, with $t_{\mathrm{vacc}}$ the start of vaccination of the
+set.
+
+\subsection{Age-specific values of the two sets}\label{sec-params-age}
+
+The values $p_j$, $d_j$ and $\mathrm{IFR}_j$ are the same in both sets
+(Section~\ref{sec-age}); the compliance $c_j^0$ of Unknown 2020/21 is given with 16 digits and
+agrees with the compliance described in Section~\ref{sec-age} to the 9 digits given there.
+The probabilities of infection on contact $\beta_j^0$ differ: the values of Unknown 2020/21,
+and the values from Fig.~4~\cite{2023Glasser_Feng}, as described in Section~\ref{sec-age}:
+\begin{center}
+\small
+\begin{tabular}{l*{8}{c}}
+age & 0--4 & 5--9 & 10--14 & 15--19 & 20--24 & 25--29 & 30--34 & 35--39\\\hline
+Unknown 2020/21 & 0.1241 & 0.0815 & 0.0645 & 0.0511 & 0.0772 & 0.0762 & 0.0733 & 0.0683\\
+from Fig.~4~\cite{2023Glasser_Feng} & 0.1211 & 0.0779 & 0.0637 & 0.0535 & 0.0796 & 0.0711 & 0.0728 & 0.0671\\\hline
+age & 40--44 & 45--49 & 50--54 & 55--59 & 60--64 & 65--69 & 70--74 & 75+\\\hline
+Unknown 2020/21 & 0.0689 & 0.0794 & 0.0793 & 0.0951 & 0.1426 & 0.1708 & 0.1881 & 0.3305\\
+from Fig.~4~\cite{2023Glasser_Feng} & 0.0671 & 0.0779 & 0.0779 & 0.0950 & 0.1422 & 0.1701 & 0.1871 & 0.3327
+\end{tabular}
+\end{center}
+The values from Fig.~4~\cite{2023Glasser_Feng} differ from the values of Unknown 2020/21 by $-6.7\%$ (25--29) to $+4.7\%$
+(15--19), and by less than $1\%$ from age 55.
+
+\subsection{Values that change over time in the two sets}\label{sec-params-var}
+
+In the set of Unknown 2020/21 each value has its own days of change, and the values after
+1 July 2021 are kept to the end (there are no values for BS1 and BA5); a value given
+from day $t$ holds for the days after $t$:
+\begin{center}
+\small
+\begin{tabular}{lcccc}
+ & start & from $t=398$ & from $t=460$ & from $t=548$\\
+ & & (1 Feb 2021) & (4 Apr 2021) & (1 Jul 2021)\\\hline
+factor of $\beta_j^0$ & 1 & 1.25 & & 1.5\\
+$\varepsilon_1=\varepsilon_2=\varepsilon_3$ & 0.9 & 0.8 & & 0.7\\
+factor of $c_j^0$ & 1 & & 0.8 & \\
+$1/k$ (days) & 5 & & & \\
+factor of $d_j$ and $1-\theta_{w,j}$ & 1 & & &
+\end{tabular}
+\end{center}
+A blank keeps the previous value. In the set used in~\cite{2026Feng_Day_Glasser}, as
+described in Section~\ref{sec-var}, all values change together on the days of the variants,
+$t=459$, $550$, $725$, $914$. The two sets differ in the day of the first change ($t=398$
+for $\beta$ and $\varepsilon$, $t=460$ for the compliance, against $t=459$ for all), in
+the factor of $c_j^0$ under Delta (0.8 against 0.6), in $k$ under Delta ($1/5$ against
+$1/4$), and after Delta.
+
+\bibliographystyle{plainurl}
 \bibliography{bib_mb}
 \end{document}

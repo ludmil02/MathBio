@@ -1,10 +1,12 @@
 """Days at which the variants of Table S4 of the supplement of Feng, Day, Glasser 2026
-(Wuhan, Alpha, Delta, BA.1, BA.5) become dominant in the United States, from the CDC data set
+(Wuhan, Alpha, Delta, BS1, BA5, the column names of Table S4) become dominant in the United
+States, from the CDC data set
 "SARS-CoV-2 Variant Proportions" (data.cdc.gov, id jr58-6ysp), USA, model type "weighted",
 for each week the estimates of the latest creation date.
 
-Lineages are grouped by family: Alpha = B.1.1.7, Q.*; Delta = B.1.617.2, AY.*;
-BA.1 = B.1.1.529, BA.1*; BA.5 = BA.5*, BQ.*, BF.*, BE.*. The switch day of a family is the
+Lineages (names as in the CDC data) are grouped by family: Alpha = B.1.1.7, Q.*; Delta =
+B.1.617.2, AY.*; BS1 = B.1.1.529, BA.1*; BA5 = BA.5*, BQ.*, BF.*, BE.*. Table S4 names the
+columns only; the lineages assigned to each are our choice. The switch day of a family is the
 week-ending date of the first week in which its share exceeds 1/2; t counts days from
 31 December 2019.  ->  data/cdc/variant_days.csv
 
@@ -30,9 +32,9 @@ def family(name):
     if n.startswith(("B.1.617.2", "AY.")):
         return "Delta"
     if n.startswith(("BA.5", "BQ.", "BF.", "BE.")):
-        return "BA.5"
+        return "BA5"
     if n.startswith(("B.1.1.529", "BA.1")):
-        return "BA.1"
+        return "BS1"
     return "other"
 
 
@@ -46,7 +48,7 @@ def build():
     v["family"] = v.variant.map(family)
     share = v.groupby(["week_ending", "family"]).share.sum().unstack().fillna(0.0)
     rows = [{"variant": "Wuhan", "date": "", "t": float("-inf"), "max_share": float("nan")}]
-    for f in ("Alpha", "Delta", "BA.1", "BA.5"):
+    for f in ("Alpha", "Delta", "BS1", "BA5"):
         weeks = share.index[share[f] > 0.5]
         d = weeks.min()
         rows.append({"variant": f, "date": d.date().isoformat(), "t": float((d - T0).days),

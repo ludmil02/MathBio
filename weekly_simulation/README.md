@@ -2,7 +2,8 @@
 
 The model of Feng, Day, Glasser (J. Theor. Biol. 633 (2026) 112531), 51 locations (50 states
 and D.C.) x 16 age groups, solved from `t = 251` (7 September 2020) without vaccination to
-`t = 349` (14 December 2020), then week by week: at the start of each week the doses of each
+the start of vaccination `t_vacc` (`t = 347`, 12 December 2020, for the parameter set `2021`;
+`t = 349`, 14 December 2020, for `feng2026`), then week by week: at the start of each week the doses of each
 location (all ages) are allocated among its age groups so as to minimize the spectral radius of
 the next generation matrix, and the system is solved over the week with these rates.  Time `t`
 is in days from 31 December 2019.
@@ -35,10 +36,14 @@ From this directory:
     ./run.sh                          # the files in input/
     ./run.sh DOSES.xlsx               # other doses
     ./run.sh DOSES.xlsx INITIAL.csv   # other doses and initial state
+    PARAMS=feng2026 ./run.sh          # another parameter set
 
-The results go to `results/<tag>/`, `tag = <INITIAL>__<DOSES>` (the two file names without
-extension), e.g. `results/state_t251_mock__doses_51x16x16_mock/`, so runs with different inputs
-are kept apart.  After an interruption, `RESUME=1 ./run.sh` with the same arguments continues
+The parameters are a set (a column) of `input/parameters.xlsx`, `PARAMS=NAME`
+(default `2021`, the values of Unknown 2020/21; also `feng2026`,
+the values of Feng, Day, Glasser 2026).  The results go to `results/<tag>/`, `tag =
+<INITIAL>__<DOSES>__<PARAMS>` (the two file names without extension, and the set), e.g.
+`results/state_t251_mock__doses_51x16x16_mock__2021/`, so runs with different inputs are kept
+apart.  After an interruption, `RESUME=1 ./run.sh` with the same arguments continues
 from the last completed week.  The run with the 126 weeks of the mock doses took about 5000 s
 (about 1.4 h); memory about 150 MB.
 
@@ -55,9 +60,9 @@ An Excel file with two sheets; the entries are the numbers of people given the d
   (816; ages 0-4, 5-9, ..., 75+); used only for the actual strategy (not run).  Sheet 1 is the
   sum of sheet 2 over the ages.
 
-Week `w` starts on day `t = 349 + 7 (w - 1)`.  The number of weeks is that of the file, and the
-run ends at `t = 349 + 7 W` for `W` weeks: `t = 734` (3 January 2022) for 55 weeks, `t = 1231`
-(15 May 2023) for the 126 weeks of the mock file.  The mock doses are made by
+Week `w` starts on day `t = t_vacc + 7 (w - 1)`.  The number of weeks is that of the file, and
+the run ends at `t = t_vacc + 7 W` for `W` weeks; for the 126 weeks of the mock file, at `t =
+1229` (13 May 2023) with `2021` and `t = 1231` (15 May 2023) with `feng2026`.  The mock doses are made by
 `code/python/mock_doses_51x16x16.py` (rules in `notes/DATA.tex`, Section 1.9.2); a file of
 reported doses has to have the same layout.
 
