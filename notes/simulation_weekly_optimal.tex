@@ -1,39 +1,39 @@
 \documentclass[10pt]{article}
-% BEGIN run values: written by code/python/weekly_report.py from weekly_simulation/results/state_t251_mock__doses_51x16x16_mock_15wk__2021/
-\providecommand{\RunTag}{}\renewcommand{\RunTag}{state\_\allowbreak{}t251\_\allowbreak{}mock\_\allowbreak{}\_\allowbreak{}doses\_\allowbreak{}51x16x16\_\allowbreak{}mock\_\allowbreak{}15wk\_\allowbreak{}\_\allowbreak{}2021}
-\providecommand{\RunInitialFile}{}\renewcommand{\RunInitialFile}{weekly\_\allowbreak{}simulation/\allowbreak{}input/\allowbreak{}state\_\allowbreak{}t251\_\allowbreak{}mock.csv}
-\providecommand{\RunDosesFile}{}\renewcommand{\RunDosesFile}{code/\allowbreak{}python/\allowbreak{}data/\allowbreak{}mock/\allowbreak{}doses\_\allowbreak{}51x16x16\_\allowbreak{}mock\_\allowbreak{}15wk.xlsx}
+% BEGIN run values: written by code/python/weekly_report.py from weekly_simulation/results/Soln_labeled__Vax2021__2021/
+\providecommand{\RunTag}{}\renewcommand{\RunTag}{Soln\_\allowbreak{}labeled\_\allowbreak{}\_\allowbreak{}Vax2021\_\allowbreak{}\_\allowbreak{}2021}
+\providecommand{\RunInitialFile}{}\renewcommand{\RunInitialFile}{data/\allowbreak{}real/\allowbreak{}Soln\_\allowbreak{}labeled.csv}
+\providecommand{\RunDosesFile}{}\renewcommand{\RunDosesFile}{data/\allowbreak{}real/\allowbreak{}Vax2021.xlsx}
 \providecommand{\RunParams}{}\renewcommand{\RunParams}{2021}
 \providecommand{\RunTvacc}{}\renewcommand{\RunTvacc}{347}
 \providecommand{\RunTvaccDate}{}\renewcommand{\RunTvaccDate}{12 December 2020}
-\providecommand{\RunWeeks}{}\renewcommand{\RunWeeks}{15}
-\providecommand{\RunTlast}{}\renewcommand{\RunTlast}{445}
-\providecommand{\RunTend}{}\renewcommand{\RunTend}{452}
-\providecommand{\RunTendDate}{}\renewcommand{\RunTendDate}{27 March 2021}
+\providecommand{\RunWeeks}{}\renewcommand{\RunWeeks}{55}
+\providecommand{\RunTlast}{}\renewcommand{\RunTlast}{725}
+\providecommand{\RunTend}{}\renewcommand{\RunTend}{732}
+\providecommand{\RunTendDate}{}\renewcommand{\RunTendDate}{1 January 2022}
 \providecommand{\RunDaysNoVacc}{}\renewcommand{\RunDaysNoVacc}{96}
-\providecommand{\RunFigDir}{}\renewcommand{\RunFigDir}{../weekly_simulation/results/state_t251_mock__doses_51x16x16_mock_15wk__2021/figures/}
+\providecommand{\RunFigDir}{}\renewcommand{\RunFigDir}{../weekly_simulation/results/Soln_labeled__Vax2021__2021/figures/}
 \providecommand{\RunSwitch}{}\renewcommand{\RunSwitch}{$t=398$, $t=460$ and $t=548$ (1 February 2021, 4 April 2021, 1 July 2021)}
-\providecommand{\RunRhoOptAbove}{}\renewcommand{\RunRhoOptAbove}{0}
-\providecommand{\RunCapWeeks}{}\renewcommand{\RunCapWeeks}{11}
-\providecommand{\RunVPeak}{}\renewcommand{\RunVPeak}{61.1}
-\providecommand{\RunVPeakDate}{}\renewcommand{\RunVPeakDate}{27 March 2021}
-\providecommand{\RunInfPeak}{}\renewcommand{\RunInfPeak}{1.05}
-\providecommand{\RunInfPeakDate}{}\renewcommand{\RunInfPeakDate}{12 December 2020}
-\providecommand{\RunHospPeak}{}\renewcommand{\RunHospPeak}{0.0708}
-\providecommand{\RunHospPeakDate}{}\renewcommand{\RunHospPeakDate}{12 December 2020}
-\providecommand{\RunDeathsStart}{}\renewcommand{\RunDeathsStart}{60}
-\providecommand{\RunDeathsEnd}{}\renewcommand{\RunDeathsEnd}{79}
-\providecommand{\RunSeroPct}{}\renewcommand{\RunSeroPct}{6.6}
-\providecommand{\RunDosesOne}{}\renewcommand{\RunDosesOne}{87}
-\providecommand{\RunDosesTwo}{}\renewcommand{\RunDosesTwo}{52}
-\providecommand{\RunDosesThree}{}\renewcommand{\RunDosesThree}{0}
-\providecommand{\RunInitialText}{}\renewcommand{\RunInitialText}{the initial state at $t=251$, \texttt{\RunInitialFile}, mock, built from the CDC seroprevalence survey (rounds 3 and 4) by made-up rules (\texttt{DATA.pdf}, Section~1.9.1), in place of the procedure of Glasser et al.\ (2023, Section~3); $\RunSeroPct\%$ seropositive}
-\providecommand{\RunDosesText}{}\renewcommand{\RunDosesText}{the weekly doses by location and dose, \texttt{\RunDosesFile}: \RunWeeks{} made-up weeks, with $\RunDosesOne$, $\RunDosesTwo$ and $\RunDosesThree$ million first, second and third doses; to be replaced by reported doses}
-\providecommand{\RunOtherInputs}{}\renewcommand{\RunOtherInputs}{mock (\texttt{DATA.pdf}, Section~1.9)}
-\providecommand{\CmpEigenvectorDeathsEnd}{}\renewcommand{\CmpEigenvectorDeathsEnd}{78}
-\providecommand{\CmpEigenvectorRhoAbove}{}\renewcommand{\CmpEigenvectorRhoAbove}{0}
-\providecommand{\CmpEigenvectorInfPeak}{}\renewcommand{\CmpEigenvectorInfPeak}{1.05}
-\providecommand{\CmpEigenvectorHospPeak}{}\renewcommand{\CmpEigenvectorHospPeak}{0.0708}
+\providecommand{\RunRhoOptAbove}{}\renewcommand{\RunRhoOptAbove}{22}
+\providecommand{\RunCapWeeks}{}\renewcommand{\RunCapWeeks}{46}
+\providecommand{\RunVPeak}{}\renewcommand{\RunVPeak}{94.9}
+\providecommand{\RunVPeakDate}{}\renewcommand{\RunVPeakDate}{22 May 2021}
+\providecommand{\RunInfPeak}{}\renewcommand{\RunInfPeak}{22.5}
+\providecommand{\RunInfPeakDate}{}\renewcommand{\RunInfPeakDate}{6 November 2021}
+\providecommand{\RunHospPeak}{}\renewcommand{\RunHospPeak}{1.46}
+\providecommand{\RunHospPeakDate}{}\renewcommand{\RunHospPeakDate}{13 November 2021}
+\providecommand{\RunDeathsStart}{}\renewcommand{\RunDeathsStart}{223}
+\providecommand{\RunDeathsEnd}{}\renewcommand{\RunDeathsEnd}{936}
+\providecommand{\RunSeroPct}{}\renewcommand{\RunSeroPct}{16}
+\providecommand{\RunDosesOne}{}\renewcommand{\RunDosesOne}{223}
+\providecommand{\RunDosesTwo}{}\renewcommand{\RunDosesTwo}{182}
+\providecommand{\RunDosesThree}{}\renewcommand{\RunDosesThree}{69}
+\providecommand{\RunInitialText}{}\renewcommand{\RunInitialText}{the initial state at $t=251$, \texttt{\RunInitialFile}; $\RunSeroPct\%$ seropositive}
+\providecommand{\RunDosesText}{}\renewcommand{\RunDosesText}{the weekly doses by location and dose, \texttt{\RunDosesFile}: \RunWeeks{} weeks, with $\RunDosesOne$, $\RunDosesTwo$ and $\RunDosesThree$ million first, second and third doses}
+\providecommand{\RunOtherInputs}{}\renewcommand{\RunOtherInputs}{not from public sources}
+\providecommand{\CmpEigenvectorDeathsEnd}{}\renewcommand{\CmpEigenvectorDeathsEnd}{699}
+\providecommand{\CmpEigenvectorRhoAbove}{}\renewcommand{\CmpEigenvectorRhoAbove}{31}
+\providecommand{\CmpEigenvectorInfPeak}{}\renewcommand{\CmpEigenvectorInfPeak}{15.8}
+\providecommand{\CmpEigenvectorHospPeak}{}\renewcommand{\CmpEigenvectorHospPeak}{1.09}
 \providecommand{\RunOmegaInv}{}\renewcommand{\RunOmegaInv}{182.5}
 \providecommand{\RunRMin}{}\renewcommand{\RunRMin}{0.714}
 \providecommand{\RunRMax}{}\renewcommand{\RunRMax}{0.985}
@@ -41,12 +41,12 @@
 \providecommand{\RunDeltaBoundLo}{}\renewcommand{\RunDeltaBoundLo}{7.9\cdot10^{-4}}
 \providecommand{\RunDeltaBoundHi}{}\renewcommand{\RunDeltaBoundHi}{3.4\cdot10^{-3}}
 \providecommand{\RunEpsFirstTo}{}\renewcommand{\RunEpsFirstTo}{ in the weeks before $t=403$}
-\providecommand{\RunDeltaLast}{}\renewcommand{\RunDeltaLast}{ (with $\varepsilon_1=0.8$, in the weeks from $t=403$: between $2.0\cdot10^{-3}$ and $5.5\cdot10^{-3}$)}
-\providecommand{\RunDeltaText}{}\renewcommand{\RunDeltaText}{in 4 of the 15 weeks, the first at $t=375$}
-\providecommand{\CmpOptimalDeathsEnd}{}\renewcommand{\CmpOptimalDeathsEnd}{79}
-\providecommand{\CmpOptimalRhoAbove}{}\renewcommand{\CmpOptimalRhoAbove}{0}
-\providecommand{\CmpOptimalInfPeak}{}\renewcommand{\CmpOptimalInfPeak}{1.05}
-\providecommand{\CmpOptimalHospPeak}{}\renewcommand{\CmpOptimalHospPeak}{0.0708}
+\providecommand{\RunDeltaLast}{}\renewcommand{\RunDeltaLast}{ (with $\varepsilon_1=0.7$, in the weeks from $t=550$: between $4.3\cdot10^{-3}$ and $9.6\cdot10^{-3}$)}
+\providecommand{\RunDeltaText}{}\renewcommand{\RunDeltaText}{in 13 of the 55 weeks, the first at $t=354$}
+\providecommand{\CmpOptimalDeathsEnd}{}\renewcommand{\CmpOptimalDeathsEnd}{936}
+\providecommand{\CmpOptimalRhoAbove}{}\renewcommand{\CmpOptimalRhoAbove}{22}
+\providecommand{\CmpOptimalInfPeak}{}\renewcommand{\CmpOptimalInfPeak}{22.5}
+\providecommand{\CmpOptimalHospPeak}{}\renewcommand{\CmpOptimalHospPeak}{1.46}
 % END run values
 % the four figures, in the folder \RunFigDir of the run (relative to this file)
 \newcommand{\figrho}{fig_compare_rho.png}
