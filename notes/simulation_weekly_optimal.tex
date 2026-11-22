@@ -38,9 +38,8 @@ The model of Feng, Day and Glasser (J.~Theoret.\ Biol.\ 633, 2026), described in
 D.C.) and $n=16$ age groups, $10\,608$ unknowns. Time $t$ is in days from 31 December 2019.
 The parameters are the set \texttt{\RunParams} (\texttt{DATA.pdf}, Section~3); the values
 that vary in time change at \RunSwitch{}. The system is solved by the Runge--Kutta method of
-order 8 (\texttt{DOP853}) from $t=251$ (7 September 2020), the initial time of Glasser et al.\
-(J.~Theoret.\ Biol.\ 556, 2023, Section~3): without vaccination to $t=\RunTvacc$
-(\RunTvaccDate), then over the \RunWeeks{} weeks of the dose file to $t=\RunTend$
+order 8 (\texttt{DOP853}) from the initial state at $t=\RunTzero$ (\RunTzeroDate): without
+vaccination to $t=\RunTvacc$ (\RunTvaccDate), then over the \RunWeeks{} weeks of the dose file to $t=\RunTend$
 (\RunTendDate).
 
 Each week the doses of each location are allocated among its age groups so as to minimize

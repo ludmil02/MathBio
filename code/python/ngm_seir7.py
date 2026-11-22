@@ -4,7 +4,7 @@ The model is that of Feng, Day, Glasser (J. Theor. Biol. 633 (2026) 112531) and 
 notes/stratified_seir_ngm.tex.  Data: the public data of notes/DATA.tex, Section 1, through
 seir7_ode.Model, with the parameter set params=NAME of
 weekly_simulation/input/parameters.xlsx (default 2021) at
-t = T_NGM = t_vacc of the set (2021: 347, feng2026: 349; the start of vaccination; Wuhan
+t = T_NGM = t_vacc of the set (2021: 354, feng2026: 349; the start of vaccination; Wuhan
 variant, stringency of that day).  All data are published or public.
 
 The next generation matrix H has size 2 n = 1632 and is never formed:

@@ -24,17 +24,19 @@ read from data/model/C_816x816.csv.gz; the system is integrated by DOP853, inter
 between the switch days of the parameters (and the weeks of vaccination).
 
 Every mode takes params=NAME, a set (column) of the parameter file (default 2021), and
-paramfile=FILE, the parameter file (default weekly_simulation/input/parameters.xlsx); t_vacc,
-the start of vaccination, is a parameter of the set (2021: 347, feng2026: 349).
+paramfile=FILE, the parameter file (default weekly_simulation/input/parameters.xlsx); t0, the
+day of the initial state, and t_vacc, the start of vaccination, are parameters of the set
+(2021: t0 = 347, t_vacc = 354; feng2026: t0 = 251, t_vacc = 349).
 
 Usage:
     python3 -u seir7_ode.py verify   | tee intermediate/seir7_ode_verify.output
-        tolerances, group sums, signs, spectral radius on [251, t_vacc]
+        tolerances, group sums, signs, spectral radius on [t0, t_vacc]
     python3 -u seir7_ode.py solve    | tee intermediate/seir7_ode_solve.output
         state at t_vacc (start of vaccination) -> data/state_t<t_vacc>_51x16__<params>.csv
     python3 -u seir7_ode.py simulate [optimal|eigenvector|actual] [resume] [initial=FILE] [doses=FILE] [params=NAME]
             | tee -a intermediate/seir7_ode_simulate_<strategy>__<tag>.output
-        initial= the state at t = 251 (default data/cdc/state_t251_mock.csv), doses= the weekly
+        initial= the state at t = t0 of the set (default data/cdc/state_t251_mock.csv; t0 at most
+        t_vacc; with t0 = t_vacc there is no integration before the first week), doses= the weekly
         doses (default data/mock/doses_51x16x16_mock_55wk.xlsx); a FILE is taken as given, else
         relative to this directory. tag = <initial>__<doses>__<params>, the two file names
         without directory and extension and the set, e.g.
@@ -43,7 +45,7 @@ Usage:
         week w starts at t = t_vacc + 7 (w - 1), and the run ends at t_vacc + 7 (number of weeks).
         (after each week the state is saved to intermediate/simulate_<strategy>__<tag>_checkpoint.npz;
         "resume" continues an interrupted run with the same inputs from the last completed week)
-        from t = 251 through the weeks of the dose file. actual: the rates of DATA.tex, Remark 2.1, from
+        from t = t0 through the weeks of the dose file. actual: the rates of DATA.tex, Remark 2.1, from
         the doses by location and age; optimal: each week, the doses of each location (all ages)
         allocated among its age groups by the alternating method (alternating.py, notes/
         stratified_seir_ngm.tex) with sigma = S, V, P of the solution at the start of the week,
@@ -93,16 +95,16 @@ def run_tag(initial, doses, params):
     stem = lambda p: os.path.splitext(os.path.basename(p))[0]
     return f"{stem(initial)}__{stem(doses)}__{params}"
 
-T_START = 251.0                                 # 7 September 2020, the initial state
 
 # The parameters: one set (a column) of weekly_simulation/input/parameters.xlsx (edited by hand),
-# chosen by params=NAME; the start of vaccination t_vacc is one of them.
+# chosen by params=NAME; the day of the initial state t0 and the start of vaccination t_vacc are
+# among them.
 PARAMS_FILE = os.path.normpath(os.path.join(HERE, "..", "..", "weekly_simulation", "input", "parameters.xlsx"))
 DEFAULT_PARAMS = "2021"
 OVER_TIME = ["beta_factor", "eps", "compliance_factor", "k", "severity"]   # order of Model.variant
 SCALARS = ["xi", "gamma_a", "gamma_s", "gamma_m", "gamma_h", "gamma_s_to_h", "delta_m_factor",
            "q_factor", "omega", "omega_v", "eta_a", "eta_ps", "eta_pm", "eta_s", "eta_m", "eta_h",
-           "b_S", "b_I", "deaths_outside", "deaths_hospital", "t_vacc"]
+           "b_S", "b_I", "deaths_outside", "deaths_hospital", "t_vacc", "t0"]
 BY_AGE = ["p", "d", "IFR_percent", "compliance", "beta0"]
 
 
@@ -200,9 +202,9 @@ class Model:
     """Parameters and data of DATA.tex, Section 1."""
 
     def __init__(self, initial=INITIAL, params=DEFAULT_PARAMS, params_file=PARAMS_FILE):
-        """initial: the file of the state at T_START (default INITIAL; "mock" is the same), or
+        """initial: the file of the state at t0 (default INITIAL; "mock" is the same), or
         "none" for no initial state. params: the name of a set of params_file (default
-        PARAMS_FILE)."""
+        PARAMS_FILE); its t0 is the day of the initial state, at most its t_vacc."""
         pop = pd.read_csv(CENSUS_N)
         self.locs = list(dict.fromkeys(pop.state))
         self.ages = list(dict.fromkeys(pop.age))
@@ -221,6 +223,9 @@ class Model:
         self.params, self.params_file = str(params), os.path.abspath(params_file)
         sc, ba, over = read_params(self.params, self.ages, self.params_file)
         self.t_vacc = sc["t_vacc"]
+        self.t0 = sc["t0"]
+        if self.t0 > self.t_vacc:
+            raise ValueError(f"t0 = {self.t0:g} after the start of vaccination t_vacc = {self.t_vacc:g}")
         self.U = Uf.to_numpy(float)                                          # U[j, q]
         self.d = D.to_numpy(float)                                           # d[i, p], miles
         self.L = Lf.L.to_numpy(float)
@@ -394,7 +399,9 @@ def group_sums(mod, x):
 
 
 def do_verify(mod):
-    t0, t1 = T_START, mod.t_vacc
+    t0, t1 = mod.t0, mod.t_vacc
+    if t0 >= t1:
+        raise ValueError(f"verify: t0 = {t0:g} is t_vacc; nothing to integrate")
     res = {}
     for rtol in (1e-6, 1e-8, 1e-10, 1e-12):
         tic = time.time()
@@ -441,8 +448,10 @@ def frame(mod, x):
 
 def do_solve(mod):
     tic = time.time()
-    (x,), st = mod.solve(T_START, mod.t_vacc, mod.x251)
-    print(f"solved [{T_START:g}, {mod.t_vacc:g}]: nfev {st['nfev']}, {time.time() - tic:.1f} s;"
+    if mod.t0 >= mod.t_vacc:
+        raise ValueError(f"solve: t0 = {mod.t0:g} is t_vacc; nothing to integrate")
+    (x,), st = mod.solve(mod.t0, mod.t_vacc, mod.x251)
+    print(f"solved [{mod.t0:g}, {mod.t_vacc:g}]: nfev {st['nfev']}, {time.time() - tic:.1f} s;"
           f" min compartment {x.min():.3g}", flush=True)
     path = STATE_VACC.format(t=mod.t_vacc, params=mod.params)
     frame(mod, x).to_csv(path, index=False, float_format="%.17g")
@@ -677,7 +686,12 @@ def do_simulate(mod, strategy="actual", nrand=0, resume=False, doses=DOSES, outd
             raise ValueError(f"{ckpt}: t = {float(z['t'])} is not the start of week {w0 + 1}")
         print(f"resuming from {ckpt}: week {w0 + 1} (t = {weeks[w0]:g})", flush=True)
     else:
-        (x,), _ = mod.solve(T_START, mod.t_vacc, mod.x251)
+        if mod.t0 < mod.t_vacc:
+            (x,), _ = mod.solve(mod.t0, mod.t_vacc, mod.x251)
+            print(f"solved [{mod.t0:g}, {mod.t_vacc:g}] without vaccination", flush=True)
+        else:
+            x = mod.x251.copy()
+            print(f"initial state at t0 = t_vacc = {mod.t_vacc:g}: no integration before week 1", flush=True)
         w0, rows, opt, chis = 0, [], [], []
     for w in range(w0, len(weeks)):
         tau = weeks[w]
@@ -732,7 +746,7 @@ def do_simulate(mod, strategy="actual", nrand=0, resume=False, doses=DOSES, outd
     if strategy == "eigenvector" and chis is not None:
         np.savez(chi_path(strategy, tag, outdir), t=np.array(weeks), chi=np.array(chis))
         print(f"wrote {chi_path(strategy, tag, outdir)}", flush=True)
-    print(f"{strategy}: simulated [{T_START:g}, {weeks[-1] + 7:g}] with {len(weeks)} weeks of doses in "
+    print(f"{strategy}: simulated [{mod.t0:g}, {weeks[-1] + 7:g}] with {len(weeks)} weeks of doses in "
           f"{time.time() - tic:.1f} s; at the end: V {out.V.iloc[-1] / 1e6:.1f} M, R {out.R.iloc[-1] / 1e6:.1f} M,"
           f" M (dead) {out.M.iloc[-1] / 1e3:.0f} K, hospitalized now {out.Ih.iloc[-1] / 1e3:.1f} K;"
           f" min compartment {x.min():.3g}", flush=True)
@@ -759,7 +773,7 @@ if __name__ == "__main__":
     mod.method = opts.get("method", "DOP853").upper()
     if mod.method not in ("DOP853", "SDIRK4"):
         raise ValueError(f"method {mod.method!r}: DOP853 or SDIRK4")
-    print(f"N total {mod.N.sum():,.0f}; parameters {mod.params}; vaccination from t = {mod.t_vacc:g};"
+    print(f"N total {mod.N.sum():,.0f}; parameters {mod.params}; initial state at t0 = {mod.t0:g}; vaccination from t = {mod.t_vacc:g};"
           f" switch days " + ", ".join(f"{t:g}" for t in mod.breaks) + f"; ODE method {mod.method}", flush=True)
     if mode == "simulate":
         args = [a for a in argv[1:] if a != "resume"]

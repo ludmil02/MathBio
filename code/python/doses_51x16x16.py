@@ -12,7 +12,7 @@ Excel files data/mock/doses_51x16x16_mock_<W>wk.xlsx, W = 15, 55, 126, two sheet
 entries: people given that dose in that week. Row 1: empty cell(s) over the key
 columns, then "Week 1", ..., "Week W", each
 in the middle one of its three columns (over Dose 2), centered; week w starts on day t = t_vacc + 7 (w - 1), t_vacc the start of
-vaccination of the parameter set of seir7_ode.py (2021: 347, feng2026: 349). Row 2: the key column
+vaccination of the parameter set of seir7_ode.py (2021: 354, feng2026: 349). Row 2: the key column
 names, then "Dose 1", "Dose 2", "Dose 3+" under each week. Then:
   sheet 1 "by_state":     key column State; 51 rows (FIPS order), all ages together;
   sheet 2 "by_state_age": key columns State, Age; 816 rows (location, age 0-4, ..., 75+).

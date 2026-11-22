@@ -1,9 +1,10 @@
 # Weekly optimal vaccination: simulation package
 
 The model of Feng, Day, Glasser (J. Theor. Biol. 633 (2026) 112531), 51 locations (50 states
-and D.C.) x 16 age groups, solved from `t = 251` (7 September 2020) without vaccination to
-the start of vaccination `t_vacc` (`t = 347`, 12 December 2020, for the parameter set `2021`;
-`t = 349`, 14 December 2020, for `feng2026`), then week by week: at the start of each week the doses of each
+and D.C.) x 16 age groups, solved from the day `t0` of the initial state without vaccination to
+the start of vaccination `t_vacc`, both parameters of the set (`2021`: `t0 = 347`, 12 December
+2020, `t_vacc = 354`, 19 December 2020; `feng2026`: `t0 = 251`, 7 September 2020,
+`t_vacc = 349`, 14 December 2020), then week by week: at the start of each week the doses of each
 location (all ages) are allocated among its age groups so as to minimize the spectral radius of
 the next generation matrix (from three starts: the uniform allocation, the rates of the
 eigenvector strategy, and the rates of the eigenvector run in the same week), and the system is solved over the week with these rates.  Time `t`

@@ -118,8 +118,11 @@ Section~\ref{sec-comp}.
 
 \subsection{Time}\label{sec-time}
 
-The time $t$ is the number of days from 31 December 2019, and the model is
-started at $t=251$, 7 September 2020~\cite[Section~3]{2023Glasser_Feng}.
+The time $t$ is the number of days from 31 December 2019. The model is started at the day
+$t_0$ of the initial state, a parameter of the set: $t_0=251$, 7 September
+2020~\cite[Section~3]{2023Glasser_Feng}, in the set of~\cite{2026Feng_Day_Glasser}, and
+$t_0=347$, 12 December 2020, in the set of Unknown 2020/21; the set \texttt{\RunParams} starts it
+at $t_0=\RunTzero$, \RunTzeroDate.
 Vaccination began on 14 December 2020~\cite[Section~2.2]{2026Feng_Day_Glasser},
 $t=349$; the parameter set \texttt{\RunParams}, used in the computation of
 Section~\ref{sec-comp}, starts it at $t_{\mathrm{vacc}}=\RunTvacc$, \RunTvaccDate{}
@@ -429,7 +432,7 @@ of a group add up to $0$, so each group keeps its size $N_{ij}$.
 \subsection{The computation}\label{sec-comp}
 
 \begin{enumerate}[leftmargin=*]
-\item Solve~\eqref{ode} from $t=251$, with the initial state~\fref{f-x0}, to
+\item Solve~\eqref{ode} from $t=\RunTzero$, with the initial state~\fref{f-x0}, to
 $t=\RunTvacc$, the start of vaccination of the parameter set \texttt{\RunParams}, with $\chi=0$.
 \item For each week $[\tau,\tau+7]$, $\tau=\RunTvacc,\dots,\RunTlast$ (\RunWeeks{} weeks, to
 $t=\RunTend$, \RunTendDate), with
@@ -562,7 +565,8 @@ $\omega=\omega_v$ & $1/182.5$ & $1/365$\\
 $b_S=b_I$ & 0.31 & 0.31\\
 $\eta_a,\eta_{ps},\eta_{pm},\eta_s,\eta_m,\eta_h$ & 0.5, 1.25, 1, 1, 0.75, 0.1 & 0.5, 1.25, 1, 1, 0.75, 0.1\\
 deaths of $\mathrm{SFR}_j$: outside, in hospital & 0.33, 0.67 & 0.3, 0.7\\
-start of vaccination & $t=347$ (12 Dec 2020) & $t=349$ (14 Dec 2020)
+initial state, $t_0$ & $t=347$ (12 Dec 2020) & $t=251$ (7 Sep 2020)\\
+start of vaccination & $t=354$ (19 Dec 2020) & $t=349$ (14 Dec 2020)
 \end{tabular}
 \end{center}
 That is, $\theta_{s,j}=1-0.33\,\mathrm{SFR}_j$ and $\theta_{h,j}=1-0.67\,\mathrm{SFR}_j$ in the

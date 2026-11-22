@@ -30,7 +30,9 @@
   \expandafter\gdef\csname #1\endcsname{#2}%
   \immediate\write\@auxout{\unexpanded{\expandafter\gdef\csname #1\endcsname{#2}}}}
 \@for\@tempa:=RunParams,RunOmegaInv,RunRMin,RunRMax,RunEpsFirst,%
-RunEpsFirstTo,RunDeltaBoundLo,RunDeltaBoundHi,RunDeltaLast,RunDeltaText\do{%
+RunEpsFirstTo,RunDeltaBoundLo,RunDeltaBoundHi,RunDeltaLast,RunDeltaText,%
+RunTzero,RunTzeroDate,RunTvacc,RunTvaccDate,RunWeeks,%
+RunTlast,RunTend,RunTendDate\do{%
   \expandafter\providecommand\csname\@tempa\endcsname{??}}
 \makeatother
 % END definition of \runvalue
@@ -698,10 +700,11 @@ computation are in the companion notes DATA.tex (Sections~1 and~2); all data are
 public except the initial state and the weekly doses, which are read from files
 (DATA.tex, Section~1.9).
 
-\paragraph{The weekly loop.} The system is solved from $t=251$ (7 September
-2020) to $t=347$ (12 December 2020, the start of vaccination in the parameter set
-used in the numerical tests) without vaccination, and then on the 55 weeks $[\tau,\tau+7]$,
-$\tau=347,354,\dots,725$, to $t=732$ (1 January 2022), with
+\paragraph{The weekly loop.} The system is solved from the initial state at
+$t=\RunTzero$ (\RunTzeroDate) to $t=\RunTvacc$ (\RunTvaccDate, the start of vaccination in
+the parameter set used in the numerical tests) without vaccination, and then on the
+\RunWeeks{} weeks $[\tau,\tau+7]$, $\tau=\RunTvacc+7(w-1)$, $w=1,\dots,\RunWeeks$, to
+$t=\RunTend$ (\RunTendDate), with
 rates $\chi_{k,p}$ constant on each week, computed at $\tau$ from the state
 $X(\tau)$ and the doses $b_{k,i}$ of each location in the week, all ages, read from a
 file (DATA.tex, Section~1.9.2), which are allocated among its age groups by the
@@ -1068,7 +1071,15 @@ to $4\cdot10^{-10}$, the tolerance of the solver.
 \runvalue{RunDeltaBoundLo}{7.9\cdot10^{-4}}
 \runvalue{RunDeltaBoundHi}{3.4\cdot10^{-3}}
 \runvalue{RunDeltaLast}{ (with $\varepsilon_1=0.7$, in the weeks from $t=550$: between $4.3\cdot10^{-3}$ and $9.6\cdot10^{-3}$)}
-\runvalue{RunDeltaText}{in 13 of the 55 weeks, the first at $t=354$}
+\runvalue{RunDeltaText}{in 12 of the 55 weeks, the first at $t=361$}
+\runvalue{RunTzero}{347}
+\runvalue{RunTzeroDate}{12 December 2020}
+\runvalue{RunTvacc}{354}
+\runvalue{RunTvaccDate}{19 December 2020}
+\runvalue{RunWeeks}{55}
+\runvalue{RunTlast}{732}
+\runvalue{RunTend}{739}
+\runvalue{RunTendDate}{8 January 2022}
 The values used in Sections~\ref{sec-reduced} and~\ref{sec-step2}, from the parameter set
 used in the numerical tests and the computation of Section~\ref{sec-simulation}:
 \begin{itemize}
