@@ -7,18 +7,18 @@ weekly_simulation/input/parameters.xlsx (default 2021) at
 t = T_NGM = t_vacc of the set (2021: 347, feng2026: 349; the start of vaccination; Wuhan
 variant, stringency of that day).  All data are published or public.
 
-The NGM has size 2 m n = 1632 and is never formed:
+The next generation matrix H has size 2 n = 1632 and is never formed:
 
-    NGM[(i,j,a), (p,q,b)] = Omega[i,j,a] mc[i,j,p,q] psiI[q] Q[q,b],
+    H[(i,j,a), (p,q,b)] = Omega[i,j,a] mc[i,j,p,q] psiI[q] Q[q,b],
 
-a, b = 0 (rows Y, columns q_s) and 1 (rows Z, columns q_m).  Products with NGM
-and NGM^T cost one product with the 816 x 816 contact matrix mc.
+a, b = 0 (rows Y, columns q_s) and 1 (rows Z, columns q_m).  Products with H
+and H^T cost one product with the 816 x 816 contact matrix mc.
 
 Importing the module loads the data and defines the functions; running it prints
   1. the row sums of mc;
-  2. rho(NGM) by Arnoldi;
+  2. rho(H) by Arnoldi;
   3. rho(F V^-1) from the full 8-state F and V (matrix free, V by sparse LU),
-     which must equal rho(NGM);
+     which must equal rho(H);
   4. the dominant left eigenvector, S part, by age and by state;
   5. -d rho / d chi1 at chi = 0, by age, for the ten HHS region headquarter
      states of Fig. 3A of the paper, with a finite difference check.
@@ -86,7 +86,7 @@ sc = dict(omega=_mod.omega, omega_v=_mod.omega_v, eps1=_eps, eps2=_eps, eps3=_ep
 ma = _mod.a
 C = _mod.C                         # row (i,j), column (p,q)
 mc = C.reshape(m, n, m, n)
-# irreducibility of C (and of A_1, which has the same pattern): one strongly connected component;
+# irreducibility of C (and of H_1, which has the same pattern): one strongly connected component;
 # the fixed point steps use spg if it fails (C > 0 here)
 from scipy.sparse.csgraph import connected_components as _scc
 IRREDUCIBLE = _scc(sps.csr_matrix(C), directed=True, connection="strong")[0] == 1
@@ -117,7 +117,7 @@ def yz(chi1, chi2, chi3):
 
 
 def h_operator(Y, Z, qs, qm):
-    """NGM and NGM^T as a LinearOperator on vectors indexed (i, j, a), size 2 m n."""
+    """H and H^T as a LinearOperator on vectors indexed (i, j, a), size 2 m n."""
     Om = np.stack([Y, Z], axis=-1).reshape(m * n, 2)
     Qd = np.stack([np.broadcast_to(qs, (m, n)), np.broadcast_to(qm, (m, n))], axis=-1).reshape(m * n, 2)
     Qd = Qd * np.tile(psiI, m)[:, None]
@@ -195,7 +195,7 @@ def left_and_gradient(Y, Z, pref):
     """At chi = 0: rho, the S part of the left eigenvector (shares, shape (m, n),
     total 1), the right and left Perron vectors, and d rho / d chi1, shape (m, n).
 
-    d rho / d Omega_k = w_k (A v)_k / <w, v>, with A v = NGM v / Omega computed
+    d rho / d Omega_k = w_k (A v)_k / <w, v>, with A v = H v / Omega computed
     without dividing; at chi = 0, dY/dchi1 = -pref / omega_v and
     dZ/dchi1 = (1 - eps1) pref / omega_v.
     """
@@ -225,18 +225,18 @@ def main():
     Y, Z, pref = yz(zero, zero, zero)
     say("chi = 0: Y in [%.4e, %.4e], max |Z| = %.1e" % (Y.min(), Y.max(), np.abs(Z).max()))
 
-    say("Arnoldi for rho(NGM) ...")
+    say("Arnoldi for rho(H) ...")
     H, Om, Qd = h_operator(Y, Z, Qs, Qm)
     rho, im, v = perron(H)
-    say("rho(NGM) = %.12f   (|imag| = %.1e)" % (rho, im))
-    say("check NGM v = rho v: |NGM v - rho v| / |v| = %.2e"
+    say("rho(H) = %.12f   (|imag| = %.1e)" % (rho, im))
+    say("check H v = rho v: |H v - rho v| / |v| = %.2e"
         % (np.linalg.norm(H @ v - rho * v) / np.linalg.norm(v)))
 
     say("rho(F V^-1), full 8-state system, matrix free ...")
     rho_fv = full_fv(Y, Z, C, np.tile(psiI, m), n, AGE_PRM)
-    say("rho(F V^-1) = %.12f   (rel. diff to rho(NGM): %.3e)" % (rho_fv, (rho_fv - rho) / rho))
+    say("rho(F V^-1) = %.12f   (rel. diff to rho(H): %.3e)" % (rho_fv, (rho_fv - rho) / rho))
 
-    say("Arnoldi for the left eigenvector (NGM^T) and the gradient ...")
+    say("Arnoldi for the left eigenvector (H^T) and the gradient ...")
     _, wS, _, w, grad = left_and_gradient(Y, Z, pref)
     say("min component of w = %.3e" % w.min())
     say("left eigenvector, S part, share by age (sum over 51 locations; total 1):")

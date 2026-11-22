@@ -31,7 +31,7 @@ Mock rules (all made up, chosen only to look plausible):
                   5-9:               cov 0.30, w = 47
                   0-4:               cov 0.10, w = 79;
           after these 12 weeks, 0.002 N_ij first doses per week until the end, so that every
-          location has first doses in every week (hence a group with Delta_p > 0, Section 6.3
+          location has first doses in every week (hence a group with Delta_p > 0, Section 5.3
           of notes/stratified_seir_ngm.tex);
   dose 2: 0.9 times dose 1 of four weeks earlier;
   dose 3: 0.5 times the total of dose 2 of age group j, spread evenly over 20 weeks from

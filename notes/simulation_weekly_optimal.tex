@@ -44,7 +44,7 @@ order 8 (\texttt{DOP853}) from $t=251$ (7 September 2020), the initial time of G
 (\RunTendDate).
 
 Each week the doses of each location are allocated among its age groups so as to minimize
-the spectral radius $\rho=\rho(\mathrm{NGM})$ of the next generation matrix NGM, with at most
+the spectral radius $\rho=\rho(H)$ of the next generation matrix $H$, with at most
 $99\%$ of a group vaccinated in a week. The minimization starts from the uniform allocation,
 from the rates of the eigenvector strategy, and from the rates of the eigenvector run in
 the same week, and keeps the smallest $\rho$; hence $\rho$ never exceeds that of the
@@ -85,7 +85,7 @@ strategies differ only in how they allocate these doses among the age groups
 \begin{itemize}
 \item \emph{optimal}: the rates that minimize $\rho$;
 \item \emph{eigenvector}: the alternative strategy of Feng, Day and Glasser (2026,
-Section~2.2), doses in proportion to the left eigenvector of NGM at the start of the week,
+Section~2.2), doses in proportion to the left eigenvector of $H$ at the start of the week,
 computed with the rates of the previous week, with the choices (C1)--(C4) described in
 \texttt{DATA.pdf}, Section~2.3.
 \end{itemize}

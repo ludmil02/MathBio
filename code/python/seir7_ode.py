@@ -528,14 +528,14 @@ def doses_by_age(mod, chi, sig, elig):
 def eigenvector_rates(mod, A, tau, X, Dw, chi_prev):
     """The rates of the week at tau by the eigenvector strategy, notes/DATA.tex, Section 2.3,
     with the doses b_{k,i} of optimal_rates: the doses sigma chi of location i in proportion to
-    the weights (5), from the left Perron vector u of A_1 diag(g) at tau with the rates
+    the weights (5), from the left Perron vector u of H_1 diag(g) at tau with the rates
     chi_prev of the previous week (choices C1-C4), then cap_rates. Returns chi (3 x m x n) and a
     summary."""
     sig, elig, b = week_problem(mod, A, tau, X, Dw)
     tic = time.time()
     g = A.g_of(*[np.asarray(c, float).ravel() for c in chi_prev])[0]
     _, _, u = A.perron(g)
-    w1 = u / g                                     # (5): rows 2p-1 of the left vector of NGM
+    w1 = u / g                                     # (5): rows 2p-1 of the left vector of H
     wts = [w1, A.r * w1, A.r * w1]                 # rows 2p: doses 2 and 3 (to V and P)
     chi = []
     for k in range(3):

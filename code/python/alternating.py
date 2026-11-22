@@ -1,19 +1,19 @@
 """The alternating method of notes/stratified_seir_ngm.tex for three doses, 51 x 16 model.
 
-Problem (1.1) of the notes: minimize rho(NGM) over the vaccination rates chi_1, chi_2,
+Problem (1.2) of the notes: minimize rho(H) over the vaccination rates chi_1, chi_2,
 chi_3 (first, second, third dose; per day), subject to
 
     sum_{p in I_i} sigma_{k,p} chi_{k,p} = b_{k,i},   chi_{k,p} >= 0,
 
-for every dose k and location i.  rho(NGM) = rho(A_1 diag(g)) (Theorem 2.1), A_1 of
-order N = 816 independent of chi, g_p a function of chi_{1,p}, chi_{2,p}, chi_{3,p}.
+for every dose k and location i.  rho(H) = rho(H_1 diag(g)) (Theorem 2.1), H_1 of
+order n = 816 independent of chi, g_p a function of chi_{1,p}, chi_{2,p}, chi_{3,p}.
 
-The method (Section 6): sweeps over chi_1, chi_3, chi_2, each step minimizing rho over one
-dose with the other two fixed, by the damped fixed point iteration of Section 5.2
+The method (Section 5): sweeps over chi_1, chi_3, chi_2, each step minimizing rho over one
+dose with the other two fixed, by the damped fixed point iteration of Section 4.3
 (t_block, damping THETA = 1/2):
-  chi_1 (Section 6.1): g = (1 - e) + e / t;
-  chi_3 (Section 6.2): g = g0 / t, over the groups with chi_1 > 0 and chi_2 > 0;
-  chi_2 (Section 6.3): g = g0 ((1 - e) + e / t), over the groups with Delta_p > 0.
+  chi_1 (Section 5.1): g = (1 - e) + e / t;
+  chi_3 (Section 5.2): g = g0 / t, over the groups with chi_1 > 0 and chi_2 > 0;
+  chi_2 (Section 5.3): g = g0 ((1 - e) + e / t), over the groups with Delta_p > 0.
 A step is done by spectral projected gradient instead (block_spg) if C is not
 irreducible, if (chi_2) a location has no group with Delta_p > 0, or if the fixed point
 iteration does not converge (fp_step).  The sweeps stop when rho changes by less than
@@ -31,7 +31,7 @@ import numpy as np
 import scipy.sparse.linalg as spsl
 
 T0 = time.time()
-THETA = 0.5          # damping of the fixed point iteration (Section 5.2); 1 = undamped
+THETA = 0.5          # damping of the fixed point iteration (Section 4.3); 1 = undamped
 # wall time (s), iterations and steps of the dose-k steps of alternate (k = 0, 1, 2), added up
 # from the last reset_stats()
 STATS = {"time": [0.0, 0.0, 0.0], "iters": [0, 0, 0], "steps": [0, 0, 0]}
@@ -68,7 +68,7 @@ def _elig(k):
     return np.ones(N, bool) if ELIG is None else ELIG[k]
 
 
-CHI_CAP = None       # None, or the bound chi_{k,p} <= CHI_CAP added to the constraints of (1.1)
+CHI_CAP = None       # None, or the bound chi_{k,p} <= CHI_CAP added to the constraints of (1.2)
 
 
 def set_cap(cap):
@@ -80,7 +80,7 @@ def set_cap(cap):
 
 def solve_mu_capped(h, st, bi, tmax, iters=200):
     """mu with sum_p st_p (t_p(mu) - 1) = bi, t_p(mu) = min(tmax_p, max(1, sqrt(h_p / (mu st_p)))):
-    the frozen step of Lemma 5.1 with the bound t_p <= tmax_p (the separable convex problem
+    the frozen step of Lemma 4.4 with the bound t_p <= tmax_p (the separable convex problem
     with box constraints). F(mu) = sum st (t - 1) - bi is nonincreasing in mu; bisection in
     log mu between a mu with all t_p = tmax_p (F >= 0, feasibility) and one with all t_p = 1."""
     hp = np.maximum(h, 0.0)
@@ -130,12 +130,12 @@ def say(*args):
 
 # ----------------------------------------------------------------------------- the model
 def pis(chi1, chi2, chi3):
-    """pi_1, pi_2, pi_3 of (1.2)."""
+    """pi_1, pi_2, pi_3 of (1.3)."""
     return chi1 / (omv + e2 * chi2), e2 * chi2 / om, 1.0 + e3 * chi3 / om
 
 
 def g_of(chi1, chi2, chi3):
-    """g = N / D of (2.4); returns g, N, D."""
+    """g = N / D of (2.3); returns g, N, D."""
     p1, p2, p3 = pis(chi1, chi2, chi3)
     num = 1.0 + r * p1 * (1.0 - e1 + p2)
     den = 1.0 + p1 * (1.0 + p2 + p2 * p3)
@@ -143,7 +143,7 @@ def g_of(chi1, chi2, chi3):
 
 
 def _arpack_report(err, side, g, op, mv, rmv):
-    """Print what is needed to diagnose a failed eigs in perron: the data of A1 diag(g), its
+    """Print what is needed to diagnose a failed eigs in perron: the data of H1 diag(g), its
     zero rows and columns, the partial Ritz values, the 6 largest moduli and a power-iteration
     estimate of rho. Only matrix-vector products; nothing is written to disk."""
     def stats(name, x):
@@ -157,7 +157,7 @@ def _arpack_report(err, side, g, op, mv, rmv):
     for name, x in (("g", g), ("dc", dc), ("psq", psq), ("psq g", psq * g)):
         stats(name, x)
     one = np.ones(N)
-    rows, cols = mv(one), rmv(one)      # row and column sums of A1 diag(g) (nonnegative entries)
+    rows, cols = mv(one), rmv(one)      # row and column sums of H1 diag(g) (nonnegative entries)
     stats("rows", rows)
     stats("cols", cols)
     zr, zc = np.flatnonzero(rows == 0), np.flatnonzero(cols == 0)
@@ -195,7 +195,7 @@ def _arpack_report(err, side, g, op, mv, rmv):
 
 
 def perron(g):
-    """rho, v, w of A1 diag(g), A1 = diag(dc) C diag(psq), by Arnoldi."""
+    """rho, v, w of H1 diag(g), H1 = diag(dc) C diag(psq), by Arnoldi."""
     mv = lambda x: dc * (C @ (psq * g * x))
     rmv = lambda x: g * psq * (C.T @ (dc * x))
     op = spsl.LinearOperator((N, N), matvec=mv, rmatvec=rmv, dtype=float)
@@ -217,7 +217,7 @@ def rho_of(chi):
 
 
 def drho_dg(g):
-    """rho and d rho / d g_p = (A1^T w)_p v_p / w^T v, (3.3)."""
+    """rho and d rho / d g_p = (H1^T w)_p v_p / w^T v, (3.2)."""
     rho, v, w = perron(g)
     return rho, (psq * (C.T @ (dc * w))) * v / float(w @ v)
 
@@ -238,7 +238,7 @@ def dg_all(chi):
 
 # ----------------------------------------------------------------------------- one step
 def solve_mu(h, sg, bi):
-    """(5.7): the solution mu of sum_p sg_p max(1, sqrt(h_p / (mu sg_p))) = c_i,
+    """(4.7): the solution mu of sum_p sg_p max(1, sqrt(h_p / (mu sg_p))) = c_i,
     c_i = bi + sum_p sg_p, written with the tail sums c_i - C_j = bi + sum_{l > j} sg_(l)
     so that groups with very large sg_p (very small slope) cause no cancellation."""
     beta = h / sg
@@ -255,7 +255,7 @@ def solve_mu(h, sg, bi):
 
 
 def chi2_form(chi):
-    """Section 6.3: g_p = (kappa + kappa' chi2) / (lambda + lambda' chi2),
+    """Section 5.3: g_p = (kappa + kappa' chi2) / (lambda + lambda' chi2),
     Delta_p = kappa lambda' - kappa' lambda; for Delta_p > 0,
     g_p = g0_p ((1 - e_p) + e_p / t_p), t_p = 1 + (lambda' / lambda) chi2.
     Returns Delta, g0, e, slope = lambda' / lambda."""
@@ -271,25 +271,25 @@ def chi2_form(chi):
 def t_block(chi, k, b, sig, tol=1e-12, kmax=300, theta=None, out=None):
     """Minimize rho over chi_k (k = 0, 1, 2 for the first, second, third dose), the other
     doses fixed, by the damped fixed point iteration t <- t + theta (t(mu) - t) of Section
-    5.2 (Lemma 5.1, (5.7)), in the one dose form of Sections 6.1-6.3 (g_p affine in 1 / t_p,
+    4.3 (Lemma 4.4, (4.7)), in the one dose form of Sections 5.1-5.3 (g_p affine in 1 / t_p,
     t_p = 1 + slope_p chi_{k,p}; the groups with slope_p = 0 get no doses of type k).
     Stops when |t(mu) - t| / |t| < tol.  Returns the new chi and the number of iterations;
     out["converged"] tells whether the tolerance was reached."""
     theta = THETA if theta is None else theta
     chi = [c.copy() for c in chi]
     c1, c2, c3 = chi
-    if k == 0:                                                # Section 6.1
+    if k == 0:                                                # Section 5.1
         p2 = e2 * c2 / om
         omp = omv + e2 * c2
         alpha = 1.0 + 2.0 * e2 * c2 / om + e2 * e3 * c2 * c3 / om**2
         slope = alpha / omp
         e = 1.0 - r / alpha * (1.0 - e1 + p2)
         coef = lambda gd: e * gd                              # h_p = e_p (d rho / d g)_p
-    elif k == 1:                                              # Section 6.3
+    elif k == 1:                                              # Section 5.3
         Delta, g0, e, slope = chi2_form(chi)
         slope = np.where(Delta > 0, slope, 0.0)
         coef = lambda gd: g0 * e * gd
-    else:                                                     # Section 6.2
+    else:                                                     # Section 5.2
         p1, p2, _ = pis(c1, c2, np.zeros(N))
         D0 = 1.0 + p1 * (1.0 + 2.0 * p2)
         slope = e3 * p1 * p2 / (om * D0)
@@ -492,7 +492,7 @@ def alternate(chi, b, sig, sweeps=200, tol=1e-11, label=""):
 def starts(b, sig, nrand, seed, rescale=()):
     """The starts, all satisfying the constraints: "uniform" (the same rate for all groups
     of a location), "left ev" (doses in proportion to the susceptible rows of the dominant
-    left eigenvector of NGM at the uniform allocation), nrand random allocations
+    left eigenvector of H at the uniform allocation), nrand random allocations
     (doses split at random among the groups of each location), then the rates of rescale, a
     list of (name, chi), chi 3 x N rates found at another state: the doses b_{k,i} of location
     i in proportion to sigma_{k,p} chi_{k,p} over its eligible groups (uniform in a location
@@ -503,7 +503,7 @@ def starts(b, sig, nrand, seed, rescale=()):
         return np.where(e, b[k][i] / s if s > 0 else 0.0, 0.0)
 
     uni = [np.concatenate([_uniform(k, i, I) for i, I in enumerate(LOC)]) for k in range(3)]
-    wS = np.abs(perron(g_of(*uni)[0])[2])   # left Perron vector of A_1 diag(g) at the uniform allocation
+    wS = np.abs(perron(g_of(*uni)[0])[2])   # left Perron vector of H_1 diag(g) at the uniform allocation
     def _share(k, i, I, wt):          # doses b_{k,i} in proportion to wt over the eligible groups
         wt = np.where(_elig(k)[I], wt, 0.0)
         return b[k][i] * wt / wt.sum() / sig[k][I] if wt.sum() > 0 else np.zeros(I.size)
@@ -540,7 +540,7 @@ def starts(b, sig, nrand, seed, rescale=()):
 
 
 def kkt_table(chi, b, sig, thr=1e-9):
-    """The KKT conditions (4.1): for each dose k and location i, h_p = -(d rho / d chi_{k,p})
+    """The KKT conditions (A.1): for each dose k and location i, h_p = -(d rho / d chi_{k,p})
     / sigma_{k,p} and mu the mean of h over the groups with u_p = sigma_{k,p} chi_{k,p} / b_{k,i}
     > thr.  Returns, per dose, the largest over i of: the spread max |h_p / mu - 1| over those
     groups (0 at a KKT point), the ratio max h_p / mu over the other groups (at most 1),

@@ -73,7 +73,7 @@ def main(resdir):
 
     fig, a = plt.subplots(figsize=size, constrained_layout=True)
     lines(a, {s: r for s, (w, r) in runs.items()}, lambda y: y.rho_applied,
-          "Spectral radius ρ(NGM)", one=True)
+          "Spectral radius ρ(H)", one=True)
     save(fig, outdir, "fig_compare_rho.png")
 
     for name, f, title in [

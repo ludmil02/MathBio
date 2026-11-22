@@ -211,7 +211,7 @@ given for locations alone.
 \src{build_C_51x16.py} (\fref{f-C}), and \src{seir7_ode.py} loads it.
 Its entries are in $[1.5\cdot10^{-23},\,0.34]$, every row adds up to $1$ (to
 $3\cdot10^{-15}$), and $C\bm x$ agrees with its computation without forming $C$
-(appendix of \src{stratified_seir_ngm.tex}) to $2\cdot10^{-15}$.
+(Appendix~B of \src{stratified_seir_ngm.tex}) to $2\cdot10^{-15}$.
 The rank and the nonzero entries of $C$, and of $C$ after dropping its entries below a
 threshold ($\epsilon=2^{-52}$; the rank is the number of singular values, computed by the
 SVD, larger than $816\,\epsilon\,\sigma_{\max}$):
@@ -445,7 +445,7 @@ with $\sigma_1=S$, $\sigma_2=V$, $\sigma_3=P$, only the groups with
 $\sigma_{k,ij}\ge1$ (at least one eligible person) receiving dose $k$, and the bound
 $0\le\chi_{k,ij}\le\chi_{\max}=-\frac17\ln(0.01)\approx0.658$ per day (at most $99\%$
 of a group in a week) as a constraint of the minimization
-(\src{stratified_seir_ngm.tex}, problem (1.1), Section~7 and its Section~7.1);
+(\src{stratified_seir_ngm.tex}, problem (1.2), Section~6 and its Section~6.1);
 \item solve~\eqref{ode} on $[\tau,\tau+7]$ with these rates, which gives the state
 at $\tau+7$;
 \item advance to the next week, $\tau\leftarrow\tau+7$.
@@ -480,7 +480,7 @@ $t=t_{\mathrm{vacc}}$ and the same doses $b_{k,i}$ per day of each location, dos
 (Section~\ref{sec-comp}).
 
 \paragraph{The rates.} With the notation of \src{stratified_seir_ngm.tex}, Sections~1--2,
-let $\bm u>0$ be the left Perron vector of $A_1\operatorname{diag}(\bm g)$ and
+let $\bm u>0$ be the left Perron vector of $H_1\operatorname{diag}(\bm g)$ and
 $J_{k,i}=\{p\in I_i:\ \sigma_{k,p}\ge1\}$ the eligible groups of location $i$ for dose
 $k$. The weights are
 \begin{equation}\label{w-ev}
@@ -493,7 +493,7 @@ p\in J_{k,i},\qquad\chi_{k,p}=0,\quad p\in I_i\setminus J_{k,i},
 \end{equation}
 followed by the bound $\chi_{k,p}\le\chi_{\max}$ as in (C4) below. By Lemma~\ref{lem-ev},
 $\rho\,w_{1,p}$ and $\rho\,w_{2,p}$ are the entries $2p-1$ and $2p$ of the left Perron vector
-of $\operatorname{NGM}$, the matrix $\mathbf H$ of~\cite[Appendix~A]{2026Feng_Day_Glasser},
+of the next generation matrix $H$, the matrix defined in~\cite[Appendix~A]{2026Feng_Day_Glasser},
 whose rows $2p-1$ and $2p$ are the infections of group $p$ that start in $S$ (through $E_s$)
 and in $V$ or $P$ (through $E_p$).
 
@@ -509,29 +509,29 @@ strategies give the same doses per day. The conversion $\chi=-\frac17\ln(1-\nu)$
 the actual strategy (Remark~\ref{rem-actual}) is not used.
 \item The bound: a rate above $\chi_{\max}$ is lowered to $\chi_{\max}$, and the doses above
 it go to the other eligible groups of the location below it, in proportion to their doses
-(\src{stratified_seir_ngm.tex}, Lemma~7.5: this ends with all rates $\le\chi_{\max}$ and
+(\src{stratified_seir_ngm.tex}, Lemma~6.5: this ends with all rates $\le\chi_{\max}$ and
 the same doses).
 \end{enumerate}
 
 \begin{lemma}\label{lem-ev}
 Let $C>0$, $\bm d_c,\bm\psi_I,\bm q_s,\bm g>0$, $r_p=q_{m,p}/q_{s,p}$, and let $\bm u>0$ be
-the left Perron vector of $A_1\operatorname{diag}(\bm g)$, with eigenvalue $\rho$. With
-$\operatorname{NGM}=X_1X_2$, $X_1=\operatorname{diag}(\bm d)\mathscr P$,
-$X_2=\operatorname{diag}(\bm d_c)C\mathscr P^T\Psi_IQ$ (\src{stratified_seir_ngm.tex},
-Theorem~2.1), $\bm w^T=\bm u^TX_2$ is a left Perron vector of $\operatorname{NGM}$, and
-$w_{2p-1}=\rho\,u_p/g_p$, $w_{2p}=r_pw_{2p-1}$, $p=1:N$.
+the left Perron vector of $H_1\operatorname{diag}(\bm g)$, with eigenvalue $\rho$. With
+$H=X_1X_2$, $X_1=\operatorname{diag}(\bm d)\mathcal{I}$,
+$X_2=\operatorname{diag}(\bm d_c)C\mathcal{I}^T\Psi_IQ$ (\src{stratified_seir_ngm.tex},
+Theorem~2.1), $\bm w^T=\bm u^TX_2$ is a left Perron vector of $H$, and
+$w_{2p-1}=\rho\,u_p/g_p$, $w_{2p}=r_pw_{2p-1}$, $p=1:mn$.
 \end{lemma}
 \begin{proof}
-$A_1=\operatorname{diag}(\bm d_c)C\operatorname{diag}(\bm\psi_I\odot\bm q_s)>0$, so
-$A_1\operatorname{diag}(\bm g)>0$ is irreducible and, by the Perron--Frobenius theorem,
+$H_1=\operatorname{diag}(\bm d_c)C\operatorname{diag}(\bm\psi_I\odot\bm q_s)>0$, so
+$H_1\operatorname{diag}(\bm g)>0$ is irreducible and, by the Perron--Frobenius theorem,
 $\rho>0$ is a simple eigenvalue with a left eigenvector $\bm u>0$. Since
-$X_2X_1=A_1\operatorname{diag}(\bm g)$, $\bm w^T\operatorname{NGM}=\bm u^TX_2X_1X_2=\rho\bm u^TX_2
+$X_2X_1=H_1\operatorname{diag}(\bm g)$, $\bm w^TH=\bm u^TX_2X_1X_2=\rho\bm u^TX_2
 =\rho\bm w^T$, and $\bm w\ne0$ since $\bm w^TX_1=\rho\bm u^T\ne0$. Entry $2p-1$ of
-$\bm u^T\operatorname{diag}(\bm d_c)C\mathscr P^T\Psi_IQ$ is
-$\left(C^T\operatorname{diag}(\bm d_c)\bm u\right)_p\psi_{I,p}q_{s,p}=(A_1^T\bm u)_p$, and entry
+$\bm u^T\operatorname{diag}(\bm d_c)C\mathcal{I}^T\Psi_IQ$ is
+$\left(C^T\operatorname{diag}(\bm d_c)\bm u\right)_p\psi_{I,p}q_{s,p}=(H_1^T\bm u)_p$, and entry
 $2p$ is the same with $q_{m,p}=r_pq_{s,p}$ in place of $q_{s,p}$. From
-$\bm u^TA_1\operatorname{diag}(\bm g)=\rho\bm u^T$, $(A_1^T\bm u)_pg_p=\rho u_p$. So $\bm w>0$,
-and it is the left Perron vector of $\operatorname{NGM}\ge0$: a nonnegative matrix has, up
+$\bm u^TH_1\operatorname{diag}(\bm g)=\rho\bm u^T$, $(H_1^T\bm u)_pg_p=\rho u_p$. So $\bm w>0$,
+and it is the left Perron vector of $H\ge0$: a nonnegative matrix has, up
 to a factor, no other positive left eigenvector.
 \end{proof}
 

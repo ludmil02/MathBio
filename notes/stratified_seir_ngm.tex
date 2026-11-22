@@ -40,141 +40,145 @@ RunEpsFirstTo,RunDeltaBoundLo,RunDeltaBoundHi,RunDeltaLast,RunDeltaText\do{%
 \begin{abstract}
 We consider the next generation matrix (NGM) of the model in~\cite{2026Feng_Day_Glasser}
 and propose an algorithm that minimizes its spectral radius over the vaccination rates.
-
-% {\color{red} We need, for each week, the doses $b_{k,i}$ of type $k=1,2,3$
-% available at location $i$: for the $51\times16$ model, $i=1:51$, and for the
-% $4\times4$ example, $i=1:4$. No breakdown by age is needed.}
 \end{abstract}
 
 \section{Formulation of the problem}\label{sec-formulation}
-
-There are $m$ locations and $n$ age groups. We set $N=mn$, identify the pair $(i,j)$
-with $p=(i-1)n+j$, and let $I_i=\{(i-1)n+1,\ldots,in\}$ be the groups of location $i$.
-The optimal vaccination rates $\chi_{k,p}\ge 0$, $k=1,2,3$, solve
+We consider the age- and location-structured model of the transmission and control
+of SARS-CoV-2 in~\cite{2026Feng_Day_Glasser}.
+The population groups are combinations of locations and
+ages: each of the $n_l$ locations is divided into $n_a$ age classes, so there are
+$n=n_ln_a$ groups. We identify age class $j$ at location $i$ with the group
+$p$ and denote by $I_i$ the set of groups at location $i$, namely,
+\begin{equation}\label{group-index}
+p=(i-1)n_a+j,\qquad I_i=\{(i-1)n_a+1,\ldots,in_a\}.
+\end{equation}
+Members of group $p$ are vaccinated at three rates: $\chi_{1,p}$, the rate at which
+susceptible people receive one dose; $\chi_{2,p}$, the rate at which they receive a
+second dose; and $\chi_{3,p}$, the rate at which people whose immunity has waned are
+revaccinated. Given the vaccine available at each location, we seek the vaccination
+rates $\chi_{k,p}\ge 0$ that minimize the effective reproduction number of the
+population, defined as the spectral radius of the so-called next generation matrix
+$H$:
 \begin{equation}\label{problem}
-\min\ \rho\left(\operatorname{NGM}(\bm\chi)\right)\quad\mbox{subject to}\quad
-\sum_{p\in I_i}\sigma_{k,p}\chi_{k,p}=b_{k,i},\quad \chi_{k,p}\ge 0,\quad k=1,2,3,\ i=1:m.
+\min\ \rho\left(H(\bm\chi)\right)\quad\mbox{subject to}\quad
+\sum_{p\in I_i}\sigma_{k,p}\chi_{k,p}=b_{k,i},\quad \chi_{k,p}\ge 0,\quad k=1,2,3,\ i=1:n_l.
 \end{equation}
 Here, $b_{k,i}\ge 0$ are the available doses of type $k$ at location $i$ and
-$\sigma_{k,p}>0$ the sizes of the groups that receive them. The parameters are as
-in~\cite{2026Feng_Day_Glasser}. At the disease free
+$\sigma_{k,p}>0$ the sizes of the groups that receive them. The parameters are close
+to those given in~\cite{2026Feng_Day_Glasser}. At the disease free
 equilibrium~\cite[Appendix~A]{2026Feng_Day_Glasser},
-$S_p/N_p=\widetilde s_p$, $V_p/N_p=\pi_{1,p}\widetilde s_p$ and
-$P_p/N_p=\pi_{2,p}\pi_{1,p}\widetilde s_p$, where
+$S_p/N_p=y_p$, $V_p/N_p=\pi_{1,p}y_p$ and
+$P_p/N_p=\pi_{2,p}\pi_{1,p}y_p$, where
 \begin{equation}\label{pis}
 \begin{aligned}
 &\pi_{1,p}=\frac{\chi_{1,p}}{\omega_v+\varepsilon_2\chi_{2,p}},\qquad
 \pi_{2,p}=\frac{\varepsilon_2\chi_{2,p}}{\omega},\qquad
 \pi_{3,p}=1+\frac{\varepsilon_3\chi_{3,p}}{\omega},\\
-&\widetilde s_p=\left(1+\pi_{1,p}\left(1+\pi_{2,p}+\pi_{2,p}\pi_{3,p}\right)\right)^{-1}.
+&y_p=\left(1+\pi_{1,p}\left(1+\pi_{2,p}+\pi_{2,p}\pi_{3,p}\right)\right)^{-1}.
 \end{aligned}
 \end{equation}
-Let $d_{c,p}=\psi_{S,p}a_p\beta_p>0$; $\psi_{I,p}>0$ and the contact matrix
-$C=(c_{pl})\ge 0$ are as in~\cite[Section~2.1]{2026Feng_Day_Glasser}. With
+Following~\cite[Section~2.1 and Appendix A]{2026Feng_Day_Glasser} let $d_{c,p}=\psi_{S,p}a_p\beta_p>0$; $\psi_{I,p}>0$ and denote the contact matrix $C=(c_{pl})\ge 0$. Then
 \begin{equation}\label{yz}
-y_p=\widetilde s_p,\qquad z_p=\left(1-\varepsilon_1+\pi_{2,p}\right)\pi_{1,p}\widetilde s_p,
+z_p=\left(1-\varepsilon_1+\pi_{2,p}\right)\pi_{1,p}y_p,
 \end{equation}
-$d_{c,p}y_p$ and $d_{c,p}z_p$ are $Y_p$ and $Z_p$
-in~\cite[Appendix~A]{2026Feng_Day_Glasser}; we set $\bm d\in\mathbb{R}^{2N}$,
-$d_{2p-1}=y_p$, $d_{2p}=z_p$. The weights $q_{s,p}>0$ and $q_{m,p}>0$ are
-$Q_{ps}$ and $Q_{pm}$ in~\cite[Appendix~A]{2026Feng_Day_Glasser}.
+and we set $\bm d=(y_1,z_1,\ldots,y_n,z_n)^T\in\mathbb{R}^{2n}$.
 
-Let $\mathscr{P}=\sum_{p=1}^N\left(\bm e_{2p-1}+\bm e_{2p}\right)\bm e_p^T\in\mathbb{R}^{2N\times N}$,
-so that $\mathscr{P}\bm a$ repeats each entry of $\bm a$ twice. A diagonal
-$X\in\mathbb{R}^{2N\times 2N}$ is the doubled matrix of $\bm a\in\mathbb{R}^N$ if
-$x_{2p-1}=x_{2p}=a_p$; then $X\mathscr{P}=\mathscr{P}\operatorname{diag}(\bm a)$
-and $\mathscr{P}^TX=\operatorname{diag}(\bm a)\mathscr{P}^T$. $D_0$ and
-$\Psi_I$ are the doubled matrices of $\bm d_c$ and $\bm\psi_I$, and
-$Q=\operatorname{diag}\left(q_{s,1},q_{m,1},\ldots,q_{s,N},q_{m,N}\right)$.
-The next generation matrix, the matrix $\mathbf H$
-in~\cite[Appendix~A]{2026Feng_Day_Glasser}, is
-\begin{equation}\label{ngm}
-\operatorname{NGM}=\operatorname{diag}(\bm d)A_c,\qquad
-A_c=D_0\,\mathscr{P}C\mathscr{P}^T\,\Psi_IQ\in\mathbb{R}^{2N\times 2N},
+We consider the matrix $\mathcal{I}$ that doubles the rows of a vector in $\mathbb{R}^n$ and is as follows:
+\begin{equation}\label{dup}
+\mathcal{I}=
+\begin{pmatrix}
+1&0&\cdots&0\\
+1&0&\cdots&0\\
+0&1&\cdots&0\\
+0&1&\cdots&0\\
+\vdots&\vdots&\ddots&\vdots\\
+0&0&\cdots&1\\
+0&0&\cdots&1
+\end{pmatrix}\in\mathbb{R}^{2n\times n},
 \end{equation}
-with $A_c$ independent of $\bm\chi$. 
-% $\rho(\operatorname{NGM})=\rho(FV^{-1})$,
-% where $F-V$ is the linearization at the disease free
-% equilibrium~\cite{2002vdDriessche_Watmough,2026Feng_Day_Glasser}.
+We denote
+$Q=\operatorname{diag}\left(q_{s,1},q_{m,1},\ldots,q_{s,n},q_{m,n}\right)$. 
+% Recall that~\cite{2026Feng_Day_Glasser}
+% the next generation matrix $H$ is defined as  $H=FV^{-1}$, where $(F-V)$ is the linearization at the disease free equilibrium.
+In this notation, the next generation matrix $H$ can be written as
+\begin{equation}\label{ngm}
+\begin{aligned}
+&H=\operatorname{diag}(\bm d)H_c,\qquad
+H_c=D_0\,\mathcal{I}C\mathcal{I}^T\,\Psi_IQ\in\mathbb{R}^{2n\times 2n},\\
+&D_0=\operatorname{diag}\left(\mathcal{I}\bm d_c\right),\qquad
+\Psi_I=\operatorname{diag}\left(\mathcal{I}\bm\psi_I\right),\qquad
+\bm d_c=\left(d_{c,p}\right)_{p=1}^n,\quad
+\bm\psi_I=\left(\psi_{I,p}\right)_{p=1}^n.
+\end{aligned}
+\end{equation}
+Note that $H_c\in\mathbb{R}^{2n\times 2n}$ is a matrix independent of $\bm\chi$. 
 
 \section{An equivalent reduced problem on a product of simplices}\label{sec-reduced}
 
 The feasible set of~\eqref{problem} is the product, over $k=1,2,3$ and
-$i=1:m$, of the simplices
+$i=1:n_l$, of the simplices
 \begin{equation}\label{simplices}
 \mathfrak{s}_{k,i}=\left\{(\chi_{k,p})_{p\in I_i}:\ \sum_{p\in I_i}\sigma_{k,p}\chi_{k,p}=b_{k,i},\
 \chi_{k,p}\ge 0\right\}.
 \end{equation}
-On this product, $\rho(\operatorname{NGM})$ is also the spectral radius of a matrix of
-order $N$.
+On this product, $\rho(H)$ is also the spectral radius of a matrix of
+order $n$.
 
-For any diagonal $X\in\mathbb{R}^{2N\times 2N}$,
-\begin{equation}\label{ptxp}
-\mathscr{P}^TX\mathscr{P}=\operatorname{diag}\left(x_{2p-1}+x_{2p}\right)_{p=1}^N,
-\end{equation}
-since column $p$ of $\mathscr{P}$ is $\bm e_{2p-1}+\bm e_{2p}$. We also use
-that for $X_1\in\mathbb{R}^{k\times l}$, $X_2\in\mathbb{R}^{l\times k}$ the
-products $X_1X_2$ and $X_2X_1$ have the same non-zero eigenvalues: if
-$X_1X_2\bm x=\lambda\bm x$, $\lambda\ne 0$, $\bm x\ne 0$, then
-$X_2X_1(X_2\bm x)=\lambda X_2\bm x$ and $X_2\bm x\ne 0$, since
-$X_1X_2\bm x\ne 0$; the converse is the same argument.
-
-% The rows of $A_c$ are doubled, $A_c=\mathscr{P}\operatorname{diag}(\bm d_c)C\mathscr{P}^T\Psi_IQ$,
+% The rows of $H_c$ are doubled, $H_c=\mathcal{I}\operatorname{diag}(\bm d_c)C\mathcal{I}^T\Psi_IQ$,
 % but its columns are doubled only if $q_{s,p}=q_{m,p}$ for all $p$; the rows
-% of $\operatorname{NGM}$ are not doubled, since they are scaled by $y_p$ and $z_p$.
+% of $H$ are not doubled, since they are scaled by $y_p$ and $z_p$.
 
 Following~\cite{2026Feng_Day_Glasser} we set $r_p=q_{m,p}/q_{s,p}>0$. We assume $r_p\le 1$, which holds for the data
-of Section~\ref{sec-simulation} ($r_p\in[\RunRMin,\RunRMax]$ for the parameter set
-\texttt{\RunParams}); it gives $e_p>0$ in~\eqref{e-new}.
-
-Let
-\begin{equation}\label{a1-g}
-A_1=\operatorname{diag}(\bm d_c)\,C\operatorname{diag}\left(\bm\psi_I\odot\bm q_s\right),
-\qquad g_p=y_p+r_pz_p,\quad p=1:N.
-\end{equation}
-
+of Section~\ref{sec-simulation} ($r_p\in[\RunRMin,\RunRMax]$ for the parameter set used in the
+numerical tests). Next theorem shows that we can reduce the problem to the minimization of the spectral radius of a matrix of order $n$.
 \begin{theorem}\label{reduction}
-$\operatorname{NGM}$ and $A_1\operatorname{diag}(\bm g)$ have the same non-zero
-eigenvalues; in particular
-$\rho\left(\operatorname{NGM}\right)=\rho\left(A_1\operatorname{diag}(\bm g)\right)$.
+If $H_1\in\mathbb{R}^{n\times n}$ and $\bm{g}\in\mathbb{R}^n$ be defined as
+\begin{equation}\label{a1-g}
+H_1=\operatorname{diag}(\bm d_c)\,C\operatorname{diag}\left(\bm\psi_I\odot\bm q_s\right),
+\qquad g_p=y_p+r_pz_p,\quad p=1:n.
+\end{equation}
+Then $H$ and $H_1\operatorname{diag}(\bm g)$ have the same non-zero
+eigenvalues and 
+\(\rho\left(H\right)=\rho\left(H_1\operatorname{diag}(\bm g)\right)\).
 \end{theorem}
 \begin{proof}
-By~\eqref{ngm} and $D_0\mathscr{P}=\mathscr{P}\operatorname{diag}(\bm d_c)$,
-$\operatorname{NGM}=X_1X_2$ with
+We introduce $X_1=\operatorname{diag}(\bm d)\mathcal{I}$ and $X_2=\operatorname{diag}(\bm d_c)C\mathcal{I}^T\Psi_IQ$. Using~\eqref{ngm} and the fact that
+$D_0\mathcal{I}=\mathcal{I}\operatorname{diag}(\bm d_c)$ we obtain
 \begin{equation*}
-X_1=\operatorname{diag}(\bm d)\mathscr{P},\qquad
-X_2=\operatorname{diag}(\bm d_c)C\mathscr{P}^T\Psi_IQ,
+H=X_1X_2,\qquad H_1\operatorname{diag}(\bm g)=X_2X_1.
 \end{equation*}
-and $X_1X_2$ and
+Next, it is easy to see that $X_1X_2$ and $X_2X_1$ have the same non-zero eigenvalues. 
+Indeed, if
+$X_1X_2\bm x=\lambda\bm x$, $\lambda\ne 0$, $\bm x\ne 0$, then
+$X_2X_1(X_2\bm x)=\lambda X_2\bm x$ and $X_2\bm x\ne 0$, since
+$X_1X_2\bm x\ne 0$ which shows that a nonzero eigenvalue of $X_1X_2$ is also an eigenvalue of $X_2X_1$. To show the other direction we can use an analogous argument. 
+
+Finnally, a straightforward computation shows that $q_{s,p}y_p+q_{m,p}z_p=q_{s,p}g_p$, and
 \begin{equation*}
-X_2X_1=\operatorname{diag}(\bm d_c)C\,\mathscr{P}^T\Psi_IQ\operatorname{diag}(\bm d)\mathscr{P}
+\mathcal{I}^T\Psi_IQ\operatorname{diag}(\bm d)\mathcal{I}
+=\operatorname{diag}\left(\psi_{I,p}q_{s,p}g_p\right)_{p=1}^n
+\qquad\mbox{implying that}\qquad X_2X_1=H_1\operatorname{diag}(\bm g).
 \end{equation*}
-have the same non-zero eigenvalues. By~\eqref{ptxp} with
-$X=\Psi_IQ\operatorname{diag}(\bm d)$,
-\begin{equation*}
-x_{2p-1}+x_{2p}=\psi_{I,p}\left(q_{s,p}y_p+q_{m,p}z_p\right)=\psi_{I,p}q_{s,p}g_p,
-\end{equation*}
-so $X_2X_1=A_1\operatorname{diag}(\bm g)$.
 \end{proof}
 
 % \begin{remark}
-% If $q_{s,p}=q_{m,p}$ for all $p$, then $A_c=\mathscr{P}A_1\mathscr{P}^T$,
-% $A_1=\frac14\mathscr{P}^TA_c\mathscr{P}$ and $\bm g=\bm y+\bm z$. Otherwise
-% $\frac14\mathscr{P}^TA_c\mathscr{P}=\operatorname{diag}(\bm d_c)C\operatorname{diag}\left(\bm\psi_I\odot(\bm q_s+\bm q_m)/2\right)$,
-% and with $\bm g=\bm y+\bm z$ it does not give $\rho(\operatorname{NGM})$
+% If $q_{s,p}=q_{m,p}$ for all $p$, then $H_c=\mathcal{I}H_1\mathcal{I}^T$,
+% $H_1=\frac14\mathcal{I}^TH_c\mathcal{I}$ and $\bm g=\bm y+\bm z$. Otherwise
+% $\frac14\mathcal{I}^TH_c\mathcal{I}=\operatorname{diag}(\bm d_c)C\operatorname{diag}\left(\bm\psi_I\odot(\bm q_s+\bm q_m)/2\right)$,
+% and with $\bm g=\bm y+\bm z$ it does not give $\rho(H)$
 % (Table~\ref{tab}).
 % \end{remark}
 
-So~\eqref{problem} is equivalent to the minimization of
-$\rho\left(A_1\operatorname{diag}(\bm g(\bm\chi))\right)$ over the same
-product of the simplices $\mathfrak{s}_{k,i}$, with $A_1\ge 0$ independent of $\bm\chi$. By~\eqref{yz}
-and~\eqref{a1-g},
+As a direct consequence of Theorem~\ref{reduction}, we see that~\eqref{problem} is
+equivalent to the minimization of
+$\rho\left(H_1\operatorname{diag}(\bm g(\bm\chi))\right)$ with $H_1\ge 0$ independent of $\bm\chi$. The relations given
+in~\eqref{yz} and~\eqref{a1-g} then show
 \begin{equation}\label{g-new}
 g_p=\frac{\mathcal{N}_p}{\mathcal{D}_p},\qquad
 \mathcal{N}_p=1+r_p\pi_{1,p}\left(1-\varepsilon_1+\pi_{2,p}\right),\qquad
 \mathcal{D}_p=1+\pi_{1,p}\left(1+\pi_{2,p}+\pi_{2,p}\pi_{3,p}\right).
 \end{equation}
-Since $r_p\le 1$, $\mathcal{N}_p\le\mathcal{D}_p$ and $0<g_p\le 1$.
+Since $r_p\le 1$, we have that $\mathcal{N}_p\le\mathcal{D}_p$ and $0<g_p\le 1$.
 
 % The single weight
 % $q_{0,p}=\eta_ap_j/\gamma_a+\eta_{ps}(1-p_j)/\xi+(1-p_j)/(\gamma_s+\delta_s)$,
@@ -184,13 +188,13 @@ Since $r_p\le 1$, $\mathcal{N}_p\le\mathcal{D}_p$ and $0<g_p\le 1$.
 % \begin{table}[ht]
 % \centering
 % \begin{tabular}{lllll}
-% data, $\bm\chi$ & $\rho(FV^{-1})$ & \eqref{a1-g} & single weight $q_0$ & $\frac14\mathscr{P}^TA_c\mathscr{P}$, $\bm y+\bm z$\\\hline
+% data, $\bm\chi$ & $\rho(FV^{-1})$ & \eqref{a1-g} & single weight $q_0$ & $\frac14\mathcal{I}^TH_c\mathcal{I}$, $\bm y+\bm z$\\\hline
 % $4\times4$, $\bm\chi=0$ & 4.440677536267 & 4.440677536267 & 4.423068109191 & \\
 % $4\times4$, $\bm\chi\ne 0$ & 1.570568657459 & 1.570568657459 & 1.695384975896 & \\
 % $51\times16$, $\bm\chi=0$ & 1.307390501274 & 1.307390501274 & 1.303036594051 & \\
 % $51\times16$, random $\bm\chi$ & 0.492928980848$^*$ & 0.492928980848 & & 0.495754640362
 % \end{tabular}
-% \caption{Spectral radii. ${}^*$computed as $\rho(\operatorname{NGM})$, equal
+% \caption{Spectral radii. ${}^*$computed as $\rho(H)$, equal
 % to $\rho(FV^{-1})$ by Proposition~\ref{fv}. The ratios $r_p$ lie in
 % $[0.732,0.977]$ for $4\times4$ and in $[0.714,0.985]$ for $51\times16$.}\label{tab}
 % \end{table}
@@ -204,14 +208,14 @@ Since $r_p\le 1$, $\mathcal{N}_p\le\mathcal{D}_p$ and $0<g_p\le 1$.
 % $51\times16$, $\bm\chi=0$ & 1.307390501274 & 1.307390501274 & 1.303036594051\\
 % $51\times16$, random $\bm\chi$ & 0.492928980848$^*$ & 0.492928980848 &
 % \end{tabular}
-% \caption{Spectral radii. ${}^*$computed as $\rho(\operatorname{NGM})$, equal
+% \caption{Spectral radii. ${}^*$computed as $\rho(H)$, equal
 % to $\rho(FV^{-1})$ by Proposition~\ref{fv}. The ratios $r_p$ lie in
 % $[0.732,0.977]$ for $4\times4$ and in $[0.714,0.985]$ for $51\times16$.}\label{tab}
 % \end{table}
 
 \section{Computing the gradient}\label{sec-gradient}
 
-Let $A_1$ be irreducible and $G=A_1\operatorname{diag}(\bm g)$. Since $\bm g>0$,
+Let $H_1$ be irreducible and $G=H_1\operatorname{diag}(\bm g)$. Since $\bm g>0$,
 $G\ge 0$ is irreducible, and by the Perron--Frobenius
 theorem~\cite[Theorem~8.4.4]{1985Horn_Johnson} $\rho$ is a simple eigenvalue of $G$ and
 \begin{equation}\label{perron}
@@ -226,7 +230,7 @@ $\dfrac{\partial\rho}{\partial g_p}=\dfrac{\bm w^T\left(\partial G/\partial g_p\
 Let $c(\lambda,\bm g)=\det(\lambda I-G)$, a polynomial in $\lambda$ and $\bm g$.
 Since $\rho$ is a simple root, $\partial_\lambda c(\rho,\bm g)\ne 0$, and by the
 implicit function theorem $\rho$ is a differentiable function of $\bm g$.
-Since $\operatorname{rank}(\rho I-G)=N-1$, $\operatorname{adj}(\rho I-G)\ne 0$
+Since $\operatorname{rank}(\rho I-G)=n-1$, $\operatorname{adj}(\rho I-G)\ne 0$
 and, by $(\rho I-G)\operatorname{adj}(\rho I-G)=c(\rho,\bm g)I=0$, each of its
 non-zero columns is an eigenvector for $\rho$; it is a polynomial in $\rho$ and
 $\bm g$, so locally $\bm v=\bm v(\bm g)$ is differentiable. Differentiating
@@ -239,12 +243,12 @@ and multiplying by $\bm w^T$ on the left, the terms with $\partial\bm v/\partial
 cancel by $\bm w^TG=\rho\bm w^T$. Since $\bm w^T\bm v>0$, the formula follows.
 \end{proof}
 
-Since $\partial G/\partial g_p=A_1\bm e_p\bm e_p^T$,
+Since $\partial G/\partial g_p=H_1\bm e_p\bm e_p^T$,
 \begin{equation}\label{drho-dg}
-\frac{\partial\rho}{\partial g_p}=\frac{\bm w^TA_1\bm e_p\,\bm e_p^T\bm v}{\bm w^T\bm v}
-=\frac{\left(A_1^T\bm w\right)_pv_p}{\bm w^T\bm v},
+\frac{\partial\rho}{\partial g_p}=\frac{\bm w^TH_1\bm e_p\,\bm e_p^T\bm v}{\bm w^T\bm v}
+=\frac{\left(H_1^T\bm w\right)_pv_p}{\bm w^T\bm v},
 \qquad
-\frac{\partial\rho}{\partial\chi_{k,p}}=\frac{\left(A_1^T\bm w\right)_pv_p}{\bm w^T\bm v}\,
+\frac{\partial\rho}{\partial\chi_{k,p}}=\frac{\left(H_1^T\bm w\right)_pv_p}{\bm w^T\bm v}\,
 \frac{\partial g_p}{\partial\chi_{k,p}}.
 \end{equation}
 With
@@ -269,34 +273,6 @@ $\partial\pi_{1,p}/\partial\chi_{2,p}=-\varepsilon_2\pi_{1,p}/\omega_p$,
 $\partial\pi_{2,p}/\partial\chi_{2,p}=\varepsilon_2/\omega$ and the quotient
 rule; the second from the quotient rule.
 
-\section{Optimality conditions for three doses}\label{sec-kkt3}
-
-Let $A_1$ be irreducible. By Section~\ref{sec-gradient}, $\rho$ is a
-differentiable function of $\bm\chi$. The Lagrangian of~\eqref{problem} is
-\begin{equation*}
-\begin{aligned}
-L(\bm\chi,\bm\mu,\bm\nu)&=\rho
-+\sum_{k=1}^3\sum_{i=1}^m\mu_{k,i}\left(\sum_{p\in I_i}\sigma_{k,p}\chi_{k,p}-b_{k,i}\right)
--\sum_{k=1}^3\sum_{p=1}^N\nu_{k,p}\chi_{k,p},\\
-\frac{\partial L}{\partial\chi_{k,p}}&=\frac{\partial\rho}{\partial\chi_{k,p}}
-+\mu_{k,i}\sigma_{k,p}-\nu_{k,p},
-\end{aligned}
-\end{equation*}
-for $p\in I_i$. The constraints are affine, so at a local minimizer the
-Karush--Kuhn--Tucker conditions hold~\cite[Section~3.4]{1999Bertsekas}: there
-are $\mu_{k,i}$ and $\nu_{k,p}$ with, for $k=1,2,3$, $i=1:m$ and $p\in I_i$,
-\begin{equation}\label{kkt3}
-\begin{aligned}
-&\sum_{p\in I_i}\sigma_{k,p}\chi_{k,p}=b_{k,i},\qquad \chi_{k,p}\ge 0,\qquad
-\nu_{k,p}\ge 0,\qquad \nu_{k,p}\chi_{k,p}=0,\\
-&\mu_{k,i}\sigma_{k,p}=\nu_{k,p}-\frac{\partial\rho}{\partial\chi_{k,p}},
-\end{aligned}
-\end{equation}
-with $\partial\rho/\partial\chi_{k,p}$ from~\eqref{drho-dg} and~\eqref{dg}.
-Equivalently, with $h_{k,p}=-\left(\partial\rho/\partial\chi_{k,p}\right)/\sigma_{k,p}$,
-$h_{k,p}=\mu_{k,i}$ where $\chi_{k,p}>0$ and $h_{k,p}\le\mu_{k,i}$ where
-$\chi_{k,p}=0$.
-
 \section{Optimization for a single dose}\label{sec-single}
 
 Let $\bm\chi_2=\bm\theta$, $\bm\chi_3=\bm\zeta$ be fixed. Then $\omega_p$ and
@@ -316,29 +292,30 @@ e_p=1-\frac{r_p}{\alpha_p}\left(1-\varepsilon_1+\frac{\varepsilon_2\theta_p}{\om
 =\frac{1}{\alpha_p}\left((1-r_p)+r_p\varepsilon_1+(2-r_p)\frac{\varepsilon_2\theta_p}{\omega}
 +\frac{\varepsilon_2\varepsilon_3\theta_p\zeta_p}{\omega^2}\right).
 \end{equation}
-Since $\varepsilon_1>0$ and $0<r_p\le 1$, the second form gives $e_p>0$ and the
+Since $\varepsilon_1>0$ and $0<r_p\le 1$ (the assumption made in
+Section~\ref{sec-reduced}), the second form gives $e_p>0$ and the
 first $e_p\le 1$; for $\bm\theta=\bm\zeta=0$, $e_p=1-r_p(1-\varepsilon_1)$.
 The constraints of~\eqref{problem} for $k=1$ become
 $\sum_{p\in I_i}\widetilde\sigma_pt_p=c_i$, $t_p\ge 1$, with
 $\widetilde\sigma_p=\sigma_{1,p}\omega_p/\alpha_p$ and
 $c_i=b_{1,i}+\sum_{p\in I_i}\widetilde\sigma_p$. So the one dose problem is
-the minimization of $\rho\left(A_1\operatorname{diag}\left((\mathbbm 1-\bm e)+\bm e/\bm t\right)\right)$
-over this set, with $A_1\ge 0$ independent of $\bm t$ and $0<e_p\le 1$.
+the minimization of $\rho\left(H_1\operatorname{diag}\left((\mathbbm 1-\bm e)+\bm e/\bm t\right)\right)$
+over this set, with $H_1\ge 0$ independent of $\bm t$ and $0<e_p\le 1$.
 
 \subsection{Optimality conditions}\label{sec-algorithm}
 
-Let $\Psi(\bm t)=\rho\left(A_1\operatorname{diag}(\bm g)\right)$ with
-$g_p=(1-e_p)+e_p/t_p$, and let $A_1\ge 0$ be irreducible. For $\bm t>0$ we
+Let $\Psi(\bm t)=\rho\left(H_1\operatorname{diag}(\bm g)\right)$ with
+$g_p=(1-e_p)+e_p/t_p$, and let $H_1\ge 0$ be irreducible. For $\bm t>0$ we
 have $\bm g>0$, and by~\eqref{drho-dg}
 \begin{equation}\label{a-p}
 \frac{\partial\Psi}{\partial t_p}=-\frac{e_pa_p}{t_p^2},\qquad
-a_p=\frac{\left(A_1^T\bm w\right)_pv_p}{\bm w^T\bm v}>0,
+a_p=\frac{\left(H_1^T\bm w\right)_pv_p}{\bm w^T\bm v}>0,
 \end{equation}
 with $\bm v$, $\bm w$ of~\eqref{perron}. The Lagrangian of the one dose problem is
 \begin{equation*}
 L(\bm t,\bm\mu,\bm\nu)=\Psi(\bm t)
-+\sum_{i=1}^m\mu_i\left(\sum_{p\in I_i}\widetilde\sigma_pt_p-c_i\right)
--\sum_{p=1}^N\nu_p\left(t_p-1\right),
++\sum_{i=1}^{n_l}\mu_i\left(\sum_{p\in I_i}\widetilde\sigma_pt_p-c_i\right)
+-\sum_{p=1}^n\nu_p\left(t_p-1\right),
 \qquad
 \frac{\partial L}{\partial t_p}=-\frac{e_pa_p}{t_p^2}+\mu_i\widetilde\sigma_p-\nu_p,
 \quad p\in I_i .
@@ -356,15 +333,15 @@ Since $e_pa_p>0$ and $\nu_p\ge 0$, every $\mu_i>0$.
 
 \subsection{Uniqueness of the minimizer}\label{sec-unique}
 
-Let $\mathcal{T}=\left\{\bm t:\ \sum_{p\in I_i}\widetilde\sigma_pt_p=c_i,\ i=1:m,\ t_p\ge 1\right\}$
+Let $\mathcal{T}=\left\{\bm t:\ \sum_{p\in I_i}\widetilde\sigma_pt_p=c_i,\ i=1:n_l,\ t_p\ge 1\right\}$
 be the feasible set of the one dose problem.
 
 \begin{lemma}\label{kingman}
 Let $B\ge 0$ be irreducible. Then $F(\bm x)=\log\rho\left(B\operatorname{diag}(e^{\bm x})\right)$,
-with $e^{\bm x}=(e^{x_1},\ldots,e^{x_N})^T$, is convex on $\mathbb{R}^N$.
+with $e^{\bm x}=(e^{x_1},\ldots,e^{x_n})^T$, is convex on $\mathbb{R}^n$.
 \end{lemma}
 \begin{proof}
-For $\bm x,\bm x'\in\mathbb{R}^N$, the $(p,l)$ entry of
+For $\bm x,\bm x'\in\mathbb{R}^n$, the $(p,l)$ entry of
 \begin{equation*}
 B\operatorname{diag}\left(e^{(1-s)\bm x+s\bm x'}\right)
 \end{equation*}
@@ -388,21 +365,21 @@ $\varphi''=\left(\gamma''\gamma-(\gamma')^2\right)/\gamma^2
 \end{proof}
 
 \begin{theorem}\label{thm-unique}
-Let $A_1$ be irreducible and $0<e_p\le 1$, $p=1:N$. Then $\log\Psi$ is strictly
+Let $H_1$ be irreducible and $0<e_p\le 1$, $p=1:n$. Then $\log\Psi$ is strictly
 convex on $\{\bm t>0\}$, $\Psi$ has exactly one minimizer on $\mathcal{T}$, and
 $\bm t\in\mathcal{T}$ is this minimizer if and only if it satisfies~\eqref{kkt}.
 \end{theorem}
 \begin{proof}
-Let $F$ be as in Lemma~\ref{kingman} with $B=A_1$, and
+Let $F$ be as in Lemma~\ref{kingman} with $B=H_1$, and
 \begin{equation*}
-\bm\ell(\bm t)=\left(\varphi_p(t_p)\right)_{p=1}^N,\qquad
+\bm\ell(\bm t)=\left(\varphi_p(t_p)\right)_{p=1}^n,\qquad
 \varphi_p(t)=\log\left((1-e_p)+e_p/t\right),
 \end{equation*}
 so that $\Phi=\log\Psi=F\circ\bm\ell$. By~\eqref{drho-dg} with $\bm g=e^{\bm x}$,
 \begin{equation*}
-\frac{\partial F}{\partial x_p}=\frac{g_p\left(A_1^T\bm w\right)_pv_p}{\rho\,\bm w^T\bm v}>0,
+\frac{\partial F}{\partial x_p}=\frac{g_p\left(H_1^T\bm w\right)_pv_p}{\rho\,\bm w^T\bm v}>0,
 \end{equation*}
-since $\bm v,\bm w>0$ and no column of $A_1$ is zero. Let $\bm t\ne\bm t'$ in
+since $\bm v,\bm w>0$ and no column of $H_1$ is zero. Let $\bm t\ne\bm t'$ in
 $\{\bm t>0\}$, $s\in(0,1)$ and $\bm t_s=(1-s)\bm t+s\bm t'$. By
 Lemma~\ref{log-g}, $\bm\ell(\bm t_s)\le\bm y$ componentwise, where
 $\bm y=(1-s)\bm\ell(\bm t)+s\bm\ell(\bm t')$, with strict inequality where
@@ -523,8 +500,8 @@ With $\bm\chi_2=\bm\theta$ and $\bm\chi_3=\bm\zeta$ fixed, the Lagrangian is
 \begin{equation}\label{lagrangian1}
 \begin{aligned}
 &L_1(\bm\chi_1,\bm\mu_1,\bm\nu_1)=\rho
-+\sum_{i=1}^m\mu_{1,i}\left(\sum_{p\in I_i}\sigma_{1,p}\chi_{1,p}-b_{1,i}\right)
--\sum_{p=1}^N\nu_{1,p}\chi_{1,p},\\
++\sum_{i=1}^{n_l}\mu_{1,i}\left(\sum_{p\in I_i}\sigma_{1,p}\chi_{1,p}-b_{1,i}\right)
+-\sum_{p=1}^n\nu_{1,p}\chi_{1,p},\\
 &\frac{\partial L_1}{\partial\chi_{1,p}}=\frac{\partial\rho}{\partial\chi_{1,p}}
 +\mu_{1,i}\sigma_{1,p}-\nu_{1,p},
 \end{aligned}
@@ -545,8 +522,8 @@ With $\bm\chi_1$ and $\bm\chi_2$ fixed, the Lagrangian is
 \begin{equation}\label{lagrangian3}
 \begin{aligned}
 &L_3(\bm\chi_3,\bm\mu_3,\bm\nu_3)=\rho
-+\sum_{i=1}^m\mu_{3,i}\left(\sum_{p\in I_i}\sigma_{3,p}\chi_{3,p}-b_{3,i}\right)
--\sum_{p=1}^N\nu_{3,p}\chi_{3,p},\\
++\sum_{i=1}^{n_l}\mu_{3,i}\left(\sum_{p\in I_i}\sigma_{3,p}\chi_{3,p}-b_{3,i}\right)
+-\sum_{p=1}^n\nu_{3,p}\chi_{3,p},\\
 &\frac{\partial L_3}{\partial\chi_{3,p}}=\frac{\partial\rho}{\partial\chi_{3,p}}
 +\mu_{3,i}\sigma_{3,p}-\nu_{3,p},
 \end{aligned}
@@ -559,8 +536,8 @@ with $\mathcal{D}_p^0$ the value at $\chi_{3,p}=0$. So
 g_p=\frac{g_p^0}{t_p},\qquad g_p^0=\frac{\mathcal{N}_p}{\mathcal{D}_p^0},\qquad
 t_p=1+s_p\chi_{3,p},\qquad s_p=\frac{\varepsilon_3\pi_{1,p}\pi_{2,p}}{\omega\mathcal{D}_p^0}\ge 0,
 \end{equation*}
-which is the one dose form with $e_p=1$, $A_1$ replaced by
-$A_1\operatorname{diag}(\bm g^0)$, $\widetilde\sigma_p=\sigma_{3,p}/s_p$ and
+which is the one dose form with $e_p=1$, $H_1$ replaced by
+$H_1\operatorname{diag}(\bm g^0)$, $\widetilde\sigma_p=\sigma_{3,p}/s_p$ and
 $c_i=b_{3,i}+\sum_{p\in I_i}\widetilde\sigma_p$, over the groups with $s_p>0$.
 As for $k=1$, a fixed point of the iteration satisfies~\eqref{kkt3} for $k=3$
 on these groups.
@@ -579,7 +556,7 @@ point satisfying~\eqref{kkt3} as well: $h_{3,p}=0$ and $h_{3,q}>0$, so
 $\mu_{3,i}\ge h_{3,q}>0$, and $\chi_{3,p}>0$ would give $\mu_{3,i}=h_{3,p}=0$;
 \eqref{kkt3} holds there with $\nu_{3,p}=\mu_{3,i}\sigma_{3,p}$. On the groups
 with $\chi_{1,p}>0$ and $\chi_{2,p}>0$ the step is the one dose problem with
-$e_p=1$ and $A_1\operatorname{diag}(\bm g^0)$, which is irreducible since
+$e_p=1$ and $H_1\operatorname{diag}(\bm g^0)$, which is irreducible since
 $\bm g^0>0$. So, if every location contains such a group, by
 Theorem~\ref{thm-unique} the step has exactly one minimizer, the only point
 satisfying~\eqref{kkt3} for $k=3$.
@@ -589,8 +566,8 @@ With $\bm\chi_1$ and $\bm\chi_3$ fixed, the Lagrangian is
 \begin{equation}\label{lagrangian2}
 \begin{aligned}
 &L_2(\bm\chi_2,\bm\mu_2,\bm\nu_2)=\rho
-+\sum_{i=1}^m\mu_{2,i}\left(\sum_{p\in I_i}\sigma_{2,p}\chi_{2,p}-b_{2,i}\right)
--\sum_{p=1}^N\nu_{2,p}\chi_{2,p},\\
++\sum_{i=1}^{n_l}\mu_{2,i}\left(\sum_{p\in I_i}\sigma_{2,p}\chi_{2,p}-b_{2,i}\right)
+-\sum_{p=1}^n\nu_{2,p}\chi_{2,p},\\
 &\frac{\partial L_2}{\partial\chi_{2,p}}=\frac{\partial\rho}{\partial\chi_{2,p}}
 +\mu_{2,i}\sigma_{2,p}-\nu_{2,p},
 \end{aligned}
@@ -626,8 +603,8 @@ $\Delta_p=0$ for $\chi_{1,p}=0$, and $\Delta_p>0$ for small $\chi_{1,p}>0$; if
 $(1-\varepsilon_1)(2+y_p)<1$, then $\Delta_p>0$ exactly for
 $0<x_p<x_p^*=(1+y_p-r_p\varepsilon_1)/\left(r_p\left(1-(1-\varepsilon_1)(2+y_p)\right)\right)$,
 and $\Delta_p<0$ for $x_p>x_p^*$. Here $\chi_{1,p}$ is not small compared
-with $\omega$: in the computation of Section~\ref{sec-simulation} (parameter set
-\texttt{\RunParams}), $\omega=\omega_v=1/\RunOmegaInv$, $r_p\in[\RunRMin,\RunRMax]$, and
+with $\omega$: in the computation of Section~\ref{sec-simulation} (the parameter set
+used in the numerical tests), $\omega=\omega_v=1/\RunOmegaInv$, $r_p\in[\RunRMin,\RunRMax]$, and
 $\varepsilon_1=\RunEpsFirst$\RunEpsFirstTo, so for $\chi_{3,p}=0$ the condition
 $\Delta_p>0$ is $0<\chi_{1,p}<\omega x_p^*$, between $\RunDeltaBoundLo$
 ($r_p=\RunRMax$) and $\RunDeltaBoundHi$ ($r_p=\RunRMin$) per day\RunDeltaLast, while
@@ -647,14 +624,14 @@ with $\Delta_p>0$, with $t_p=1+\lambda_p'\chi_{2,p}/\lambda_p$,
 g_p=g_p^0\left((1-e_p)+\frac{e_p}{t_p}\right),\qquad g_p^0=\frac{\kappa_p}{\lambda_p},\qquad
 e_p=\frac{\Delta_p}{\kappa_p\lambda_p'}\in(0,1),
 \end{equation*}
-which is the one dose form with $A_1$ replaced by $A_1\operatorname{diag}(\bm\gamma)$,
+which is the one dose form with $H_1$ replaced by $H_1\operatorname{diag}(\bm\gamma)$,
 $\gamma_p=g_p^0$ on these groups and $\gamma_p=g_p$ on the others,
 $\widetilde\sigma_p=\sigma_{2,p}\lambda_p/\lambda_p'$ and
 $c_i=b_{2,i}+\sum\widetilde\sigma_p$, the sum over these groups of the location.
 So this step, like the other two, is done by the damped fixed point iteration
 of Section~\ref{sec-fixed-point}. The same exchange argument applies at every
 local minimizer of~\eqref{problem} and at every point satisfying~\eqref{kkt3},
-and since $0<e_p<1$ and $A_1\operatorname{diag}(\bm\gamma)$ is irreducible,
+and since $0<e_p<1$ and $H_1\operatorname{diag}(\bm\gamma)$ is irreducible,
 by Theorem~\ref{thm-unique} the step has exactly one minimizer, the only point
 satisfying~\eqref{kkt3} for $k=2$.
 
@@ -666,7 +643,7 @@ sweep $s$, $\bm z^{(s)}$ the point after its $\bm\chi_1$ step, $\bm y^{(s)}$
 after its $\bm\chi_3$ step, and $\bm x^{(s+1)}$ after its $\bm\chi_2$ step.
 
 \begin{theorem}\label{alt-limit}
-Let $A_1$ be irreducible, $0<r_p\le 1$, and let each step end at the minimizer
+Let $H_1$ be irreducible, $0<r_p\le 1$, and let each step end at the minimizer
 of $\rho$ over its dose. Then the sequence $\bm x^{(s)}$ has limit points. Let
 $\bar{\bm x}=(\bar{\bm\chi}_1,\bar{\bm\chi}_2,\bar{\bm\chi}_3)$ be one of them,
 and let every location contain a group $q$ with $\bar\chi_{1,q}>0$ and
@@ -716,19 +693,19 @@ points (Section~\ref{sec-simulation}).
 
 The problem~\eqref{problem} is solved week by week along a solution of the
 model. The system of ordinary differential equations
-of~\cite[Section~2.1]{2026Feng_Day_Glasser}, its data with their sources, and the
+defined in~\cite[Section~2.1]{2026Feng_Day_Glasser}, its data with their sources, and the
 computation are in the companion notes DATA.tex (Sections~1 and~2); all data are
 public except the initial state and the weekly doses, which are read from files
 (DATA.tex, Section~1.9).
 
 \paragraph{The weekly loop.} The system is solved from $t=251$ (7 September
-2020) to $t=347$ (12 December 2020, the start of vaccination of the parameter set
-\texttt{2021}) without vaccination, and then on the 55 weeks $[\tau,\tau+7]$,
+2020) to $t=347$ (12 December 2020, the start of vaccination in the parameter set
+used in the numerical tests) without vaccination, and then on the 55 weeks $[\tau,\tau+7]$,
 $\tau=347,354,\dots,725$, to $t=732$ (1 January 2022), with
 rates $\chi_{k,p}$ constant on each week, computed at $\tau$ from the state
 $X(\tau)$ and the doses $b_{k,i}$ of each location in the week, all ages, read from a
 file (DATA.tex, Section~1.9.2), which are allocated among its age groups by the
-solution of~\eqref{problem} at $\tau$. The actual strategy of~\cite{2026Feng_Day_Glasser}, the reported doses by
+solution of~\eqref{problem} at $\tau$. The actual strategy described in~\cite{2026Feng_Day_Glasser}, the reported doses by
 location and age group, is the reference for this allocation; it is not computed
 here (DATA.tex, Remark~2.1).
 
@@ -743,7 +720,7 @@ $10^{-6}$, since the formulas need $\sigma_{k,p}>0$; in the first weeks $V=0$.)
 $0.99\sum\sigma_{k,p}/7$ over the eligible groups of location $i$, the bound of
 the actual strategy; at least $10^{-9}$ (the method needs $b_{k,i}>0$); and
 $b_{k,i}=0$ if location $i$ has no eligible group.
-\item $A_1$ of~\eqref{a1-g} with the parameters at $\tau$:
+\item $H_1$ of~\eqref{a1-g} with the parameters at $\tau$:
 $d_{c,p}=s_i(\tau)\,a_p\,\psi_{S,p}(\tau)\,\beta_p(\tau)$, with $s_i$ the stringency
 factor of location $i\ni p$ (DATA.tex, Section~1.5) and the values of the variant
 dominant at $\tau$ (DATA.tex, Section~1.8); $\psi_{I,p}(\tau)$; $q_{s,p}$ and
@@ -756,7 +733,7 @@ $C>0$, it is irreducible. Its products can also be computed without forming it
 \item The alternating method of Section~\ref{sec-three} is run each week from
 three starts, and the end point with the smallest $\rho$ is kept: the uniform
 allocation; the rates of the eigenvector strategy
-of~\cite{2026Feng_Day_Glasser} (DATA.tex, Section~2.3), computed at the start of
+described in~\cite{2026Feng_Day_Glasser} (DATA.tex, Section~2.3), computed at the start of
 the week from the state, the next generation matrix and the rates of the
 previous week; and the rates of the same week in the eigenvector run (the
 simulation with the eigenvector strategy in every week, at its own state), with
@@ -766,7 +743,7 @@ smallest $\rho$ it sees, the start included; so each week $\rho$ is at most that
 of the eigenvector strategy at the same state. One start is not enough: in a
 55-week test run, the end values from the uniform start and from an
 earlier second start, the doses in proportion to the left Perron vector of
-$A_1\operatorname{diag}(\bm g)$ at the uniform allocation, differ by up to
+$H_1\operatorname{diag}(\bm g)$ at the uniform allocation, differ by up to
 $0.2\%$, each the smaller in about half of the weeks.
 \item The rates are bounded, $\chi_{k,p}\le\chi_{\max}=-\frac17\ln(1-0.99)\approx0.658$
 per day, the largest rate of the actual strategy; this bound is added to the
@@ -830,14 +807,14 @@ they are smaller than $\chi_{\max}$ by this inequality.
 With $\chi_{1,p}\le\chi_{\max}$ added, the one dose problem of
 Section~\ref{sec-single} has the feasible set
 \begin{equation*}
-\mathcal T_{\max}=\left\{\bm t:\ \sum_{p\in I_i}\widetilde\sigma_pt_p=c_i,\ i=1:m,\
+\mathcal T_{\max}=\left\{\bm t:\ \sum_{p\in I_i}\widetilde\sigma_pt_p=c_i,\ i=1:n_l,\
 1\le t_p\le T_p\right\},\qquad T_p=1+\frac{\alpha_p}{\omega_p}\chi_{\max},
 \end{equation*}
 and we assume $\sum_{p\in I_i}\widetilde\sigma_p<c_i<\sum_{p\in I_i}\widetilde\sigma_pT_p$,
 that is, $0<b_{1,i}<\chi_{\max}\sum_{p\in I_i}\sigma_{1,p}$.
 
 \begin{theorem}\label{thm-unique-bound}
-Let $A_1$ be irreducible and $0<e_p\le 1$. Then $\Psi$ has exactly one minimizer
+Let $H_1$ be irreducible and $0<e_p\le 1$. Then $\Psi$ has exactly one minimizer
 on $\mathcal T_{\max}$, and $\bm t\in\mathcal T_{\max}$ is this minimizer if and only
 if there are $\mu_i$, $\nu_p$, $\lambda_p$ with
 \begin{equation}\label{kkt-bound}
@@ -982,7 +959,7 @@ never contains all of $J_i$, so there are at most $|J_i|-1$ such steps, and afte
 $O$ is empty.
 \end{proof}
 
-The code (\path{cap_rates} in \path{seir7_ode.py}) does at most $n\ge|J_i|$ passes,
+The code (\path{cap_rates} in \path{seir7_ode.py}) does at most $n_a\ge|J_i|$ passes,
 the last of them only finding $O$ empty, and reports the largest rate before the
 check.
 
@@ -1005,8 +982,8 @@ interrupted computation from the last completed week; the bound, the eligible gr
 
 \begin{enumerate}
 \item The spectral radius of the next generation matrix of the model
-in~\cite{2026Feng_Day_Glasser} equals that of $A_1\operatorname{diag}(\bm g)$, of
-order $N$ (Theorem~\ref{reduction}); $A_1\ge 0$ does not depend on the
+in~\cite{2026Feng_Day_Glasser} equals that of $H_1\operatorname{diag}(\bm g)$, of
+order $n$ (Theorem~\ref{reduction}); $H_1\ge 0$ does not depend on the
 vaccination rates, which enter only through $\bm g$.
 \item For one dose, with the other two fixed, the problem has exactly one
 minimizer, the only point satisfying the Karush--Kuhn--Tucker conditions
@@ -1021,11 +998,39 @@ Theorem~\ref{alt-limit}, the limit points of the method satisfy the
 Karush--Kuhn--Tucker conditions of the problem for three doses.
 \item The problem for three doses is not convex, so the method is run from
 several starts and the end point with the smallest $\rho$ is kept. One start is
-the eigenvector strategy of~\cite{2026Feng_Day_Glasser}, so the result is never
+the eigenvector strategy described in~\cite{2026Feng_Day_Glasser}, so the result is never
 worse than that strategy at the same state.
 \end{enumerate}
 
 \appendix
+\section{Optimality conditions for three doses}\label{sec-kkt3}
+
+Let $H_1$ be irreducible. By Section~\ref{sec-gradient}, $\rho$ is a
+differentiable function of $\bm\chi$. The Lagrangian of~\eqref{problem} is
+\begin{equation*}
+\begin{aligned}
+L(\bm\chi,\bm\mu,\bm\nu)&=\rho
++\sum_{k=1}^3\sum_{i=1}^{n_l}\mu_{k,i}\left(\sum_{p\in I_i}\sigma_{k,p}\chi_{k,p}-b_{k,i}\right)
+-\sum_{k=1}^3\sum_{p=1}^n\nu_{k,p}\chi_{k,p},\\
+\frac{\partial L}{\partial\chi_{k,p}}&=\frac{\partial\rho}{\partial\chi_{k,p}}
++\mu_{k,i}\sigma_{k,p}-\nu_{k,p},
+\end{aligned}
+\end{equation*}
+for $p\in I_i$. The constraints are affine, so at a local minimizer the
+Karush--Kuhn--Tucker conditions hold~\cite[Section~3.4]{1999Bertsekas}: there
+are $\mu_{k,i}$ and $\nu_{k,p}$ with, for $k=1,2,3$, $i=1:n_l$ and $p\in I_i$,
+\begin{equation}\label{kkt3}
+\begin{aligned}
+&\sum_{p\in I_i}\sigma_{k,p}\chi_{k,p}=b_{k,i},\qquad \chi_{k,p}\ge 0,\qquad
+\nu_{k,p}\ge 0,\qquad \nu_{k,p}\chi_{k,p}=0,\\
+&\mu_{k,i}\sigma_{k,p}=\nu_{k,p}-\frac{\partial\rho}{\partial\chi_{k,p}},
+\end{aligned}
+\end{equation}
+with $\partial\rho/\partial\chi_{k,p}$ from~\eqref{drho-dg} and~\eqref{dg}.
+Equivalently, with $h_{k,p}=-\left(\partial\rho/\partial\chi_{k,p}\right)/\sigma_{k,p}$,
+$h_{k,p}=\mu_{k,i}$ where $\chi_{k,p}>0$ and $h_{k,p}\le\mu_{k,i}$ where
+$\chi_{k,p}=0$.
+
 \section{Products with the contact matrix without forming it}\label{app-factored}
 
 The contact matrix of the $51\times16$ model has the entries
@@ -1035,17 +1040,17 @@ locations $i$ and $p$, so the sum over $(p,q)$ in $(C\bm x)_{ij}$ splits into a 
 over $p$ followed by a sum over $q$:
 \begin{equation*}
 \sum_{p,q}L_pU_{jq}e^{-b_qd_{ip}}x_{pq}
-=\sum_{q=1}^nU_{jq}\,W_{iq},\qquad
-W_{iq}=\sum_{p=1}^me^{-b_qd_{ip}}L_px_{pq}.
+=\sum_{q=1}^{n_a}U_{jq}\,W_{iq},\qquad
+W_{iq}=\sum_{p=1}^{n_l}e^{-b_qd_{ip}}L_px_{pq}.
 \end{equation*}
-That is, with the $n$ matrices $K^{(q)}\in\mathbb R^{m\times m}$,
-$K^{(q)}_{ip}=e^{-b_qd_{ip}}$, the column $q$ of $W\in\mathbb R^{m\times n}$ is
+That is, with the $n_a$ matrices $K^{(q)}\in\mathbb R^{n_l\times n_l}$,
+$K^{(q)}_{ip}=e^{-b_qd_{ip}}$, the column $q$ of $W\in\mathbb R^{n_l\times n_a}$ is
 $K^{(q)}$ times the vector $(L_px_{pq})_p$, and
 $(C\bm x)_{ij}=\left(WU^{\mathsf T}\right)_{ij}/Z_{ij}$, where $Z$ is the same
 expression with $x\equiv1$. Similarly
 $(C^{\mathsf T}\bm x)_{pq}=L_p\sum_iK^{(q)}_{ip}\left(\widetilde XU\right)_{iq}$ with
-$\widetilde X_{ij}=x_{ij}/Z_{ij}$. Each product takes $2m^2n+2mn^2\approx1.1\cdot10^5$
-operations and stores the $m^2n$ entries of the $K^{(q)}$, against $(mn)^2\approx
+$\widetilde X_{ij}=x_{ij}/Z_{ij}$. Each product takes $2n_l^2n_a+2n_ln_a^2\approx1.1\cdot10^5$
+operations and stores the $n_l^2n_a$ entries of the $K^{(q)}$, against $n^2\approx
 6.7\cdot10^5$ for the formed matrix. The computations use the formed matrix
 (DATA.tex, Section~1.5); this form serves as a check of it: $C\bm x$ agrees to
 $2\cdot10^{-15}$ for random $\bm x$, and the solution of the model at $t=349$
@@ -1065,7 +1070,7 @@ to $4\cdot10^{-10}$, the tolerance of the solver.
 \runvalue{RunDeltaLast}{ (with $\varepsilon_1=0.7$, in the weeks from $t=550$: between $4.3\cdot10^{-3}$ and $9.6\cdot10^{-3}$)}
 \runvalue{RunDeltaText}{in 13 of the 55 weeks, the first at $t=354$}
 The values used in Sections~\ref{sec-reduced} and~\ref{sec-step2}, from the parameter set
-\texttt{\RunParams} and the computation of Section~\ref{sec-simulation}:
+used in the numerical tests and the computation of Section~\ref{sec-simulation}:
 \begin{itemize}
 \item $\omega=\omega_v=1/\RunOmegaInv$ per day;
 \item $r_p=q_{m,p}/q_{s,p}\in[\RunRMin,\RunRMax]$;

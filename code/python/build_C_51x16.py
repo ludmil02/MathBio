@@ -6,7 +6,7 @@ locations in FIPS order, ages 0-4, ..., 75+), from the public inputs of notes/DA
 
 U from prem_U_16x16.py, L and d from geo_51.py, b_q from U and d (seir7_ode.decay_rates).
 Checks: every row adds up to 1, and C x agrees with its computation without forming C
-(appendix of notes/stratified_seir_ngm.tex), for random x.
+(Appendix B of notes/stratified_seir_ngm.tex), for random x.
 
 Usage:  python3 -u build_C_51x16.py
 """
@@ -34,7 +34,7 @@ def build():
     E = np.exp(-b[None, None, :] * d[:, :, None])                     # E[i, p, q]
     K = L[None, None, :, None] * U[None, :, None, :] * E[:, None, :, :]  # K[i, j, p, q]
     C = (K / K.sum(axis=(2, 3), keepdims=True)).reshape(m * n, m * n)
-    # checks: row sums, and (W U^T)/Z without forming C (appendix of stratified_seir_ngm.tex)
+    # checks: row sums, and (W U^T)/Z without forming C (Appendix B of stratified_seir_ngm.tex)
     Kq = np.exp(-b[:, None, None] * d[None, :, :])                    # K^(q)[i, p]
     cy = lambda y: np.einsum("qip,pq->iq", Kq, L[:, None] * y) @ U.T
     Z = cy(np.ones((m, n)))

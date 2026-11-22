@@ -37,7 +37,7 @@ def day(t):
 def panel_rho(a, w, r):
     a.plot(day(r.t), r.rho_opt, color=C[1])
     a.axhline(1.0, color="#8a8984", lw=0.8, ls="--")
-    a.set_title("Spectral radius ρ(NGM), optimal", loc="left")
+    a.set_title("Spectral radius ρ(H), optimal", loc="left")
 
 
 def panel_compartments(a, w, r):

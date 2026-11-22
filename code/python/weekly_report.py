@@ -253,7 +253,7 @@ def write_appendix(tag, v):
     body += [f"\\runvalue{{{k}}}{{{v[k]}}}" for k in MAIN_VALUES]
     body += [
         "The values used in Sections~\\ref{sec-reduced} and~\\ref{sec-step2}, from the parameter set",
-        "\\texttt{\\RunParams} and the computation of Section~\\ref{sec-simulation}:",
+        "used in the numerical tests and the computation of Section~\\ref{sec-simulation}:",
         "\\begin{itemize}",
         "\\item $\\omega=\\omega_v=1/\\RunOmegaInv$ per day;",
         "\\item $r_p=q_{m,p}/q_{s,p}\\in[\\RunRMin,\\RunRMax]$;",
