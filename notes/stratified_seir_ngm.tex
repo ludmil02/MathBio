@@ -85,10 +85,12 @@ We consider the matrix $\mathcal{I}$ that doubles the rows of a vector in $\math
 \vdots&\vdots&\ddots&\vdots\\
 0&0&\cdots&1\\
 0&0&\cdots&1
-\end{pmatrix}\in\mathbb{R}^{2n\times n},
+\end{pmatrix}\in\mathbb{R}^{2n\times n}.
 \end{equation}
 We denote
-$Q=\operatorname{diag}\left(q_{s,1},q_{m,1},\ldots,q_{s,n},q_{m,n}\right)$. 
+$Q=\operatorname{diag}\left(q_{s,1},q_{m,1},\ldots,q_{s,n},q_{m,n}\right)$, where
+$q_{s,p}$ and $q_{m,p}$ are the quantities $Q_{ps}$ and $Q_{pm}$
+of~\cite[Appendix~A]{2026Feng_Day_Glasser} (see the supplement for their derivation).
 % Recall that~\cite{2026Feng_Day_Glasser}
 % the next generation matrix $H$ is defined as  $H=FV^{-1}$, where $(F-V)$ is the linearization at the disease free equilibrium.
 In this notation, the next generation matrix $H$ can be written as
@@ -112,18 +114,9 @@ $i=1:n_l$, of the simplices
 \mathfrak{s}_{k,i}=\left\{(\chi_{k,p})_{p\in I_i}:\ \sum_{p\in I_i}\sigma_{k,p}\chi_{k,p}=b_{k,i},\
 \chi_{k,p}\ge 0\right\}.
 \end{equation}
-On this product, $\rho(H)$ is also the spectral radius of a matrix of
-order $n$.
-
-% The rows of $H_c$ are doubled, $H_c=\mathcal{I}\operatorname{diag}(\bm d_c)C\mathcal{I}^T\Psi_IQ$,
-% but its columns are doubled only if $q_{s,p}=q_{m,p}$ for all $p$; the rows
-% of $H$ are not doubled, since they are scaled by $y_p$ and $z_p$.
-
-Following~\cite{2026Feng_Day_Glasser} we set $r_p=q_{m,p}/q_{s,p}>0$. We assume $r_p\le 1$, which holds for the data
-of Section~\ref{sec-simulation} ($r_p\in[\RunRMin,\RunRMax]$ for the parameter set used in the
-numerical tests). Next theorem shows that we can reduce the problem to the minimization of the spectral radius of a matrix of order $n$.
+Following~\cite{2026Feng_Day_Glasser} we set $r_p=q_{m,p}/q_{s,p}>0$. We assume $r_p\le 1$, which holds for the parameter set used in the numerical tests: in the computation of Section~\ref{sec-simulation}, $r_p\in[\RunRMin,\RunRMax]$.  The next theorem shows that we can reduce the problem to the minimization of the spectral radius of a matrix of order $n$.
 \begin{theorem}\label{reduction}
-If $H_1\in\mathbb{R}^{n\times n}$ and $\bm{g}\in\mathbb{R}^n$ be defined as
+Let $H_1\in\mathbb{R}^{n\times n}$ and $\bm{g}\in\mathbb{R}^n$ be defined as
 \begin{equation}\label{a1-g}
 H_1=\operatorname{diag}(\bm d_c)\,C\operatorname{diag}\left(\bm\psi_I\odot\bm q_s\right),
 \qquad g_p=y_p+r_pz_p,\quad p=1:n.
@@ -144,7 +137,7 @@ $X_1X_2\bm x=\lambda\bm x$, $\lambda\ne 0$, $\bm x\ne 0$, then
 $X_2X_1(X_2\bm x)=\lambda X_2\bm x$ and $X_2\bm x\ne 0$, since
 $X_1X_2\bm x\ne 0$ which shows that a nonzero eigenvalue of $X_1X_2$ is also an eigenvalue of $X_2X_1$. To show the other direction we can use an analogous argument. 
 
-Finnally, a straightforward computation shows that $q_{s,p}y_p+q_{m,p}z_p=q_{s,p}g_p$, and
+Finally, a straightforward computation shows that $q_{s,p}y_p+q_{m,p}z_p=q_{s,p}g_p$, and
 \begin{equation*}
 \mathcal{I}^T\Psi_IQ\operatorname{diag}(\bm d)\mathcal{I}
 =\operatorname{diag}\left(\psi_{I,p}q_{s,p}g_p\right)_{p=1}^n
@@ -464,11 +457,11 @@ constraints, and by Lemma~\ref{frozen} a fixed point satisfies~\eqref{kkt}.
 We do not prove that the iteration converges.
 
 In the computations the iteration is damped:
-$\bm t^{(k+1)}=\bm t^{(k)}+\theta\left(\bm t(\bm\mu)-\bm t^{(k)}\right)$ with
-$\theta=1/2$, where $\bm t(\bm\mu)$ is the point given by the lemma. The
+$\bm t^{(k+1)}=\bm t^{(k)}+\vartheta\left(\bm t(\bm\mu)-\bm t^{(k)}\right)$ with
+$\vartheta=1/2$, where $\bm t(\bm\mu)$ is the point given by the lemma. The
 constraints are linear and both points satisfy them and $t_p\ge 1$, so every
 iterate does; the fixed points are those of the undamped iteration. In our
-tests the undamped iteration ($\theta=1$) ended in a cycle of two points,
+tests the undamped iteration ($\vartheta=1$) ended in a cycle of two points,
 while the damped one converged.
 
 \section{The alternating method for three doses}\label{sec-three}
@@ -585,18 +578,18 @@ with $\Delta_p=\kappa_p\lambda_p'-\kappa_p'\lambda_p$, which does not depend on
 $\chi_{2,p}$: $g_p$ is strictly decreasing, constant or strictly increasing
 in $\chi_{2,p}$ as $\Delta_p>0$, $=0$ or $<0$.
 
-For $\omega=\omega_v$, with $x_p=\chi_{1,p}/\omega$ and $y_p=\varepsilon_3\chi_{3,p}/\omega$,
+For $\omega=\omega_v$, with $x_p=\chi_{1,p}/\omega$ and $m_p=\varepsilon_3\chi_{3,p}/\omega$,
 the definitions give $\kappa_p=\omega(1+r_p(1-\varepsilon_1)x_p)$,
 $\kappa_p'=\varepsilon_2(1+r_px_p)$, $\lambda_p=\omega(1+x_p)$,
-$\lambda_p'=\varepsilon_2(1+(2+y_p)x_p)$, and multiplying out,
+$\lambda_p'=\varepsilon_2(1+(2+m_p)x_p)$, and multiplying out,
 \begin{equation}\label{delta-x}
-\frac{\Delta_p}{\omega\varepsilon_2}=x_p\left(1+y_p-r_p\varepsilon_1\right)
--r_px_p^2\left(1-(1-\varepsilon_1)(2+y_p)\right).
+\frac{\Delta_p}{\omega\varepsilon_2}=x_p\left(1+m_p-r_p\varepsilon_1\right)
+-r_px_p^2\left(1-(1-\varepsilon_1)(2+m_p)\right).
 \end{equation}
 Since $0<r_p\le1$ and $\varepsilon_1<1$, the coefficient of $x_p$ is positive. So
 $\Delta_p=0$ for $\chi_{1,p}=0$, and $\Delta_p>0$ for small $\chi_{1,p}>0$; if
-$(1-\varepsilon_1)(2+y_p)<1$, then $\Delta_p>0$ exactly for
-$0<x_p<x_p^*=(1+y_p-r_p\varepsilon_1)/\left(r_p\left(1-(1-\varepsilon_1)(2+y_p)\right)\right)$,
+$(1-\varepsilon_1)(2+m_p)<1$, then $\Delta_p>0$ exactly for
+$0<x_p<x_p^*=(1+m_p-r_p\varepsilon_1)/\left(r_p\left(1-(1-\varepsilon_1)(2+m_p)\right)\right)$,
 and $\Delta_p<0$ for $x_p>x_p^*$. Here $\chi_{1,p}$ is not small compared
 with $\omega$: in the computation of Section~\ref{sec-simulation} (the parameter set
 used in the numerical tests), $\omega=\omega_v=1/\RunOmegaInv$, $r_p\in[\RunRMin,\RunRMax]$, and
@@ -632,54 +625,55 @@ satisfying~\eqref{kkt3} for $k=2$.
 
 \subsection{Convergence}\label{sec-alt-convergence}
 We do not prove that the fixed point iterations of the steps converge, nor
-that the method converges. If the steps end at their minimizers, the limit points of the
-method satisfy~\eqref{kkt3}. Let $\bm x^{(s)}$ be the point at the start of
-sweep $s$, $\bm z^{(s)}$ the point after its $\bm\chi_1$ step, $\bm y^{(s)}$
+that the method converges. If the steps end at their minimizers and every location contains a group
+with first and second doses at the limit point, the limit points of the
+method satisfy~\eqref{kkt3} (Theorem~\ref{alt-limit}). Let $\bm x^{(s)}$ be the point at the start of
+sweep $s$, $\bm x^{(s,1)}$ the point after its $\bm\chi_1$ step, $\bm x^{(s,3)}$
 after its $\bm\chi_3$ step, and $\bm x^{(s+1)}$ after its $\bm\chi_2$ step.
 
 \begin{theorem}\label{alt-limit}
 Let $H_1$ be irreducible, $0<r_p\le 1$, and let each step end at the minimizer
 of $\rho$ over its dose. Then the sequence $\bm x^{(s)}$ has limit points. Let
-$\bar{\bm x}=(\bar{\bm\chi}_1,\bar{\bm\chi}_2,\bar{\bm\chi}_3)$ be one of them,
-and let every location contain a group $q$ with $\bar\chi_{1,q}>0$ and
-$\bar\chi_{2,q}>0$. Then each $\bar{\bm\chi}_k$ minimizes $\rho$ over
-$\bm\chi_k$ with the other two doses those of $\bar{\bm x}$, and $\bar{\bm x}$
+$\widetilde{\bm x}=(\widetilde{\bm\chi}_1,\widetilde{\bm\chi}_2,\widetilde{\bm\chi}_3)$ be one of them,
+and let every location contain a group $q$ with $\widetilde\chi_{1,q}>0$ and
+$\widetilde\chi_{2,q}>0$. Then each $\widetilde{\bm\chi}_k$ minimizes $\rho$ over
+$\bm\chi_k$ with the other two doses those of $\widetilde{\bm x}$, and $\widetilde{\bm x}$
 satisfies~\eqref{kkt3} for $k=1,2,3$.
 \end{theorem}
 \begin{proof}
 The feasible set is compact, so limit points exist, and $\rho(\bm x^{(s)})$
-decreases to some $\bar\rho$. Let $\bm x^{(s)}\to\bar{\bm x}$ along a
-subsequence $\mathcal S$; then $\rho(\bar{\bm x})=\bar\rho$, and
-$\rho(\bm z^{(s)})$, $\rho(\bm y^{(s)})\to\bar\rho$ as well.
+decreases to some $\widetilde\rho$. Let $\bm x^{(s)}\to\widetilde{\bm x}$ along a
+subsequence $\mathcal S$; then $\rho(\widetilde{\bm x})=\widetilde\rho$, and
+$\rho(\bm x^{(s,1)})$, $\rho(\bm x^{(s,3)})\to\widetilde\rho$ as well.
 
-\emph{First dose.} Along a further subsequence $\bm z^{(s)}\to\bar{\bm z}$, which
-differs from $\bar{\bm x}$ only in $\bm\chi_1$. For every feasible $\bm\chi_1$,
-$\rho(\bm z^{(s)})\le\rho(\bm\chi_1,\bm\chi_2^{(s)},\bm\chi_3^{(s)})$, and by
-continuity $\rho(\bar{\bm z})\le\rho(\bm\chi_1,\bar{\bm\chi}_2,\bar{\bm\chi}_3)$.
-So $\bar{\bm z}_1$ minimizes $\rho$ over $\bm\chi_1$ at $\bar{\bm x}$, and so
-does $\bar{\bm\chi}_1$, since $\rho(\bar{\bm x})=\bar\rho=\rho(\bar{\bm z})$. The
-minimizer is unique (Section~\ref{sec-step1}), so $\bar{\bm z}=\bar{\bm x}$, and
-$\bm z^{(s)}\to\bar{\bm x}$ along $\mathcal S$.
+\emph{First dose.} Along a further subsequence $\bm x^{(s,1)}\to\widetilde{\bm x}^{(1)}$, which
+differs from $\widetilde{\bm x}$ only in $\bm\chi_1$. For every feasible $\bm\chi_1$,
+$\rho(\bm x^{(s,1)})\le\rho(\bm\chi_1,\bm\chi_2^{(s)},\bm\chi_3^{(s)})$, and by
+continuity $\rho(\widetilde{\bm x}^{(1)})\le\rho(\bm\chi_1,\widetilde{\bm\chi}_2,\widetilde{\bm\chi}_3)$.
+So the $\bm\chi_1$ part of $\widetilde{\bm x}^{(1)}$ minimizes $\rho$ over $\bm\chi_1$ at $\widetilde{\bm x}$, and so
+does $\widetilde{\bm\chi}_1$, since $\rho(\widetilde{\bm x})=\widetilde\rho=\rho(\widetilde{\bm x}^{(1)})$. The
+minimizer is unique (Section~\ref{sec-step1}), so $\widetilde{\bm x}^{(1)}=\widetilde{\bm x}$, and
+$\bm x^{(s,1)}\to\widetilde{\bm x}$ along $\mathcal S$.
 
-\emph{Third dose.} The same argument, with $\bm z^{(s)}$ in place of
-$\bm x^{(s)}$, shows that $\bar{\bm\chi}_3$ minimizes $\rho$ over $\bm\chi_3$ at
-$\bar{\bm x}$; by the hypothesis on $\bar{\bm\chi}_1$, $\bar{\bm\chi}_2$ this
-minimizer is unique (Section~\ref{sec-step3}), so $\bm y^{(s)}\to\bar{\bm x}$.
+\emph{Third dose.} The same argument, with $\bm x^{(s,1)}$ in place of
+$\bm x^{(s)}$, shows that $\widetilde{\bm\chi}_3$ minimizes $\rho$ over $\bm\chi_3$ at
+$\widetilde{\bm x}$; by the hypothesis on $\widetilde{\bm\chi}_1$, $\widetilde{\bm\chi}_2$ this
+minimizer is unique (Section~\ref{sec-step3}), so $\bm x^{(s,3)}\to\widetilde{\bm x}$.
 
-\emph{Second dose.} The same argument, with $\bm y^{(s)}$, shows that
-$\bar{\bm\chi}_2$ minimizes $\rho$ over $\bm\chi_2$ at $\bar{\bm x}$.
+\emph{Second dose.} The same argument, with $\bm x^{(s,3)}$, shows that
+$\widetilde{\bm\chi}_2$ minimizes $\rho$ over $\bm\chi_2$ at $\widetilde{\bm x}$.
 
-Each $\bar{\bm\chi}_k$ minimizes a differentiable function under affine
+Each $\widetilde{\bm\chi}_k$ minimizes a differentiable function under affine
 constraints, so~\eqref{kkt3} holds for this $k$~\cite[Section~3.4]{1999Bertsekas};
 the constraints of different doses are separate, so the three systems together
 are~\eqref{kkt3}.
 \end{proof}
 
 A point satisfying~\eqref{kkt3} may be a local, not a global, minimizer. At
-$\bar{\bm x}$ of the theorem,
-$\nabla\rho(\bar{\bm x})^T(\bm x-\bar{\bm x})=\sum_{k=1}^3\nabla_{\bm\chi_k}\rho(\bar{\bm x})^T(\bm\chi_k-\bar{\bm\chi}_k)\ge 0$
+$\widetilde{\bm x}$ of the theorem,
+$\nabla\rho(\widetilde{\bm x})^T(\bm x-\widetilde{\bm x})=\sum_{k=1}^3\nabla_{\bm\chi_k}\rho(\widetilde{\bm x})^T(\bm\chi_k-\widetilde{\bm\chi}_k)\ge 0$
 for every feasible $\bm x$, so if $\rho$ is convex on the feasible set, which
-depends on the parameters and on $C$, $\bar{\bm x}$ is a global minimizer, and
+depends on the parameters and on $C$, $\widetilde{\bm x}$ is a global minimizer, and
 if it is strictly convex every start gives the same limit. For our data $\rho$
 is not convex (see the supplement), and different starts end at different
 points (Section~\ref{sec-simulation}).
@@ -921,7 +915,7 @@ bisection between $\min_p(y_p-U_p)-1$ and $\max_py_p$, where $G\ge1$ and $G\le1$
 \paragraph{The check after the minimization.} The bound is a constraint of the
 minimization, and the rates it returns exceed $\chi_{\max}$ at most by rounding
 errors: the step~\eqref{t-of-mu-bound} gives $t_p\le T_p$, the code updates
-$\bm t\leftarrow\bm t+\theta(\bm t^{\mathrm{new}}-\bm t)$ with $\theta=\frac12$, a convex
+$\bm t\leftarrow\bm t+\vartheta(\bm t^{\mathrm{new}}-\bm t)$ with $\vartheta=\frac12$, a convex
 combination of values $\le T_p$, and the projection of
 Lemma~\ref{lem-capped-proj} gives $u_p\le U_p$. The computation then applies, to each location $i$
 and dose $k$, the following step, repeated while some rate exceeds $\chi_{\max}$:
