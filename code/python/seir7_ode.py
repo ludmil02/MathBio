@@ -33,14 +33,15 @@ Usage:
         tolerances, group sums, signs, spectral radius on [t0, t_vacc]
     python3 -u seir7_ode.py solve    | tee intermediate/seir7_ode_solve.output
         state at t_vacc (start of vaccination) -> data/state_t<t_vacc>_51x16__<params>.csv
-    python3 -u seir7_ode.py simulate [optimal|eigenvector|actual] [resume] [initial=FILE] [doses=FILE] [params=NAME]
+    python3 -u seir7_ode.py simulate [optimal|eigenvector|actual] [resume] [initial=FILE] [doses=FILE] [params=NAME] [order=132]
             | tee -a intermediate/seir7_ode_simulate_<strategy>__<tag>.output
         initial= the state at t = t0 of the set (default data/cdc/state_t251_mock.csv; t0 at most
         t_vacc; with t0 = t_vacc there is no integration before the first week), doses= the weekly
         doses (default data/mock/doses_51x16x16_mock_55wk.xlsx); a FILE is taken as given, else
-        relative to this directory. tag = <initial>__<doses>__<params>, the two file names
-        without directory and extension and the set, e.g.
-        state_t251_mock__doses_51x16x16_mock_55wk__2021. out=DIR: the results and the checkpoint go
+        relative to this directory. order= the order of the steps of a sweep of the alternating
+        method, a permutation of 1, 2, 3 (default 132: chi_1, chi_3, chi_2). tag =
+        <initial>__<doses>__<params>__<order>, the two file names without directory and extension,
+        the set and the order, e.g. state_t251_mock__doses_51x16x16_mock_55wk__2021__132. out=DIR: the results and the checkpoint go
         to DIR (default: data/ and intermediate/). The number of weeks is that of the dose file:
         week w starts at t = t_vacc + 7 (w - 1), and the run ends at t_vacc + 7 (number of weeks).
         (after each week the state is saved to intermediate/simulate_<strategy>__<tag>_checkpoint.npz;
@@ -89,11 +90,12 @@ def input_path(p):
     raise FileNotFoundError(p)
 
 
-def run_tag(initial, doses, params):
-    """The part of the output names given by the inputs: <initial>__<doses>__<params>, the file
-    names without directory and extension, and the name of the parameter set."""
+def run_tag(initial, doses, params, order="132"):
+    """The part of the output names given by the inputs: <initial>__<doses>__<params>__<order>,
+    the file names without directory and extension, the name of the parameter set and the order
+    of the steps of a sweep of the alternating method."""
     stem = lambda p: os.path.splitext(os.path.basename(p))[0]
-    return f"{stem(initial)}__{stem(doses)}__{params}"
+    return f"{stem(initial)}__{stem(doses)}__{params}__{order}"
 
 
 # The parameters: one set (a column) of weekly_simulation/input/parameters.xlsx (edited by hand),
@@ -263,6 +265,7 @@ class Model:
         self.C = Cf.to_numpy(float)                                          # C[(i,j), (p,q)]
         self.chi = np.zeros((3, m, n))                                       # chi_1, chi_2, chi_3
         self.method = "DOP853"                                               # or "SDIRK4"
+        self.order = "132"                         # the steps of a sweep: chi1, chi3, chi2 (alternating.alternate)
         self.x251, self.initial_path = None, None
         if initial not in (None, "none"):
             self.initial_path = INITIAL if initial == "mock" else input_path(initial)
@@ -585,7 +588,7 @@ def optimal_rates(mod, A, tau, X, Dw, nrand, chi_prev, chi_run=None):
     st = [st[0], ("eigenvector", [c.ravel() for c in chi_eig])] + st[2:]   # uniform, eigenvector, random, eigenvector run
     for name, chi0 in st:
         rho0 = A.rho_of(chi0)
-        cm, rm, sw, _ = A.alternate(chi0, b, sig, label=f"[t={tau:g} {name}]")
+        cm, rm, sw, _ = A.alternate(chi0, b, sig, label=f"[t={tau:g} {name}]", order=mod.order)
         ends.append((rm, name, cm, sw, rho0))
     rm, name, chi, sw, _ = min(ends, key=lambda e: e[0])
     rho_uni = next(e[4] for e in ends if e[1] == "uniform")
@@ -634,15 +637,15 @@ def do_simulate(mod, strategy="actual", nrand=0, resume=False, doses=DOSES, outd
     "eigenvector": the same doses allocated by the eigenvector strategy, notes/DATA.tex, Section 2.3.
     After every week the state, the week and the results so far are saved to the checkpoint
     simulate_<strategy>__<tag>_checkpoint.npz (in intermediate/, or outdir), tag =
-    run_tag(initial, doses, params); with resume=True the run continues from it. The results go
+    run_tag(initial, doses, params, order); with resume=True the run continues from it. The results go
     to data/, or outdir."""
     if strategy not in ("actual", "optimal", "eigenvector"):
         raise ValueError(f"strategy {strategy!r}")
-    tag = run_tag(mod.initial_path, doses, mod.params)
+    tag = run_tag(mod.initial_path, doses, mod.params, mod.order)
     if outdir:
         os.makedirs(outdir, exist_ok=True)
     print(f"initial state {mod.initial_path}\ndoses {doses}\nparameters {mod.params} of {mod.params_file}"
-          f" (vaccination from t = {mod.t_vacc:g})\noutput tag {tag}\n"
+          f" (vaccination from t = {mod.t_vacc:g})\nsweep order {mod.order}\noutput tag {tag}\n"
           f"output directory {outdir or DATA}", flush=True)
     A = None
     if strategy != "actual":
@@ -762,15 +765,18 @@ def do_simulate(mod, strategy="actual", nrand=0, resume=False, doses=DOSES, outd
 if __name__ == "__main__":
     opts = dict(a.split("=", 1) for a in sys.argv[1:] if "=" in a)   # method=, initial=, doses=, params=, paramfile=
     argv = [a for a in sys.argv[1:] if "=" not in a]
-    bad = set(opts) - {"method", "initial", "doses", "out", "params", "paramfile"}
+    bad = set(opts) - {"method", "initial", "doses", "out", "params", "paramfile", "order"}
     if bad:
         raise ValueError(f"unknown options {sorted(bad)}: method=, initial=, doses=, out=, params=,"
-                         " paramfile=")
+                         " paramfile=, order=")
     mode = argv[0] if argv else "solve"
     mod = Model(initial=opts.get("initial", INITIAL), params=opts.get("params", DEFAULT_PARAMS),
                 params_file=input_path(opts["paramfile"]) if "paramfile" in opts else PARAMS_FILE)
     doses = input_path(opts["doses"]) if "doses" in opts else DOSES
     mod.method = opts.get("method", "DOP853").upper()
+    mod.order = opts.get("order", "132").strip()
+    if sorted(mod.order) != ["1", "2", "3"]:
+        raise ValueError(f"order={mod.order}: a permutation of 1, 2, 3, e.g. 132 (the default) or 123")
     if mod.method not in ("DOP853", "SDIRK4"):
         raise ValueError(f"method {mod.method!r}: DOP853 or SDIRK4")
     print(f"N total {mod.N.sum():,.0f}; parameters {mod.params}; initial state at t0 = {mod.t0:g}; vaccination from t = {mod.t_vacc:g};"

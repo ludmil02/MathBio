@@ -8,7 +8,8 @@ chi_3 (first, second, third dose; per day), subject to
 for every dose k and location i.  rho(H) = rho(H_1 diag(g)) (Theorem 2.1), H_1 of
 order n = 816 independent of chi, g_p a function of chi_{1,p}, chi_{2,p}, chi_{3,p}.
 
-The method (Section 5): sweeps over chi_1, chi_3, chi_2, each step minimizing rho over one
+The method (Section 5): sweeps over chi_1, chi_3, chi_2 (another order of the three steps by
+the argument order of alternate), each step minimizing rho over one
 dose with the other two fixed, by the damped fixed point iteration of Section 4.3
 (t_block, damping THETA = 1/2):
   chi_1 (Section 5.1): g = (1 - e) + e / t;
@@ -449,13 +450,24 @@ def _timed_step(chi, k, b, sig, label):
 STALL_SWEEPS = 3     # stop when the smallest rho seen has not decreased in this many sweeps
 
 
-def alternate(chi, b, sig, sweeps=200, tol=1e-11, label=""):
+def parse_order(order):
+    """The order of the steps in a sweep, "132" (chi_1, chi_3, chi_2) or another permutation of
+    1, 2, 3, as the dose indices (0, 2, 1)."""
+    s = str(order).strip()
+    if sorted(s) != ["1", "2", "3"]:
+        raise ValueError(f"order={order}: a permutation of 1, 2, 3, e.g. 132 or 123")
+    return tuple(int(c) - 1 for c in s)
+
+
+def alternate(chi, b, sig, sweeps=200, tol=1e-11, label="", order="132"):
     """The alternating method from chi.  Returns the chi with the smallest rho seen after any
     step (every step keeps all the constraints), that rho, the number of sweeps and the
-    history of rho (the start, then after each step chi1, chi3, chi2 of every sweep).  The
+    history of rho (the start, then after each step of every sweep, in the order of the steps;
+    order: "132", chi1, chi3, chi2, the default, or another permutation of 1, 2, 3).  The
     sweeps stop when rho changes by less than tol (relative) in a sweep, or when the smallest
     rho seen has not decreased by more than tol (relative) in STALL_SWEEPS sweeps (the sweeps
     cycle)."""
+    ks = parse_order(order)
     rho = rho_of(chi)
     hist = [rho]
     best_rho, best_chi, stall = rho, chi, 0
@@ -464,7 +476,7 @@ def alternate(chi, b, sig, sweeps=200, tol=1e-11, label=""):
         lab = "%s sweep %d" % (label, sw)
         improved = False
         rs, its = [], []
-        for k in (0, 2, 1):
+        for k in ks:
             chi, it, _ = _timed_step(chi, k, b, sig, lab)
             r = rho_of(chi)
             rs.append(r)
@@ -473,18 +485,18 @@ def alternate(chi, b, sig, sweeps=200, tol=1e-11, label=""):
                 improved = True
             if r < best_rho:
                 best_rho, best_chi = r, chi
-        r1, r3, r2 = rs
         hist += rs
-        say("%s sweep %3d: after chi1 %.12f (%d it), chi3 %.12f (%d it), chi2 %.12f (%d it)"
-            % (label, sw, r1, its[0], r3, its[1], r2, its[2]))
-        if abs(rho - r2) < tol * r2:
+        say("%s sweep %3d: after " % (label, sw)
+            + ", ".join("chi%d %.12f (%d it)" % (k + 1, r, i) for k, r, i in zip(ks, rs, its)))
+        r_end = rs[-1]
+        if abs(rho - r_end) < tol * r_end:
             break
         stall = 0 if improved else stall + 1
         if stall >= STALL_SWEEPS:
             say("%s smallest rho %.12f not decreased in %d sweeps: the sweeps cycle; stop"
                 % (label, best_rho, STALL_SWEEPS))
             break
-        rho = r2
+        rho = r_end
     say("%s end after %d sweeps: rho = %.12f (smallest seen)" % (label, sw + 1, best_rho))
     return best_chi, best_rho, sw + 1, np.array(hist)
 

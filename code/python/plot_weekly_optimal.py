@@ -5,7 +5,7 @@ with initial=, doses=, params= and out= as given to seir7_ode.py simulate optima
 default files and set, and the results in data/). The figures go to FIGDIR; without it, to DIR
 (out=); one of the two is required.
 
-Inputs (produced by seir7_ode.py simulate optimal, tag = <initial>__<doses>__<params>, seir7_ode.run_tag):
+Inputs (produced by seir7_ode.py simulate optimal, tag = <initial>__<doses>__<params>__<order>, seir7_ode.run_tag):
   data/simulate_weekly_51x16_optimal__<tag>.csv      national totals at the start of each week
   data/simulate_weekly_51x16_optimal__<tag>_rho.csv  rho per week (rho_opt is plotted)
 Output, in FIGDIR or DIR:
@@ -75,9 +75,9 @@ def dates(a):
     a.xaxis.set_major_formatter(mdates.DateFormatter("%b %Y"))
 
 
-def main(outdir, initial, doses, params, resdir=None):
+def main(outdir, initial, doses, params, resdir=None, order="132"):
     import seir7_ode as so
-    tag = so.run_tag(so.input_path(initial), so.input_path(doses), params)
+    tag = so.run_tag(so.input_path(initial), so.input_path(doses), params, order)
     path, path_rho = so.output_paths("optimal", tag, resdir)
     os.makedirs(outdir, exist_ok=True)
     print("reading", path, "and", path_rho, flush=True)
@@ -97,12 +97,13 @@ def main(outdir, initial, doses, params, resdir=None):
 if __name__ == "__main__":
     import seir7_ode as so
     opts = dict(a.split("=", 1) for a in sys.argv[1:] if "=" in a)
-    bad = set(opts) - {"initial", "doses", "params", "out"}
+    bad = set(opts) - {"initial", "doses", "params", "out", "order"}
     if bad:
-        raise ValueError(f"unknown options {sorted(bad)}: initial=, doses=, params=, out=")
+        raise ValueError(f"unknown options {sorted(bad)}: initial=, doses=, params=, out=, order=")
     pos = [a for a in sys.argv[1:] if "=" not in a]
     resdir = os.path.abspath(opts["out"]) if "out" in opts else None
     if not pos and resdir is None:
         raise SystemExit("plot_weekly_optimal.py: give the figure folder FIGDIR or out=DIR")
     main(pos[0] if pos else resdir, opts.get("initial", so.INITIAL),
-         opts.get("doses", so.DOSES), opts.get("params", so.DEFAULT_PARAMS), resdir)
+         opts.get("doses", so.DOSES), opts.get("params", so.DEFAULT_PARAMS), resdir,
+         opts.get("order", "132"))

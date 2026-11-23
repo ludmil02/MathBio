@@ -55,7 +55,7 @@ Run the scripts from `code/python/`.  Eigenvalues by Arnoldi (`scipy.sparse.lina
 | `ngm_seir7.py` | the 51 x 16 next generation matrix H at `t = t_vacc` (start of vaccination) from the same data (option `params=`): `rho(H)`, `rho(F V^-1)`, the left eigenvector, the gradient |
 | `plot_weekly_optimal.py` | the figures of the weekly optimal simulation, from `data/simulate_weekly_51x16_optimal__<tag>*.csv` (options `initial=`, `doses=`, `params=` as for `seir7_ode.py`), saved as `fig_weekly_optimal*.png` to the folder given as argument (or `out=`, required) |
 | `plot_compare.py` | the comparison figures of the strategies run for one set of inputs (`python3 plot_compare.py RESULTS_DIR`), saved to `RESULTS_DIR/figures/fig_compare_*.png` |
-| `weekly_report.py` | `python3 weekly_report.py RESULTS_DIR`: all figures of one results directory (`plot_weekly_optimal.py`, `plot_compare.py`), and the run values (input files, parameter set, days, weeks, results) written to `notes/run_values.tex`, included by `notes/DATA.tex` and `notes/simulation_weekly_optimal.tex`, and the values used by `notes/stratified_seir_ngm.tex` (r_p, omega, epsilon_1, the Delta_p bounds) written to its last appendix, "Parameter values", which is created if missing |
+| `weekly_report.py` | `python3 weekly_report.py RESULTS_DIR`: all figures of one results directory (`plot_weekly_optimal.py`, `plot_compare.py`), and the run values (input files, parameter set, days, weeks, results, and r_p, omega, epsilon_1, the Delta_p bounds) written to `notes/run_values_<order>.tex`, `<order>` the sweep order of the run (the last part of its tag); and `notes/DATA_<order>.tex`, `notes/simulation_weekly_optimal_<order>.tex`, the templates `notes/templates/DATA.tex`, `notes/templates/simulation_weekly_optimal.tex` including `run_values_<order>`. `notes/stratified_seir_ngm.tex` includes `run_values_132` (set by hand in its preamble) |
 
 Order: `census_N_51x16.py`, `prem_U_16x16.py`, `geo_51.py`, `build_C_51x16.py`,
 `glasser2023_inputs.py`, `oxcgrt_s_51.py`, `cdc_variants.py`, `sero_initial_51x16.py`,
@@ -77,8 +77,9 @@ the values of `table2.csv`, `beta0.csv`, `variant_days.csv` and Tables S1, S4 of
 of Feng, Day, Glasser 2026).  The file has the sheets `scalars`, `by_age` and `over_time` (each
 parameter that changes over time with its own switch days); a new set is a new column.  The day of the initial state `t0` and the start of vaccination `t_vacc` belong to the set
 (`2021`: `t0` = 347, `t_vacc` = 354; `feng2026`: `t0` = 251, `t_vacc` = 349); the state is
-integrated without vaccination from `t0` to `t_vacc`.  The outputs are named by the inputs, `tag = <initial>__<doses>__<params>` (file names
-without directory and extension, and the set): `data/simulate_weekly_51x16_optimal__<tag>.csv`,
+integrated without vaccination from `t0` to `t_vacc`.  The option `order=132` (the default, or another permutation of 1, 2, 3) is the order of the steps of a
+sweep of the alternating method.  The outputs are named by the inputs, `tag = <initial>__<doses>__<params>__<order>` (file names
+without directory and extension, the set and the order): `data/simulate_weekly_51x16_optimal__<tag>.csv`,
 `data/simulate_weekly_51x16_optimal__<tag>_rho.csv`, and the checkpoint
 `intermediate/simulate_optimal__<tag>_checkpoint.npz`, saved after each week.  After an
 interruption (Ctrl-C), `resume` with the same inputs continues from the last completed week

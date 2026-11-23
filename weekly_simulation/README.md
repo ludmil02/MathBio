@@ -42,13 +42,16 @@ From this directory:
     ./run.sh DOSES.xlsx               # other doses
     ./run.sh DOSES.xlsx INITIAL.csv   # other doses and initial state
     PARAMS=feng2026 ./run.sh          # another parameter set
+    ORDER=123 ./run.sh                # sweeps chi1, chi2, chi3 (default 132: chi1, chi3, chi2)
 
 The parameters are a set (a column) of `input/parameters.xlsx`, `PARAMS=NAME`
 (default `2021`, the values of Unknown 2020/21; also `feng2026`,
-the values of Feng, Day, Glasser 2026).  The results go to `results/<tag>/`, `tag =
-<INITIAL>__<DOSES>__<PARAMS>` (the two file names without extension, and the set), e.g.
-`results/state_t251_mock__doses_51x16x16_mock_55wk__2021/`, so runs with different inputs are kept
-apart.  After an interruption, `RESUME=1 ./run.sh` with the same arguments continues
+the values of Feng, Day, Glasser 2026).  `ORDER` is the order of the steps of a sweep of the
+alternating method, a permutation of `123` (default `132`).  The results go to `results/<tag>/`,
+`tag = <INITIAL>__<DOSES>__<PARAMS>__<ORDER>` (the two file names without extension, the set and
+the order), e.g. `results/state_t251_mock__doses_51x16x16_mock_55wk__2021__132/`, so runs with
+different inputs are kept apart.  `./rename_tags.sh` adds `__132` to the tags of results made
+before the order was part of the tag (a dry run; `DO=1 ./rename_tags.sh` renames).  After an interruption, `RESUME=1 ./run.sh` with the same arguments continues
 from the last completed week.
 
 `run.sh` first runs the eigenvector strategy with the same inputs into the same
@@ -62,10 +65,11 @@ on the eigenvector run is at a different state, so its rho can be below the opti
 the same week.
 
 After the optimal run, `run.sh` makes the figures (`plot_weekly_optimal.py`, `plot_compare.py`), and writes the values of
-the run (`weekly_report.py RESULTS nofigures`) into `notes/run_values.tex`, included by
-`notes/DATA.tex` and `notes/simulation_weekly_optimal.tex`, and into the last appendix of
-`notes/stratified_seir_ngm.tex`, "Parameter values" (created if missing), so that the notes show
-this run.  Each of these steps is one line of `run.sh` and can be commented out.
+the run (`weekly_report.py RESULTS nofigures`) into `notes/run_values_<ORDER>.tex`, and writes
+`notes/DATA_<ORDER>.tex` and `notes/simulation_weekly_optimal_<ORDER>.tex` (the templates
+`notes/templates/DATA.tex` and `notes/templates/simulation_weekly_optimal.tex`, including these values), so that they
+show this run; the files of the other orders are kept.  `notes/stratified_seir_ngm.tex` includes
+`run_values_132.tex`; the order is set by hand in its preamble.  Each of these steps is one line of `run.sh` and can be commented out.
 `python3 weekly_report.py RESULTS`, from `code/python/`, makes all figures and writes the
 values for an existing `results/<tag>/`.
 
