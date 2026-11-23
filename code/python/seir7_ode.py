@@ -55,7 +55,10 @@ Usage:
         allocated by the eigenvector strategy, no optimization (notes/DATA.tex, Section 2.3)
         -> data/simulate_weekly_51x16_<strategy>__<tag>.csv (national totals at the start of each
            week), and except for actual data/simulate_weekly_51x16_<strategy>__<tag>_rho.csv (rho
-           of the applied rates, rho_applied, and the doses by age, D<k>_<age>, per week)
+           of the applied rates, rho_applied, and the doses by age, D<k>_<age>, per week),
+           data/simulate_weekly_51x16_<strategy>__<tag>_age.csv (the 13 compartments of each age
+           group, summed over the locations, at the start of each week) and, except for actual,
+           ..._<strategy>__<tag>_chi.npz (the rates of every week)
     Any mode takes method=DOP853 (default; explicit RK of order 8, scipy) or method=SDIRK4
     (implicit RK of order 4 with step control, matrix-free Newton-GMRES with jvp; sdirk.py).
 """
@@ -629,6 +632,18 @@ def chi_path(strategy, tag, outdir=None):
     return output_paths(strategy, tag, outdir)[0].replace(".csv", "_chi.npz")
 
 
+def age_path(strategy, tag, outdir=None):
+    """The compartments by age group (summed over the locations) at the start of each week."""
+    return output_paths(strategy, tag, outdir)[0].replace(".csv", "_age.csv")
+
+
+def age_rows(mod, t, X):
+    """One row per age group: t, the age group and its 13 compartments summed over the locations."""
+    S = X.sum(axis=1)                                  # 13 x n
+    return [{"t": t, "age": a, **{nm: S[c, j] for c, nm in enumerate(NAMES)}}
+            for j, a in enumerate(mod.ages)]
+
+
 def do_simulate(mod, strategy="actual", nrand=0, resume=False, doses=DOSES, outdir=None):
     """Weekly vaccination from mod.t_vacc, with the initial state of mod and the dose file doses,
     for as many weeks as the dose file has. strategy "actual" (not run): the rates of DATA.tex,
@@ -685,6 +700,8 @@ def do_simulate(mod, strategy="actual", nrand=0, resume=False, doses=DOSES, outd
         if "chi" in z.files:                   # the rates of the last completed week
             mod.chi[:] = z["chi"]
         chis = list(z["chis"]) if "chis" in z.files else None   # the rates of all completed weeks
+        # the compartments by age of all completed weeks (None for a checkpoint written without them)
+        rows_age = list(z["rows_age"]) if "rows_age" in z.files else None
         if not np.isclose(float(z["t"]), weeks[w0]):
             raise ValueError(f"{ckpt}: t = {float(z['t'])} is not the start of week {w0 + 1}")
         print(f"resuming from {ckpt}: week {w0 + 1} (t = {weeks[w0]:g})", flush=True)
@@ -695,11 +712,13 @@ def do_simulate(mod, strategy="actual", nrand=0, resume=False, doses=DOSES, outd
         else:
             x = mod.x251.copy()
             print(f"initial state at t0 = t_vacc = {mod.t_vacc:g}: no integration before week 1", flush=True)
-        w0, rows, opt, chis = 0, [], [], []
+        w0, rows, opt, chis, rows_age = 0, [], [], [], []
     for w in range(w0, len(weeks)):
         tau = weeks[w]
         X = x.reshape(13, mod.m, mod.n)
         rows.append({"t": tau, **{nm: X[c].sum() for c, nm in enumerate(NAMES)}})
+        if rows_age is not None:
+            rows_age.extend(age_rows(mod, tau, X))
         Dw = Dk[..., w]                        # 3 x m, or 3 x m x n (actual)
         if strategy == "actual":
             mod.chi[:] = actual_rates(mod, X, Dw)
@@ -735,7 +754,8 @@ def do_simulate(mod, strategy="actual", nrand=0, resume=False, doses=DOSES, outd
             tmp = ckpt + ".tmp.npz"
             np.savez(tmp, next_week=w + 1, t=weeks[w + 1], x=x, chi=mod.chi,
                      rows=np.array(rows, dtype=object), opt=np.array(opt, dtype=object),
-                     **({} if chis is None else {"chis": np.array(chis)}))
+                     **({} if chis is None else {"chis": np.array(chis)}),
+                     **({} if rows_age is None else {"rows_age": np.array(rows_age, dtype=object)}))
             os.replace(tmp, ckpt)
     mod.chi[:] = 0.0
     X = x.reshape(13, mod.m, mod.n)
@@ -743,10 +763,17 @@ def do_simulate(mod, strategy="actual", nrand=0, resume=False, doses=DOSES, outd
     out = pd.DataFrame(rows)
     path, path_rho = output_paths(strategy, tag, outdir)
     out.to_csv(path, index=False, float_format="%.6g")
+    if rows_age is not None:
+        rows_age.extend(age_rows(mod, weeks[-1] + 7.0, X))
+        pd.DataFrame(rows_age).to_csv(age_path(strategy, tag, outdir), index=False, float_format="%.6g")
+        print(f"wrote {age_path(strategy, tag, outdir)}", flush=True)
+    else:
+        print("no compartments by age: the run was resumed from a checkpoint written without them",
+              flush=True)
     if opt:
         pd.DataFrame(opt).to_csv(path_rho, index=False, float_format="%.10g")
         print(f"wrote {path_rho}", flush=True)
-    if strategy == "eigenvector" and chis is not None:
+    if strategy != "actual" and chis is not None:     # optimal: for a replay of the ODE
         np.savez(chi_path(strategy, tag, outdir), t=np.array(weeks), chi=np.array(chis))
         print(f"wrote {chi_path(strategy, tag, outdir)}", flush=True)
     print(f"{strategy}: simulated [{mod.t0:g}, {weeks[-1] + 7:g}] with {len(weeks)} weeks of doses in "

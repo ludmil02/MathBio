@@ -8,8 +8,10 @@ default files and set, and the results in data/). The figures go to FIGDIR; with
 Inputs (produced by seir7_ode.py simulate optimal, tag = <initial>__<doses>__<params>__<order>, seir7_ode.run_tag):
   data/simulate_weekly_51x16_optimal__<tag>.csv      national totals at the start of each week
   data/simulate_weekly_51x16_optimal__<tag>_rho.csv  rho per week (rho_opt is plotted)
+  data/simulate_weekly_51x16_optimal__<tag>_age.csv  compartments by age group (if the run saved them)
 Output, in FIGDIR or DIR:
   fig_weekly_optimal_{rho,compartments,infectious,deaths}.png   one panel each
+  fig_weekly_optimal_compartments_age<jj>.png   S, P, V, R of age group jj = 01, 02, ..., one each
 """
 import os
 import sys
@@ -89,6 +91,31 @@ def main(outdir, initial, doses, params, resdir=None, order="132"):
         f(a, w, r)
         dates(a)
         out = os.path.join(outdir, f"fig_weekly_optimal_{name}.png")
+        fig.savefig(out, dpi=200)
+        plt.close(fig)
+        print("wrote", out, flush=True)
+
+    path_age = so.age_path("optimal", tag, resdir)
+    if os.path.exists(path_age):
+        compartments_by_age(pd.read_csv(path_age), outdir)
+    else:
+        print(f"no {path_age} (a run before the compartments by age were saved); "
+              "figures by age skipped", flush=True)
+
+
+def compartments_by_age(wa, outdir):
+    """fig_weekly_optimal_compartments_age<jj>.png, jj = 01, 02, ...: S, P, V, R of the age
+    group jj (summed over the locations), in thousands; one figure per age group."""
+    names = [("S", "susceptible S"), ("P", "partially immune P"), ("V", "vaccinated V"), ("R", "recovered R")]
+    for j, age in enumerate(dict.fromkeys(wa.age), start=1):
+        g = wa[wa.age == age]
+        fig, a = plt.subplots(figsize=(5, 3.25), constrained_layout=True)
+        for k, (c, nm) in enumerate(names):
+            a.plot(day(g.t), g[c] / 1e3, color=C[k], label=nm)
+        a.set_title(f"Compartments, age {age}, optimal (thousands)", loc="left")
+        a.legend(fontsize=7)
+        dates(a)
+        out = os.path.join(outdir, f"fig_weekly_optimal_compartments_age{j:02d}.png")
         fig.savefig(out, dpi=200)
         plt.close(fig)
         print("wrote", out, flush=True)
